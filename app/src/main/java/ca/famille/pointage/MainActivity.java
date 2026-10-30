@@ -6,6 +6,12 @@ import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.os.Build;
 import android.provider.Settings;
+import android.provider.DocumentsContract;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import android.speech.RecognizerIntent;
 import java.util.ArrayList;
 import org.json.JSONArray;
@@ -36,6 +42,7 @@ public class MainActivity extends Activity {
     private static final int REQ_EXPORT = 41;
     private static final int REQ_IMPORT = 42;
     private static final int REQ_SPEECH = 43;
+    private static final int REQ_TREE = 44;
     private WebView web;
     private String pendingExport;
     // API GitHub : à jour en moins d'une minute (le site « raw » garde une copie jusqu'à 5 minutes)
@@ -102,6 +109,56 @@ public class MainActivity extends Activity {
             updateError(status == PackageInstaller.STATUS_FAILURE_ABORTED ? "Installation annulée." : "Installation refusée" + (msg != null ? " : " + msg : "."));
         }
         installing = false;
+    }
+
+    private SharedPreferences prefs() { return getSharedPreferences("backup", MODE_PRIVATE); }
+
+    private String folderName(Uri tree) {
+        try {
+            Uri doc = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree));
+            Cursor c = getContentResolver().query(doc, new String[]{DocumentsContract.Document.COLUMN_DISPLAY_NAME}, null, null, null);
+            if (c != null) { try { if (c.moveToFirst()) return c.getString(0); } finally { c.close(); } }
+        } catch (Exception ignored) { }
+        return "Dossier choisi";
+    }
+
+    /** Trouve (ou crée) un fichier dans le dossier choisi, puis le remplace par le contenu donné. */
+    private void writeInTree(Uri tree, String fileName, byte[] data) throws Exception {
+        String rootId = DocumentsContract.getTreeDocumentId(tree);
+        Uri parent = DocumentsContract.buildDocumentUriUsingTree(tree, rootId);
+        Uri children = DocumentsContract.buildChildDocumentsUriUsingTree(tree, rootId);
+        Uri target = null;
+        Cursor c = getContentResolver().query(children, new String[]{DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME}, null, null, null);
+        if (c != null) {
+            try { while (c.moveToNext()) { if (fileName.equals(c.getString(1))) { target = DocumentsContract.buildDocumentUriUsingTree(tree, c.getString(0)); break; } } }
+            finally { c.close(); }
+        }
+        if (target == null) target = DocumentsContract.createDocument(getContentResolver(), parent, "application/json", fileName);
+        if (target == null) throw new Exception("création du fichier refusée");
+        OutputStream os = getContentResolver().openOutputStream(target, "wt");
+        os.write(data);
+        os.close();
+    }
+
+    private void writeBackup(final String json) {
+        final String t = prefs().getString("tree", null);
+        if (t == null) return;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Uri tree = Uri.parse(t);
+                    byte[] data = json.getBytes(StandardCharsets.UTF_8);
+                    writeInTree(tree, "Pointage-sauvegarde.json", data);
+                    String month = new SimpleDateFormat("yyyy-MM", Locale.CANADA).format(new Date());
+                    writeInTree(tree, "Pointage-sauvegarde-" + month + ".json", data);
+                    prefs().edit().putLong("last", System.currentTimeMillis()).apply();
+                    js("window.onBackupDone && window.onBackupDone(true, '')");
+                } catch (Exception e) {
+                    js("window.onBackupDone && window.onBackupDone(false, " + JSONObject.quote("le dossier n'est plus accessible, choisissez-le de nouveau") + ")");
+                }
+            }
+        }).start();
     }
 
     private void updateError(String msg) {
@@ -233,6 +290,18 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Uri uri = (resultCode == RESULT_OK && data != null) ? data.getData() : null;
+        if (requestCode == REQ_TREE) {
+            boolean ok = false;
+            if (uri != null) {
+                try {
+                    getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    prefs().edit().putString("tree", uri.toString()).putString("name", folderName(uri)).remove("last").apply();
+                    ok = true;
+                } catch (Exception ignored) { }
+            }
+            js("window.onBackupFolder && window.onBackupFolder(" + ok + ")");
+            return;
+        }
         if (requestCode == REQ_SPEECH) {
             if (resultCode == RESULT_OK && data != null) {
                 ArrayList<String> res = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
@@ -339,6 +408,31 @@ public class MainActivity extends Activity {
                 }
             }).start();
         }
+
+        @JavascriptInterface
+        public void pickBackupFolder() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try { startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQ_TREE); }
+                    catch (Exception e) { js("window.onBackupFolder && window.onBackupFolder(false)"); }
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public String backupInfo() {
+            try {
+                JSONObject o = new JSONObject();
+                SharedPreferences p = prefs();
+                if (p.getString("tree", null) != null) o.put("folder", p.getString("name", "Dossier choisi"));
+                if (p.getLong("last", 0) > 0) o.put("last", p.getLong("last", 0));
+                return o.toString();
+            } catch (Exception e) { return "{}"; }
+        }
+
+        @JavascriptInterface
+        public void writeBackup(String json) { MainActivity.this.writeBackup(json); }
 
         @JavascriptInterface
         public void listen() {

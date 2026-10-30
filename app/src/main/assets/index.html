@@ -276,6 +276,33 @@ table.p10 tr.fin td{border-top:2px solid var(--line)}
 .cards{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:16px 0 8px}
 .cgroup{display:flex;gap:3px}
 .pc{width:30px;height:44px;border-radius:5px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.chart{position:relative;margin-top:4px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible;touch-action:none}
+.chart .ax{fill:var(--muted);font-size:10px;font-variant-numeric:tabular-nums}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .base{stroke:var(--muted);stroke-width:1}
+.chart .tgt{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4}
+.chart .lbl{fill:var(--ink);font-size:11px;font-weight:700}
+.chart .xh{stroke:var(--ink);stroke-width:1;opacity:.35}
+.ctip{position:absolute;top:0;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:12.5px;box-shadow:var(--shadow);min-width:120px;z-index:2}
+.ctip .h{font-weight:700;margin-bottom:3px;color:var(--muted)}
+.ctip .r{display:flex;align-items:center;gap:6px;justify-content:space-between}
+.ctip .r i{width:8px;height:8px;border-radius:50%;flex:none}
+.ctip .r span{flex:1}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px;font-size:12.5px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:14px;height:3px;border-radius:2px}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stile{padding:10px 10px 9px}
+.stile .k{font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.2}
+.stile .v{font-size:19px;font-weight:800;margin-top:4px;line-height:1.15;overflow-wrap:anywhere}
+.rec .li{padding:10px 14px}
+.rec .li .t{font-size:14.5px}
+.statt td.p{cursor:pointer}
+.switch{position:relative;width:52px;height:30px;border-radius:15px;background:var(--line);flex:none;transition:.15s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:.15s}
+.switch.on{background:var(--brand)}
+.switch.on::after{left:25px}
 .bar{height:6px;border-radius:3px;background:var(--surface2);margin-top:5px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent)}
 </style>
@@ -290,7 +317,7 @@ table.p10 tr.fin td{border-top:2px solid var(--line)}
 const KEY = 'pointage.v1';
 const bridge = window.AndroidBridge || null;
 const P10_COLORS = ['#e03131','#f76707','#fcc419','#82c91e','#2b8a3e','#12b886','#22b8cf','#1c7ed6','#364fc7','#7048e8','#ae3ec9','#e64980','#8d5524','#868e96','#212529','#f8f9fa'];
-const PALETTE = ['#2f7d4f','#1971c2','#c2255c','#e8590c','#7048e8','#0c8599','#b08900','#5c940d','#d6336c','#495057','#9c36b5','#1098ad'];
+const PALETTE = ['#2f7d4f','#1971c2','#c2255c','#e8590c','#7048e8','#0a8fb0','#b08900','#5c940d','#d6336c','#495057','#9c36b5','#1098ad'];
 const FD = {target:25000, entry:1000, penFrom:20000, pen:1000, straight:1500, pairs:750, useStraight:true, usePairs:true};
 
 function defaultDb(){ return {v:1, players:[], games:[], house:{}, farkle:{...FD}, lastSel:{}, titles:[]}; }
@@ -299,7 +326,26 @@ function load(){
   return defaultDb();
 }
 let db = load();
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ toast('Impossible d’enregistrer'); } recordHist(); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ toast('Impossible d’enregistrer'); } recordHist(); autoBackupSoon(); }
+/* Sauvegarde automatique (app Android) : copie du fichier dans un dossier choisi, quelques secondes après chaque changement */
+const canAutoBackup = () => !!(bridge && bridge.writeBackup && bridge.pickBackupFolder);
+function abInfo(){ try{ return JSON.parse(bridge.backupInfo()); }catch(e){ return {}; } }
+function abOn(){ try{ return localStorage.getItem('pointage.autobackup') === '1'; }catch(e){ return false; } }
+let abTimer = null;
+function autoBackupSoon(){ if(!canAutoBackup() || !abOn()) return; clearTimeout(abTimer); abTimer = setTimeout(autoBackupNow, 8000); }
+function autoBackupNow(){ clearTimeout(abTimer); abTimer = null; if(!canAutoBackup() || !abOn() || !abInfo().folder) return; bridge.writeBackup(JSON.stringify(db, null, 1)); }
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden' && abTimer) autoBackupNow(); });
+window.onBackupFolder = ok => { if(ok){ try{ localStorage.setItem('pointage.autobackup', '1'); }catch(e){} autoBackupNow(); toast('Dossier choisi : sauvegarde automatique activée'); } else toast('Aucun dossier choisi'); render(); };
+window.onBackupDone = (ok, msg) => { if(!ok) toast('Sauvegarde automatique impossible : ' + msg); if(S.view === 'settings') render(); };
+function backupCard(){
+  if(!canAutoBackup()) return `<p class="hint" style="margin:12px 0 0">La sauvegarde automatique est offerte dans l’app Android. Ici, pensez à exporter de temps en temps.</p>`;
+  const on = abOn(), info = abInfo();
+  return `<div class="row" style="margin-top:14px;align-items:flex-start"><div style="flex:1"><b>Sauvegarde automatique</b><div class="hint" style="margin:2px 0 0">Une copie à jour est enregistrée dans un dossier de votre choix après chaque changement.</div></div>
+      <button class="switch ${on && info.folder ? 'on' : ''}" data-a="abToggle" aria-label="Sauvegarde automatique"></button></div>
+    ${on && info.folder ? `<p class="hint">📁 ${esc(info.folder)}${info.last ? ' · dernière copie : ' + esc(new Date(info.last).toLocaleString('fr-CA', {dateStyle:'medium', timeStyle:'short'})) : ''}</p>
+      <div class="row"><button class="btn sm" style="flex:1" data-a="abNow">Sauvegarder maintenant</button><button class="btn sm" style="flex:1" data-a="abPick">Changer de dossier</button></div>
+      <p class="hint">Fichier : <b>Pointage-sauvegarde.json</b> (toujours à jour), plus une copie par mois. Pour restaurer : « Importer une sauvegarde » et choisir ce fichier.</p>` : ''}`;
+}
 /* Annuler / rétablir : un historique par partie, alimenté à chaque changement enregistré */
 const HIST = {};
 function histSnap(g){ const c = Object.assign({}, g); delete c.updated; return JSON.stringify({g: c, turn: S.turn || 0}); }
@@ -963,6 +1009,68 @@ function fkAdd(pts){
 }
 function fkNext(g){ g.cur = (g.cur + 1) % g.players.length; S.turn = 0; S.dice = []; S.heard = null; g.updated = Date.now(); save(); render(); }
 
+/* ---------- Graphique : évolution des scores ---------- */
+function scoreSeries(g){
+  // cumul par joueur : après chaque manche, ou après chacun de ses tours (jeu de dés)
+  return g.players.map(p => {
+    const pts = [0]; let c = 0;
+    if(g.type === 'farkle') g.turns.forEach(x => { if(x.pk === p.key){ c += x.pts; pts.push(c); } });
+    else g.rounds.forEach(r => { c += Number(r.s[p.key]) || 0; pts.push(c); });
+    return {p, pts};
+  });
+}
+function niceStep(range, n){ const raw = range / n, mag = Math.pow(10, Math.floor(Math.log10(raw || 1))), f = raw / mag; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * mag; }
+let CH = {};
+function chartHtml(g, id){
+  const ser = scoreSeries(g); const n = Math.max(...ser.map(x => x.pts.length)) - 1;
+  if(n < 1) return `<p class="hint">Le graphique apparaîtra après la première ${GAMES[g.type].round.toLowerCase()}.</p>`;
+  const tgt = g.type === 'farkle' ? g.opts.f.target : (g.opts.target || 0);
+  let lo = Math.min(0, ...ser.flatMap(x => x.pts)), hi = Math.max(0, ...ser.flatMap(x => x.pts));
+  if(tgt && hi >= tgt * 0.6) hi = Math.max(hi, tgt);
+  if(hi === lo) hi = lo + 10;
+  const step = niceStep(hi - lo, 4); lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+  const W = 340, H = 210, L = 40, Rm = ser.length <= 4 ? 58 : 12, T = 10, B = 24;
+  const x = i => L + (W - L - Rm) * (i / n), y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  let svg = '';
+  for(let v = lo; v <= hi + 1e-9; v += step) svg += `<line class="grid" x1="${L}" x2="${W-Rm}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${L-6}" y="${y(v)+3.5}" text-anchor="end">${fmt(v)}</text>`;
+  if(lo < 0) svg += `<line class="base" x1="${L}" x2="${W-Rm}" y1="${y(0)}" y2="${y(0)}"/>`;
+  if(tgt && tgt <= hi) svg += `<line class="tgt" x1="${L}" x2="${W-Rm}" y1="${y(tgt)}" y2="${y(tgt)}"/><text class="ax" x="${L+4}" y="${y(tgt)-4}">objectif ${fmt(tgt)}</text>`;
+  const xs = n <= 10 ? [...Array(n+1).keys()] : [0, ...[1,2,3,4].map(k => Math.round(n*k/4))];
+  xs.forEach(i => { svg += `<text class="ax" x="${x(i)}" y="${H-6}" text-anchor="middle">${i}</text>`; });
+  ser.forEach(sr => { svg += `<polyline fill="none" stroke="${sr.p.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="${sr.pts.map((v,i) => x(i).toFixed(1)+','+y(v).toFixed(1)).join(' ')}"/>`;
+    const li = sr.pts.length - 1; svg += `<circle cx="${x(li)}" cy="${y(sr.pts[li])}" r="4" fill="${sr.p.color}" stroke="var(--surface)" stroke-width="2"/>`; });
+  if(ser.length <= 4){ // étiquettes directes en bout de ligne, décalées pour ne pas se chevaucher
+    const ends = ser.map(sr => ({sr, yy: y(sr.pts[sr.pts.length-1]), xx: x(sr.pts.length-1)})).sort((a,b) => a.yy - b.yy);
+    for(let i = 1; i < ends.length; i++) if(ends[i].yy - ends[i-1].yy < 13) ends[i].yy = ends[i-1].yy + 13;
+    ends.forEach(e => { const nm = e.sr.p.name.length > 8 ? e.sr.p.name.slice(0,7) + '.' : e.sr.p.name; svg += `<text class="lbl" x="${e.xx + 7}" y="${e.yy + 4}">${esc(nm)}</text>`; });
+  }
+  svg += `<line id="${id}-xh" class="xh" x1="0" x2="0" y1="${T}" y2="${H-B}" visibility="hidden"/>`;
+  svg += `<rect data-chart="${id}" x="${L}" y="0" width="${W-L-Rm}" height="${H}" fill="transparent"/>`;
+  CH[id] = {g, ser, n, L, W, Rm, H, x};
+  const legend = ser.length >= 2 ? `<div class="legend">${ser.map(sr => `<span><i style="background:${sr.p.color}"></i>${esc(sr.p.name)}</span>`).join('')}</div>` : '';
+  return `<div class="chart" id="${id}"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Évolution des scores par ${GAMES[g.type].round.toLowerCase()}">${svg}</svg><div class="ctip" id="${id}-tip" hidden></div></div>${legend}
+    <p class="hint" style="margin-top:6px">Axe horizontal : ${g.type === 'farkle' ? 'tours de chaque joueur' : GAMES[g.type].round.toLowerCase() + 's'}. Touchez le graphique pour voir les pointages.</p>`;
+}
+function chartHover(e){
+  const rect = e.target.closest('rect[data-chart]'); if(!rect) return;
+  const c = CH[rect.dataset.chart]; if(!c) return;
+  const svg = rect.ownerSVGElement, bb = svg.getBoundingClientRect(), sx = (e.clientX - bb.left) * (c.W / bb.width);
+  const i = Math.max(0, Math.min(c.n, Math.round((sx - c.L) / ((c.W - c.L - c.Rm) / c.n))));
+  const xh = $(rect.dataset.chart + '-xh'); xh.setAttribute('x1', c.x(i)); xh.setAttribute('x2', c.x(i)); xh.setAttribute('visibility', 'visible');
+  const tip = $(rect.dataset.chart + '-tip');
+  const rows = c.ser.map(sr => ({sr, v: sr.pts[Math.min(i, sr.pts.length - 1)]})).sort((a,b) => isLow(c.g) ? a.v - b.v : b.v - a.v);
+  tip.innerHTML = `<div class="h">${c.g.type === 'farkle' ? 'Tour ' : GAMES[c.g.type].round + ' '}${i}</div>` + rows.map(r => `<div class="r"><i style="background:${r.sr.p.color}"></i><span>${esc(r.sr.p.name)}</span><b class="num-t">${fmt(r.v)}</b></div>`).join('');
+  tip.hidden = false; const px = c.x(i) * bb.width / c.W;
+  tip.style.left = Math.max(0, Math.min(bb.width - tip.offsetWidth, px + (px > bb.width / 2 ? -tip.offsetWidth - 10 : 10))) + 'px';
+}
+document.addEventListener('pointermove', chartHover);
+document.addEventListener('pointerdown', chartHover);
+document.addEventListener('pointerleave', e => { if(e.target.matches && e.target.matches('rect[data-chart]')){ const id = e.target.dataset.chart; $(id+'-tip').hidden = true; $(id+'-xh').setAttribute('visibility','hidden'); } }, true);
+function openChart(){
+  const g = curGame();
+  openModal(`<div class="mhead"><h2>📈 Évolution des scores</h2><button class="icon-btn" data-a="close">✕</button></div><div class="mbody"><div class="card" style="padding:12px 12px 10px">${chartHtml(g, 'chm')}</div></div>`);
+}
+
 /* ---------- Résultat ---------- */
 function vResults(){
   const g = curGame(); const r = ranking(g); const med = ['🥇','🥈','🥉'];
@@ -975,6 +1083,7 @@ function vResults(){
     <h2 class="sec">Classement</h2>
     <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank-1]||x.rank}</span><span class="av" style="background:${x.p.color}">${initial(x.p.name)}</span>
       <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type==='phase10'?`<div class="s">Phase ${Math.min(x.phase,10)}${x.phase>10?' réussie':''}</div>`:''}</div><div class="t num-t" style="font-size:20px">${fmt(x.total)}</div></div>`).join('')}</div>
+    ${(g.type === 'farkle' ? g.turns.length : g.rounds.length) ? `<h2 class="sec">Évolution des scores</h2><div class="card" style="padding:12px 12px 10px">${chartHtml(g, 'chr')}</div>` : ''}
     ${guests.length ? `<h2 class="sec">Invités</h2><div class="card list">${guests.map(p => `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">Pas dans votre liste de joueurs</div></div><button class="btn sm" data-a="saveGuest" data-k="${p.key}">+ À ma liste</button></div>`).join('')}</div>` : ''}
     <div style="display:grid;gap:10px;margin-top:22px">
       <button class="btn primary block" data-a="rematch">Revanche avec les mêmes joueurs</button>
@@ -1026,25 +1135,109 @@ function vHistory(){
 /* ---------- Statistiques ---------- */
 function statKey(g){ return g.type === 'generic' ? 'generic:' + (g.title||'Pointage libre') : g.type; }
 function statLabel(k){ return k.startsWith('generic:') ? k.slice(8) : GAMES[k].name; }
-function vStats(){
-  const done = db.games.filter(g => g.finished);
-  const keys = [...new Set(done.map(statKey))];
-  const filt = S.statF && (S.statF === 'all' || keys.includes(S.statF)) ? S.statF : 'all';
-  const gs = filt === 'all' ? done : done.filter(g => statKey(g) === filt);
+function statGames(){
+  const per = S.statP || 'all', now = Date.now();
+  const from = per === 'year' ? now - 365*864e5 : (per === 'month' ? now - 30*864e5 : 0);
+  return db.games.filter(g => g.finished && (g.updated || g.created) >= from).sort((a,b) => a.created - b.created);
+}
+function pkey(name){ return String(name).trim().toLowerCase(); }
+function computeStats(gs){
   const st = {};
-  gs.forEach(g => { const r = ranking(g); r.forEach(x => {
-    const k = x.p.name.trim().toLowerCase(); st[k] = st[k] || {name:x.p.name, color:x.p.color, n:0, w:0};
-    st[k].n++; if(x.rank === 1) st[k].w++; }); });
+  const get = p => { const k = pkey(p.name); return st[k] = st[k] || {name:p.name, color:p.color, n:0, w:0, seq:[], vs:{}, games:{}}; };
+  gs.forEach(g => {
+    const r = ranking(g), winners = r.filter(x => x.rank === 1).map(x => x.p);
+    r.forEach(x => {
+      const s1 = get(x.p), won = x.rank === 1, gk = statKey(g);
+      s1.n++; if(won) s1.w++; s1.seq.push(won); s1.color = x.p.color;
+      s1.games[gk] = s1.games[gk] || {n:0, w:0}; s1.games[gk].n++; if(won) s1.games[gk].w++;
+      if(!won) winners.forEach(wp => { const k = pkey(wp.name); s1.vs[k] = (s1.vs[k] || 0) + 1; });
+    });
+  });
+  Object.values(st).forEach(s1 => {
+    let best = 0, run = 0; s1.seq.forEach(w => { run = w ? run + 1 : 0; best = Math.max(best, run); });
+    let cur = 0; for(let i = s1.seq.length - 1; i >= 0 && s1.seq[i]; i--) cur++;
+    s1.best = best; s1.cur = cur;
+    const nem = Object.entries(s1.vs).sort((a,b) => b[1] - a[1])[0];
+    s1.nemesis = nem ? {name: (st[nem[0]] || {name: nem[0]}).name, n: nem[1]} : null;
+    const fav = Object.entries(s1.games).sort((a,b) => b[1].w - a[1].w || b[1].n - a[1].n)[0];
+    s1.fav = fav && fav[1].w ? statLabel(fav[0]) : null;
+  });
+  return st;
+}
+function recordsFor(gs){
+  if(!gs.length) return [];
+  const g0 = gs[0], low = isLow(g0) && g0.type !== 'phase10';
+  let bestWin = null, margin = null, longest = null;
+  gs.forEach(g => {
+    const r = ranking(g); const w = r[0], second = r.find(x => x.rank > 1);
+    if(!(g.winner)){ const v = w.total; if(!bestWin || (low ? v < bestWin.v : v > bestWin.v)) bestWin = {v, who: w.p.name, g}; }
+    if(second){ const m = Math.abs(w.total - second.total); if(!margin || m > margin.v) margin = {v: m, who: w.p.name, g}; }
+    const len = g.type === 'farkle' ? g.turns.length : g.rounds.length; if(!longest || len > longest.v) longest = {v: len, g};
+  });
+  const unit = g0.type === 'farkle' ? 'tours' : GAMES[g0.type].round.toLowerCase() + 's';
+  const out = [];
+  if(bestWin) out.push([low ? 'Meilleur pointage gagnant (le plus bas)' : 'Meilleur pointage gagnant', fmt(bestWin.v), bestWin.who + ' · ' + dateFr(bestWin.g.created)]);
+  if(margin) out.push(['Plus grande avance', fmt(margin.v) + ' pts', margin.who + ' · ' + dateFr(margin.g.created)]);
+  if(longest) out.push(['Partie la plus longue', longest.v + ' ' + unit, dateFr(longest.g.created)]);
+  const sixes = gs.filter(g => g.winner).length; if(sixes) out.push(['Victoires aux six dés identiques', String(sixes), '']);
+  return out;
+}
+function vStats(){
+  const all = statGames();
+  const keys = [...new Set(db.games.filter(g => g.finished).map(statKey))];
+  const filt = S.statF && (S.statF === 'all' || keys.includes(S.statF)) ? S.statF : 'all';
+  const gs = filt === 'all' ? all : all.filter(g => statKey(g) === filt);
+  const st = computeStats(gs);
   const rows = Object.values(st).sort((a,b) => b.w - a.w || (b.w/b.n) - (a.w/a.n));
+  const per = S.statP || 'all';
+  const count = {}; gs.forEach(g => { const k = statKey(g); count[k] = (count[k] || 0) + 1; });
+  const topGame = Object.entries(count).sort((a,b) => b[1] - a[1])[0];
+  const hot = rows.filter(x => x.cur >= 2).sort((a,b) => b.cur - a.cur)[0];
+  const recs = filt !== 'all' ? recordsFor(gs) : [];
   return `<header class="top"><div class="grow"><h1>Statistiques</h1><p class="sub">Qui gagne le plus ?</p></div></header>
   <main class="pad">
+    <div class="seg" style="margin-bottom:10px">${[['all','Tout'],['year','12 mois'],['month','30 jours']].map(([v,l]) => `<button data-a="statP" data-v="${v}" class="${per===v?'on':''}">${l}</button>`).join('')}</div>
     ${keys.length ? `<div class="chips" style="margin-bottom:14px"><button class="chip ${filt==='all'?'on':''}" data-a="statF" data-v="all" style="padding-left:14px">Tous les jeux</button>
       ${keys.map(k => `<button class="chip ${filt===k?'on':''}" data-a="statF" data-v="${esc(k)}" style="padding-left:14px">${esc(statLabel(k))}</button>`).join('')}</div>` : ''}
-    ${rows.length ? `<div class="card"><table class="statt"><thead><tr><th>Joueur</th><th>Parties</th><th>Victoires</th></tr></thead><tbody>
-      ${rows.map(x => `<tr><td><b>${esc(x.name)}</b><div class="bar"><i style="width:${Math.round(100*x.w/x.n)}%"></i></div></td><td>${x.n}</td><td><b>${x.w}</b> <span class="hint">${Math.round(100*x.w/x.n)} %</span></td></tr>`).join('')}
-      </tbody></table></div><p class="hint" style="margin-top:10px">${gs.length} partie${gs.length>1?'s':''} terminée${gs.length>1?'s':''}. Une égalité compte comme une victoire pour chacun.</p>`
-    : `<div class="card empty">Terminez une partie pour voir les statistiques.</div>`}
+    ${rows.length ? `
+    <div class="tiles3">
+      <div class="card stile"><div class="k">Parties</div><div class="v num-t">${gs.length}</div></div>
+      <div class="card stile"><div class="k">${filt==='all' ? 'Jeu préféré' : 'Champion'}</div><div class="v" style="font-size:15px">${esc(filt==='all' ? (topGame ? statLabel(topGame[0]) : '–') : rows[0].name)}</div></div>
+      <div class="card stile"><div class="k">En feu 🔥</div><div class="v" style="font-size:15px">${hot ? esc(hot.name) + ' · ' + hot.cur : '–'}</div></div>
+    </div>
+    <h2 class="sec">Joueurs</h2>
+    <div class="card"><table class="statt"><thead><tr><th>Joueur</th><th>Parties</th><th>Victoires</th><th>Série</th></tr></thead><tbody>
+      ${rows.map(x => `<tr data-a="statPlayer" data-k="${esc(pkey(x.name))}"><td class="p"><b>${esc(x.name)}</b> <span class="hint">›</span><div class="bar"><i style="width:${Math.round(100*x.w/x.n)}%"></i></div></td><td>${x.n}</td><td><b>${x.w}</b> <span class="hint">${Math.round(100*x.w/x.n)} %</span></td><td>${x.cur ? x.cur + (x.cur >= 2 ? ' 🔥' : '') : '0'}<div class="hint" style="margin:0">max ${x.best}</div></td></tr>`).join('')}
+      </tbody></table></div>
+    <p class="hint" style="margin-top:8px">Touchez un joueur pour sa fiche. Une égalité compte comme une victoire pour chacun. « Série » : victoires de suite en cours.</p>
+    ${recs.length ? `<h2 class="sec">Records · ${esc(statLabel(filt))}</h2><div class="card list rec">${recs.map(r => `<div class="li"><div class="grow"><div class="s">${esc(r[0])}</div><div class="t">${esc(r[1])}</div></div><div class="s" style="text-align:right">${esc(r[2])}</div></div>`).join('')}</div>` : ''}
+    <h2 class="sec">Dernières parties</h2>
+    <div class="card list">${gs.slice(-6).reverse().map(g => { const r = ranking(g);
+      return `<button class="li" data-a="open" data-id="${g.id}">${badge(g.type, 34)}<div class="grow"><div class="t">🏆 ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))}</div><div class="s">${esc(gameName(g))} · ${dateFr(g.created)}</div></div><span class="chev">›</span></button>`; }).join('')}</div>`
+    : `<div class="card empty">${db.games.some(g => g.finished) ? 'Aucune partie terminée pendant cette période.' : 'Terminez une partie pour voir les statistiques.'}</div>`}
   </main>${nav('stats')}`;
+}
+function openPlayerStats(k){
+  const all = statGames(); const st = computeStats(all)[k]; if(!st) return;
+  const games = Object.entries(st.games).sort((a,b) => b[1].n - a[1].n);
+  openModal(`<div class="mhead"><span class="av" style="background:${st.color}">${initial(st.name)}</span><h2>${esc(st.name)}</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody">
+      <div class="tiles3">
+        <div class="card stile"><div class="k">Victoires</div><div class="v num-t">${st.w}<span class="hint" style="font-size:12px"> / ${st.n}</span></div></div>
+        <div class="card stile"><div class="k">Taux</div><div class="v num-t">${Math.round(100*st.w/st.n)} %</div></div>
+        <div class="card stile"><div class="k">Meilleure série</div><div class="v num-t">${st.best}</div></div>
+      </div>
+      <div class="card list rec" style="margin-top:12px">
+        <div class="li"><div class="grow"><div class="s">Jeu fétiche</div><div class="t">${esc(st.fav || '–')}</div></div></div>
+        <div class="li"><div class="grow"><div class="s">Bête noire (l’a battu le plus souvent)</div><div class="t">${st.nemesis ? esc(st.nemesis.name) + ' · ' + st.nemesis.n + ' fois' : '–'}</div></div></div>
+        <div class="li"><div class="grow"><div class="s">Série en cours</div><div class="t">${st.cur ? st.cur + ' victoire' + (st.cur > 1 ? 's' : '') + ' de suite' + (st.cur >= 2 ? ' 🔥' : '') : 'aucune'}</div></div></div>
+      </div>
+      <h2 class="sec">Par jeu</h2>
+      <div class="card"><table class="statt"><thead><tr><th>Jeu</th><th>Parties</th><th>Victoires</th></tr></thead><tbody>
+        ${games.map(([gk, v]) => `<tr><td>${esc(statLabel(gk))}<div class="bar"><i style="width:${Math.round(100*v.w/v.n)}%"></i></div></td><td>${v.n}</td><td><b>${v.w}</b> <span class="hint">${Math.round(100*v.w/v.n)} %</span></td></tr>`).join('')}
+      </tbody></table></div>
+      <p class="hint">Période choisie dans l’écran Statistiques.</p>
+    </div>`);
 }
 
 /* ---------- Mises à jour ---------- */
@@ -1107,7 +1300,8 @@ function vSettings(){
     <div class="card" style="padding:14px">
       <p style="margin:0 0 12px">Les données restent dans ce téléphone. Exportez une copie de temps en temps (Google Drive, courriel…) pour ne rien perdre en changeant de téléphone.</p>
       <div style="display:grid;gap:10px"><button class="btn primary block" data-a="export">Exporter une sauvegarde</button>
-      <button class="btn block" data-a="import">Importer une sauvegarde</button></div></div>
+      <button class="btn block" data-a="import">Importer une sauvegarde</button></div>
+      ${backupCard()}</div>
     <h2 class="sec">Données</h2>
     <div class="card" style="padding:14px"><p style="margin:0">${db.players.length} joueurs · ${db.games.length} parties</p></div>
     <p class="hint" style="margin-top:22px;text-align:center">Pointage · version ${esc(appVersion() || '?')}${bridge ? '' : ' (web)'}</p>
@@ -1251,6 +1445,7 @@ function openMenu(){
       ${g.type!=='farkle' && g.rounds.length && !g.finished ? `<button class="li" data-a="undoRound">↶ Supprimer la dernière manche</button>` : ''}
       ${!g.finished ? `<button class="li" data-a="addLate">➕ Ajouter un joueur</button>` : ''}
       <button class="li" data-a="rematch">🔁 Revanche (nouvelle partie)</button>
+      <button class="li" data-a="chart">📈 Évolution des scores</button>
       <button class="li" data-a="feedback">💬 Signaler un problème / suggérer</button>
       <button class="li" data-a="delGame" style="color:var(--danger)">🗑 Supprimer cette partie</button></div></div>`);
 }
@@ -1425,6 +1620,14 @@ const A = {
   recolor: el => { const p = db.players.find(x => x.id === el.dataset.id); p.color = PALETTE[(PALETTE.indexOf(p.color)+1) % PALETTE.length];
       db.games.forEach(g => g.players.forEach(x => { if(x.rid === p.id) x.color = p.color; })); save(); render(); },
   statF: el => { S.statF = el.dataset.v; render(); },
+  abToggle: () => { if(abOn() && abInfo().folder){ try{ localStorage.setItem('pointage.autobackup', '0'); }catch(e){} toast('Sauvegarde automatique désactivée'); render(); }
+    else if(abInfo().folder){ try{ localStorage.setItem('pointage.autobackup', '1'); }catch(e){} autoBackupNow(); toast('Sauvegarde automatique activée'); render(); }
+    else bridge.pickBackupFolder(); },
+  abPick: () => bridge.pickBackupFolder(),
+  abNow: () => { autoBackupNow(); toast('Sauvegarde…'); },
+  statP: el => { S.statP = el.dataset.v; render(); },
+  statPlayer: el => openPlayerStats(el.dataset.k),
+  chart: () => { closeModal(); openChart(); },
   export: () => doExport(),
   checkUp: () => checkUpdates(false),
   installUp: () => { if(!UP.url) return checkUpdates(false); UP.state = 'downloading'; UP.pct = 0; render(); bridge.installUpdate(UP.url); },

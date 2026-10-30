@@ -1,6 +1,6 @@
 {
- "version": "2.1",
- "notes": "• Nouveau : boutons ↶ Annuler et ↷ Rétablir en haut de chaque feuille de pointage. Ils défont ou refont n'importe quelle action de la partie : manche, tour de dés, points du tour, marqueur de Phase 10, couleur, brasseur, fin de partie.\n• Nouveau, jeu de dés : bouton 🎤 « Dire les dés ». Ex. : « trois cinq et un un », « un, cinq, cinq ». Terminez par « ajouter » ou « encaisser », ou dites « raté ».",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.1.apk",
- "size": 90969
+ "version": "2.2",
+ "notes": "• Nouveau : statistiques plus riches. Période (tout, 12 mois, 30 jours), séries de victoires 🔥, records par jeu, dernières parties, et une fiche par joueur (jeu fétiche, bête noire, résultats par jeu).\n• Nouveau : graphique de l'évolution des scores, dans l'écran de résultat et dans le menu ⋮ de chaque partie. Touchez le graphique pour voir les pointages à chaque manche.\n• Nouveau (Android) : sauvegarde automatique, à activer dans ⚙︎ Réglages. Une copie à jour est enregistrée dans le dossier de votre choix après chaque changement.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.2.apk",
+ "size": 95065
 }
