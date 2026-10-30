@@ -289,6 +289,43 @@ public class MainActivity extends Activity {
         public void installUpdate(String url) { downloadAndInstall(url); }
 
         @JavascriptInterface
+        public void postIssue(final String id, final String repo, final String key, final String payload) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        HttpURLConnection c = (HttpURLConnection) new URL("https://api.github.com/repos/" + repo + "/issues").openConnection();
+                        c.setRequestMethod("POST");
+                        c.setDoOutput(true);
+                        c.setConnectTimeout(15000);
+                        c.setReadTimeout(20000);
+                        c.setRequestProperty("Authorization", "Bearer " + key);
+                        c.setRequestProperty("Accept", "application/vnd.github+json");
+                        c.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+                        c.setRequestProperty("User-Agent", "Pointage-Android");
+                        OutputStream os = c.getOutputStream();
+                        os.write(payload.getBytes(StandardCharsets.UTF_8));
+                        os.close();
+                        int code = c.getResponseCode();
+                        if (code == 201) {
+                            BufferedReader r = new BufferedReader(new InputStreamReader(c.getInputStream(), StandardCharsets.UTF_8));
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = r.readLine()) != null) sb.append(line);
+                            r.close();
+                            int num = new JSONObject(sb.toString()).optInt("number", 0);
+                            js("window.onIssueResult && window.onIssueResult(" + JSONObject.quote(id) + ", true, " + num + ")");
+                        } else {
+                            js("window.onIssueResult && window.onIssueResult(" + JSONObject.quote(id) + ", false, " + JSONObject.quote("http " + code) + ")");
+                        }
+                    } catch (Exception e) {
+                        js("window.onIssueResult && window.onIssueResult(" + JSONObject.quote(id) + ", false, \"reseau\")");
+                    }
+                }
+            }).start();
+        }
+
+        @JavascriptInterface
         public void openUrl(String url) {
             openExternal(url);
         }

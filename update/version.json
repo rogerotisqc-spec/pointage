@@ -1,6 +1,6 @@
 {
- "version": "1.9",
- "notes": "Version de test de la mise à jour intégrée.\n\n• Le numéro de version s'affiche maintenant sous le titre, sur l'accueil.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-1.9.apk",
- "size": 82777
+ "version": "2.0",
+ "notes": "• Nouveau : bouton « 💬 Signaler un problème / suggérer » dans le menu ⋮ de chaque partie et dans ⚙︎ Réglages. Les rapports arrivent directement au responsable de l'app, avec le jeu et le pointage en cours. Sans réseau, ils partent plus tard automatiquement.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.0.apk",
+ "size": 86873
 }

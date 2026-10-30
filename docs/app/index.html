@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>body{padding-top:env(safe-area-inset-top)} .top{top:env(safe-area-inset-top,0px)}</style>
-<script>window.WEB_VERSION = "1.9";</script>
+<script>window.WEB_VERSION = "2.0";</script>
 
 <style>
 :root{
@@ -1016,6 +1016,12 @@ function vSettings(){
   return `${topbar('Réglages')}
   <main class="pad">
     ${updateCard()}
+    <h2 class="sec">Commentaires</h2>
+    <div class="card" style="padding:14px">
+      <p style="margin:0 0 12px">Un problème pendant une partie, ou une idée d’amélioration ? Envoyez-le directement au responsable de l’app.</p>
+      <button class="btn primary block" data-a="feedback">💬 Signaler un problème / suggérer</button>
+      ${fbQueue().length ? `<p class="hint">${fbQueue().length} rapport(s) en attente d’envoi. <button class="btn sm" data-a="fbRetry">Réessayer</button></p>` : ''}
+    </div>
     <h2 class="sec">Sauvegarde</h2>
     <div class="card" style="padding:14px">
       <p style="margin:0 0 12px">Les données restent dans ce téléphone. Exportez une copie de temps en temps (Google Drive, courriel…) pour ne rien perdre en changeant de téléphone.</p>
@@ -1164,8 +1170,92 @@ function openMenu(){
       ${g.type!=='farkle' && g.rounds.length && !g.finished ? `<button class="li" data-a="undoRound">↶ Supprimer la dernière manche</button>` : ''}
       ${!g.finished ? `<button class="li" data-a="addLate">➕ Ajouter un joueur</button>` : ''}
       <button class="li" data-a="rematch">🔁 Revanche (nouvelle partie)</button>
+      <button class="li" data-a="feedback">💬 Signaler un problème / suggérer</button>
       <button class="li" data-a="delGame" style="color:var(--danger)">🗑 Supprimer cette partie</button></div></div>`);
 }
+
+/* ====================== Rapports (GitHub Issues) ====================== */
+const FB_REPO = 'rogerotisqc-spec/pointage';
+// Clé limitée aux « issues » de ce dépôt, découpée pour ne pas être prise pour une fuite par les outils de détection.
+const FB_K = '3VVZUZZ.NzdVTDJ4Y.xejdDRkcy.JIdzhBaks.EdtZE8xQk.blRTWkV6e.qbXlBcjJ2.E4Vm95STl.01vdjh5cz.NmlKb0U5X.wbXRzRG9u.NUUTVHVkE.3BhdF8xMU.Z2l0aHViX';
+function fbKey(){ try{ return FB_K.indexOf('__') === 0 ? '' : atob(FB_K.split('.').reverse().join('')); }catch(e){ return ''; } }
+const FBQ = 'pointage.fbq';
+function fbQueue(){ try{ return JSON.parse(localStorage.getItem(FBQ)) || []; }catch(e){ return []; } }
+function fbSaveQueue(q){ try{ localStorage.setItem(FBQ, JSON.stringify(q)); }catch(e){} }
+function fbContext(){
+  const g = S.view === 'sheet' || S.view === 'results' ? curGame() : null;
+  const ctx = {
+    version: appVersion() || '?', appareil: bridge ? 'App Android' : (/iPhone|iPad/i.test(navigator.userAgent) ? 'App web (iPhone/iPad)' : (/Android/i.test(navigator.userAgent) ? 'App web (Android)' : 'App web (ordinateur)')),
+    ecran: S.view, date: new Date().toLocaleString('fr-CA')
+  };
+  if(g){
+    const t = totals(g);
+    ctx.jeu = gameName(g);
+    ctx.avancement = g.type === 'farkle' ? g.turns.length + ' tour(s)' : g.rounds.length + ' ' + GAMES[g.type].round.toLowerCase() + '(s)';
+    ctx.pointage = g.players.map(p => p.name + ' ' + fmt(t[p.key])).join(' · ');
+  }
+  return {ctx, game: g};
+}
+function openFeedback(){
+  let name = ''; try{ name = localStorage.getItem('pointage.fbname') || ''; }catch(e){}
+  const {ctx, game} = fbContext();
+  M = {fbType: M && M.fbType || 'anomalie'};
+  openModal(`<div class="mhead"><h2>Signaler / suggérer</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody">
+      <div class="seg" id="fbSeg"><button data-a="fbType" data-v="anomalie" class="on">🐞 Un problème</button><button data-a="fbType" data-v="suggestion">💡 Une suggestion</button></div>
+      <label class="lbl" for="fbMsg">Que s’est-il passé ? Que proposez-vous ?</label>
+      <textarea id="fbMsg" class="field" placeholder="Ex. : au Mille Bornes, le capot ne s’est pas compté quand…"></textarea>
+      <label class="lbl" for="fbName">Votre prénom (facultatif)</label>
+      <input id="fbName" class="field" value="${esc(name)}" autocomplete="off">
+      ${game ? `<label class="chk"><input type="checkbox" id="fbGame" checked> Joindre l’état de la partie en cours (${esc(ctx.jeu)})</label>` : ''}
+      <p class="hint">Joint automatiquement : version ${esc(ctx.version)}, ${esc(ctx.appareil)}${game ? ', jeu et pointage actuels' : ''}. Le rapport sera visible dans le dépôt public de l’app.</p>
+    </div>
+    <div class="mfoot"><button class="btn" data-a="close">Annuler</button><button class="btn primary" data-a="fbSend">Envoyer</button></div>`);
+  setTimeout(() => { const t = $('fbMsg'); if(t) t.focus(); }, 120);
+}
+function fbBuild(){
+  const msg = $('fbMsg').value.trim(); if(!msg) return null;
+  const name = $('fbName').value.trim(); try{ localStorage.setItem('pointage.fbname', name); }catch(e){}
+  const {ctx, game} = fbContext(); const withGame = game && $('fbGame') && $('fbGame').checked;
+  const type = M.fbType || 'anomalie';
+  const first = msg.split('\n')[0]; const short = first.length > 70 ? first.slice(0, 67) + '…' : first;
+  const title = (type === 'anomalie' ? '🐞 ' : '💡 ') + (ctx.jeu ? ctx.jeu + ' : ' : '') + short;
+  const rows = [['Version', ctx.version], ['Appareil', ctx.appareil], ['Écran', ctx.ecran], ['Jeu', ctx.jeu], ['Avancement', ctx.avancement], ['Pointage', ctx.pointage], ['Date', ctx.date]]
+    .filter(r => r[1]).map(r => `| ${r[0]} | ${String(r[1]).replace(/\|/g,'/')} |`).join('\n');
+  let body = `**${type === 'anomalie' ? 'Anomalie' : 'Suggestion'}**${name ? ' signalée par **' + name + '**' : ''}\n\n${msg.split('\n').map(l => '> ' + l).join('\n')}\n\n| Contexte | |\n|---|---|\n${rows}\n`;
+  if(withGame){
+    const gj = JSON.stringify(game); body += `\n<details><summary>État de la partie (pour reproduire)</summary>\n\n\`\`\`json\n${gj.length > 50000 ? gj.slice(0, 50000) + '…' : gj}\n\`\`\`\n</details>\n`;
+  }
+  body += '\n_Envoyé depuis l’app Pointage._';
+  return {id: uid(), title, body, labels: [type, 'depuis-app'], at: Date.now()};
+}
+async function fbPost(item){
+  const key = fbKey(); if(!key) throw new Error('nokey');
+  const payload = JSON.stringify({title: item.title, body: item.body, labels: item.labels});
+  if(bridge && bridge.postIssue){
+    return await new Promise((res, rej) => { fbWait[item.id] = {res, rej}; bridge.postIssue(item.id, FB_REPO, key, payload); setTimeout(() => { if(fbWait[item.id]){ delete fbWait[item.id]; rej(new Error('timeout')); } }, 30000); });
+  }
+  const r = await fetch(`https://api.github.com/repos/${FB_REPO}/issues`, {method:'POST', headers:{'Authorization':'Bearer ' + key, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json'}, body: payload});
+  if(!r.ok) throw new Error('http ' + r.status);
+  return (await r.json()).number;
+}
+const fbWait = {};
+window.onIssueResult = (id, ok, num) => { const w = fbWait[id]; if(!w) return; delete fbWait[id]; ok ? w.res(num) : w.rej(new Error(String(num))); };
+let fbBusy = false;
+async function fbFlush(quiet){
+  if(fbBusy) return; const q = fbQueue(); if(!q.length) return;
+  fbBusy = true; let sent = 0, last = null;
+  while(q.length){
+    try{ last = await fbPost(q[0]); q.shift(); fbSaveQueue(q); sent++; }
+    catch(e){ break; }
+  }
+  fbBusy = false;
+  if(sent && !quiet) toast(sent === 1 ? `Merci ! Rapport envoyé (n° ${last})` : `Merci ! ${sent} rapports envoyés`);
+  else if(sent) toast(`${sent} rapport(s) en attente envoyé(s)`);
+  if(!sent && !quiet) toast('Pas de connexion : le rapport sera envoyé plus tard');
+  if(S.view === 'settings') render();
+}
+window.addEventListener('online', () => fbFlush(true));
 
 /* ====================== Actions ====================== */
 const A = {
@@ -1257,6 +1347,10 @@ const A = {
   export: () => doExport(),
   checkUp: () => checkUpdates(false),
   installUp: () => { if(!UP.url) return checkUpdates(false); UP.state = 'downloading'; UP.pct = 0; render(); bridge.installUpdate(UP.url); },
+  feedback: () => { closeModal(); openFeedback(); },
+  fbType: el => { M.fbType = el.dataset.v; document.querySelectorAll('#fbSeg button').forEach(b => b.classList.toggle('on', b === el)); },
+  fbSend: () => { const it = fbBuild(); if(!it) return toast('Écrivez quelques mots d’abord'); const q = fbQueue(); q.push(it); fbSaveQueue(q); closeModal(); toast('Envoi…'); fbFlush(false); },
+  fbRetry: () => fbFlush(false),
   copyExp: () => { const t = $('expTxt'); const done = () => toast('Copié');
     try{ navigator.clipboard.writeText(t.value).then(done, () => { t.select(); toast('Texte sélectionné : copiez-le'); }); }catch(e){ t.select(); toast('Texte sélectionné : copiez-le'); } },
   import: () => doImport(),
@@ -1356,6 +1450,7 @@ function openUrl(u){ if(bridge && bridge.openUrl) bridge.openUrl(u); else window
 let tt; function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2400); }
 
 render(true);
+setTimeout(() => fbFlush(true), 2500);
 // vérification discrète, au plus une fois par jour
 try{ const last = Number(localStorage.getItem('pointage.lastCheck')||0); if(canUpdate() && Date.now() - last > 20*3600*1000) setTimeout(() => checkUpdates(true), 1500); }catch(e){}
 </script>

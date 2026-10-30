@@ -8,8 +8,11 @@ B=build; rm -rf "$B"; mkdir -p "$B/res" "$B/gen" "$B/classes" "$B/dex"
 SRC=app/src/main
 
 "$AAPT2" compile --dir "$SRC/res" -o "$B/res/res.zip"
+# Copie des assets avec la clé des rapports injectée (keystore/feedback.key, jamais publiée en clair)
+rm -rf "$B/assets"; cp -r "$SRC/assets" "$B/assets"
+python3 tools/inject_key.py "$B/assets/index.html"
 "$AAPT2" link -o "$B/base.apk" -I "$ANDROID_JAR" --manifest "$SRC/AndroidManifest.xml" \
-  --java "$B/gen" -A "$SRC/assets" "$B/res/res.zip" --auto-add-overlay
+  --java "$B/gen" -A "$B/assets" "$B/res/res.zip" --auto-add-overlay
 
 javac -source 8 -target 8 -Xlint:-options -encoding UTF-8 -bootclasspath "$ANDROID_JAR" \
   -d "$B/classes" $(find "$SRC/java" "$B/gen" -name '*.java')
