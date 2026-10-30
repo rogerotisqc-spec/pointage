@@ -971,9 +971,8 @@ function checkUpdates(quiet){
 window.onUpdateInfo = text => {
   const quiet = UP.quiet;
   let rel = null; try{ rel = text ? JSON.parse(text) : null; }catch(e){}
-  const asset = rel && (rel.assets||[]).find(a => /\.apk$/i.test(a.name));
-  if(rel && asset && newer(rel.tag_name, appVersion())){
-    UP = {state:'available', latest: String(rel.tag_name).replace(/^v/i,''), notes: rel.body || '', url: asset.browser_download_url, size: asset.size};
+  if(rel && rel.version && rel.apk && newer(rel.version, appVersion())){
+    UP = {state:'available', latest: String(rel.version), notes: rel.notes || '', url: rel.apk, size: rel.size};
   } else UP = {state:'none'};
   if(!(quiet && UP.state === 'none')) render();
 };

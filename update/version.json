@@ -1,0 +1,6 @@
+{
+ "version": "1.8",
+ "notes": "Première version publiée sur GitHub.\n\n• Nouveau : bouton « Vérifier les mises à jour » dans ⚙︎ Réglages. L'app télécharge et installe les nouvelles versions elle-même, et vérifie d'office une fois par jour.\n• Jeu de dés : la pénalité de 1 000 ne s'applique que si aucun dé n'a compté pendant le tour.\n• Jeu de dés : arriver exactement à l'objectif ; six dés identiques = victoire.\n• Phase 10 : tableau de progression par couleur.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage.apk",
+ "size": 82777
+}

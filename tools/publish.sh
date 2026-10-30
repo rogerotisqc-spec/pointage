@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
-# Publie l'APK compilé comme nouvelle version (Release) GitHub.
-# Usage : tools/publish.sh notes.txt
+# Publie l'APK compilé dans le dépôt GitHub (dossier update/) avec son fichier de version.
+# Usage : tools/publish.sh notes.txt /chemin/du/clone
 set -euo pipefail
 cd "$(dirname "$0")/.."
-REPO=rogerotisqc-spec/pointage
+NOTES=${1:?fichier de notes requis}; REPO_DIR=${2:?chemin du clone requis}
 VER=$(sed -n 's/.*android:versionName="\([^"]*\)".*/\1/p' app/src/main/AndroidManifest.xml)
-NOTES=${1:?fichier de notes requis}
-test -f dist/Pointage.apk
-gh release create "v$VER" dist/Pointage.apk -R "$REPO" --title "Pointage $VER" --notes-file "$NOTES" --latest
-echo "Publié : https://github.com/$REPO/releases/tag/v$VER"
+mkdir -p "$REPO_DIR/update"
+cp dist/Pointage.apk "$REPO_DIR/update/Pointage.apk"
+python3 - "$VER" "$NOTES" "$REPO_DIR/update" <<'PY'
+import json, os, sys
+ver, notes, d = sys.argv[1:4]
+json.dump({"version": ver, "notes": open(notes, encoding="utf-8").read().strip(),
+           "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage.apk",
+           "size": os.path.getsize(os.path.join(d, "Pointage.apk"))},
+          open(os.path.join(d, "version.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+PY
+echo "Prêt dans $REPO_DIR/update (version $VER) : il reste à faire commit et push."

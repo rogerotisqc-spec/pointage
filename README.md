@@ -6,7 +6,7 @@ Mille Bornes, Phase 10, jeu de dés (10 000) et pointage libre.
 ## Installer l'app (Android)
 
 Téléchargez la dernière version sur le téléphone :
-**https://github.com/rogerotisqc-spec/pointage/releases/latest/download/Pointage.apk**
+**https://github.com/rogerotisqc-spec/pointage/raw/main/update/Pointage.apk**
 
 Ouvrez le fichier, puis autorisez l'installation d'applications inconnues si Android le demande.
 
@@ -20,6 +20,6 @@ et affiche un bandeau sur l'accueil quand une nouvelle version est publiée. Les
 - `app/src/main/assets/index.html` : toute l'interface (HTML/JS), partagée avec la version web (`tools/make_web.py`).
 - `app/src/main/java/.../MainActivity.java` : l'enveloppe Android (WebView, sauvegarde, mise à jour).
 - `build.sh` : compilation sans Gradle (aapt2, javac, dx, signature apksig).
-- `tools/publish.sh` : publication d'une nouvelle version sur GitHub.
+- `tools/publish.sh` : dépose l APK et `update/version.json` (lu par l app) dans le dépôt.
 
 La clé de signature n'est pas dans ce dépôt.

@@ -639,6 +639,7 @@ function vHome(){
   const open = db.games.filter(g => !g.finished).sort((a,b) => b.updated - a.updated);
   return `<header class="top"><div class="grow"><h1>Pointage</h1><p class="sub">Les jeux de la famille</p></div>
     <button class="icon-btn" data-a="go" data-v="settings" aria-label="Réglages">⚙︎</button></header>
+  ${updateBanner()}
   <main class="pad">
     ${open.length ? `<h2 class="sec">Parties en cours</h2>${open.map(g => {
       const r = ranking(g);
@@ -949,10 +950,56 @@ function vStats(){
   </main>${nav('stats')}`;
 }
 
+/* ---------- Mises à jour ---------- */
+const canUpdate = () => !!(bridge && bridge.checkUpdate && bridge.installUpdate);
+const appVersion = () => { try{ return bridge && bridge.getVersion ? bridge.getVersion() : ''; }catch(e){ return ''; } };
+let UP = {state:'idle'};
+function verParts(v){ return String(v||'').replace(/^v/i,'').split('.').map(n => parseInt(n,10)||0); }
+function newer(a, b){ const x = verParts(a), y = verParts(b); for(let i=0;i<Math.max(x.length,y.length);i++){ const d = (x[i]||0) - (y[i]||0); if(d) return d > 0; } return false; }
+function checkUpdates(quiet){
+  if(!canUpdate()) return;
+  UP = {state:'checking', quiet}; if(!quiet) render();
+  try{ localStorage.setItem('pointage.lastCheck', String(Date.now())); }catch(e){}
+  bridge.checkUpdate();
+}
+window.onUpdateInfo = text => {
+  const quiet = UP.quiet;
+  let rel = null; try{ rel = text ? JSON.parse(text) : null; }catch(e){}
+  if(rel && rel.version && rel.apk && newer(rel.version, appVersion())){
+    UP = {state:'available', latest: String(rel.version), notes: rel.notes || '', url: rel.apk, size: rel.size};
+  } else UP = {state:'none'};
+  if(!(quiet && UP.state === 'none')) render();
+};
+window.onUpdateProgress = pct => { UP.state = 'downloading'; UP.pct = pct; const b = $('upPct'); if(b){ b.style.width = pct + '%'; $('upTxt').textContent = pct < 100 ? 'Téléchargement… ' + pct + ' %' : 'Ouverture de l’installation…'; } else if(S.view === 'settings') render(); };
+window.onUpdateError = msg => { const q = UP.quiet && UP.state === 'checking'; UP = Object.assign({}, UP, {state: q ? 'idle' : 'error', msg}); if(!q) render(); };
+window.onUpdateNeedsPermission = () => { UP.state = 'perm'; render(); };
+window.onUpdateDone = () => { UP = {state:'none'}; toast('Mise à jour installée'); render(); };
+function updateBanner(){
+  if(UP.state !== 'available') return '';
+  return `<button class="banner" style="width:calc(100% - 32px);text-align:left" data-a="go" data-v="settings"><div class="grow">⬆️ Version ${esc(UP.latest)} disponible</div><span class="btn sm primary">Voir</span></button>`;
+}
+function updateCard(){
+  if(!canUpdate()) return '';
+  const v = appVersion(); let body = '';
+  const st = UP.state;
+  if(st === 'checking') body = `<p style="margin:0">Vérification en cours…</p>`;
+  else if(st === 'none') body = `<p style="margin:0 0 12px">✓ Vous avez la dernière version.</p><button class="btn block" data-a="checkUp">Vérifier à nouveau</button>`;
+  else if(st === 'available') body = `<p style="margin:0 0 6px"><b>Version ${esc(UP.latest)} disponible</b>${UP.size?` · ${(UP.size/1048576).toFixed(1).replace('.',',')} Mo`:''}</p>
+      ${UP.notes ? `<div class="hint" style="white-space:pre-line;margin:0 0 12px">${esc(UP.notes)}</div>` : ''}
+      <button class="btn primary block" data-a="installUp">Télécharger et installer</button>
+      <p class="hint">Android vous demandera de confirmer l’installation. Vos parties et vos joueurs sont conservés.</p>`;
+  else if(st === 'downloading') body = `<p id="upTxt" style="margin:0 0 8px">Téléchargement… ${UP.pct||0} %</p><div class="bar" style="height:10px"><i id="upPct" style="width:${UP.pct||0}%;background:var(--brand)"></i></div>`;
+  else if(st === 'perm') body = `<p style="margin:0 0 12px">Android doit d’abord autoriser Pointage à installer des applications. Dans l’écran qui s’est ouvert, activez <b>Autoriser cette source</b>, revenez ici, puis touchez de nouveau le bouton.</p><button class="btn primary block" data-a="installUp">Télécharger et installer</button>`;
+  else if(st === 'error') body = `<p class="neg" style="margin:0 0 12px">${esc(UP.msg||'Erreur')}</p><button class="btn block" data-a="${UP.url?'installUp':'checkUp'}">Réessayer</button>`;
+  else body = `<button class="btn primary block" data-a="checkUp">Vérifier les mises à jour</button>`;
+  return `<h2 class="sec">Mises à jour</h2><div class="card" style="padding:14px"><p class="hint" style="margin:0 0 10px">Version installée : ${esc(v)}</p>${body}</div>`;
+}
+
 /* ---------- Réglages ---------- */
 function vSettings(){
   return `${topbar('Réglages')}
   <main class="pad">
+    ${updateCard()}
     <h2 class="sec">Sauvegarde</h2>
     <div class="card" style="padding:14px">
       <p style="margin:0 0 12px">Les données restent dans ce téléphone. Exportez une copie de temps en temps (Google Drive, courriel…) pour ne rien perdre en changeant de téléphone.</p>
@@ -960,7 +1007,7 @@ function vSettings(){
       <button class="btn block" data-a="import">Importer une sauvegarde</button></div></div>
     <h2 class="sec">Données</h2>
     <div class="card" style="padding:14px"><p style="margin:0">${db.players.length} joueurs · ${db.games.length} parties</p></div>
-    <p class="hint" style="margin-top:22px;text-align:center">Pointage · version 1.7</p>
+    <p class="hint" style="margin-top:22px;text-align:center">Pointage · version ${esc(appVersion() || '1.8')}</p>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none">
   </main>`;
 }
@@ -1192,6 +1239,8 @@ const A = {
       db.games.forEach(g => g.players.forEach(x => { if(x.rid === p.id) x.color = p.color; })); save(); render(); },
   statF: el => { S.statF = el.dataset.v; render(); },
   export: () => doExport(),
+  checkUp: () => checkUpdates(false),
+  installUp: () => { if(!UP.url) return checkUpdates(false); UP.state = 'downloading'; UP.pct = 0; render(); bridge.installUpdate(UP.url); },
   copyExp: () => { const t = $('expTxt'); const done = () => toast('Copié');
     try{ navigator.clipboard.writeText(t.value).then(done, () => { t.select(); toast('Texte sélectionné : copiez-le'); }); }catch(e){ t.select(); toast('Texte sélectionné : copiez-le'); } },
   import: () => doImport(),
@@ -1288,4 +1337,6 @@ function openUrl(u){ if(bridge && bridge.openUrl) bridge.openUrl(u); else window
 let tt; function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2400); }
 
 render(true);
+// vérification discrète, au plus une fois par jour
+try{ const last = Number(localStorage.getItem('pointage.lastCheck')||0); if(canUpdate() && Date.now() - last > 20*3600*1000) setTimeout(() => checkUpdates(true), 1500); }catch(e){}
 </script>
