@@ -958,7 +958,7 @@ function vStats(){
 
 /* ---------- Mises à jour ---------- */
 const canUpdate = () => !!(bridge && bridge.checkUpdate && bridge.installUpdate);
-const appVersion = () => { try{ return bridge && bridge.getVersion ? bridge.getVersion() : ''; }catch(e){ return ''; } };
+const appVersion = () => { try{ return bridge && bridge.getVersion ? bridge.getVersion() : (window.WEB_VERSION || ''); }catch(e){ return ''; } };
 let UP = {state:'idle'};
 function verParts(v){ return String(v||'').replace(/^v/i,'').split('.').map(n => parseInt(n,10)||0); }
 function newer(a, b){ const x = verParts(a), y = verParts(b); for(let i=0;i<Math.max(x.length,y.length);i++){ const d = (x[i]||0) - (y[i]||0); if(d) return d > 0; } return false; }
@@ -1013,7 +1013,7 @@ function vSettings(){
       <button class="btn block" data-a="import">Importer une sauvegarde</button></div></div>
     <h2 class="sec">Données</h2>
     <div class="card" style="padding:14px"><p style="margin:0">${db.players.length} joueurs · ${db.games.length} parties</p></div>
-    <p class="hint" style="margin-top:22px;text-align:center">Pointage · version ${esc(appVersion() || '1.8')}</p>
+    <p class="hint" style="margin-top:22px;text-align:center">Pointage · version ${esc(appVersion() || '?')}${bridge ? '' : ' (web)'}</p>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none">
   </main>`;
 }
@@ -1318,6 +1318,9 @@ async function doExport(){
   const name = 'pointage-sauvegarde-' + new Date().toISOString().slice(0,10) + '.json';
   const data = JSON.stringify(db, null, 1);
   if(bridge && bridge.exportData){ bridge.exportData(data, name); return; }
+  if(!window.claude){ // navigateur ordinaire (app web) : téléchargement direct
+    try{ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], {type:'application/json'})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); toast('Sauvegarde téléchargée'); return; }catch(e){}
+  }
   let dl = null;
   try{ if(window.claude && window.claude.use) dl = await window.claude.use('downloads'); }catch(e){ dl = null; }
   if(dl){

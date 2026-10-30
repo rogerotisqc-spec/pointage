@@ -23,3 +23,8 @@ et affiche un bandeau sur l'accueil quand une nouvelle version est publiée. Les
 - `tools/publish.sh` : dépose l APK et `update/version.json` (lu par l app) dans le dépôt.
 
 La clé de signature n'est pas dans ce dépôt.
+
+## Site d'installation (GitHub Pages)
+
+https://rogerotisqc-spec.github.io/pointage/ : page d'accueil qui propose l'APK (Android) ou l'app web
+installable (iPhone, ordinateur). Le dossier `docs/` est généré par `tools/make_pages.py` à chaque publication.

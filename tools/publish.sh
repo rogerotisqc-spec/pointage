@@ -17,4 +17,5 @@ json.dump({"version": ver, "notes": open(notes, encoding="utf-8").read().strip()
            "size": os.path.getsize(os.path.join(d, "Pointage.apk"))},
           open(os.path.join(d, "version.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 PY
+python3 tools/make_pages.py . "$REPO_DIR/docs"
 echo "Prêt dans $REPO_DIR/update (version $VER) : il reste à faire commit et push."
