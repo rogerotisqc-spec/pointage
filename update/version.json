@@ -1,6 +1,6 @@
 {
- "version": "2.0",
- "notes": "• Nouveau : bouton « 💬 Signaler un problème / suggérer » dans le menu ⋮ de chaque partie et dans ⚙︎ Réglages. Les rapports arrivent directement au responsable de l'app, avec le jeu et le pointage en cours. Sans réseau, ils partent plus tard automatiquement.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.0.apk",
- "size": 86873
+ "version": "2.1",
+ "notes": "• Nouveau : boutons ↶ Annuler et ↷ Rétablir en haut de chaque feuille de pointage. Ils défont ou refont n'importe quelle action de la partie : manche, tour de dés, points du tour, marqueur de Phase 10, couleur, brasseur, fin de partie.\n• Nouveau, jeu de dés : bouton 🎤 « Dire les dés ». Ex. : « trois cinq et un un », « un, cinq, cinq ». Terminez par « ajouter » ou « encaisser », ou dites « raté ».",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.1.apk",
+ "size": 90969
 }

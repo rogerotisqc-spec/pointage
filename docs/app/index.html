@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>body{padding-top:env(safe-area-inset-top)} .top{top:env(safe-area-inset-top,0px)}</style>
-<script>window.WEB_VERSION = "2.0";</script>
+<script>window.WEB_VERSION = "2.1";</script>
 
 <style>
 :root{
@@ -49,6 +49,13 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .top .sub{margin:2px 0 0;font-size:13px;opacity:.8}
 .top .grow{flex:1;min-width:0}
 .top .grow h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon-btn:disabled{opacity:.35}
+.top .icon-btn.sm{width:36px}
+.mic{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:12px;border-radius:12px;border:1.5px dashed var(--brand);color:var(--brand);font-weight:700;background:var(--surface)}
+.mic.on{background:var(--brand);color:#fff;border-style:solid;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.75}}
+.heard{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--surface2);font-size:13.5px}
+.heard .bad{color:var(--danger)}
 .icon-btn{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:20px;flex:none}
 .top .icon-btn:active{background:rgba(255,255,255,.15)}
 .pad{padding:16px 16px 110px}
@@ -302,7 +309,28 @@ function load(){
   return defaultDb();
 }
 let db = load();
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ toast('Impossible d’enregistrer'); } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ toast('Impossible d’enregistrer'); } recordHist(); }
+/* Annuler / rétablir : un historique par partie, alimenté à chaque changement enregistré */
+const HIST = {};
+function histSnap(g){ const c = Object.assign({}, g); delete c.updated; return JSON.stringify({g: c, turn: S.turn || 0}); }
+function histFor(g){ if(!g) return null; if(!HIST[g.id]) HIST[g.id] = {u: [], r: [], last: histSnap(g)}; return HIST[g.id]; }
+function recordHist(){
+  if(!S || !S.gameId) return; const g = db.games.find(x => x.id === S.gameId); if(!g) return;
+  const h = histFor(g), cur = histSnap(g);
+  if(h.last !== cur){ h.u.push(h.last); if(h.u.length > 60) h.u.shift(); h.r = []; h.last = cur; }
+}
+function histApply(state){
+  const st = JSON.parse(state), i = db.games.findIndex(x => x.id === S.gameId); if(i < 0) return;
+  st.g.updated = Date.now(); db.games[i] = st.g; S.turn = st.turn || 0; S.dice = [];
+  HIST[S.gameId].last = state;
+  try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){}
+  if(S.view !== 'sheet'){ S.view = 'sheet'; }
+  render();
+}
+function histUndo(){ const g = curGame(), h = histFor(g); if(!h || !h.u.length) return; h.r.push(h.last); histApply(h.u.pop()); toast('↶ Action annulée'); }
+function histRedo(){ const g = curGame(), h = histFor(g); if(!h || !h.r.length) return; h.u.push(h.last); histApply(h.r.pop()); toast('↷ Action rétablie'); }
+function histBtns(g){ const h = histFor(g);
+  return `<button class="icon-btn sm" data-a="undo" ${h.u.length?'':'disabled'} aria-label="Annuler">↶</button><button class="icon-btn sm" data-a="redo" ${h.r.length?'':'disabled'} aria-label="Rétablir">↷</button>`; }
 
 const uid = () => Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-5);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -444,6 +472,7 @@ function rulesHtml(type, g){
       <li>Il faut faire au moins <b>${fmt(f.entry)} points en un seul tour</b> pour « entrer » et commencer à accumuler.</li>
       <li>À partir de <b>${fmt(f.penFrom)}</b> points, un tour sans aucun dé qui compte fait perdre <b>${fmt(f.pen)}</b> points.</li>
       <li>Partie à ${fmt(f.target)} : il faut arriver <b>exactement</b> à ce total. Si les points du tour feraient dépasser, le tour s’arrête aussitôt, sans gain ni perte, et c’est au joueur suivant.</li>
+      <li><b>Commande vocale</b> (bouton 🎤) : « trois cinq et un un » = trois 5 et un 1 ; « un, cinq, cinq » = un 1 et deux 5. Terminez par « ajouter » ou « encaisser », ou dites « raté ».</li>
       <li><b>Six dés identiques</b>, à n’importe quel moment : victoire immédiate, peu importe le pointage.</li>
       <li>La pénalité ne s’applique que si <b>aucun dé n’a compté</b> pendant le tour (points du tour à zéro). Si des dés ont donné des points avant le raté, on perd seulement les points du tour.</li>
       <li>Dépasser l’objectif n’est pas un raté : la pénalité de ${fmt(f.pen)} ne s’applique qu’à un lancer sans aucun dé qui compte.</li></ul>
@@ -792,7 +821,7 @@ function vSheet(){
   const canAdd = !g.finished && !(maxRounds && g.rounds.length >= maxRounds);
   const sub = g.type==='playnine' ? `Trou ${Math.min(next, maxRounds)} de ${maxRounds} · le plus bas gagne`
             : (g.opts.target ? `Partie à ${fmt(g.opts.target)} · ${isLow(g)?'le plus bas gagne':'le plus haut gagne'}` : (isLow(g)?'Le plus bas gagne':'Le plus haut gagne'));
-  return `${topbar(gameName(g), sub, `<button class="icon-btn" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(ranking(g).filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${dealerBanner(g)}${g.type === 'phase10' ? p10Board(g) + (g.rounds.length ? '<h2 class="sec" style="margin:20px 18px 0">Points</h2>' : '') : ''}${strip}${table}
@@ -845,6 +874,8 @@ function vFarkle(g){
     <div class="dice">${[1,2,3,4,5,6].map(v => dieHtml(v, '', `data-a="fkDie" data-v="${v}"`)).join('')}</div>
     <div class="tray">${(S.dice||[]).length ? S.dice.map((v,i) => dieHtml(v, 'sm', `data-a="fkRm" data-i="${i}"`)).join('') : '<span class="ph">Touchez les dés gardés de ce lancer</span>'}</div>
     ${(S.dice||[]).length === 6 && S.dice.every(d => d === S.dice[0]) ? `<div class="sel-v" style="color:var(--ok)">🎲 Six dés identiques : victoire immédiate !</div>` : (S.dice||[]).length ? `<div class="sel-v">${sc.ok ? `Ces dés valent <b>${fmt(sc.pts)}</b>` : `<span class="neg">Certains dés ne comptent pas</span>${sc.pts?` (le reste vaut ${fmt(sc.pts)})`:''}`}</div>` : ''}
+    ${voiceAvailable() ? `<button class="mic ${S.listening?'on':''}" data-a="voice">${S.listening ? '🎤 J’écoute…' : '🎤 Dire les dés'}</button>
+      ${S.heard ? `<div class="heard">Entendu : « ${esc(S.heard.text)} »${S.heard.ok ? '' : ' <span class="bad">— pas compris, réessayez ou touchez les dés</span>'}</div>` : `<p class="hint" style="margin:6px 2px 0">Ex. : « trois cinq et un un », « un, cinq, cinq ». Ajoutez « encaisser », « ajouter » ou dites « raté ».</p>`}` : ''}
     <div class="row" style="margin-top:10px"><button class="btn sm" data-a="fkClear" ${(S.dice||[]).length?'':'disabled'}>Effacer</button>
       <button class="btn sm primary" style="flex:1" data-a="fkAddSel" ${sc.pts>0?'':'disabled'}>${(S.dice||[]).length === 6 && S.dice.every(d => d === S.dice[0]) ? '🏆 Victoire !' : `Ajouter au tour${sc.pts?` (+${fmt(sc.pts)})`:''}`}</button></div>
     <div class="row" style="margin-top:10px"><div class="num" style="width:auto;flex:1"><input id="fk-man" inputmode="numeric" placeholder="Autre montant" style="text-align:left"></div>
@@ -857,11 +888,71 @@ function vFarkle(g){
       const p = g.players.find(p => p.key === x.pk) || {name:'?'}; const idx = g.turns.length-1-ri;
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div>
         <div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div>${idx===g.turns.length-1 && !g.finished?`<button class="btn sm" data-a="fkUndo">Annuler</button>`:''}</div>`; }).join('')}</div>` : '';
-  return `${topbar(gameName(g), `Partie à ${fmt(f.target)}`, `<button class="icon-btn" data-a="rules" data-t="farkle" aria-label="Règles">📖</button><button class="icon-btn" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), `Partie à ${fmt(f.target)}`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="farkle" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
+/* ---------- Commande vocale (jeu de dés) ---------- */
+const VOICE_NUM = {un:1, une:1, uns:1, deux:2, trois:3, quatre:4, cinq:5, six:6};
+function voiceAvailable(){ return !!((bridge && bridge.listen) || window.SpeechRecognition || window.webkitSpeechRecognition); }
+function parseDiceSpeech(text){
+  let t = String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const cmd = /encaiss/.test(t) ? 'bank' : (/\brate\b|\bfarkle\b|aucun de/.test(t) ? 'farkle' : (/ajout/.test(t) ? 'add' : (/effac|recommenc/.test(t) ? 'clear' : null)));
+  t = t.replace(/[^a-z0-9 ]+/g, ' ').replace(/\b(et|plus|puis|avec)\b/g, ' | ');
+  const groups = t.split('|').map(gp => {
+    const out = [];
+    gp.trim().split(/\s+/).forEach(w => {
+      if(!w) return;
+      if(VOICE_NUM[w]) out.push(VOICE_NUM[w]);
+      else if(/^[1-6]+$/.test(w)) w.split('').forEach(d => out.push(+d));
+      else if(/^\d+$/.test(w)) out.push(-1); // nombre impossible (0, 7, 8…)
+    });
+    return out;
+  }).filter(gp => gp.length);
+  if(groups.some(gp => gp.includes(-1))) return {dice: null, cmd};
+  const dice = [];
+  for(const gp of groups){
+    if(gp.length === 2 && gp[0] >= 1){ for(let i = 0; i < gp[0]; i++) dice.push(gp[1]); }  // « trois cinq » = trois 5
+    else gp.forEach(d => dice.push(d));                                                   // « un cinq cinq » = 1, 5, 5
+  }
+  if(dice.length > 6) return {dice: null, cmd};
+  return {dice, cmd};
+}
+function voiceStart(){
+  if(S.listening) return;
+  if(bridge && bridge.listen){ S.listening = true; render(); bridge.listen(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(!SR) return toast('Reconnaissance vocale non disponible ici');
+  const rec = new SR(); rec.lang = 'fr-CA'; rec.maxAlternatives = 5; rec.interimResults = false;
+  rec.onresult = e => { const alts = []; for(const a of e.results[0]) alts.push(a.transcript); window.onSpeech(JSON.stringify(alts)); };
+  rec.onerror = e => window.onSpeechError(e.error === 'not-allowed' ? 'Autorisez le micro pour cette app' : (e.error === 'no-speech' ? 'Rien entendu' : 'Erreur du micro'));
+  rec.onend = () => { if(S.listening){ S.listening = false; render(); } };
+  S.listening = true; render();
+  try{ rec.start(); }catch(e){ window.onSpeechError('Erreur du micro'); }
+}
+window.onSpeechError = msg => { S.listening = false; toast('🎤 ' + msg); render(); };
+window.onSpeech = json => {
+  S.listening = false;
+  let alts = []; try{ alts = JSON.parse(json) || []; }catch(e){}
+  const g = curGame(); if(!g || g.type !== 'farkle' || g.finished){ render(); return; }
+  let pick = null, heard = alts[0] || '';
+  for(const a of alts){ const r = parseDiceSpeech(a); if((r.dice && r.dice.length) || r.cmd){ pick = r; heard = a; break; } }
+  S.heard = {text: heard, ok: !!pick};
+  if(!pick){ render(); return; }
+  if(pick.dice && pick.dice.length) S.dice = pick.dice;
+  if(pick.cmd === 'clear'){ S.dice = []; render(); return; }
+  if(pick.cmd === 'farkle' && !(pick.dice && pick.dice.length)){ S.heard.did = 'Raté'; return A.fkFarkle(); }
+  if(pick.cmd === 'add' || pick.cmd === 'bank'){
+    const c = [0,0,0,0,0,0,0]; (S.dice||[]).forEach(d => c[d]++);
+    const sc = diceScore(c, g.opts.f);
+    if(S.dice.length && !(S.dice.length === 6 && S.dice.every(d => d === S.dice[0])) && !sc.ok){ render(); return toast('Certains dés ne comptent pas : vérifiez'); }
+    const cur = g.cur;
+    if(S.dice.length) A.fkAddSel();
+    if(pick.cmd === 'bank' && curGame().cur === cur && !curGame().finished && (S.turn||0) > 0) A.fkBank();
+    return;
+  }
+  render();
+};
 function fkSix(v){
   const g = curGame(), p = g.players[g.cur];
   g.turns.push({pk:p.key, pts:0, raw:S.turn||0, win:true, note:`🎲 Six dés identiques${v?' ('+v+')':''} : victoire !`, t:Date.now()});
@@ -878,9 +969,9 @@ function fkAdd(pts){
       return fkNext(g);
     }
   }
-  S.turn = nt; S.dice = []; render();
+  S.turn = nt; S.dice = []; recordHist(); render();
 }
-function fkNext(g){ g.cur = (g.cur + 1) % g.players.length; S.turn = 0; S.dice = []; g.updated = Date.now(); save(); render(); }
+function fkNext(g){ g.cur = (g.cur + 1) % g.players.length; S.turn = 0; S.dice = []; S.heard = null; g.updated = Date.now(); save(); render(); }
 
 /* ---------- Résultat ---------- */
 function vResults(){
@@ -1351,6 +1442,9 @@ const A = {
   fbType: el => { M.fbType = el.dataset.v; document.querySelectorAll('#fbSeg button').forEach(b => b.classList.toggle('on', b === el)); },
   fbSend: () => { const it = fbBuild(); if(!it) return toast('Écrivez quelques mots d’abord'); const q = fbQueue(); q.push(it); fbSaveQueue(q); closeModal(); toast('Envoi…'); fbFlush(false); },
   fbRetry: () => fbFlush(false),
+  voice: () => voiceStart(),
+  undo: () => histUndo(),
+  redo: () => histRedo(),
   copyExp: () => { const t = $('expTxt'); const done = () => toast('Copié');
     try{ navigator.clipboard.writeText(t.value).then(done, () => { t.select(); toast('Texte sélectionné : copiez-le'); }); }catch(e){ t.select(); toast('Texte sélectionné : copiez-le'); } },
   import: () => doImport(),
@@ -1359,8 +1453,8 @@ const A = {
   fkRm: el => { S.dice.splice(Number(el.dataset.i),1); render(); },
   fkClear: () => { S.dice = []; render(); },
   fkAddSel: () => { if(S.dice.length === 6 && S.dice.every(d => d === S.dice[0])) return fkSix(S.dice[0]); const g = curGame(); const c = [0,0,0,0,0,0,0]; S.dice.forEach(d => c[d]++); fkAdd(diceScore(c, g.opts.f).pts); },
-  fkAddMan: () => { const v = num($('fk-man').value); if(!v) return; if(v < 0){ S.turn = Math.max(0, (S.turn||0) + v); return render(); } fkAdd(v); },
-  fkResetTurn: () => { S.turn = 0; S.dice = []; render(); },
+  fkAddMan: () => { const v = num($('fk-man').value); if(!v) return; if(v < 0){ S.turn = Math.max(0, (S.turn||0) + v); recordHist(); return render(); } fkAdd(v); },
+  fkResetTurn: () => { S.turn = 0; S.dice = []; recordHist(); render(); },
   fkCur: el => { const g = curGame(); if(g.finished) return; if(S.turn) return toast('Encaissez ou annulez le tour en cours d’abord'); g.cur = Number(el.dataset.i); S.dice = []; save(); render(); },
   fkBank: () => { const g = curGame(), f = g.opts.f, p = g.players[g.cur]; let pts = S.turn||0, note = '';
     if(pts <= 0) return;

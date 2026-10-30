@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.os.Build;
 import android.provider.Settings;
+import android.speech.RecognizerIntent;
+import java.util.ArrayList;
+import org.json.JSONArray;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 public class MainActivity extends Activity {
     private static final int REQ_EXPORT = 41;
     private static final int REQ_IMPORT = 42;
+    private static final int REQ_SPEECH = 43;
     private WebView web;
     private String pendingExport;
     // API GitHub : à jour en moins d'une minute (le site « raw » garde une copie jusqu'à 5 minutes)
@@ -229,6 +233,17 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Uri uri = (resultCode == RESULT_OK && data != null) ? data.getData() : null;
+        if (requestCode == REQ_SPEECH) {
+            if (resultCode == RESULT_OK && data != null) {
+                ArrayList<String> res = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                JSONArray arr = new JSONArray();
+                if (res != null) for (String r : res) arr.put(r);
+                js("window.onSpeech && window.onSpeech(" + JSONObject.quote(arr.toString()) + ")");
+            } else {
+                js("window.onSpeechError && window.onSpeechError('Rien entendu')");
+            }
+            return;
+        }
         if (requestCode == REQ_EXPORT) {
             boolean ok = false;
             if (uri != null && pendingExport != null) {
@@ -323,6 +338,25 @@ public class MainActivity extends Activity {
                     }
                 }
             }).start();
+        }
+
+        @JavascriptInterface
+        public void listen() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "fr-CA");
+                        i.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
+                        i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Dites les dés gardés");
+                        startActivityForResult(i, REQ_SPEECH);
+                    } catch (Exception e) {
+                        js("window.onSpeechError && window.onSpeechError('Reconnaissance vocale non disponible sur ce téléphone')");
+                    }
+                }
+            });
         }
 
         @JavascriptInterface
