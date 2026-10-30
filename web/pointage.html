@@ -321,24 +321,62 @@ function load(){
 }
 let db = load();
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ toast('Impossible d’enregistrer'); } recordHist(); autoBackupSoon(); }
-/* Sauvegarde automatique (app Android) : copie du fichier dans un dossier choisi, quelques secondes après chaque changement */
-const canAutoBackup = () => !!(bridge && bridge.writeBackup && bridge.pickBackupFolder);
-function abInfo(){ try{ return JSON.parse(bridge.backupInfo()); }catch(e){ return {}; } }
+/* Sauvegarde automatique : app Android (dossier choisi) ou navigateur d'ordinateur Chrome/Edge (dossier choisi) */
+const abWeb = () => !bridge && !!window.showDirectoryPicker && !window.claude;
+const canAutoBackup = () => !!(bridge && bridge.writeBackup && bridge.pickBackupFolder) || abWeb();
+function idb(){ return new Promise((res, rej) => { const r = indexedDB.open('pointage', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+async function idbGet(k){ try{ const d = await idb(); return await new Promise(res => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(null); }); }catch(e){ return null; } }
+async function idbSet(k, v){ try{ const d = await idb(); await new Promise(res => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = res; }); }catch(e){} }
+let abDir = null, abNeedPerm = false;
+if(abWeb()) idbGet('abDir').then(h => { abDir = h || null; if(S.view === 'settings') render(); });
+function abInfo(){
+  if(bridge){ try{ return JSON.parse(bridge.backupInfo()); }catch(e){ return {}; } }
+  let last = 0; try{ last = Number(localStorage.getItem('pointage.ablast')) || 0; }catch(e){}
+  return abDir ? {folder: abDir.name, last: last || undefined} : {};
+}
 function abOn(){ try{ return localStorage.getItem('pointage.autobackup') === '1'; }catch(e){ return false; } }
 let abTimer = null;
 function autoBackupSoon(){ if(!canAutoBackup() || !abOn()) return; clearTimeout(abTimer); abTimer = setTimeout(autoBackupNow, 8000); }
-function autoBackupNow(){ clearTimeout(abTimer); abTimer = null; if(!canAutoBackup() || !abOn() || !abInfo().folder) return; bridge.writeBackup(JSON.stringify(db, null, 1)); }
+async function abWriteWeb(json, gesture){
+  if(!abDir) return;
+  let perm = await abDir.queryPermission({mode: 'readwrite'});
+  if(perm !== 'granted' && gesture) perm = await abDir.requestPermission({mode: 'readwrite'});
+  if(perm !== 'granted'){ if(!abNeedPerm){ abNeedPerm = true; render(); } return; }
+  const wasPaused = abNeedPerm; abNeedPerm = false;
+  const month = new Date().toISOString().slice(0, 7);
+  for(const name of ['Pointage-sauvegarde.json', 'Pointage-sauvegarde-' + month + '.json']){
+    const fh = await abDir.getFileHandle(name, {create: true}); const w = await fh.createWritable(); await w.write(json); await w.close();
+  }
+  try{ localStorage.setItem('pointage.ablast', String(Date.now())); }catch(e){}
+  window.onBackupDone(true, '');
+  if(wasPaused) render();
+}
+function autoBackupNow(gesture){
+  clearTimeout(abTimer); abTimer = null;
+  if(!canAutoBackup() || !abOn() || !abInfo().folder) return;
+  const json = JSON.stringify(db, null, 1);
+  if(bridge) bridge.writeBackup(json);
+  else abWriteWeb(json, gesture).catch(() => window.onBackupDone(false, 'le dossier n’est plus accessible, choisissez-le de nouveau'));
+}
+async function abPickFolder(){
+  if(bridge) return bridge.pickBackupFolder();
+  try{ abDir = await window.showDirectoryPicker({id: 'pointage', mode: 'readwrite', startIn: 'documents'}); await idbSet('abDir', abDir); window.onBackupFolder(true); }
+  catch(e){ if(e && e.name !== 'AbortError') toast('Impossible d’utiliser ce dossier'); }
+}
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden' && abTimer) autoBackupNow(); });
-window.onBackupFolder = ok => { if(ok){ try{ localStorage.setItem('pointage.autobackup', '1'); }catch(e){} autoBackupNow(); toast('Dossier choisi : sauvegarde automatique activée'); } else toast('Aucun dossier choisi'); render(); };
+window.onBackupFolder = ok => { if(ok){ try{ localStorage.setItem('pointage.autobackup', '1'); }catch(e){} autoBackupNow(true); toast('Dossier choisi : sauvegarde automatique activée'); } else toast('Aucun dossier choisi'); render(); };
 window.onBackupDone = (ok, msg) => { if(!ok) toast('Sauvegarde automatique impossible : ' + msg); if(S.view === 'settings') render(); };
+function abPausedBanner(){
+  return abWeb() && abOn() && abNeedPerm ? `<button class="banner" style="width:calc(100% - 32px);text-align:left" data-a="abResume"><div class="grow">💾 Sauvegarde automatique en pause : le navigateur demande votre accord</div><span class="btn sm primary">Autoriser</span></button>` : '';
+}
 function backupCard(){
-  if(!canAutoBackup()) return `<p class="hint" style="margin:12px 0 0">La sauvegarde automatique est offerte dans l’app Android. Ici, pensez à exporter de temps en temps.</p>`;
+  if(!canAutoBackup()) return `<p class="hint" style="margin:12px 0 0">La sauvegarde automatique est offerte dans l’app Android et dans Chrome ou Edge sur ordinateur. Ici, pensez à exporter de temps en temps.</p>`;
   const on = abOn(), info = abInfo();
   return `<div class="row" style="margin-top:14px;align-items:flex-start"><div style="flex:1"><b>Sauvegarde automatique</b><div class="hint" style="margin:2px 0 0">Une copie à jour est enregistrée dans un dossier de votre choix après chaque changement.</div></div>
       <button class="switch ${on && info.folder ? 'on' : ''}" data-a="abToggle" aria-label="Sauvegarde automatique"></button></div>
     ${on && info.folder ? `<p class="hint">📁 ${esc(info.folder)}${info.last ? ' · dernière copie : ' + esc(new Date(info.last).toLocaleString('fr-CA', {dateStyle:'medium', timeStyle:'short'})) : ''}</p>
       <div class="row"><button class="btn sm" style="flex:1" data-a="abNow">Sauvegarder maintenant</button><button class="btn sm" style="flex:1" data-a="abPick">Changer de dossier</button></div>
-      <p class="hint">Fichier : <b>Pointage-sauvegarde.json</b> (toujours à jour), plus une copie par mois. Pour restaurer : « Importer une sauvegarde » et choisir ce fichier.</p>` : ''}`;
+      <p class="hint">Fichier : <b>Pointage-sauvegarde.json</b> (toujours à jour), plus une copie par mois. Pour restaurer : « Importer une sauvegarde » et choisir ce fichier.${abWeb() ? ' À la réouverture de l’app, le navigateur peut redemander votre accord d’un clic.' : ''}</p>` : ''}`;
 }
 /* Annuler / rétablir : un historique par partie, alimenté à chaque changement enregistré */
 const HIST = {};
@@ -714,7 +752,7 @@ function vHome(){
   const open = db.games.filter(g => !g.finished).sort((a,b) => b.updated - a.updated);
   return `<header class="top"><div class="grow"><h1>Pointage</h1><p class="sub">Les jeux de la famille${appVersion() ? ' · v' + esc(appVersion()) : ''}</p></div>
     <button class="icon-btn" data-a="go" data-v="settings" aria-label="Réglages">⚙︎</button></header>
-  ${updateBanner()}
+  ${updateBanner()}${abPausedBanner()}
   <main class="pad">
     ${open.length ? `<h2 class="sec">Parties en cours</h2>${open.map(g => {
       const r = ranking(g);
@@ -1615,10 +1653,11 @@ const A = {
       db.games.forEach(g => g.players.forEach(x => { if(x.rid === p.id) x.color = p.color; })); save(); render(); },
   statF: el => { S.statF = el.dataset.v; render(); },
   abToggle: () => { if(abOn() && abInfo().folder){ try{ localStorage.setItem('pointage.autobackup', '0'); }catch(e){} toast('Sauvegarde automatique désactivée'); render(); }
-    else if(abInfo().folder){ try{ localStorage.setItem('pointage.autobackup', '1'); }catch(e){} autoBackupNow(); toast('Sauvegarde automatique activée'); render(); }
-    else bridge.pickBackupFolder(); },
-  abPick: () => bridge.pickBackupFolder(),
-  abNow: () => { autoBackupNow(); toast('Sauvegarde…'); },
+    else if(abInfo().folder){ try{ localStorage.setItem('pointage.autobackup', '1'); }catch(e){} autoBackupNow(true); toast('Sauvegarde automatique activée'); render(); }
+    else abPickFolder(); },
+  abPick: () => abPickFolder(),
+  abNow: () => { autoBackupNow(true); toast('Sauvegarde…'); },
+  abResume: () => autoBackupNow(true),
   statP: el => { S.statP = el.dataset.v; render(); },
   statPlayer: el => openPlayerStats(el.dataset.k),
   chart: () => { closeModal(); openChart(); },

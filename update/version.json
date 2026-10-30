@@ -1,6 +1,6 @@
 {
- "version": "2.2",
- "notes": "• Nouveau : statistiques plus riches. Période (tout, 12 mois, 30 jours), séries de victoires 🔥, records par jeu, dernières parties, et une fiche par joueur (jeu fétiche, bête noire, résultats par jeu).\n• Nouveau : graphique de l'évolution des scores, dans l'écran de résultat et dans le menu ⋮ de chaque partie. Touchez le graphique pour voir les pointages à chaque manche.\n• Nouveau (Android) : sauvegarde automatique, à activer dans ⚙︎ Réglages. Une copie à jour est enregistrée dans le dossier de votre choix après chaque changement.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.2.apk",
- "size": 95065
+ "version": "2.3",
+ "notes": "• Nouveau : sauvegarde automatique aussi dans l'app web, sur ordinateur avec Chrome ou Edge (⚙︎ Réglages → Sauvegarde).",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.3.apk",
+ "size": 99161
 }
