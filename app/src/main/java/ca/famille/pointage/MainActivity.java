@@ -34,7 +34,8 @@ public class MainActivity extends Activity {
     private static final int REQ_IMPORT = 42;
     private WebView web;
     private String pendingExport;
-    static final String RELEASES_API = "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/version.json";
+    // API GitHub : à jour en moins d'une minute (le site « raw » garde une copie jusqu'à 5 minutes)
+    static final String RELEASES_API = "https://api.github.com/repos/rogerotisqc-spec/pointage/contents/update/version.json";
     static final String ACTION_INSTALL = "ca.famille.pointage.INSTALL_STATUS";
     private volatile boolean installing = false;
 
@@ -109,8 +110,9 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 try {
-                    HttpURLConnection c = (HttpURLConnection) new URL(RELEASES_API + "?t=" + System.currentTimeMillis()).openConnection(); // contourne le cache de GitHub
+                    HttpURLConnection c = (HttpURLConnection) new URL(RELEASES_API).openConnection();
                     c.setUseCaches(false);
+                    c.setRequestProperty("Accept", "application/vnd.github.raw+json");
                     c.setRequestProperty("Cache-Control", "no-cache");
                     c.setRequestProperty("User-Agent", "Pointage-Android");
                     c.setConnectTimeout(15000);
