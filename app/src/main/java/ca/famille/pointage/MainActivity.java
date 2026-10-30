@@ -109,7 +109,8 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 try {
-                    HttpURLConnection c = (HttpURLConnection) new URL(RELEASES_API).openConnection();
+                    HttpURLConnection c = (HttpURLConnection) new URL(RELEASES_API + "?t=" + System.currentTimeMillis()).openConnection(); // contourne le cache de GitHub
+                    c.setUseCaches(false);
                     c.setRequestProperty("Cache-Control", "no-cache");
                     c.setRequestProperty("User-Agent", "Pointage-Android");
                     c.setConnectTimeout(15000);
@@ -145,7 +146,8 @@ public class MainActivity extends Activity {
             public void run() {
                 PackageInstaller.Session session = null;
                 try {
-                    HttpURLConnection c = (HttpURLConnection) new URL(apkUrl).openConnection();
+                    HttpURLConnection c = (HttpURLConnection) new URL(apkUrl + (apkUrl.contains("?") ? "&" : "?") + "t=" + System.currentTimeMillis()).openConnection();
+                    c.setUseCaches(false);
                     c.setInstanceFollowRedirects(true);
                     c.setRequestProperty("User-Agent", "Pointage-Android");
                     c.setConnectTimeout(20000);
