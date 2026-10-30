@@ -1,0 +1,9 @@
+# Clé de signature : ne JAMAIS publier
+keystore/
+*.p12
+*.pem
+*.der
+# Fichiers générés
+build/
+dist/
+tools/bin/

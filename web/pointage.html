@@ -1,0 +1,1291 @@
+<meta name="theme-color" content="#1f5c45">
+<title>Pointage famille</title>
+<style>
+:root{
+  --bg:#f3f0e8; --surface:#fffdf8; --surface2:#f8f5ee; --ink:#1c2420; --muted:#68716c; --line:#e2dccd;
+  --brand:#1f5c45; --brand-2:#2a7559; --on-brand:#ffffff; --accent:#d98e04; --danger:#c0392b; --ok:#2f7d4f;
+  --lead:#fff4d6; --shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.06);
+  --r:14px; --warn-bg:#fde8e4; --warn-line:#f3b4a8; --warn-ink:#a33;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101412; --surface:#191f1c; --surface2:#1f2622; --ink:#ecf0ed; --muted:#97a19b; --line:#2b3430;
+    --brand:#2f8a66; --brand-2:#3a9d76; --on-brand:#ffffff; --accent:#f0a91c; --danger:#e5604f; --ok:#4cb37b;
+    --lead:#3a3216; --shadow:0 1px 2px rgba(0,0,0,.4);
+    --warn-bg:#3d1f1b; --warn-line:#6b3229; --warn-ink:#f19a8b; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+    --bg:#101412; --surface:#191f1c; --surface2:#1f2622; --ink:#ecf0ed; --muted:#97a19b; --line:#2b3430;
+    --brand:#2f8a66; --brand-2:#3a9d76; --on-brand:#ffffff; --accent:#f0a91c; --danger:#e5604f; --ok:#4cb37b;
+    --lead:#3a3216; --shadow:0 1px 2px rgba(0,0,0,.4);
+    --warn-bg:#3d1f1b; --warn-line:#6b3229; --warn-ink:#f19a8b; color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.4}
+body{padding-bottom:env(safe-area-inset-bottom)}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,textarea,select{font:inherit;color:var(--ink)}
+.num-t{font-variant-numeric:tabular-nums}
+h1,h2,h3{margin:0;line-height:1.2}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--brand)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:8px;padding:14px 16px 12px;background:var(--brand);color:var(--on-brand)}
+.top h1{font-size:22px;font-weight:750;letter-spacing:-.01em}
+.top .sub{margin:2px 0 0;font-size:13px;opacity:.8}
+.top .grow{flex:1;min-width:0}
+.top .grow h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon-btn{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:20px;flex:none}
+.top .icon-btn:active{background:rgba(255,255,255,.15)}
+.pad{padding:16px 16px 110px}
+.sec{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:22px 2px 10px}
+.sec:first-child{margin-top:4px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{position:relative;padding:14px 12px 12px;min-height:116px;display:flex;flex-direction:column;gap:8px;text-align:left}
+.tile:active{transform:scale(.98)}
+.badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;letter-spacing:-.02em;flex:none}
+.tile h3{font-size:16px;font-weight:700}
+.tile p{margin:0;font-size:12.5px;color:var(--muted)}
+.tile .rules-btn{position:absolute;top:8px;right:8px;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:17px;color:var(--muted)}
+.tile .rules-btn:active{background:var(--surface2)}
+.resume{display:flex;align-items:center;gap:12px;padding:12px;margin-bottom:10px;width:100%;text-align:left}
+.resume .grow{flex:1;min-width:0}
+.resume .t{font-weight:700}
+.resume .s{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chev{color:var(--muted);font-size:22px}
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.bottom button{padding:9px 0 10px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted)}
+nav.bottom button .i{font-size:21px;line-height:1}
+nav.bottom button.on{color:var(--brand);font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 18px;border-radius:12px;font-weight:700;background:var(--surface2);border:1px solid var(--line)}
+.btn:active{filter:brightness(.95)}
+.btn.primary{background:var(--brand);color:var(--on-brand);border-color:transparent}
+.btn.danger{color:var(--danger)}
+.btn.block{width:100%}
+.btn.sm{min-height:38px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.45}
+.fab{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:25;min-height:56px;font-size:17px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 8px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line);font-weight:600}
+.chip .dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800}
+.chip.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--surface))}
+.chip .x{margin-left:2px;color:var(--muted);font-size:18px}
+.chip.guest{border-style:dashed}
+.row{display:flex;gap:8px;align-items:center}
+.field{width:100%;min-height:48px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface)}
+.field:focus{outline:none;border-color:var(--brand)}
+textarea.field{padding:12px 14px;min-height:120px;resize:vertical}
+label.lbl{display:block;font-size:14px;font-weight:600;margin:14px 2px 6px}
+.hint{font-size:13px;color:var(--muted);margin:6px 2px 0}
+.seg{display:flex;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{flex:1;min-height:42px;border-radius:9px;font-weight:600;font-size:14px;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.opts{padding:4px 14px 16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+/* totals strip */
+.scores{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none}
+.scores::-webkit-scrollbar{display:none}
+.pscore{flex:1 0 96px;max-width:170px;padding:10px 10px 9px;border-radius:12px;background:var(--surface);border:1px solid var(--line);position:relative}
+.pscore.lead{background:var(--lead);border-color:var(--accent)}
+.pscore .n{padding-right:24px;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
+.pscore .n i{width:9px;height:9px;border-radius:50%;flex:none}
+.pscore .v{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+.pscore .x{font-size:12px;color:var(--muted)}
+.pscore .rk{position:absolute;top:8px;right:9px;font-size:12px;font-weight:800;color:var(--muted)}
+.pscore.lead .rk{color:var(--accent)}
+.tablewrap{overflow-x:auto;margin:0 16px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface)}
+table.sheet{border-collapse:collapse;width:100%;min-width:100%}
+table.sheet th,table.sheet td{padding:0;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+table.sheet thead th{font-size:13px;padding:10px 8px;background:var(--surface2);font-weight:700;max-width:110px;overflow:hidden;text-overflow:ellipsis}
+table.sheet th.lbl,table.sheet td.lbl{position:sticky;left:0;background:var(--surface2);text-align:left;padding:0 10px;font-size:13px;color:var(--muted);font-weight:600;z-index:1;border-right:1px solid var(--line)}
+table.sheet td button{display:block;width:100%;min-width:64px;min-height:46px;padding:0 8px;font-size:17px;font-weight:600}
+table.sheet td button:active{background:var(--surface2)}
+table.sheet tfoot td{font-weight:800;font-size:17px;padding:10px 6px;background:var(--surface2);border-bottom:0}
+table.sheet tfoot td.lbl{font-size:13px}
+.neg{color:var(--danger)}
+.tick{color:var(--ok);font-size:13px;margin-left:3px}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+.banner{margin:12px 16px 0;padding:12px 14px;border-radius:12px;background:var(--lead);border:1px solid var(--accent);display:flex;gap:10px;align-items:center}
+.banner .grow{flex:1;font-weight:600;font-size:14.5px}
+.banner.done{background:color-mix(in srgb,var(--ok) 14%,var(--surface));border-color:var(--ok)}
+/* modal */
+.modal-bg{position:fixed;inset:0;z-index:100;background:rgba(10,14,12,.5);display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
+.msheet{width:100%;max-width:640px;max-height:92vh;display:flex;flex-direction:column;background:var(--bg);border-radius:20px 20px 0 0;animation:up .2s ease-out}
+.msheet.center{margin:auto 16px;border-radius:18px;max-height:80vh}
+.modal-bg.c{align-items:center}
+.mhead{display:flex;align-items:center;gap:8px;padding:16px 16px 10px}
+.mhead h2{flex:1;font-size:19px}
+.mbody{overflow-y:auto;padding:0 16px 12px;flex:1}
+.mfoot{display:flex;gap:10px;padding:12px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
+.mfoot .btn{flex:1}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.prow{padding:12px;margin-bottom:10px}
+.prow .ph{display:flex;align-items:center;gap:10px}
+.prow .ph .nm{flex:1;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.num{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden;width:132px;flex:none}
+.num:focus-within{border-color:var(--brand)}
+.num input{width:100%;min-width:0;border:0;background:none;text-align:right;padding:0 12px;font-size:20px;font-weight:700;min-height:48px;font-variant-numeric:tabular-nums}
+.num input:focus{outline:none}
+.num .sign{width:40px;flex:none;font-weight:800;font-size:18px;color:var(--muted);border-right:1px solid var(--line);background:var(--surface2)}
+.calc-t{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--surface2);border:1px solid var(--line);font-size:16px;flex:none}
+.calc-t.on{background:var(--brand);color:#fff;border-color:transparent}
+.helper{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.helper.open{display:block}
+.keys{display:flex;flex-wrap:wrap;gap:6px}
+.key{min-width:44px;min-height:42px;padding:0 10px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:15px}
+.key:active{background:var(--line)}
+.key.on{background:var(--brand);color:#fff;border-color:transparent}
+.key.wide{flex:1 1 auto;white-space:nowrap}
+.expr{font-size:13px;color:var(--muted);margin-top:8px;min-height:18px}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:40px;height:40px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-size:20px;font-weight:700}
+.stepper b{min-width:22px;text-align:center;font-size:18px}
+.line{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}
+.line .l{font-size:14.5px}
+.line .l small{display:block;color:var(--muted);font-size:12px}
+.chk{display:flex;align-items:center;gap:10px;min-height:44px;font-size:14.5px}
+.chk input{width:22px;height:22px;accent-color:var(--brand)}
+.ptotal{font-size:22px;font-weight:800;color:var(--brand)}
+.radio{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);margin-bottom:8px;font-weight:700}
+.radio input{width:22px;height:22px;accent-color:var(--brand)}
+.radio:has(input:checked){border-color:var(--brand)}
+/* lists */
+.list{overflow:hidden}
+.li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.li:last-child{border-bottom:0}
+.li .grow{flex:1;min-width:0}
+.li .t{font-weight:700}
+.li .s{font-size:13px;color:var(--muted)}
+.av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;flex:none}
+/* rules */
+.rules{padding:16px 18px;font-size:15.5px}
+.rules h3{font-size:15px;margin:18px 0 6px;color:var(--brand)}
+.rules h3:first-child{margin-top:0}
+.rules p{margin:6px 0}
+.rules ul,.rules ol{margin:6px 0;padding-left:22px}
+.rules li{margin:4px 0}
+.rules table{border-collapse:collapse;width:100%;font-size:14.5px;margin:6px 0}
+.rules td{padding:7px 4px;border-bottom:1px solid var(--line)}
+.rules td:last-child{text-align:right;font-weight:700;white-space:nowrap}
+/* farkle */
+.fk-players .li.cur{background:var(--lead)}
+.fk-players .li.cur .t::before{content:"▶ ";color:var(--accent)}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:2px}
+.tag.warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
+.turnbox{margin:12px 16px 0;padding:14px}
+.turnbox .who{font-size:14px;color:var(--muted);font-weight:600}
+.turnbox .who b{color:var(--ink);font-size:20px;display:block}
+.turnpts{font-size:40px;font-weight:850;letter-spacing:-.03em;color:var(--brand);line-height:1.1}
+.dice{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px}
+.die{aspect-ratio:1;border-radius:12px;background:var(--surface);border:2px solid var(--ink);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:16%;max-width:58px;width:100%;justify-self:center}
+.die:active{transform:scale(.94)}
+.die span{width:68%;aspect-ratio:1;border-radius:50%;background:var(--ink);place-self:center;visibility:hidden}
+.die.sm{width:38px;height:38px;max-width:none;flex:none;border-width:1.5px;border-radius:8px;padding:5px}
+.die.sm span{width:6px;height:6px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;min-height:44px;margin-top:10px;padding:6px;border-radius:12px;background:var(--surface2);border:1px dashed var(--line);align-items:center}
+.tray .ph{font-size:13px;color:var(--muted);padding:0 6px}
+.sel-v{font-size:14px;margin-top:8px;font-weight:600}
+.log{margin:14px 16px 0}
+.log .li{padding:9px 14px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:12px;font-size:14.5px;font-weight:600;opacity:0;transition:.2s;z-index:200;max-width:88vw;text-align:center;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.podium .li .rk{width:34px;font-size:22px;text-align:center}
+.menu .li{font-weight:600}
+.statt{width:100%;border-collapse:collapse}
+.statt th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:right;padding:10px 12px;border-bottom:1px solid var(--line)}
+.statt th:first-child,.statt td:first-child{text-align:left}
+.statt td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.statt tr:last-child td{border-bottom:0}
+.dealer{display:flex;align-items:center;gap:10px;width:calc(100% - 32px);margin:12px 16px 0;padding:10px 14px;border-radius:12px;background:var(--surface);border:1.5px dashed var(--brand);text-align:left}
+.dealer .ic{font-size:22px}.dealer .grow{flex:1;font-size:15px}.dealer .grow small{display:block;color:var(--muted);font-size:12px}
+.dealer .chg{font-size:13px;color:var(--brand);font-weight:700}
+.ptabs{display:flex;flex:none;gap:6px;overflow-x:auto;padding:0 16px 10px;scrollbar-width:none}
+.ptabs::-webkit-scrollbar{display:none}
+.ptab{flex:none;padding:7px 12px;border-radius:12px;background:var(--surface);border:1.5px solid var(--line);text-align:left;min-width:92px}
+.ptab .n{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}.ptab .n i{width:9px;height:9px;border-radius:50%}
+.ptab .v{font-size:17px;font-weight:800}
+.ptab.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--surface))}
+.crow{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;margin-bottom:8px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-align:left}
+.crow .l{flex:1;min-width:0;font-size:15px;font-weight:600}.crow .l small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.crow .stepper b{min-width:26px}
+.crow .stepper button:disabled{opacity:.35}
+.crow .stepper button.plus{background:var(--brand);color:#fff;border-color:transparent}
+.crow .pts{width:52px;text-align:right;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.crow .pts.on{color:var(--ink)}
+.pill{flex:none;padding:7px 12px;border-radius:10px;border:1.5px solid var(--line);font-weight:700;color:var(--muted);background:var(--surface2);white-space:nowrap}
+.crow.on{border-color:var(--ok)}.crow.on .pill{background:var(--ok);color:#fff;border-color:transparent}
+.crow .auto{font-size:11px;font-weight:700;color:var(--ok);margin-left:6px}
+.crow.dis{opacity:.55}
+.mbtot{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;background:var(--surface);border:1.5px solid var(--brand);margin:4px 0 8px;font-weight:800}
+.mbtot b{font-size:24px;color:var(--brand)}
+.warn-t{color:var(--danger);font-size:13px;margin:-2px 2px 8px}
+table.sheet.compact{table-layout:fixed}
+table.sheet.compact th.lbl{width:64px}
+table.sheet.compact thead th{padding:9px 2px;font-size:12px;max-width:52px}
+table.sheet.compact td button{min-width:0;padding:0 2px;font-size:16px}
+table.sheet.compact th.lbl,table.sheet.compact td.lbl{padding:0 6px}
+table.sheet.compact tfoot td{font-size:16px;padding:10px 2px}
+table.sheet.compact tr.sub td{font-size:13px;padding:6px 2px}
+table.sheet tr.sub td{background:var(--surface2);font-size:14px;font-weight:700;color:var(--muted);padding:6px}
+table.sheet tr.sub td.lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+table.sheet tr.next td button{background:color-mix(in srgb,var(--brand) 7%,transparent)}
+table.sheet td.empty-c{color:var(--line);height:46px}
+.p9grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.p9c{aspect-ratio:3/4;max-height:74px;border-radius:9px;border:2px solid var(--line);background:var(--surface2);font-size:20px;font-weight:800;display:grid;place-items:center}
+.p9c.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.p9c.f{background:var(--surface);border-color:var(--ink)}
+.p9c.m{background:color-mix(in srgb,var(--ok) 18%,var(--surface));border-color:var(--ok);color:var(--ok)}
+.p10b{margin:12px 16px 0;padding:8px 6px 6px;overflow-x:auto}
+table.p10{border-collapse:collapse;width:100%;table-layout:fixed}
+table.p10 th{padding:2px 1px 6px;vertical-align:bottom}
+table.p10 th.lc{width:96px}
+.sw{width:34px;height:34px;border-radius:8px;border:2px solid rgba(0,0,0,.15);display:block;margin:0 auto;box-shadow:var(--shadow)}
+.sw-n{font-size:11px;font-weight:700;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+table.p10 td{padding:0;border-top:1px solid var(--line);height:44px;text-align:center}
+table.p10 td.ph{text-align:left;padding:0 6px;line-height:1.15}
+table.p10 td.ph b{font-size:15px;margin-right:4px}
+table.p10 td.ph small{font-size:11px;color:var(--muted)}
+table.p10 tr:nth-child(even) td{background:color-mix(in srgb,var(--surface2) 70%,transparent)}
+table.p10 tr.fin td{border-top:2px solid var(--line)}
+.p10c{width:100%;height:44px;display:grid;place-items:center}
+.mk{width:30px;height:30px;border-radius:50%;border:2.5px solid rgba(0,0,0,.25);box-shadow:0 2px 5px rgba(0,0,0,.25)}
+.mk.big{width:44px;height:44px}
+.done-dot{width:8px;height:8px;border-radius:50%;opacity:.45}
+.nxt{width:24px;height:24px;border-radius:50%;border:2px dashed;opacity:.45}
+.cpick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:6px 0 10px}
+.cpick button{aspect-ratio:1;border-radius:14px;border:2px solid rgba(0,0,0,.15);position:relative}
+.cpick button.on{box-shadow:0 0 0 3px var(--bg),0 0 0 6px var(--ink)}
+.cpick button .who{position:absolute;bottom:3px;left:0;right:0;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.obj{text-align:center;padding:6px 4px 4px}
+.obj .lvl{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.obj h3{font-size:22px;margin:6px 0 4px}
+.cards{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:16px 0 8px}
+.cgroup{display:flex;gap:3px}
+.pc{width:30px;height:44px;border-radius:5px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.bar{height:6px;border-radius:3px;background:var(--surface2);margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+</style>
+
+<div id="app"></div>
+<div id="modal"></div>
+<div id="toast" class="toast"></div>
+<script>
+'use strict';
+/* ====================== Données ====================== */
+const KEY = 'pointage.v1';
+const bridge = window.AndroidBridge || null;
+const P10_COLORS = ['#e03131','#f76707','#fcc419','#82c91e','#2b8a3e','#12b886','#22b8cf','#1c7ed6','#364fc7','#7048e8','#ae3ec9','#e64980','#8d5524','#868e96','#212529','#f8f9fa'];
+const PALETTE = ['#2f7d4f','#1971c2','#c2255c','#e8590c','#7048e8','#0c8599','#b08900','#5c940d','#d6336c','#495057','#9c36b5','#1098ad'];
+const FD = {target:25000, entry:1000, penFrom:20000, pen:1000, straight:1500, pairs:750, useStraight:true, usePairs:true};
+
+function defaultDb(){ return {v:1, players:[], games:[], house:{}, farkle:{...FD}, lastSel:{}, titles:[]}; }
+function load(){
+  try{ const d = JSON.parse(localStorage.getItem(KEY)); if(d && d.v) return Object.assign(defaultDb(), d); }catch(e){}
+  return defaultDb();
+}
+let db = load();
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ toast('Impossible d’enregistrer'); } }
+
+const uid = () => Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-5);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => { n = Number(n)||0; return (n<0?'−':'') + Math.abs(n).toLocaleString('fr-CA'); };
+const num = v => { const s = String(v == null ? '' : v).replace(/[−–]/g,'-').replace(/[^\d-]/g,''); const neg = s.startsWith('-'); const d = parseInt(s.replace(/-/g,''),10); return isNaN(d) ? 0 : (neg ? -d : d); };
+const initial = n => (String(n).trim()[0]||'?').toUpperCase();
+const dateFr = ts => new Date(ts).toLocaleDateString('fr-CA',{day:'numeric',month:'long',year:'numeric'});
+const $ = id => document.getElementById(id);
+
+/* ====================== Jeux ====================== */
+const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10'];
+const GAMES = {
+  generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
+  playnine:   {name:'Play Nine',      color:'#2b8a3e', badge:'9',  desc:'9 trous · le plus bas gagne', round:'Trou', low:true, helper:'playnine'},
+  flip7:      {name:'Flip 7',         color:'#e8590c', badge:'7',  desc:'Premier à 200', round:'Manche', target:200, helper:'flip7'},
+  uno:        {name:'Uno',            color:'#c92a2a', badge:'U',  desc:'Chacun ses cartes · le plus bas gagne', round:'Manche', target:500, low:true, helper:'uno'},
+  skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'25 + 5 par carte · premier à 500', round:'Manche', target:500},
+  millebornes:{name:'Mille Bornes',   color:'#d9a400', badge:'1000', desc:'Premier à 5 000', round:'Manche', target:5000},
+  phase10:    {name:'Phase 10',       color:'#6741d9', badge:'10', desc:'10 phases · le moins de points', round:'Manche', low:true, helper:'phase10'},
+  farkle:     {name:'Jeu de dés',   color:'#0b7285', badge:'⚄',  desc:'Entrée à 1 000 · partie à 25 000', round:'Tour'}
+};
+const PHASES = [
+  'Deux brelans (2 × 3 identiques)',
+  'Un brelan + une suite de 4',
+  'Un carré (4 identiques) + une suite de 4',
+  'Une suite de 7',
+  'Une suite de 8',
+  'Une suite de 9',
+  'Deux carrés (2 × 4 identiques)',
+  '7 cartes d’une même couleur',
+  '5 identiques + 2 identiques',
+  '5 identiques + 3 identiques'
+];
+const PHASE_SHORT = ['2 brelans','Brelan + suite de 4','Carré + suite de 4','Suite de 7','Suite de 8','Suite de 9','2 carrés','7 de même couleur','5 identiques + 2','5 identiques + 3'];
+const PHASE_EX = [[[5,5,5],[9,9,9]],[[8,8,8],[3,4,5,6]],[[2,2,2,2],[6,7,8,9]],[[1,2,3,4,5,6,7]],[[3,4,5,6,7,8,9,10]],[[2,3,4,5,6,7,8,9,10]],
+  [[4,4,4,4],[11,11,11,11]],[[1,4,6,7,9,11,12]],[[6,6,6,6,6],[2,2]],[[9,9,9,9,9],[3,3,3]]];
+const PHASE_EXPL = ['Deux groupes de 3 cartes de même chiffre.','Trois cartes de même chiffre et 4 chiffres qui se suivent.','Quatre cartes de même chiffre et 4 chiffres qui se suivent.',
+  '7 chiffres qui se suivent, couleurs mélangées.','8 chiffres qui se suivent, couleurs mélangées.','9 chiffres qui se suivent, couleurs mélangées.','Deux groupes de 4 cartes de même chiffre.',
+  '7 cartes de la même couleur, n’importe quels chiffres.','Cinq cartes de même chiffre et deux autres de même chiffre.','Cinq cartes de même chiffre et trois autres de même chiffre.'];
+function gameName(g){ return g.type === 'generic' ? (g.title || 'Pointage libre') : GAMES[g.type].name; }
+function houseKey(type, title){ return type === 'generic' ? 'generic:' + (title||'').trim().toLowerCase() : type; }
+
+/* ====================== Règles (résumés) ====================== */
+function rulesHtml(type, g){
+  const f = (g && g.opts && g.opts.f) || Object.assign({}, FD, db.farkle);
+  switch(type){
+  case 'playnine': return `
+    <h3>But</h3><p>Avoir le moins de points possible après 9 trous (manches).</p>
+    <h3>Mise en place</h3><p>Chaque joueur reçoit 8 cartes face cachée, placées en 2 rangées de 4. Chacun retourne 2 cartes de son choix.</p>
+    <h3>Un tour</h3><ul>
+      <li>Prendre la carte du dessus de la pioche ou de la défausse.</li>
+      <li>Soit l’échanger contre une de ses 8 cartes (visible ou cachée) : la carte remplacée va à la défausse.</li>
+      <li>Soit, si elle vient de la pioche, la défausser et retourner une de ses cartes cachées.</li></ul>
+    <h3>Fin du trou</h3><p>Quand un joueur a toutes ses cartes visibles, chacun des autres joue un dernier tour, puis on retourne tout et on compte.</p>
+    <h3>Pointage</h3><ul>
+      <li>Chaque carte vaut son chiffre (0 à 12). La carte « Hole-in-One » vaut −5.</li>
+      <li>Deux cartes identiques dans une même colonne s’annulent (0). Une paire de −5 vaut −10.</li>
+      <li>Bonus pour des colonnes appariées avec le même chiffre : 2 colonnes = −10, 3 = −15, 4 = −20.</li></ul>`;
+  case 'flip7': return `
+    <h3>But</h3><p>Être le premier à atteindre 200 points.</p>
+    <h3>Une manche</h3><ul>
+      <li>Le donneur distribue une carte face visible à chacun.</li>
+      <li>À son tour, chaque joueur actif choisit : une autre carte (« encore ») ou s’arrêter (« je reste ») et garder ses points.</li>
+      <li>Recevoir un chiffre qu’on a déjà devant soi : éliminé de la manche, 0 point (sauf avec une Seconde chance).</li></ul>
+    <h3>Cartes action</h3><ul>
+      <li><b>Gel</b> : le joueur visé doit s’arrêter et encaisser ses points.</li>
+      <li><b>Pige trois</b> : le joueur visé doit prendre 3 cartes d’affilée.</li>
+      <li><b>Seconde chance</b> : se défausse avec un doublon pour rester en jeu.</li></ul>
+    <h3>Flip 7</h3><p>Réunir 7 chiffres différents termine la manche sur-le-champ et donne 15 points de bonus.</p>
+    <h3>Pointage</h3><ol>
+      <li>Additionner ses cartes chiffres.</li><li>La carte ×2 double ce total (chiffres seulement).</li>
+      <li>Ajouter les modificateurs (+2 à +10).</li><li>Ajouter 15 pour un Flip 7.</li></ol>
+    <p>La calculatrice 🧮 de la feuille fait ce calcul pour vous.</p>`;
+  case 'uno': return `
+    <h3>But</h3><p>Se débarrasser de toutes ses cartes.</p>
+    <h3>Déroulement</h3><ul>
+      <li>7 cartes chacun ; on retourne une carte pour lancer la défausse.</li>
+      <li>Jouer une carte de même couleur, même chiffre ou même symbole. Sinon, piger une carte (on peut la jouer si elle convient).</li>
+      <li><b>+2</b> : le suivant pige 2 et passe son tour. <b>Inversion</b> : change le sens. <b>Passe</b> : le suivant passe son tour.</li>
+      <li><b>Joker</b> : choisir la couleur. <b>Joker +4</b> : choisir la couleur, le suivant pige 4 et passe son tour.</li>
+      <li>Dire « Uno ! » quand il ne reste qu’une carte, sinon on pige 2 cartes de pénalité.</li></ul>
+    <h3>Pointage maison</h3><p>À la fin de la manche, chaque joueur compte les cartes qui lui restent en main :</p>
+    <table><tr><td>Chiffres</td><td>valeur</td></tr><tr><td>+2, Inversion, Passe</td><td>20</td></tr><tr><td>Joker, Joker +4</td><td>50</td></tr></table>
+    <p>Quand un joueur atteint ${fmt((g&&g.opts.target)||500)}, la partie se termine : <b>le plus bas gagne</b>.</p>
+    <p class="hint">Règle officielle : le gagnant de la manche marque les points des cartes des autres, premier à 500.</p>`;
+  case 'skipbo': return `
+    <h3>But</h3><p>Être le premier à vider son talon (sa pile de départ).</p>
+    <h3>Mise en place</h3><ul>
+      <li>Talon de 30 cartes par joueur (2 à 4 joueurs) ou de 20 cartes (5 joueurs et plus), face cachée, la carte du dessus retournée.</li>
+      <li>5 cartes en main. Le reste forme la pioche.</li></ul>
+    <h3>Un tour</h3><ul>
+      <li>Compléter sa main à 5 cartes.</li>
+      <li>Au centre, jusqu’à 4 piles communes qui montent de 1 à 12. Une pile complétée est retirée.</li>
+      <li>On joue sur ces piles depuis sa main, le dessus de son talon ou le dessus de ses défausses. Les cartes Skip-Bo sont des jokers.</li>
+      <li>Si on vide sa main, on repige 5 cartes et on continue.</li>
+      <li>Le tour se termine en déposant une carte sur une de ses 4 piles de défausse.</li></ul>
+    <h3>Pointage officiel</h3><p>Le gagnant de la manche marque <b>25 points + 5 points par carte</b> restant dans le talon de chaque adversaire. Premier à ${fmt((g&&g.opts.target)||500)}.</p>`;
+  case 'millebornes': return `
+    <h3>But</h3><p>Parcourir exactement 1 000 km par manche. La partie se joue en ${fmt((g&&g.opts.target)||5000)} points. Souvent en équipes à 4 ou 6 joueurs (inscrivez l’équipe comme un joueur).</p>
+    <h3>Un tour</h3><p>6 cartes en main. Piger une carte, puis en jouer ou en défausser une.</p>
+    <h3>Les cartes</h3><ul>
+      <li><b>Bornes</b> : 25, 50, 75, 100, 200 km. Pas plus de deux 200 km par manche.</li>
+      <li>Il faut un <b>Feu vert</b> pour rouler.</li>
+      <li><b>Attaques</b> (sur l’adversaire) → <b>parades</b> : Feu rouge → Feu vert ; Limite de vitesse (50 km max) → Fin de limite ; Panne d’essence → Essence ; Crevaison → Roue de secours ; Accident → Réparations.</li>
+      <li><b>Bottes</b> (protection permanente) : Véhicule prioritaire, Citerne d’essence, Increvable, As du volant.</li>
+      <li><b>Coup fourré</b> : quand on est attaqué et qu’on a la botte correspondante, on la joue aussitôt, on pige et on rejoue.</li></ul>
+    <h3>Pointage</h3><table>
+      <tr><td>Kilomètres parcourus</td><td>1 pt / km</td></tr><tr><td>Allonge (700 → 1 000 km)</td><td>200</td></tr><tr><td>Chaque botte</td><td>100</td></tr>
+      <tr><td>Les 4 bottes (en plus)</td><td>300</td></tr><tr><td>Chaque coup fourré</td><td>300</td></tr>
+      <tr><td>Voyage achevé (1 000 km)</td><td>400</td></tr><tr><td>Retardement (terminer après la fin de la pioche)</td><td>300</td></tr>
+      <tr><td>Sans les 200 km</td><td>300</td></tr><tr><td>Capot (l’adversaire n’a aucun km)</td><td>500</td></tr></table>`;
+  case 'phase10': return `
+    <h3>But</h3><p>Réaliser les 10 phases, dans l’ordre, avant les autres.</p>
+    <h3>Un tour</h3><ul>
+      <li>10 cartes en main. Piger (pioche ou défausse), puis défausser une carte.</li>
+      <li>Pour réussir sa phase, on pose d’un coup toutes les combinaisons demandées.</li>
+      <li>Une fois sa phase posée, on peut ajouter des cartes sur ses combinaisons et sur celles des autres.</li>
+      <li><b>Joker</b> : remplace n’importe quelle carte. <b>Passe</b> : fait sauter le tour d’un joueur.</li>
+      <li>La manche finit quand un joueur n’a plus de cartes. Ceux qui ont réussi passent à la phase suivante, les autres la recommencent.</li></ul>
+    <h3>Les 10 phases</h3><ol>${PHASES.map(p=>`<li>${p}</li>`).join('')}</ol>
+    <p class="hint">Brelan = 3 cartes identiques · carré = 4 identiques · suite = chiffres consécutifs.</p>
+    <h3>Pointage (cartes restées en main)</h3><table>
+      <tr><td>1 à 9</td><td>5</td></tr><tr><td>10 à 12</td><td>10</td></tr><tr><td>Passe</td><td>15</td></tr><tr><td>Joker</td><td>25</td></tr></table>
+    <p>Gagnant : le premier à réussir la phase 10. En cas d’égalité, le moins de points.</p>`;
+  case 'farkle': return `
+    <h3>But</h3><p>Être le premier à arriver exactement à ${fmt(f.target)} points.</p>
+    <h3>Un tour</h3><ul>
+      <li>Lancer les 6 dés et mettre de côté au moins un dé qui compte.</li>
+      <li>Ensuite, relancer les dés restants pour augmenter ses points, ou s’arrêter et encaisser.</li>
+      <li>Si un lancer ne donne <b>aucun dé qui compte</b> : c’est raté, on perd les points du tour.</li>
+      <li>Si les 6 dés ont compté, on peut relancer les 6 et continuer à accumuler.</li></ul>
+    <h3>Valeurs</h3><table>
+      <tr><td>Un 1</td><td>100</td></tr><tr><td>Un 5</td><td>50</td></tr>
+      <tr><td>Trois 1</td><td>1 000</td></tr><tr><td>Trois 2, 3, 4, 5, 6</td><td>valeur × 100</td></tr>
+      <tr><td>Chaque dé identique de plus</td><td>double</td></tr><tr><td>(quatre 1 = 2 000, cinq 1 = 4 000)</td><td></td></tr>
+      ${f.useStraight?`<tr><td>Suite 1-2-3-4-5-6</td><td>${fmt(f.straight)}</td></tr>`:''}
+      ${f.usePairs?`<tr><td>Trois paires</td><td>${fmt(f.pairs)}</td></tr>`:''}</table>
+    <h3>Règles de la maison</h3><ul>
+      <li>Il faut faire au moins <b>${fmt(f.entry)} points en un seul tour</b> pour « entrer » et commencer à accumuler.</li>
+      <li>À partir de <b>${fmt(f.penFrom)}</b> points, un tour sans aucun dé qui compte fait perdre <b>${fmt(f.pen)}</b> points.</li>
+      <li>Partie à ${fmt(f.target)} : il faut arriver <b>exactement</b> à ce total. Si les points du tour feraient dépasser, le tour s’arrête aussitôt, sans gain ni perte, et c’est au joueur suivant.</li>
+      <li><b>Six dés identiques</b>, à n’importe quel moment : victoire immédiate, peu importe le pointage.</li>
+      <li>La pénalité ne s’applique que si <b>aucun dé n’a compté</b> pendant le tour (points du tour à zéro). Si des dés ont donné des points avant le raté, on perd seulement les points du tour.</li>
+      <li>Dépasser l’objectif n’est pas un raté : la pénalité de ${fmt(f.pen)} ne s’applique qu’à un lancer sans aucun dé qui compte.</li></ul>
+    <p class="hint">Ces valeurs se modifient au début d’une partie, dans « Valeurs et règles ».</p>`;
+  default: return `<p>Le pointage libre n’a pas de règles intégrées. Notez ci-dessous les règles de ce jeu ou vos variantes.</p>`;
+  }
+}
+
+/* ====================== Calculs ====================== */
+function totals(g){
+  const t = {}; g.players.forEach(p => t[p.key] = 0);
+  if(g.type === 'farkle') g.turns.forEach(x => { if(x.pk in t) t[x.pk] += x.pts; });
+  else g.rounds.forEach(r => { for(const k in r.s) if(k in t) t[k] += Number(r.s[k])||0; });
+  return t;
+}
+function phaseOf(g, pk){
+  if(!g.ph){ // anciennes parties : phases déduites des manches
+    g.ph = {}; g.players.forEach(p => { let n = 1; g.rounds.forEach(r => { if(r.m && r.m.done && r.m.done[p.key]) n++; }); g.ph[p.key] = n; });
+  }
+  return g.ph[pk] || 1;
+}
+function p10Board(g){
+  const cmp = g.players.length >= 5;
+  const head = g.players.map(p => `<th><button class="sw" data-a="p10color" data-k="${p.key}" style="background:${p.color}" aria-label="Couleur de ${esc(p.name)}"></button><div class="sw-n">${esc(p.name)}</div></th>`).join('');
+  const cell = (p, n) => { const cur = phaseOf(g, p.key);
+    let inner = '';
+    if(n === cur) inner = `<span class="mk" style="background:${p.color}"></span>`;
+    else if(n < cur) inner = `<span class="done-dot" style="background:${p.color}"></span>`;
+    else if(n === cur + 1 && !g.finished) inner = `<span class="nxt" style="border-color:${p.color}"></span>`;
+    return `<td><button class="p10c" data-a="p10cell" data-k="${p.key}" data-n="${n}" aria-label="${esc(p.name)} phase ${n}">${inner}</button></td>`; };
+  let rows = '';
+  for(let n = 1; n <= 10; n++) rows += `<tr><td class="ph"><b>${n}</b>${cmp ? '' : ''}<small>${PHASE_SHORT[n-1]}</small></td>${g.players.map(p => cell(p, n)).join('')}</tr>`;
+  rows += `<tr class="fin"><td class="ph"><b>🏆</b><small>Phase 10 réussie</small></td>${g.players.map(p => cell(p, 11)).join('')}</tr>`;
+  return `<div class="card p10b"><table class="p10"><thead><tr><th class="lc"><div class="hint" style="margin:0;text-align:left;font-weight:600">Touchez un carré pour la couleur</div></th>${head}</tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="hint" style="margin:6px 18px 0">Touchez la case suivante (cercle pointillé) pour avancer un joueur ; touchez son marqueur pour voir son objectif.</p>`;
+}
+function p10Info(g, pk){
+  const p = g.players.find(x => x.key === pk); const n = phaseOf(g, pk);
+  const cols = ['#e03131','#1c7ed6','#2b8a3e','#f59f00'];
+  let body;
+  if(n > 10) body = `<div class="obj"><span class="mk big" style="background:${p.color};display:inline-block"></span><h3>Les 10 phases sont réussies !</h3></div>`;
+  else {
+    let ci = 0;
+    const ex = PHASE_EX[n-1].map(gr => `<div class="cgroup">${gr.map(v => `<span class="pc" style="background:${n===8?cols[1]:cols[(ci++)%4]}">${v}</span>`).join('')}</div>`).join('');
+    body = `<div class="obj"><span class="mk big" style="background:${p.color};display:inline-block"></span>
+      <div class="lvl" style="margin-top:8px">${esc(p.name)} · Phase ${n} sur 10</div><h3>${PHASES[n-1]}</h3><p class="hint" style="margin:0">${PHASE_EXPL[n-1]}</p>
+      <div class="cards">${ex}</div><p class="hint">Exemple. Un Joker peut remplacer n’importe quelle carte.</p>
+      ${n < 10 ? `<p class="hint">Ensuite : phase ${n+1} · ${PHASES[n]}</p>` : `<p class="hint">C’est la dernière phase !</p>`}</div>`;
+  }
+  openModal(`<div class="mhead"><h2>Objectif</h2><button class="icon-btn" data-a="close">✕</button></div><div class="mbody">${body}</div>
+    <div class="mfoot"><button class="btn" data-a="close">Fermer</button>${n <= 10 && !g.finished ? `<button class="btn primary" data-a="p10adv" data-k="${pk}">Phase ${n} réussie ›</button>` : ''}</div>`);
+}
+function p10Set(g, pk, n){
+  phaseOf(g, pk); g.ph[pk] = n; g.updated = Date.now(); save(); render();
+  const p = g.players.find(x => x.key === pk);
+  toast(n > 10 ? '🏆 ' + p.name + ' a réussi les 10 phases !' : p.name + ' passe à la phase ' + n);
+}
+function isLow(g){ return !!g.opts.low; }
+function ranking(g){
+  const t = totals(g);
+  const arr = g.players.map(p => ({p, total:t[p.key], phase: g.type==='phase10' ? phaseOf(g,p.key) : 0}));
+  const cmp = (a,b) => {
+    if(g.winner && (a.p.key === g.winner) !== (b.p.key === g.winner)) return a.p.key === g.winner ? -1 : 1;
+    if(g.type === 'phase10' && a.phase !== b.phase) return b.phase - a.phase;
+    return isLow(g) ? a.total - b.total : b.total - a.total;
+  };
+  arr.sort(cmp);
+  arr.forEach((x,i) => { x.rank = (i>0 && cmp(arr[i-1], x) === 0) ? arr[i-1].rank : i+1; });
+  return arr;
+}
+function endInfo(g){
+  const t = totals(g);
+  if(g.type === 'phase10'){
+    const w = g.players.filter(p => phaseOf(g,p.key) > 10);
+    return w.length ? w.map(p=>p.name).join(', ') + ' a réussi la phase 10' : null;
+  }
+  if(g.opts.holes) return g.rounds.length >= g.opts.holes ? 'Les ' + g.opts.holes + ' trous sont joués' : null;
+  const tg = g.type === 'farkle' ? g.opts.f.target : g.opts.target;
+  if(g.type === 'farkle'){
+    if(g.winner){ const w = g.players.find(p => p.key === g.winner); return (w ? w.name : '?') + ' a tiré six dés identiques'; }
+    const r = g.players.filter(p => t[p.key] === tg);
+    return r.length ? r.map(p=>p.name).join(', ') + ' arrive exactement à ' + fmt(tg) : null;
+  }
+  if(tg > 0){
+    const r = g.players.filter(p => t[p.key] >= tg);
+    if(r.length) return r.map(p=>p.name).join(', ') + (r.length>1?' ont':' a') + ' atteint ' + fmt(tg);
+  }
+  return null;
+}
+function diceScore(c, f){
+  const n = c.reduce((a,b)=>a+b,0);
+  if(!n) return {pts:0, ok:true};
+  let pts = 0, ok = true;
+  for(let i=1;i<=6;i++){
+    const k = c[i];
+    if(k >= 3) pts += (i===1 ? 1000 : i*100) * Math.pow(2, k-3);
+    else if(k > 0){ if(i===1) pts += 100*k; else if(i===5) pts += 50*k; else ok = false; }
+  }
+  let special = -1;
+  if(n === 6){
+    if(f.useStraight && [1,2,3,4,5,6].every(i=>c[i]===1)) special = Math.max(special, f.straight);
+    if(f.usePairs && [1,2,3,4,5,6].every(i=>c[i]===0||c[i]===2)) special = Math.max(special, f.pairs);
+  }
+  if(special >= 0 && (!ok || special > pts)) return {pts:special, ok:true};
+  return {pts, ok};
+}
+const MB_KM = [25,50,75,100,200];
+function mbKm(m){ m = m || {}; return MB_KM.some(v => m['c'+v] != null) ? MB_KM.reduce((a,v) => a + v*(m['c'+v]||0), 0) : (m.km||0); }
+// valeur effective d'une prime (automatique sauf si l'utilisateur l'a forcée)
+function mbFlag(m, f, others){
+  if(m[f] === true || m[f] === false) return m[f];
+  const km = mbKm(m);
+  if(f === 'va') return km >= 1000;
+  if(f === 's200') return mbFlag(m, 'va', others) && !(m.c200 > 0);
+  if(f === 'cap') return mbFlag(m, 'va', others) && !!others && others.length > 0 && others.every(o => mbKm(o) === 0);
+  return false;
+}
+function mbPts(m, others){
+  m = m || {}; const b = m.b||0;
+  if(m.v2 !== true) return (m.km||0) + 100*b + (b===4?300:0) + 300*(m.cf||0) + (m.va?400:0) + (m.ret?300:0) + (m.s200?300:0) + (m.cap?500:0);
+  return mbKm(m) + 100*b + (b===4?300:0) + 300*(m.cf||0) + (mbFlag(m,'va',others)?400:0) + (m.al?200:0) + (m.ret?300:0)
+       + (mbFlag(m,'s200',others)?300:0) + (mbFlag(m,'cap',others)?500:0);
+}
+function mbOthers(pk){ return Object.keys(M.mb).filter(k => k !== pk).map(k => M.mb[k]); }
+function mbRender(){
+  const g = curGame(); const pk = M.mbSel; const p = g.players.find(x => x.key === pk); const m = M.mb[pk]; const oth = mbOthers(pk);
+  $('mb-tabs').innerHTML = g.players.map(x => `<button class="ptab ${x.key===pk?'on':''}" data-a="mbTab" data-k="${x.key}"><div class="n"><i style="background:${x.color}"></i>${esc(x.name)}</div><div class="v num-t">${fmt(mbPts(M.mb[x.key], mbOthers(x.key)))}</div></button>`).join('');
+  const km = mbKm(m);
+  const cnt = (f, label, sub, per, max) => { const n = m[f]||0;
+    return `<div class="crow"><div class="l">${label}<small>${sub}</small></div><div class="stepper"><button data-a="mbC" data-f="${f}" data-d="-1" ${n<=0?'disabled':''}>−</button><b class="num-t">${n}</b><button class="plus" data-a="mbC" data-f="${f}" data-d="1" ${n>=max?'disabled':''}>+</button></div><div class="pts ${n?'on':''}">${fmt(n*per)}</div></div>`; };
+  const tog = (f, label, sub, pts, auto) => { const on = auto ? mbFlag(m, f, oth) : !!m[f]; const forced = m[f] === true || m[f] === false;
+    return `<button class="crow ${on?'on':''}" data-a="mbT" data-f="${f}"><div class="l">${label}${auto && !forced ? '<span class="auto">AUTO</span>' : ''}<small>${sub}</small></div><span class="pill">✓ +${pts}</span></button>`; };
+  $('mb-body').innerHTML = `
+    <h2 class="sec">Bornes parcourues · ${fmt(km)} km</h2>
+    ${km > 1000 ? '<p class="warn-t">Plus de 1 000 km : vérifiez les cartes.</p>' : ''}
+    ${MB_KM.map(v => cnt('c'+v, 'Borne ' + v, v + ' pts la carte' + (v===200?' · 2 au maximum':''), v, v===200?2:40)).join('')}
+    <h2 class="sec">Bottes</h2>
+    ${cnt('b', 'Bottes jouées', '100 pts chacune, coups fourrés inclus', 100, 4)}
+    ${cnt('cf', 'dont coups fourrés', '300 pts de plus chacun', 300, m.b||0)}
+    <div class="crow ${m.b===4?'on':''}"><div class="l">Les 4 bottes<span class="auto">AUTO</span><small>prime en plus des 4 bottes</small></div><span class="pill">✓ +300</span></div>
+    <h2 class="sec">Fin de manche</h2>
+    ${tog('va', 'Manche terminée', '1 000 bornes atteintes', 400, true)}
+    ${tog('al', 'Allonge', '700 → 1 000 en partie à rallonge', 200, false)}
+    ${tog('s200', 'Sans les 200', 'manche terminée sans carte 200 km', 300, true)}
+    ${tog('cap', 'Capot', 'les adversaires n’ont aucune borne', 500, true)}
+    ${tog('ret', 'Retardement', 'manche terminée après la fin de la pioche', 300, false)}
+    <div class="mbtot"><span>Total de ${esc(p.name)}</span><b class="num-t">${fmt(mbPts(m, oth))}</b></div>
+    <p class="hint">Les primes AUTO se cochent seules selon les cartes ; touchez-les pour forcer l’inverse.</p>`;
+}
+function f7Pts(h){
+  if(h.bust) return 0;
+  const s = h.nums.reduce((a,b)=>a+b,0);
+  return s*(h.x2?2:1) + h.mods.reduce((a,b)=>a+b,0) + (h.bonus?15:0);
+}
+
+function dealerIdx(g){ const n = g.players.length; return (((g.dealer0||0) + g.rounds.length) % n + n) % n; }
+function dealerName(g){ return (g.players[dealerIdx(g)] || {}).name || '?'; }
+function dealerBanner(g){
+  if(g.type === 'farkle' || g.finished || (g.opts.holes && g.rounds.length >= g.opts.holes)) return '';
+  const G = GAMES[g.type];
+  return `<button class="dealer" data-a="dealer"><span class="ic">🃏</span><div class="grow">À <b>${esc(dealerName(g))}</b> de brasser<small>${G.round} ${g.rounds.length + 1}</small></div><span class="chg">Changer</span></button>`;
+}
+
+/* ====================== État de l'interface ====================== */
+let S = {view:'home', stack:[]};
+let M = null; // modal courant
+function curGame(){ return db.games.find(g => g.id === S.gameId); }
+function go(view, params){
+  S.stack.push(snapshot());
+  Object.assign(S, params||{}, {view});
+  render(true);
+}
+function snapshot(){ const o = {}; for(const k in S) if(k!=='stack') o[k] = S[k]; return o; }
+function tab(view){
+  M = null; $('modal').innerHTML = '';
+  S = {view, stack: view==='home' ? [] : [{view:'home'}]};
+  render(true);
+}
+function back(){
+  if(M){ closeModal(); return true; }
+  if(S.stack.length){ const p = S.stack.pop(); const st = S.stack; S = Object.assign({}, p, {stack:st}); render(true); return true; }
+  return false;
+}
+window.handleBack = () => back();
+
+/* ====================== Rendu ====================== */
+function render(top){
+  const v = S.view;
+  const html = ({home:vHome, setup:vSetup, sheet:vSheet, rules:vRules, players:vPlayers, history:vHistory, stats:vStats, settings:vSettings, results:vResults})[v]();
+  $('app').innerHTML = html;
+  if(top) window.scrollTo(0,0);
+  if(bridge && bridge.keepScreenOn) try{ bridge.keepScreenOn(v === 'sheet'); }catch(e){}
+  else wakeLock(v === 'sheet');
+}
+function nav(on){
+  const it = [['home','🎲','Jeux'],['players','👥','Joueurs'],['history','🕘','Historique'],['stats','🏆','Stats']];
+  return `<nav class="bottom">${it.map(([v,i,l])=>`<button data-a="tab" data-v="${v}" class="${on===v?'on':''}"><span class="i">${i}</span>${l}</button>`).join('')}</nav>`;
+}
+function badge(type, size){
+  const G = GAMES[type]; const fs = G.badge.length > 2 ? 12 : (G.badge.length > 1 ? 15 : 19);
+  return `<span class="badge" style="background:${G.color};font-size:${fs}px${size?`;width:${size}px;height:${size}px`:''}">${G.badge}</span>`;
+}
+function topbar(title, sub, right){
+  return `<header class="top"><button class="icon-btn" data-a="back" aria-label="Retour">←</button><div class="grow"><h1>${esc(title)}</h1>${sub?`<p class="sub">${esc(sub)}</p>`:''}</div>${right||''}</header>`;
+}
+
+/* ---------- Accueil ---------- */
+function vHome(){
+  const open = db.games.filter(g => !g.finished).sort((a,b) => b.updated - a.updated);
+  return `<header class="top"><div class="grow"><h1>Pointage</h1><p class="sub">Les jeux de la famille</p></div>
+    <button class="icon-btn" data-a="go" data-v="settings" aria-label="Réglages">⚙︎</button></header>
+  <main class="pad">
+    ${open.length ? `<h2 class="sec">Parties en cours</h2>${open.map(g => {
+      const r = ranking(g);
+      return `<button class="card resume" data-a="open" data-id="${g.id}">${badge(g.type)}<div class="grow"><div class="t">${esc(gameName(g))}</div>
+        <div class="s">${r.map(x=>esc(x.p.name)+' '+fmt(x.total)).join(' · ')}</div></div><span class="chev">›</span></button>`;}).join('')}` : ''}
+    <h2 class="sec">Nouvelle partie</h2>
+    <div class="tiles">${ORDER.map(t => `<div class="card tile" data-a="setup" data-t="${t}" role="button">
+      ${badge(t)}<h3>${GAMES[t].name}</h3><p>${GAMES[t].desc}</p>
+      ${t!=='generic'?`<button class="rules-btn" data-a="rules" data-t="${t}" aria-label="Règles">📖</button>`:''}</div>`).join('')}</div>
+  </main>${nav('home')}`;
+}
+
+/* ---------- Préparation d'une partie ---------- */
+function startSetup(type, preset){
+  const sel = preset ? preset.players.map(p => p.guest ? p.key : p.rid).filter(Boolean)
+                     : (db.lastSel[type]||[]).filter(id => db.players.some(p => p.id === id));
+  const guests = preset ? preset.players.filter(p => p.guest).map(p => ({key:p.key, name:p.name})) : [];
+  go('setup', {setupType:type, sel, guests, dealer:null, setupTitle: preset ? preset.title||'' : '', setupLow: preset ? !!preset.opts.low : false,
+               setupOpts: preset ? JSON.parse(JSON.stringify(preset.opts)) : null});
+}
+function vSetup(){
+  const type = S.setupType, G = GAMES[type];
+  const chip = (key, name, color, guest) => {
+    const i = S.sel.indexOf(key);
+    return `<button class="chip ${i>=0?'on':''} ${guest?'guest':''}" data-a="toggleSel" data-k="${key}">
+      <span class="dot" style="background:${i>=0?color:'var(--line)'}">${i>=0?i+1:initial(name)}</span>${esc(name)}${guest?'<span class="x" data-a="rmGuest" data-k="'+key+'">×</span>':''}</button>`;
+  };
+  const o = S.setupOpts || {};
+  let opts = '';
+  if(type === 'generic'){
+    opts = `<label class="lbl" for="o-title">Nom du jeu</label>
+      <input id="o-title" class="field" list="titles" placeholder="Ex. : Rummikub, Crib, Yum…" value="${esc(S.setupTitle||'')}">
+      <datalist id="titles">${(db.titles||[]).map(t=>`<option value="${esc(t)}">`).join('')}</datalist>
+      <label class="lbl">Qui gagne ?</label>
+      <div class="seg"><button data-a="setLow" data-v="0" class="${!S.setupLow?'on':''}">Le plus haut pointage</button><button data-a="setLow" data-v="1" class="${S.setupLow?'on':''}">Le plus bas pointage</button></div>
+      <label class="lbl" for="o-target">Pointage visé (facultatif)</label>
+      <input id="o-target" class="field" inputmode="numeric" placeholder="Aucun" value="${o.target||''}">
+      <p class="hint">L’app vous avertit quand un joueur atteint ce pointage.</p>`;
+  } else if(type === 'farkle'){
+    const f = Object.assign({}, FD, db.farkle, o.f||{});
+    const inp = (id, label, v) => `<div><label class="lbl" for="${id}">${label}</label><input id="${id}" class="field" inputmode="numeric" value="${v}"></div>`;
+    opts = `<details ${S.fkOpen?'open':''}><summary class="lbl" style="cursor:pointer">Valeurs et règles ▾</summary>
+      <div class="grid2">${inp('f-target','Partie à',f.target)}${inp('f-entry','Pour entrer',f.entry)}${inp('f-penFrom','Pénalité à partir de',f.penFrom)}${inp('f-pen','Pénalité',f.pen)}</div>
+      <div class="grid2">${inp('f-straight','Suite 1 à 6',f.straight)}${inp('f-pairs','Trois paires',f.pairs)}</div>
+      <label class="chk"><input type="checkbox" id="f-useStraight" ${f.useStraight?'checked':''}> Compter la suite</label>
+      <label class="chk"><input type="checkbox" id="f-usePairs" ${f.usePairs?'checked':''}> Compter les trois paires</label>
+      <p class="hint">Ces valeurs sont gardées pour les prochaines parties.</p></details>
+      <p class="hint">Partie à ${fmt(f.target)} · ${fmt(f.entry)} pour entrer · −${fmt(f.pen)} à partir de ${fmt(f.penFrom)}</p>`;
+  } else if(G.target){
+    opts = `<label class="lbl" for="o-target">Partie à</label><input id="o-target" class="field" inputmode="numeric" value="${o.target||G.target}">`;
+    if(type === 'uno') opts += `<p class="hint">Chacun compte ses propres cartes ; quand un joueur atteint ce total, le plus bas gagne.</p>`;
+  }
+  const rosterChips = db.players.map(p => chip(p.id, p.name, p.color, false)).join('');
+  const guestChips = S.guests.map(g => chip(g.key, g.name, '#868e96', true)).join('');
+  return `${topbar(G.name, 'Nouvelle partie', type!=='generic'?`<button class="icon-btn" data-a="rules" data-t="${type}" aria-label="Règles">📖</button>`:'')}
+  <main class="pad">
+    <h2 class="sec">Qui joue ? <span style="text-transform:none;letter-spacing:0;font-weight:500">(touchez dans l’ordre du jeu)</span></h2>
+    ${db.players.length || S.guests.length ? `<div class="chips">${rosterChips}${guestChips}</div>` : `<p class="hint" style="margin-bottom:8px">Aucun joueur dans votre liste pour l’instant. Ajoutez un nom ci-dessous.</p>`}
+    <div class="row" style="margin-top:12px"><input id="guestName" class="field" placeholder="Ajouter un nom…" autocomplete="off" enterkeyhint="done"></div>
+    <div class="row" style="margin-top:8px"><button class="btn sm" style="flex:1" data-a="addGuest">+ Invité (sans profil)</button><button class="btn sm" style="flex:1" data-a="addRoster">+ À ma liste</button></div>
+    ${type !== 'farkle' && S.sel.length > 1 ? `<h2 class="sec">Premier à brasser</h2><div class="chips">${S.sel.map(k => {
+        const nm = (db.players.find(p => p.id === k) || S.guests.find(g => g.key === k) || {}).name || '?';
+        const on = (S.sel.includes(S.dealer) ? S.dealer : S.sel[0]) === k;
+        return `<button class="chip ${on?'on':''}" data-a="setDealer0" data-k="${k}" style="padding-left:14px">${on?'🃏 ':''}${esc(nm)}</button>`; }).join('')}</div>
+      <p class="hint">Ensuite, le brassage passe au joueur suivant, dans l’ordre choisi ci-dessus.</p>` : ''}
+    ${opts ? `<h2 class="sec">Options</h2><div class="card opts">${opts}</div>` : ''}
+  </main>
+  <button class="btn primary fab" data-a="start" ${S.sel.length?'':'disabled'}>Commencer${S.sel.length?` · ${S.sel.length} joueur${S.sel.length>1?'s':''}`:''}</button>`;
+}
+function readSetupFields(){
+  // conserve ce qui a été tapé avant un re-rendu
+  const o = S.setupOpts = S.setupOpts || {};
+  if($('o-title')) S.setupTitle = $('o-title').value;
+  if($('o-target')) o.target = num($('o-target').value);
+  if($('f-target')){
+    o.f = {}; ['target','entry','penFrom','pen','straight','pairs'].forEach(k => o.f[k] = num($('f-'+k).value));
+    o.f.useStraight = $('f-useStraight').checked; o.f.usePairs = $('f-usePairs').checked;
+    S.fkOpen = $('f-target').closest('details').open;
+  }
+}
+function startGame(){
+  readSetupFields();
+  const type = S.setupType, G = GAMES[type], o = S.setupOpts || {};
+  if(type === 'skipbo' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
+  const players = S.sel.map(k => {
+    const p = db.players.find(x => x.id === k);
+    if(p) return {key:'p'+p.id, rid:p.id, name:p.name, color:p.color, guest:false};
+    const gu = S.guests.find(x => x.key === k);
+    return {key:gu.key, name:gu.name, color:'#868e96', guest:true};
+  });
+  // couleurs d'invités distinctes
+  let gi = 0; players.forEach(p => { if(p.guest){ p.color = PALETTE[(db.players.length + gi++) % PALETTE.length]; } });
+  if(type === 'phase10'){ const order = [0,7,4,2,9,1,11,5,10,3,12,6,8,13,14,15]; players.forEach((p,i) => p.color = P10_COLORS[order[i % order.length]]); }
+  const opts = {low: type==='generic' ? !!S.setupLow : !!G.low};
+  if(type === 'generic'){ opts.target = o.target || 0; }
+  else if(type === 'playnine'){ opts.holes = 9; }
+  else if(type === 'farkle'){ opts.f = Object.assign({}, FD, db.farkle, o.f||{}); db.farkle = Object.assign({}, opts.f); }
+  else if(G.target){ opts.target = o.target || G.target; }
+  const title = type === 'generic' ? (S.setupTitle||'').trim() : '';
+  if(title && !db.titles.some(t => t.toLowerCase() === title.toLowerCase())) db.titles.unshift(title);
+  db.lastSel[type] = S.sel.filter(k => db.players.some(p => p.id === k));
+  const g = {id:uid(), type, title, created:Date.now(), updated:Date.now(), finished:false, players, rounds:[], turns:[], cur:0, opts,
+             dealer0: Math.max(0, S.sel.indexOf(S.sel.includes(S.dealer) ? S.dealer : S.sel[0]))};
+  db.games.push(g); save();
+  S = {view:'sheet', gameId:g.id, stack:[{view:'home'}], turn:0, dice:[]};
+  render(true);
+}
+
+/* ---------- Feuille de pointage ---------- */
+function vSheet(){
+  const g = curGame(); if(!g) return vHome();
+  if(g.type === 'farkle') return vFarkle(g);
+  const G = GAMES[g.type], r = ranking(g), t = totals(g);
+  const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
+  const end = !g.finished && endInfo(g);
+  const maxRounds = g.opts.holes || 0;
+  const strip = `<div class="scores">${g.players.map(p => { const x = byKey[p.key];
+    return `<div class="pscore ${x.rank===1 && (g.rounds.length) ?'lead':''}"><span class="rk">${g.rounds.length?(x.rank===1?'★':'#'+x.rank):''}</span>
+      <div class="n"><i style="background:${p.color}"></i>${esc(p.name)}</div><div class="v num-t">${fmt(x.total)}</div>
+      ${g.type==='phase10'?`<div class="x">Phase ${Math.min(x.phase,10)}${x.phase>10?' ✓':''}</div>`:''}
+      ${g.type==='playnine' && g.rounds.length ? `<div class="x">${x.rank===1?'En tête':'+' + fmt(x.total - r[0].total) + (g.players.length >= 5 ? '' : ' du meneur')}</div>`:''}</div>`; }).join('')}</div>`;
+  let table;
+  if(g.type === 'playnine') table = p9Table(g, t);
+  else if(g.type === 'phase10' && !g.rounds.length) table = '';
+  else if(!g.rounds.length) table = `<div class="tablewrap"><div class="empty">Aucune ${G.round.toLowerCase()} pour l’instant.<br>Touchez le bouton en bas pour inscrire les points.</div></div>`;
+  else table = `<div class="tablewrap"><table class="sheet"><thead><tr><th class="lbl"></th>${g.players.map(p=>`<th>${esc(p.name)}</th>`).join('')}</tr></thead>
+    <tbody>${g.rounds.map((rd,i) => `<tr><td class="lbl">${G.round} ${i+1}</td>${g.players.map(p => {
+        const v = rd.s[p.key]; const has = v !== undefined && v !== null;
+        const tick = '';
+        const extra = g.type==='skipbo' && rd.m && rd.m.w === p.key ? ' 🏁' : '';
+        return `<td><button data-a="editRound" data-i="${i}" class="num-t ${v<0?'neg':''}">${has?fmt(v):'–'}${tick}${extra}</button></td>`; }).join('')}</tr>`).join('')}</tbody>
+    <tfoot><tr><td class="lbl">Total</td>${g.players.map(p=>`<td class="num-t ${t[p.key]<0?'neg':''}">${fmt(t[p.key])}</td>`).join('')}</tr></tfoot></table></div>`;
+  const next = g.rounds.length + 1;
+  const canAdd = !g.finished && !(maxRounds && g.rounds.length >= maxRounds);
+  const sub = g.type==='playnine' ? `Trou ${Math.min(next, maxRounds)} de ${maxRounds} · le plus bas gagne`
+            : (g.opts.target ? `Partie à ${fmt(g.opts.target)} · ${isLow(g)?'le plus bas gagne':'le plus haut gagne'}` : (isLow(g)?'Le plus bas gagne':'Le plus haut gagne'));
+  return `${topbar(gameName(g), sub, `<button class="icon-btn" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn" data-a="menu" aria-label="Menu">⋮</button>`)}
+    ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(ranking(g).filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
+    ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
+    ${dealerBanner(g)}${g.type === 'phase10' ? p10Board(g) + (g.rounds.length ? '<h2 class="sec" style="margin:20px 18px 0">Points</h2>' : '') : ''}${strip}${table}
+    <div style="height:100px"></div>
+    ${canAdd ? `<button class="btn primary fab" data-a="addRound">+ ${G.round} ${next}</button>` : ''}`;
+}
+
+function p9Table(g, t){
+  const holes = g.opts.holes || 9; const run = {}; const cmp = g.players.length >= 5;
+  const short = n => cmp && n.length > 7 ? n.slice(0,6) + '.' : n; g.players.forEach(p => run[p.key] = 0);
+  let rows = '';
+  for(let i = 0; i < holes; i++){
+    const rd = g.rounds[i];
+    if(rd){
+      rows += `<tr><td class="lbl">⛳${cmp?'':' '}${i+1}</td>${g.players.map(p => { const v = rd.s[p.key]; run[p.key] += Number(v)||0;
+        return `<td><button data-a="editRound" data-i="${i}" class="num-t ${v<0?'neg':''}">${v!=null?fmt(v):'–'}</button></td>`; }).join('')}</tr>`;
+      if(i > 0 && i < holes - 1) rows += `<tr class="sub"><td class="lbl">${cmp ? 'S.-tot.' : 'Sous-total'}</td>${g.players.map(p => `<td class="num-t">${fmt(run[p.key])}</td>`).join('')}</tr>`;
+    } else {
+      const nx = i === g.rounds.length && !g.finished;
+      rows += `<tr class="${nx?'next':''}"><td class="lbl">⛳ ${i+1}</td>${g.players.map(() => nx ? `<td><button data-a="addRound">+</button></td>` : `<td class="empty-c">·</td>`).join('')}</tr>`;
+    }
+  }
+  return `<div class="tablewrap"><table class="sheet ${cmp?'compact':''}"><thead><tr><th class="lbl">Trou</th>${g.players.map(p=>`<th>${esc(short(p.name))}</th>`).join('')}</tr></thead>
+    <tbody>${rows}</tbody><tfoot><tr><td class="lbl">Total</td>${g.players.map(p=>`<td class="num-t ${t[p.key]<0?'neg':''}">${fmt(t[p.key])}</td>`).join('')}</tr></tfoot></table></div>`;
+}
+
+/* ---------- Dés (Farkle) ---------- */
+const PIPS = {1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+function dieHtml(v, cls, attrs){ return `<button class="die ${cls||''}" ${attrs||''} aria-label="${v}">${[0,1,2,3,4,5,6,7,8].map(i=>`<span style="${PIPS[v].includes(i)?'visibility:visible':''}"></span>`).join('')}</button>`; }
+function isEntered(g, pk){ return g.turns.some(x => x.pk === pk && x.pts > 0); }
+function vFarkle(g){
+  const f = g.opts.f, t = totals(g), r = ranking(g);
+  const end = !g.finished && endInfo(g);
+  const cur = g.players[g.cur] || g.players[0];
+  const counts = [0,0,0,0,0,0,0]; (S.dice||[]).forEach(d => counts[d]++);
+  const sc = diceScore(counts, f);
+  const turn = S.turn || 0;
+  const entered = isEntered(g, cur.key);
+  const rankOf = {}; r.forEach(x => rankOf[x.p.key] = x.rank);
+  const players = `<div class="card list fk-players" style="margin:12px 16px 0">${g.players.map((p,i) => {
+    const tags = (!isEntered(g,p.key) ? `<span class="tag">pas entré</span>` : '') + (t[p.key] >= f.penFrom ? `<span class="tag warn">zone −${fmt(f.pen)}</span>` : '');
+    return `<button class="li ${i===g.cur && !g.finished?'cur':''}" data-a="fkCur" data-i="${i}"><span class="av" style="background:${p.color}">${initial(p.name)}</span>
+      <div class="grow"><div class="t">${esc(p.name)}${tags}</div></div><div class="t num-t" style="font-size:20px">${fmt(t[p.key])}</div></button>`; }).join('')}</div>`;
+  const panel = g.finished ? '' : `<div class="card turnbox">
+    <div class="row"><div class="who" style="flex:1">Au tour de<b>${esc(cur.name)}</b></div>
+      <div style="text-align:right"><div class="who">Points du tour</div><div class="turnpts num-t">${fmt(turn)}</div></div></div>
+    ${!entered ? `<p class="hint" style="margin-top:6px">⚠ Pas encore entré : il faut ${fmt(f.entry)} points en un tour.</p>` : ''}
+    ${entered ? `<p class="hint" style="margin-top:6px">🎯 Il reste <b>${fmt(f.target - t[cur.key] - turn)}</b> pour arriver exactement à ${fmt(f.target)}${turn===f.target-t[cur.key]?' — encaissez pour gagner !':''}</p>` : ''}
+    ${t[cur.key] >= f.penFrom ? `<p class="hint" style="margin-top:6px">⚠ Zone de pénalité : un raté coûte ${fmt(f.pen)} ${turn ? '<b>sauf maintenant</b> (des dés ont déjà compté ce tour)' : 'si aucun dé ne compte ce tour'}.</p>` : ''}
+    <div class="dice">${[1,2,3,4,5,6].map(v => dieHtml(v, '', `data-a="fkDie" data-v="${v}"`)).join('')}</div>
+    <div class="tray">${(S.dice||[]).length ? S.dice.map((v,i) => dieHtml(v, 'sm', `data-a="fkRm" data-i="${i}"`)).join('') : '<span class="ph">Touchez les dés gardés de ce lancer</span>'}</div>
+    ${(S.dice||[]).length === 6 && S.dice.every(d => d === S.dice[0]) ? `<div class="sel-v" style="color:var(--ok)">🎲 Six dés identiques : victoire immédiate !</div>` : (S.dice||[]).length ? `<div class="sel-v">${sc.ok ? `Ces dés valent <b>${fmt(sc.pts)}</b>` : `<span class="neg">Certains dés ne comptent pas</span>${sc.pts?` (le reste vaut ${fmt(sc.pts)})`:''}`}</div>` : ''}
+    <div class="row" style="margin-top:10px"><button class="btn sm" data-a="fkClear" ${(S.dice||[]).length?'':'disabled'}>Effacer</button>
+      <button class="btn sm primary" style="flex:1" data-a="fkAddSel" ${sc.pts>0?'':'disabled'}>${(S.dice||[]).length === 6 && S.dice.every(d => d === S.dice[0]) ? '🏆 Victoire !' : `Ajouter au tour${sc.pts?` (+${fmt(sc.pts)})`:''}`}</button></div>
+    <div class="row" style="margin-top:10px"><div class="num" style="width:auto;flex:1"><input id="fk-man" inputmode="numeric" placeholder="Autre montant" style="text-align:left"></div>
+      <button class="btn sm" data-a="fkAddMan">Ajouter</button>${turn?`<button class="btn sm" data-a="fkResetTurn" aria-label="Remettre le tour à zéro">↺</button>`:''}</div>
+    <div class="row" style="margin-top:14px"><button class="btn danger" style="flex:1" data-a="fkFarkle">💥 Raté</button>
+      <button class="btn primary" style="flex:1.4" data-a="fkBank" ${turn>0?'':'disabled'}>Encaisser ${turn?fmt(turn):''}</button></div>
+    <button class="btn sm block" style="margin-top:10px" data-a="fkSixBtn">🎲 Six dés identiques : victoire</button>
+  </div>`;
+  const log = g.turns.length ? `<h2 class="sec" style="margin:20px 18px 8px">Derniers tours</h2><div class="card list log">${g.turns.slice().reverse().slice(0,12).map((x,ri) => {
+      const p = g.players.find(p => p.key === x.pk) || {name:'?'}; const idx = g.turns.length-1-ri;
+      return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div>
+        <div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div>${idx===g.turns.length-1 && !g.finished?`<button class="btn sm" data-a="fkUndo">Annuler</button>`:''}</div>`; }).join('')}</div>` : '';
+  return `${topbar(gameName(g), `Partie à ${fmt(f.target)}`, `<button class="icon-btn" data-a="rules" data-t="farkle" aria-label="Règles">📖</button><button class="icon-btn" data-a="menu" aria-label="Menu">⋮</button>`)}
+    ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
+    ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
+    ${players}${panel}${log}<div style="height:40px"></div>`;
+}
+function fkSix(v){
+  const g = curGame(), p = g.players[g.cur];
+  g.turns.push({pk:p.key, pts:0, raw:S.turn||0, win:true, note:`🎲 Six dés identiques${v?' ('+v+')':''} : victoire !`, t:Date.now()});
+  g.winner = p.key; g.finished = true; g.updated = Date.now(); S.turn = 0; S.dice = []; save();
+  toast('🎲 ' + p.name + ' gagne avec six dés identiques !'); go('results');
+}
+function fkAdd(pts){
+  const g = curGame(), f = g.opts.f, p = g.players[g.cur];
+  const tot = totals(g)[p.key], nt = (S.turn||0) + pts;
+  if(isEntered(g, p.key) || tot + nt >= f.entry){
+    if(tot + nt > f.target){
+      g.turns.push({pk:p.key, pts:0, raw:nt, note:`Dépasse ${fmt(f.target)} (${fmt(tot + nt)}) : tour terminé, aucun point`, t:Date.now()});
+      toast('⛔ ' + p.name + ' dépasserait ' + fmt(f.target) + ' : au suivant');
+      return fkNext(g);
+    }
+  }
+  S.turn = nt; S.dice = []; render();
+}
+function fkNext(g){ g.cur = (g.cur + 1) % g.players.length; S.turn = 0; S.dice = []; g.updated = Date.now(); save(); render(); }
+
+/* ---------- Résultat ---------- */
+function vResults(){
+  const g = curGame(); const r = ranking(g); const med = ['🥇','🥈','🥉'];
+  const guests = g.players.filter(p => p.guest && !db.players.some(x => x.name.toLowerCase() === p.name.toLowerCase()));
+  return `${topbar('Résultat', gameName(g) + ' · ' + dateFr(g.created))}
+  <main class="pad">
+    <div class="card" style="padding:22px 16px;text-align:center"><div style="font-size:44px">🏆</div>
+      <h2 style="font-size:24px;margin-top:6px">${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(' et '))}</h2>${g.winner?'<p class="hint" style="margin:4px 0 0">🎲 Six dés identiques</p>':''}
+      <p class="hint" style="margin-top:4px">${r.filter(x=>x.rank===1).length>1?'remportent':'remporte'} la partie</p></div>
+    <h2 class="sec">Classement</h2>
+    <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank-1]||x.rank}</span><span class="av" style="background:${x.p.color}">${initial(x.p.name)}</span>
+      <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type==='phase10'?`<div class="s">Phase ${Math.min(x.phase,10)}${x.phase>10?' réussie':''}</div>`:''}</div><div class="t num-t" style="font-size:20px">${fmt(x.total)}</div></div>`).join('')}</div>
+    ${guests.length ? `<h2 class="sec">Invités</h2><div class="card list">${guests.map(p => `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">Pas dans votre liste de joueurs</div></div><button class="btn sm" data-a="saveGuest" data-k="${p.key}">+ À ma liste</button></div>`).join('')}</div>` : ''}
+    <div style="display:grid;gap:10px;margin-top:22px">
+      <button class="btn primary block" data-a="rematch">Revanche avec les mêmes joueurs</button>
+      <button class="btn block" data-a="open" data-id="${g.id}">Voir la feuille</button>
+      <button class="btn block" data-a="tab" data-v="home">Accueil</button></div>
+  </main>`;
+}
+
+/* ---------- Règles ---------- */
+function vRules(){
+  const type = S.rulesType; const g = S.rulesGame ? db.games.find(x => x.id === S.rulesGame) : null;
+  const hk = houseKey(type, g ? g.title : ''); const name = type === 'generic' ? (g && g.title ? g.title : 'Pointage libre') : GAMES[type].name;
+  return `${topbar('Règles', name)}
+  <main style="padding:16px 16px 40px">
+    <div class="card rules">${rulesHtml(type, g)}</div>
+    <h2 class="sec">Nos règles maison</h2>
+    <textarea id="house" class="field" placeholder="Vos variantes, précisions, décisions de la famille…" data-hk="${esc(hk)}">${esc(db.house[hk]||'')}</textarea>
+    <p class="hint">Enregistré automatiquement.</p>
+    ${type!=='generic' || (g && g.title) ? `<a class="btn block" style="margin-top:16px;text-decoration:none" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent('règles officielles ' + name + ' pdf')}">🔎 Chercher les règles officielles</a>` : ''}
+  </main>`;
+}
+
+/* ---------- Joueurs ---------- */
+function vPlayers(){
+  return `<header class="top"><div class="grow"><h1>Joueurs</h1><p class="sub">Votre liste permanente</p></div></header>
+  <main class="pad">
+    <div class="row"><input id="newPlayer" class="field" placeholder="Nom du joueur" autocomplete="off" enterkeyhint="done"><button class="btn primary" data-a="addPlayer">Ajouter</button></div>
+    <h2 class="sec">${db.players.length} joueur${db.players.length>1?'s':''}</h2>
+    ${db.players.length ? `<div class="card list">${db.players.map((p,i) => `<div class="li"><button class="av" style="background:${p.color}" data-a="recolor" data-id="${p.id}" aria-label="Changer la couleur">${initial(p.name)}</button>
+      <div class="grow"><div class="t">${esc(p.name)}</div><div class="s">${db.games.filter(g=>g.players.some(x=>x.rid===p.id)).length} partie(s)</div></div>
+      <button class="btn sm" data-a="movePlayer" data-id="${p.id}" ${i===0?'disabled':''} aria-label="Monter">↑</button>
+      <button class="btn sm" data-a="renamePlayer" data-id="${p.id}">Renommer</button>
+      <button class="btn sm danger" data-a="delPlayer" data-id="${p.id}" aria-label="Retirer">✕</button></div>`).join('')}</div>`
+      : `<div class="card empty">Inscrivez ici les membres de la famille. Au début de chaque partie, vous n’aurez qu’à toucher ceux qui jouent.</div>`}
+    <p class="hint" style="margin-top:12px">Touchez le rond de couleur pour changer la couleur d’un joueur.</p>
+  </main>${nav('players')}`;
+}
+
+/* ---------- Historique ---------- */
+function vHistory(){
+  const gs = db.games.slice().sort((a,b) => b.updated - a.updated);
+  return `<header class="top"><div class="grow"><h1>Historique</h1><p class="sub">${gs.length} partie${gs.length>1?'s':''}</p></div></header>
+  <main class="pad">${gs.length ? `<div class="card list">${gs.map(g => { const r = ranking(g);
+    return `<button class="li" data-a="open" data-id="${g.id}">${badge(g.type, 38)}<div class="grow"><div class="t">${esc(gameName(g))}${g.finished?'':' <span class="tag">en cours</span>'}</div>
+      <div class="s">${dateFr(g.created)} · ${g.finished ? '🏆 ' + esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', ')) : r.map(x=>esc(x.p.name)).join(', ')}</div></div><span class="chev">›</span></button>`; }).join('')}</div>`
+    : `<div class="card empty">Les parties jouées apparaîtront ici.</div>`}</main>${nav('history')}`;
+}
+
+/* ---------- Statistiques ---------- */
+function statKey(g){ return g.type === 'generic' ? 'generic:' + (g.title||'Pointage libre') : g.type; }
+function statLabel(k){ return k.startsWith('generic:') ? k.slice(8) : GAMES[k].name; }
+function vStats(){
+  const done = db.games.filter(g => g.finished);
+  const keys = [...new Set(done.map(statKey))];
+  const filt = S.statF && (S.statF === 'all' || keys.includes(S.statF)) ? S.statF : 'all';
+  const gs = filt === 'all' ? done : done.filter(g => statKey(g) === filt);
+  const st = {};
+  gs.forEach(g => { const r = ranking(g); r.forEach(x => {
+    const k = x.p.name.trim().toLowerCase(); st[k] = st[k] || {name:x.p.name, color:x.p.color, n:0, w:0};
+    st[k].n++; if(x.rank === 1) st[k].w++; }); });
+  const rows = Object.values(st).sort((a,b) => b.w - a.w || (b.w/b.n) - (a.w/a.n));
+  return `<header class="top"><div class="grow"><h1>Statistiques</h1><p class="sub">Qui gagne le plus ?</p></div></header>
+  <main class="pad">
+    ${keys.length ? `<div class="chips" style="margin-bottom:14px"><button class="chip ${filt==='all'?'on':''}" data-a="statF" data-v="all" style="padding-left:14px">Tous les jeux</button>
+      ${keys.map(k => `<button class="chip ${filt===k?'on':''}" data-a="statF" data-v="${esc(k)}" style="padding-left:14px">${esc(statLabel(k))}</button>`).join('')}</div>` : ''}
+    ${rows.length ? `<div class="card"><table class="statt"><thead><tr><th>Joueur</th><th>Parties</th><th>Victoires</th></tr></thead><tbody>
+      ${rows.map(x => `<tr><td><b>${esc(x.name)}</b><div class="bar"><i style="width:${Math.round(100*x.w/x.n)}%"></i></div></td><td>${x.n}</td><td><b>${x.w}</b> <span class="hint">${Math.round(100*x.w/x.n)} %</span></td></tr>`).join('')}
+      </tbody></table></div><p class="hint" style="margin-top:10px">${gs.length} partie${gs.length>1?'s':''} terminée${gs.length>1?'s':''}. Une égalité compte comme une victoire pour chacun.</p>`
+    : `<div class="card empty">Terminez une partie pour voir les statistiques.</div>`}
+  </main>${nav('stats')}`;
+}
+
+/* ---------- Réglages ---------- */
+function vSettings(){
+  return `${topbar('Réglages')}
+  <main class="pad">
+    <h2 class="sec">Sauvegarde</h2>
+    <div class="card" style="padding:14px">
+      <p style="margin:0 0 12px">Les données restent dans ce téléphone. Exportez une copie de temps en temps (Google Drive, courriel…) pour ne rien perdre en changeant de téléphone.</p>
+      <div style="display:grid;gap:10px"><button class="btn primary block" data-a="export">Exporter une sauvegarde</button>
+      <button class="btn block" data-a="import">Importer une sauvegarde</button></div></div>
+    <h2 class="sec">Données</h2>
+    <div class="card" style="padding:14px"><p style="margin:0">${db.players.length} joueurs · ${db.games.length} parties</p></div>
+    <p class="hint" style="margin-top:22px;text-align:center">Pointage · version 1.7</p>
+    <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+  </main>`;
+}
+
+/* ====================== Fenêtres (modales) ====================== */
+function openModal(html, center){
+  if(!M || typeof M !== 'object') M = {};
+  $('modal').innerHTML = `<div class="modal-bg ${center?'c':''}" data-a="modalBg"><div class="msheet ${center?'center':''}">${html}</div></div>`;
+}
+function closeModal(){ M = null; $('modal').innerHTML = ''; }
+function confirmBox(text, okLabel, fn, danger){
+  openModal(`<div class="mhead"><h2>${esc(text)}</h2></div><div class="mfoot"><button class="btn" data-a="close">Annuler</button><button class="btn ${danger?'danger':'primary'}" data-a="confirmOk">${esc(okLabel)}</button></div>`, true);
+  M = {confirm:fn};
+}
+function promptBox(title, val, fn){
+  openModal(`<div class="mhead"><h2>${esc(title)}</h2></div><div class="mbody"><input id="pr" class="field" value="${esc(val||'')}" autocomplete="off"></div>
+    <div class="mfoot"><button class="btn" data-a="close">Annuler</button><button class="btn primary" data-a="promptOk">OK</button></div>`, true);
+  M = {prompt:fn}; setTimeout(() => { const i = $('pr'); if(i){ i.focus(); i.select(); } }, 50);
+}
+function numInput(id, v){
+  return `<div class="num"><button type="button" class="sign" data-a="sign" data-for="${id}" aria-label="Changer le signe">±</button><input id="${id}" inputmode="numeric" autocomplete="off" value="${v===undefined||v===null||v===''?'':v}" placeholder="0"></div>`;
+}
+const HELPERS = {
+  uno: [['1',1],['2',2],['3',3],['4',4],['5',5],['6',6],['7',7],['8',8],['9',9],['+2 / Inv. / Passe',20],['Joker / +4',50]],
+  phase10: [['1–9 : 5',5],['10–12 : 10',10],['Passe : 15',15],['Joker : 25',25]]
+};
+function openRound(idx){
+  const g = curGame(), G = GAMES[g.type];
+  const editing = idx !== null && idx !== undefined; const rd = editing ? g.rounds[idx] : {s:{}, m:{}};
+  const n = editing ? idx + 1 : g.rounds.length + 1;
+  let body = '';
+  if(g.type === 'millebornes'){
+    M = {round:idx, mb:{}, mbSel: g.players[0].key};
+    g.players.forEach(p => { const old = (rd.m||{})[p.key];
+      M.mb[p.key] = old && old.v2 ? JSON.parse(JSON.stringify(old)) : {v2:true, c25:0, c50:0, c75:0, c100:0, c200:0, b:old?old.b||0:0, cf:old?old.cf||0:0}; });
+    openModal(`<div class="mhead"><h2>${G.round} ${n}</h2><button class="icon-btn" data-a="close" aria-label="Fermer">✕</button></div>
+      <div class="ptabs" id="mb-tabs"></div><div class="mbody" id="mb-body"></div>
+      <div class="mfoot">${editing?`<button class="btn danger" data-a="delRound">Supprimer</button>`:''}<button class="btn" data-a="mbNext">Joueur suivant ›</button><button class="btn primary" data-a="saveRound">Enregistrer</button></div>`);
+    M.type = g.type; M.round = editing ? idx : null; mbRender(); return;
+  } else if(g.type === 'skipbo'){
+    M = {round:idx};
+    const w = (rd.m||{}).w; const left = (rd.m||{}).left || {};
+    body = `<p class="hint" style="margin:0 0 10px">Qui a vidé son talon ?</p>${g.players.map(p => `<label class="radio"><input type="radio" name="sbw" value="${p.key}" ${w===p.key?'checked':''}> <span class="av" style="background:${p.color};width:30px;height:30px">${initial(p.name)}</span> ${esc(p.name)}</label>`).join('')}
+      <h2 class="sec">Cartes restantes dans le talon des autres</h2>
+      ${g.players.map(p => `<div class="card prow" id="sbrow-${p.key}"><div class="ph"><div class="nm">${esc(p.name)}</div><div class="num" style="width:110px"><input id="sb-${p.key}" data-sb="1" inputmode="numeric" value="${left[p.key]!=null?left[p.key]:''}" placeholder="0"></div></div></div>`).join('')}
+      <div class="card prow"><div class="ph"><div class="nm">Points du gagnant</div><div class="ptotal num-t" id="sb-total">–</div></div><p class="hint" style="margin:4px 0 0">25 + 5 par carte restante</p></div>`;
+  } else {
+    M = {round:idx, f7:{}};
+    const hp = G.helper;
+    body = g.players.map(p => {
+      const v = rd.s[p.key]; const id = 'in-' + p.key;
+      let helper = '';
+      if(hp === 'uno' || hp === 'phase10'){
+        helper = `<div class="helper" id="hl-${p.key}"><div class="keys">${HELPERS[hp].map(([l,pts]) => `<button class="key ${l.length>3?'wide':''}" data-a="addv" data-for="${id}" data-v="${pts}">${l}${hp==='uno' && l.length>3?` · ${pts}`:''}</button>`).join('')}
+          <button class="key" data-a="zero" data-for="${id}">0</button></div><p class="expr">Chaque touche ajoute la valeur d’une carte.</p></div>`;
+      } else if(hp === 'playnine'){
+        M.p9 = M.p9 || {}; M.p9[p.key] = {c:Array(8).fill(null), sel:0};
+        helper = `<div class="helper" id="hl-${p.key}"><div class="p9grid" id="p9g-${p.key}"></div>
+          <div class="keys">${[-5,0,1,2,3,4,5,6,7,8,9,10,11,12].map(v=>`<button class="key" data-a="p9k" data-k="${p.key}" data-v="${v}">${v<0?'−5':v}</button>`).join('')}<button class="key" data-a="p9k" data-k="${p.key}" data-v="clr">Effacer</button></div>
+          <p class="expr" id="p9e-${p.key}">Touchez une carte, puis sa valeur. Les colonnes identiques s’annulent.</p></div>`;
+      } else if(hp === 'flip7'){
+        M.f7[p.key] = {nums:[], x2:false, mods:[], bonus:false, bust:false};
+        helper = `<div class="helper" id="hl-${p.key}"><div class="keys">${[0,1,2,3,4,5,6,7,8,9,10,11,12].map(v=>`<button class="key" data-a="f7" data-k="${p.key}" data-op="n" data-v="${v}">${v}</button>`).join('')}</div>
+          <div class="keys" style="margin-top:6px">${[2,4,6,8,10].map(v=>`<button class="key" data-a="f7" data-k="${p.key}" data-op="m" data-v="${v}">+${v}</button>`).join('')}<button class="key" id="f7x2-${p.key}" data-a="f7" data-k="${p.key}" data-op="x2">×2</button></div>
+          <div class="keys" style="margin-top:6px"><button class="key wide" id="f7b-${p.key}" data-a="f7" data-k="${p.key}" data-op="bonus">Flip 7 · +15</button><button class="key wide" id="f7bust-${p.key}" data-a="f7" data-k="${p.key}" data-op="bust">Éliminé · 0</button><button class="key" data-a="f7" data-k="${p.key}" data-op="clear">Effacer</button></div>
+          <p class="expr" id="f7e-${p.key}">Touchez les cartes du joueur.</p></div>`;
+      }
+      return `<div class="card prow"><div class="ph"><span class="av" style="background:${p.color}">${initial(p.name)}</span><div class="nm">${esc(p.name)}</div>
+        ${helper?`<button class="calc-t" data-a="helper" data-k="${p.key}" aria-label="Calculatrice">🧮</button>`:''}${numInput(id, v)}</div>
+        ${g.type==='phase10' ? `<p class="hint" style="margin:6px 0 0">Phase ${Math.min(phaseOf(g,p.key),10)} · ${PHASES[Math.min(phaseOf(g,p.key),10)-1]}</p>` : ''}
+        ${helper}</div>`; }).join('');
+  }
+  openModal(`<div class="mhead"><h2>${G.round} ${n}</h2><button class="icon-btn" data-a="close" aria-label="Fermer">✕</button></div>
+    <div class="mbody">${body}</div>
+    <div class="mfoot">${editing?`<button class="btn danger" data-a="delRound">Supprimer</button>`:''}<button class="btn primary" data-a="saveRound">Enregistrer</button></div>`);
+  M.type = g.type; M.round = editing ? idx : null;
+  if(g.type === 'skipbo') sbUpdate();
+  if(M.p9) Object.keys(M.p9).forEach(p9Render);
+  setTimeout(() => { const first = document.querySelector('#modal .num input'); if(first && !editing && g.type!=='skipbo') first.focus(); }, 120);
+}
+function p9Score(c){
+  let pts = 0; const matched = {}; const parts = [];
+  for(let i = 0; i < 4; i++){
+    const a = c[i], b = c[i+4];
+    if(a != null && b != null && a === b){ const v = a === -5 ? -10 : 0; pts += v; matched[a] = (matched[a]||0) + 1; parts.push(a === -5 ? '−10' : '0'); }
+    else { if(a != null){ pts += a; parts.push(String(a)); } if(b != null){ pts += b; parts.push(String(b)); } }
+  }
+  let bonus = 0; for(const k in matched) if(matched[k] >= 2) bonus -= 5 * matched[k];
+  return {pts: pts + bonus, bonus, parts, matched};
+}
+function p9Render(pk){
+  const h = M.p9[pk]; const sc = p9Score(h.c);
+  const isM = i => { const col = i % 4; return h.c[col] != null && h.c[col] === h.c[col+4]; };
+  $('p9g-'+pk).innerHTML = h.c.map((v,i) => `<button class="p9c ${i===h.sel?'sel':''} ${v!=null?'f':''} ${isM(i)?'m':''}" data-a="p9s" data-k="${pk}" data-i="${i}">${v==null?'':(v<0?'−5':v)}</button>`).join('');
+  const filled = h.c.filter(v => v != null).length;
+  if(filled) $('in-'+pk).value = sc.pts;
+  $('p9e-'+pk).innerHTML = filled ? `${filled}/8 cartes · ${sc.parts.join(' + ').replace(/\+ -/g,'− ')}${sc.bonus?` · bonus ${fmt(sc.bonus)}`:''} = <b>${fmt(sc.pts)}</b>` : 'Touchez une carte, puis sa valeur. Les colonnes identiques s’annulent.';
+}
+function sbUpdate(){
+  const g = curGame(); const w = (document.querySelector('input[name=sbw]:checked')||{}).value;
+  let sum = 0;
+  g.players.forEach(p => { const row = $('sbrow-'+p.key); if(row) row.style.display = p.key === w ? 'none' : ''; if(p.key !== w) sum += Math.max(0, num($('sb-'+p.key).value)); });
+  $('sb-total').textContent = w ? fmt(25 + 5*sum) : '–';
+}
+function f7Update(pk){
+  const h = M.f7[pk]; const v = f7Pts(h);
+  $('in-'+pk).value = (h.nums.length || h.mods.length || h.bust || h.bonus) ? v : '';
+  $('f7x2-'+pk).classList.toggle('on', h.x2); $('f7b-'+pk).classList.toggle('on', h.bonus); $('f7bust-'+pk).classList.toggle('on', h.bust);
+  const dup = h.nums.length !== new Set(h.nums).size;
+  $('f7e-'+pk).innerHTML = h.bust ? 'Éliminé : 0 point' : (h.nums.length||h.mods.length ? `(${h.nums.join(' + ')||0})${h.x2?' × 2':''}${h.mods.map(m=>' + '+m).join('')}${h.bonus?' + 15':''} = <b>${v}</b>${dup?' <span class="neg">· doublon !</span>':''}` : 'Touchez les cartes du joueur.');
+}
+function saveRound(){
+  const g = curGame(); const rd = {s:{}, m:{}};
+  if(g.type === 'millebornes'){
+    g.players.forEach(p => { const m = Object.assign({}, M.mb[p.key]); m.km = mbKm(m); rd.m[p.key] = m; rd.s[p.key] = mbPts(m, mbOthers(p.key)); });
+  } else if(g.type === 'skipbo'){
+    const w = (document.querySelector('input[name=sbw]:checked')||{}).value;
+    if(!w) return toast('Choisissez le gagnant de la manche');
+    let sum = 0; rd.m = {w, left:{}};
+    g.players.forEach(p => { if(p.key !== w){ const n = Math.max(0, num($('sb-'+p.key).value)); rd.m.left[p.key] = n; sum += n; } });
+    g.players.forEach(p => rd.s[p.key] = p.key === w ? 25 + 5*sum : 0);
+  } else {
+    if(g.type === 'phase10' && M.round !== null) rd.m = g.rounds[M.round].m || {};
+    g.players.forEach(p => { rd.s[p.key] = num($('in-'+p.key).value); });
+  }
+  if(M.round !== null) g.rounds[M.round] = rd; else g.rounds.push(rd);
+  const isNew = M.round === null;
+  g.updated = Date.now(); save(); closeModal(); render();
+  const e = endInfo(g);
+  if(e && !g.finished) toast('🏁 ' + e);
+  else if(isNew && !(g.opts.holes && g.rounds.length >= g.opts.holes)) toast('🃏 À ' + dealerName(g) + ' de brasser' + (g.type === 'phase10' ? ' · avancez les marqueurs' : ''));
+}
+function openMenu(){
+  const g = curGame();
+  openModal(`<div class="mhead"><h2>${esc(gameName(g))}</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody"><div class="card list menu">
+      ${g.finished ? `<button class="li" data-a="reopen">↩︎ Rouvrir la partie</button>` : `<button class="li" data-a="finish">🏁 Terminer la partie</button>`}
+      ${g.type!=='farkle' && g.rounds.length && !g.finished ? `<button class="li" data-a="undoRound">↶ Supprimer la dernière manche</button>` : ''}
+      ${!g.finished ? `<button class="li" data-a="addLate">➕ Ajouter un joueur</button>` : ''}
+      <button class="li" data-a="rematch">🔁 Revanche (nouvelle partie)</button>
+      <button class="li" data-a="delGame" style="color:var(--danger)">🗑 Supprimer cette partie</button></div></div>`);
+}
+
+/* ====================== Actions ====================== */
+const A = {
+  tab: el => tab(el.dataset.v),
+  go: el => go(el.dataset.v),
+  back: () => { if(!back()) tab('home'); },
+  close: () => closeModal(),
+  modalBg: (el, e) => { if(e.target === el) closeModal(); },
+  setup: el => startSetup(el.dataset.t),
+  rules: el => { const g = S.view === 'sheet' ? curGame() : null; go('rules', {rulesType: el.dataset.t, rulesGame: g ? g.id : null}); },
+  open: el => { M = null; $('modal').innerHTML=''; const st = S.stack.concat([snapshot()]); S = {view:'sheet', gameId: el.dataset.id, stack: st, turn:0, dice:[]}; render(true); },
+  toggleSel: (el) => { readSetupFields(); const k = el.dataset.k; const i = S.sel.indexOf(k); if(i>=0) S.sel.splice(i,1); else S.sel.push(k); render(); },
+  rmGuest: (el, e) => { e.stopPropagation(); readSetupFields(); const k = el.dataset.k; S.guests = S.guests.filter(g => g.key !== k); S.sel = S.sel.filter(x => x !== k); render(); },
+  addGuest: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const k = 'g' + uid(); S.guests.push({key:k, name:n}); S.sel.push(k); render(); },
+  addRoster: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const p = newPlayer(n); if(p){ S.sel.push(p.id); render(); toast(n + ' ajouté à votre liste'); } },
+  setLow: el => { readSetupFields(); S.setupLow = el.dataset.v === '1'; render(); },
+  setHoles: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {holes: Number(el.dataset.v)}); render(); },
+  start: () => startGame(),
+  addRound: () => openRound(null),
+  editRound: el => { if(curGame().finished) return toast('Partie terminée : rouvrez-la pour modifier'); openRound(Number(el.dataset.i)); },
+  saveRound: () => saveRound(),
+  delRound: () => { const g = curGame(), i = M.round; closeModal(); confirmBox('Supprimer la manche ' + (i+1) + ' ?', 'Supprimer', () => { g.rounds.splice(i,1); g.updated = Date.now(); save(); render(); }, true); },
+  sign: el => { const i = $(el.dataset.for); const v = i.value.trim(); i.value = v.startsWith('-') ? v.slice(1) : '-' + (v || ''); i.focus(); },
+  helper: el => { const h = $('hl-' + el.dataset.k); h.classList.toggle('open'); el.classList.toggle('on'); },
+  addv: el => { const i = $(el.dataset.for); i.value = num(i.value) + Number(el.dataset.v); },
+  zero: el => { $(el.dataset.for).value = 0; },
+  f7: el => { const k = el.dataset.k, h = M.f7[k], v = Number(el.dataset.v), op = el.dataset.op;
+    if(op==='n'){ h.nums.push(v); h.bust = false; if(new Set(h.nums).size >= 7) h.bonus = true; }
+    else if(op==='m'){ h.mods.push(v); h.bust = false; }
+    else if(op==='x2') h.x2 = !h.x2; else if(op==='bonus') h.bonus = !h.bonus; else if(op==='bust') h.bust = !h.bust;
+    else if(op==='clear') Object.assign(h, {nums:[], x2:false, mods:[], bonus:false, bust:false});
+    f7Update(k); },
+  mbC: el => { const m = M.mb[M.mbSel], f = el.dataset.f; m[f] = Math.max(0, (m[f]||0) + Number(el.dataset.d)); if(m.cf > (m.b||0)) m.cf = m.b||0; mbRender(); },
+  mbT: el => { const m = M.mb[M.mbSel], f = el.dataset.f; const auto = ['va','s200','cap'].includes(f);
+    const cur = auto ? mbFlag(m, f, mbOthers(M.mbSel)) : !!m[f]; m[f] = !cur;
+    if(auto){ delete m[f]; if(mbFlag(m, f, mbOthers(M.mbSel)) === cur) m[f] = !cur; } mbRender(); },
+  mbTab: el => { M.mbSel = el.dataset.k; mbRender(); $('mb-body').scrollTop = 0; },
+  mbNext: () => { const g = curGame(); const i = g.players.findIndex(p => p.key === M.mbSel); M.mbSel = g.players[(i+1) % g.players.length].key; mbRender(); $('mb-body').scrollTop = 0; },
+  p9s: el => { M.p9[el.dataset.k].sel = Number(el.dataset.i); p9Render(el.dataset.k); },
+  p9k: el => { const k = el.dataset.k, h = M.p9[k];
+    if(el.dataset.v === 'clr'){ h.c = Array(8).fill(null); h.sel = 0; $('in-'+k).value = ''; }
+    else { if(h.sel < 0) return toast('Touchez d’abord la carte à changer'); h.c[h.sel] = Number(el.dataset.v); const nx = h.c.findIndex((v,i) => v == null && i > h.sel); h.sel = nx >= 0 ? nx : Math.max(0, h.c.findIndex(v => v == null)); if(h.c.every(v => v != null)) h.sel = -1; }
+    p9Render(k); },
+  p10cell: el => { const g = curGame(), k = el.dataset.k, n = Number(el.dataset.n), cur = phaseOf(g, k);
+    if(n === cur) return p10Info(g, k);
+    if(g.finished) return toast('Partie terminée : rouvrez-la pour modifier');
+    if(n === cur + 1) return p10Set(g, k, n);
+    const p = g.players.find(x => x.key === k);
+    confirmBox(`Placer ${p.name} ${n > 10 ? 'à « Phase 10 réussie »' : 'à la phase ' + n} ?`, 'Déplacer', () => p10Set(g, k, n)); },
+  p10adv: el => { closeModal(); const g = curGame(); p10Set(g, el.dataset.k, phaseOf(g, el.dataset.k) + 1); },
+  p10color: el => { const g = curGame(), k = el.dataset.k, p = g.players.find(x => x.key === k);
+    openModal(`<div class="mhead"><h2>Couleur de ${esc(p.name)}</h2><button class="icon-btn" data-a="close">✕</button></div>
+      <div class="mbody"><div class="cpick">${P10_COLORS.map(c => { const o = g.players.find(x => x.color === c && x.key !== k);
+        return `<button class="${p.color===c?'on':''}" style="background:${c}" data-a="pickColor" data-k="${k}" data-c="${c}">${o?`<span class="who">${esc(o.name)}</span>`:''}</button>`; }).join('')}</div>
+      <p class="hint">Si la couleur est déjà prise, les deux joueurs échangent leurs couleurs.</p></div>`); },
+  pickColor: el => { const g = curGame(), p = g.players.find(x => x.key === el.dataset.k), c = el.dataset.c;
+    const o = g.players.find(x => x.color === c && x.key !== p.key); if(o) o.color = p.color; p.color = c; g.updated = Date.now(); save(); closeModal(); render(); },
+  setDealer0: el => { readSetupFields(); S.dealer = el.dataset.k; render(); },
+  dealer: () => { const g = curGame();
+    openModal(`<div class="mhead"><h2>Qui brasse la ${GAMES[g.type].round.toLowerCase()} ${g.rounds.length+1} ?</h2><button class="icon-btn" data-a="close">✕</button></div>
+      <div class="mbody"><div class="card list">${g.players.map((p,i) => `<button class="li" data-a="pickDealer" data-i="${i}"><span class="av" style="background:${p.color}">${initial(p.name)}</span><div class="grow"><div class="t">${esc(p.name)}</div></div>${i===dealerIdx(g)?'🃏':''}</button>`).join('')}</div>
+      <p class="hint">Les manches suivantes continueront dans l’ordre à partir de ce joueur.</p></div>`); },
+  pickDealer: el => { const g = curGame(); g.dealer0 = Number(el.dataset.i) - g.rounds.length; save(); closeModal(); render(); },
+  menu: () => openMenu(),
+  finish: () => { closeModal(); const g = curGame(); g.finished = true; g.updated = Date.now(); save(); go('results'); },
+  results: () => go('results'),
+  reopen: () => { closeModal(); const g = curGame(); g.finished = false; g.updated = Date.now(); save(); render(); },
+  undoRound: () => { closeModal(); const g = curGame(); confirmBox('Supprimer la dernière manche ?', 'Supprimer', () => { g.rounds.pop(); save(); render(); }, true); },
+  addLate: () => { closeModal(); promptBox('Nom du joueur à ajouter', '', n => { if(!n.trim()) return; const g = curGame();
+      const rp = db.players.find(p => p.name.toLowerCase() === n.trim().toLowerCase());
+      if(g.players.some(p => p.name.toLowerCase() === n.trim().toLowerCase())) return toast('Déjà dans la partie');
+      g.players.push(rp ? {key:'p'+rp.id, rid:rp.id, name:rp.name, color:rp.color, guest:false} : {key:'g'+uid(), name:n.trim(), color:PALETTE[(db.players.length+g.players.length)%PALETTE.length], guest:true});
+      save(); render(); }); },
+  delGame: () => { closeModal(); const g = curGame(); confirmBox('Supprimer définitivement cette partie ?', 'Supprimer', () => { db.games = db.games.filter(x => x.id !== g.id); save(); tab('home'); }, true); },
+  rematch: () => { closeModal(); const g = curGame(); const st = [{view:'home'}]; S = {view:'home', stack:[]}; startSetup(g.type, g); S.stack = st; render(true); },
+  saveGuest: el => { const g = curGame(); const p = g.players.find(x => x.key === el.dataset.k); const np = newPlayer(p.name, p.color);
+    if(np){ db.games.forEach(gg => gg.players.forEach(x => { if(x.guest && x.name.toLowerCase() === np.name.toLowerCase()){ x.guest = false; x.rid = np.id; } })); save(); render(); toast(np.name + ' est dans votre liste'); } },
+  confirmOk: () => { const fn = M.confirm; closeModal(); fn(); },
+  promptOk: () => { const fn = M.prompt, v = $('pr').value; closeModal(); fn(v); },
+  officialRules: el => openUrl('https://www.google.com/search?q=' + encodeURIComponent('règles officielles ' + el.dataset.q + ' pdf')),
+  addPlayer: () => { const i = $('newPlayer'); const n = i.value.trim(); if(!n) return toast('Tapez un nom'); if(newPlayer(n)){ render(); setTimeout(()=>{ const x=$('newPlayer'); if(x) x.focus(); }, 30); } },
+  renamePlayer: el => { const p = db.players.find(x => x.id === el.dataset.id); promptBox('Renommer', p.name, n => { n = n.trim(); if(!n) return; p.name = n;
+      db.games.forEach(g => g.players.forEach(x => { if(x.rid === p.id) x.name = n; })); save(); render(); }); },
+  delPlayer: el => { const p = db.players.find(x => x.id === el.dataset.id); confirmBox('Retirer ' + p.name + ' de la liste ?', 'Retirer', () => { db.players = db.players.filter(x => x.id !== p.id); save(); render(); toast('Son nom reste dans l’historique'); }, true); },
+  movePlayer: el => { const i = db.players.findIndex(x => x.id === el.dataset.id); if(i>0){ const [p] = db.players.splice(i,1); db.players.splice(i-1,0,p); save(); render(); } },
+  recolor: el => { const p = db.players.find(x => x.id === el.dataset.id); p.color = PALETTE[(PALETTE.indexOf(p.color)+1) % PALETTE.length];
+      db.games.forEach(g => g.players.forEach(x => { if(x.rid === p.id) x.color = p.color; })); save(); render(); },
+  statF: el => { S.statF = el.dataset.v; render(); },
+  export: () => doExport(),
+  copyExp: () => { const t = $('expTxt'); const done = () => toast('Copié');
+    try{ navigator.clipboard.writeText(t.value).then(done, () => { t.select(); toast('Texte sélectionné : copiez-le'); }); }catch(e){ t.select(); toast('Texte sélectionné : copiez-le'); } },
+  import: () => doImport(),
+  // dés
+  fkDie: el => { if((S.dice||[]).length >= 6) return toast('6 dés maximum'); S.dice = (S.dice||[]).concat([Number(el.dataset.v)]); render(); },
+  fkRm: el => { S.dice.splice(Number(el.dataset.i),1); render(); },
+  fkClear: () => { S.dice = []; render(); },
+  fkAddSel: () => { if(S.dice.length === 6 && S.dice.every(d => d === S.dice[0])) return fkSix(S.dice[0]); const g = curGame(); const c = [0,0,0,0,0,0,0]; S.dice.forEach(d => c[d]++); fkAdd(diceScore(c, g.opts.f).pts); },
+  fkAddMan: () => { const v = num($('fk-man').value); if(!v) return; if(v < 0){ S.turn = Math.max(0, (S.turn||0) + v); return render(); } fkAdd(v); },
+  fkResetTurn: () => { S.turn = 0; S.dice = []; render(); },
+  fkCur: el => { const g = curGame(); if(g.finished) return; if(S.turn) return toast('Encaissez ou annulez le tour en cours d’abord'); g.cur = Number(el.dataset.i); S.dice = []; save(); render(); },
+  fkBank: () => { const g = curGame(), f = g.opts.f, p = g.players[g.cur]; let pts = S.turn||0, note = '';
+    if(pts <= 0) return;
+    if(!isEntered(g, p.key) && pts < f.entry){ note = `${fmt(pts)} : pas assez pour entrer (${fmt(f.entry)})`; pts = 0; toast(p.name + ' n’entre pas encore'); }
+    else if(!isEntered(g, p.key)) note = 'Entré !';
+    g.turns.push({pk:p.key, pts, raw:S.turn, note, t:Date.now()}); fkNext(g);
+    const e = endInfo(g); if(e) toast('🏁 ' + e); },
+  fkFarkle: () => { const g = curGame(), f = g.opts.f, p = g.players[g.cur]; const tot = totals(g)[p.key];
+    const c = [0,0,0,0,0,0,0]; (S.dice||[]).forEach(d => c[d]++);
+    const scored = (S.turn||0) > 0 || diceScore(c, f).pts > 0; // des dés ont déjà compté pendant ce tour
+    const pen = tot >= f.penFrom && !scored ? -f.pen : 0;
+    g.turns.push({pk:p.key, pts:pen, raw:0, note: pen ? `Raté à ${fmt(tot)} : pénalité` : (S.turn ? `Raté, ${fmt(S.turn)} perdus${tot >= f.penFrom ? ' (pas de pénalité : des dés avaient compté)' : ''}` : 'Raté'), t:Date.now()});
+    if(pen) toast(p.name + ' perd ' + fmt(f.pen));
+    fkNext(g); },
+  fkSixBtn: () => { const g = curGame(); confirmBox(g.players[g.cur].name + ' a tiré six dés identiques ? Il gagne la partie.', 'Victoire !', () => fkSix(0)); },
+  fkUndo: () => { const g = curGame(); const x = g.turns.pop(); if(x.win){ delete g.winner; g.finished = false; } const i = g.players.findIndex(p => p.key === x.pk); if(i>=0) g.cur = i; S.turn = 0; S.dice = []; save(); render(); toast('Tour annulé'); }
+};
+function newPlayer(name, color){
+  if(db.players.some(p => p.name.toLowerCase() === name.toLowerCase())){ toast(name + ' est déjà dans la liste'); return null; }
+  const p = {id:uid(), name, color: color && !db.players.some(x=>x.color===color) ? color : PALETTE.find(c => !db.players.some(x => x.color === c)) || PALETTE[db.players.length % PALETTE.length]};
+  db.players.push(p); save(); return p;
+}
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-a]'); if(!el || el.disabled) return;
+  const fn = A[el.dataset.a]; if(fn){ fn(el, e); }
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if(t.id === 'house'){ const v = t.value; if(v.trim()) db.house[t.dataset.hk] = v; else delete db.house[t.dataset.hk]; save(); }
+  if(t.dataset && t.dataset.sb) sbUpdate();
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if(t.name === 'sbw') sbUpdate();
+  if(t.id === 'importFile' && t.files[0]){ const r = new FileReader(); r.onload = () => window.onImportData(r.result); r.readAsText(t.files[0]); }
+});
+document.addEventListener('keydown', e => {
+  if(e.key !== 'Enter') return;
+  const id = e.target.id;
+  if(id === 'guestName'){ e.preventDefault(); A.addGuest(); }
+  else if(id === 'newPlayer'){ e.preventDefault(); A.addPlayer(); }
+  else if(id === 'pr'){ e.preventDefault(); A.promptOk(); }
+  else if(id === 'fk-man'){ e.preventDefault(); A.fkAddMan(); }
+  else if(e.target.closest && e.target.closest('#modal .num')){ // passe au champ suivant
+    e.preventDefault(); const ins = [...document.querySelectorAll('#modal .num input')]; const i = ins.indexOf(e.target);
+    if(i >= 0 && i < ins.length-1) ins[i+1].focus(); else e.target.blur(); }
+});
+
+/* ====================== Sauvegarde ====================== */
+let wl = null;
+async function wakeLock(on){
+  try{
+    if(on && !wl && navigator.wakeLock){ wl = await navigator.wakeLock.request('screen'); wl.addEventListener('release', () => { wl = null; }); }
+    else if(!on && wl){ await wl.release(); wl = null; }
+  }catch(e){ wl = null; }
+}
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && S.view === 'sheet' && !bridge) wakeLock(true); });
+async function doExport(){
+  const name = 'pointage-sauvegarde-' + new Date().toISOString().slice(0,10) + '.json';
+  const data = JSON.stringify(db, null, 1);
+  if(bridge && bridge.exportData){ bridge.exportData(data, name); return; }
+  let dl = null;
+  try{ if(window.claude && window.claude.use) dl = await window.claude.use('downloads'); }catch(e){ dl = null; }
+  if(dl){
+    try{ await dl.save({filename: name, data}); toast('Sauvegarde enregistrée'); return; }
+    catch(e){ if(e && e.code === 'declined') return toast('Exportation annulée'); }
+  }
+  // dernier recours : copier le texte
+  openModal(`<div class="mhead"><h2>Copie de sauvegarde</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody"><p class="hint" style="margin-top:0">Copiez ce texte et collez-le dans une note ou un courriel. Pour le restaurer, enregistrez-le dans un fichier .json et utilisez « Importer ».</p>
+    <textarea id="expTxt" class="field" readonly style="min-height:220px;font-size:12px">${esc(data)}</textarea></div>
+    <div class="mfoot"><button class="btn primary" data-a="copyExp">Copier</button></div>`);
+}
+function doImport(){ if(bridge && bridge.importData){ bridge.importData(); return; } const i = $('importFile'); if(i) i.click(); }
+window.onImportData = text => {
+  let d; try{ d = JSON.parse(text); }catch(e){ return toast('Fichier illisible'); }
+  if(!d || !d.v || !Array.isArray(d.games)) return toast('Ce n’est pas une sauvegarde de Pointage');
+  confirmBox(`Remplacer les données actuelles par cette sauvegarde (${(d.players||[]).length} joueurs, ${d.games.length} parties) ?`, 'Remplacer', () => {
+    db = Object.assign(defaultDb(), d); save(); tab('home'); toast('Sauvegarde importée'); }, true);
+};
+window.onExportDone = ok => toast(ok ? 'Sauvegarde enregistrée' : 'Exportation annulée');
+function openUrl(u){ if(bridge && bridge.openUrl) bridge.openUrl(u); else window.open(u, '_blank'); }
+
+let tt; function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2400); }
+
+render(true);
+</script>
