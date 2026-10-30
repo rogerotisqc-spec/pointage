@@ -637,7 +637,7 @@ function topbar(title, sub, right){
 /* ---------- Accueil ---------- */
 function vHome(){
   const open = db.games.filter(g => !g.finished).sort((a,b) => b.updated - a.updated);
-  return `<header class="top"><div class="grow"><h1>Pointage</h1><p class="sub">Les jeux de la famille</p></div>
+  return `<header class="top"><div class="grow"><h1>Pointage</h1><p class="sub">Les jeux de la famille${appVersion() ? ' · v' + esc(appVersion()) : ''}</p></div>
     <button class="icon-btn" data-a="go" data-v="settings" aria-label="Réglages">⚙︎</button></header>
   ${updateBanner()}
   <main class="pad">
