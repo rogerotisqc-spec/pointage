@@ -47,8 +47,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .sec{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:22px 2px 10px}
 .sec:first-child{margin-top:4px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
-.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media (min-width:640px){.tiles{grid-template-columns:repeat(3,1fr);gap:14px}}
+.tiles{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:10px}
+@media (min-width:900px){.tiles{grid-template-columns:repeat(5,1fr);gap:14px}}
 .tile{position:relative;padding:14px 12px 12px;min-height:116px;display:flex;flex-direction:column;gap:8px;text-align:left}
 .tile:active{transform:scale(.98)}
 .badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;letter-spacing:-.02em;flex:none}
@@ -424,7 +424,7 @@ const $ = id => document.getElementById(id);
 
 /* ====================== Jeux ====================== */
 const MANUAL_URL = 'https://rogerotisqc-spec.github.io/pointage/manuel/';
-const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble'];
+const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','skyjo'];
 const GAMES = {
   generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
   playnine:   {name:'Play Nine',      color:'#2b8a3e', badge:'9',  desc:'9 trous · le plus bas gagne', round:'Trou', low:true, helper:'playnine'},
@@ -433,6 +433,7 @@ const GAMES = {
   skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'Individuel ou en équipes · 500', round:'Manche', target:500},
   millebornes:{name:'Mille Bornes',   color:'#d9a400', badge:'1000', desc:'Individuel ou en équipes · 5 000', round:'Manche', target:5000},
   phase10:    {name:'Phase 10',       color:'#6741d9', badge:'10', desc:'10 phases · le moins de points', round:'Manche', low:true, helper:'phase10'},
+  skyjo:      {name:'Skyjo',          color:'#3b8fd9', badge:'SK', desc:'Partie à 100 · le plus bas gagne', round:'Manche', target:100, low:true, helper:'skyjo'},
   scrabble:   {name:'Scrabble',       color:'#9c6b2f', badge:'S',  desc:'Calcul des mots · fin de partie', round:'Tour'},
   farkle:     {name:'Jeu de dés',   color:'#0b7285', badge:'⚄',  desc:'Entrée à 1 000 · partie à 25 000', round:'Tour'}
 };
@@ -551,6 +552,15 @@ function rulesHtml(type, g){
     <h3>Pointage (cartes restées en main)</h3><table>
       <tr><td>1 à 9</td><td>5</td></tr><tr><td>10 à 12</td><td>10</td></tr><tr><td>Passe</td><td>15</td></tr><tr><td>Joker</td><td>25</td></tr></table>
     <p>Gagnant : le premier à réussir la phase 10. En cas d’égalité, le moins de points.</p>`;
+  case 'skyjo': return `
+    <h3>But</h3><p>Avoir le moins de points possible. La partie s’arrête quand un joueur atteint ${fmt((g&&g.opts.target)||100)} points : <b>le plus bas total gagne</b>.</p>
+    <h3>Mise en place</h3><p>Chaque joueur reçoit 12 cartes face cachée, en 3 rangées de 4 colonnes. Les cartes valent de −2 à 12. Chacun retourne 2 cartes ; celui dont la somme est la plus élevée commence.</p>
+    <h3>Un tour</h3><ul>
+      <li>Prendre la carte visible de la défausse et l’échanger avec une de ses 12 cartes (visible ou cachée).</li>
+      <li>Ou piger la carte du dessus de la pioche : l’échanger avec une de ses cartes, ou la défausser et retourner une de ses cartes cachées.</li>
+      <li><b>Colonne de trois cartes identiques</b> : elle est retirée du jeu (elle ne compte plus).</li></ul>
+    <h3>Fin de manche</h3><p>Quand un joueur a retourné ses 12 cartes, chacun des autres joue un dernier tour. On retourne alors toutes les cartes et chacun additionne ses cartes.</p>
+    <h3>Doublement</h3><p>Si le joueur qui a terminé la manche <b>n’a pas strictement le plus bas pointage</b> de la manche, son pointage est <b>doublé</b> (seulement s’il est positif). Une égalité avec le plus bas compte aussi : il est doublé. L’app applique cette règle quand vous indiquez qui a terminé.</p>`;
   case 'scrabble': return `
     <h3>But</h3><p>Marquer le plus de points en formant des mots sur la grille.</p>
     <h3>Mise en place</h3><p>Chaque joueur pige 7 lettres. Le premier mot doit couvrir la case centrale (étoile), qui compte comme un mot compte double.</p>
@@ -965,7 +975,7 @@ function vSheet(){
     <tbody>${g.rounds.map((rd,i) => `<tr><td class="lbl">${G.round} ${i+1}</td>${g.players.map(p => {
         const v = rd.s[p.key]; const has = v !== undefined && v !== null;
         const tick = '';
-        const extra = (g.type==='skipbo' || g.type==='uno') && rd.m && rd.m.w === p.key ? ' 🏁' : '';
+        const extra = (g.type==='skipbo' || g.type==='uno') && rd.m && rd.m.w === p.key ? ' 🏁' : (g.type==='skyjo' && rd.m && rd.m.fin === p.key ? (rd.m.doubled ? ' <small class="neg">×2</small>' : ' 🏁') : '');
         return `<td><button data-a="editRound" data-i="${i}" class="num-t ${v<0?'neg':''}">${has?fmt(v):'–'}${tick}${extra}</button></td>`; }).join('')}</tr>`).join('')}</tbody>
     <tfoot><tr><td class="lbl">Total</td>${g.players.map(p=>`<td class="num-t ${t[p.key]<0?'neg':''}">${fmt(t[p.key])}</td>`).join('')}</tr></tfoot></table></div>`;
   const next = g.rounds.length + 1;
@@ -1554,12 +1564,20 @@ function openRound(idx){
   } else {
     M = {round:idx, f7:{}};
     const hp = G.helper;
-    body = g.players.map(p => {
-      const v = rd.s[p.key]; const id = 'in-' + p.key;
+    const skFin = g.type === 'skyjo' ? `<p class="hint" style="margin:0 0 8px">Qui a retourné toutes ses cartes en premier ?</p>
+      <div class="chips" style="margin-bottom:12px">${g.players.map(p => `<label class="chip" style="padding-left:12px"><input type="radio" name="skfin" value="${p.key}" ${(rd.m||{}).fin===p.key?'checked':''} style="accent-color:var(--brand)"> ${esc(p.name)}</label>`).join('')}</div>
+      <p class="hint" style="margin:-4px 0 12px">S’il n’a pas strictement le plus bas pointage, l’app doublera le sien (s’il est positif). Inscrivez le total des cartes de chacun, sans doubler.</p>` : '';
+    body = skFin + g.players.map(p => {
+      const v = g.type === 'skyjo' && rd.m && rd.m.raw ? rd.m.raw[p.key] : rd.s[p.key]; const id = 'in-' + p.key;
       let helper = '';
       if(hp === 'uno' || hp === 'phase10'){
         helper = `<div class="helper" id="hl-${p.key}"><div class="keys">${HELPERS[hp].map(([l,pts]) => `<button class="key ${l.length>3?'wide':''}" data-a="addv" data-for="${id}" data-v="${pts}">${l}${hp==='uno' && l.length>3?` · ${pts}`:''}</button>`).join('')}
           <button class="key" data-a="zero" data-for="${id}">0</button></div><p class="expr">Chaque touche ajoute la valeur d’une carte.</p></div>`;
+      } else if(hp === 'skyjo'){
+        M.sk = M.sk || {}; M.sk[p.key] = {c:Array(12).fill(null), sel:0};
+        helper = `<div class="helper" id="hl-${p.key}"><div class="p9grid" id="skg-${p.key}"></div>
+          <div class="keys">${[-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12].map(v=>`<button class="key" data-a="skk" data-k="${p.key}" data-v="${v}">${v<0?'−'+(-v):v}</button>`).join('')}<button class="key" data-a="skk" data-k="${p.key}" data-v="clr">Effacer</button></div>
+          <p class="expr" id="ske-${p.key}">Touchez une carte, puis sa valeur. Une colonne de trois cartes identiques est retirée.</p></div>`;
       } else if(hp === 'playnine'){
         M.p9 = M.p9 || {}; M.p9[p.key] = {c:Array(8).fill(null), sel:0};
         helper = `<div class="helper" id="hl-${p.key}"><div class="p9grid" id="p9g-${p.key}"></div>
@@ -1584,7 +1602,24 @@ function openRound(idx){
   if(g.type === 'skipbo') sbUpdate();
   if(g.type === 'uno' && g.opts.mode === 'official') unoUpdate();
   if(M.p9) Object.keys(M.p9).forEach(p9Render);
+  if(M.sk) Object.keys(M.sk).forEach(skRender);
   setTimeout(() => { const first = document.querySelector('#modal .num input'); if(first && !editing && g.type!=='skipbo') first.focus(); }, 120);
+}
+function skScore(c){
+  let pts = 0; const gone = [];
+  for(let col = 0; col < 4; col++){
+    const a = c[col], b = c[col + 4], d = c[col + 8];
+    if(a != null && a === b && b === d){ gone.push(col); continue; }
+    [a, b, d].forEach(v => { if(v != null) pts += v; });
+  }
+  return {pts, gone};
+}
+function skRender(pk){
+  const h = M.sk[pk], sc = skScore(h.c);
+  $('skg-'+pk).innerHTML = h.c.map((v,i) => `<button class="p9c ${i===h.sel?'sel':''} ${v!=null?'f':''} ${sc.gone.includes(i % 4)?'m':''}" data-a="sks" data-k="${pk}" data-i="${i}">${v==null?'':(v<0?'−'+(-v):v)}</button>`).join('');
+  const filled = h.c.filter(v => v != null).length;
+  if(filled) $('in-'+pk).value = sc.pts;
+  $('ske-'+pk).innerHTML = filled ? `${filled}/12 cartes${sc.gone.length ? ` · ${sc.gone.length} colonne${sc.gone.length>1?'s':''} retirée${sc.gone.length>1?'s':''}` : ''} = <b>${fmt(sc.pts)}</b>` : 'Touchez une carte, puis sa valeur. Une colonne de trois cartes identiques est retirée.';
 }
 function p9Score(c){
   let pts = 0; const matched = {}; const parts = [];
@@ -1642,6 +1677,12 @@ function saveRound(){
   } else {
     if(g.type === 'phase10' && M.round !== null) rd.m = g.rounds[M.round].m || {};
     g.players.forEach(p => { rd.s[p.key] = num($('in-'+p.key).value); });
+    if(g.type === 'skyjo'){
+      const fin = (document.querySelector('input[name=skfin]:checked')||{}).value;
+      rd.m = {raw: Object.assign({}, rd.s), fin: fin || null};
+      if(fin){ const v = rd.s[fin]; const lowestStrict = g.players.every(p => p.key === fin || rd.s[p.key] > v);
+        if(v > 0 && !lowestStrict){ rd.s[fin] = v * 2; rd.m.doubled = true; toast('Pointage doublé pour ' + g.players.find(p => p.key === fin).name + ' : ' + v + ' × 2 = ' + (v * 2)); } }
+    }
   }
   if(M.round !== null) g.rounds[M.round] = rd; else g.rounds.push(rd);
   const isNew = M.round === null;
@@ -1788,6 +1829,11 @@ const A = {
     if(auto){ delete m[f]; if(mbFlag(m, f, mbOthers(M.mbSel)) === cur) m[f] = !cur; } mbRender(); },
   mbTab: el => { M.mbSel = el.dataset.k; mbRender(); $('mb-body').scrollTop = 0; },
   mbNext: () => { const g = curGame(); const i = g.players.findIndex(p => p.key === M.mbSel); M.mbSel = g.players[(i+1) % g.players.length].key; mbRender(); $('mb-body').scrollTop = 0; },
+  sks: el => { M.sk[el.dataset.k].sel = Number(el.dataset.i); skRender(el.dataset.k); },
+  skk: el => { const k = el.dataset.k, h = M.sk[k];
+    if(el.dataset.v === 'clr'){ h.c = Array(12).fill(null); h.sel = 0; $('in-'+k).value = ''; }
+    else { if(h.sel < 0) return toast('Touchez d’abord la carte à changer'); h.c[h.sel] = Number(el.dataset.v); const nx = h.c.findIndex((v,i) => v == null && i > h.sel); h.sel = nx >= 0 ? nx : h.c.findIndex(v => v == null); }
+    skRender(k); },
   p9s: el => { M.p9[el.dataset.k].sel = Number(el.dataset.i); p9Render(el.dataset.k); },
   p9k: el => { const k = el.dataset.k, h = M.p9[k];
     if(el.dataset.v === 'clr'){ h.c = Array(8).fill(null); h.sel = 0; $('in-'+k).value = ''; }

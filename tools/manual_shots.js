@@ -140,6 +140,18 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await p.fill('#scrPts', '24'); await p.keyboard.press('Enter');
   await shot('scrabble-simple');
 
+  // ---------- Skyjo ----------
+  await startGame('skyjo', ['Roger', 'Marie', 'Léa']);
+  await tap('[data-a=addRound]'); await p.check('input[name=skfin] >> nth=0');
+  const kj = await p.$$eval('.calc-t', e => e.map(x => x.dataset.k));
+  await tap(`.calc-t[data-k="${kj[0]}"]`);
+  for (const v of [5, 1, 2, 3, 5, 4, 0, -2, 5, 6, 7, 12]) await tap(`[data-a=skk][data-k="${kj[0]}"][data-v="${v}"]`);
+  await shot('skyjo-calculatrice');
+  const sj = await p.$$('#modal .num input'); await sj[0].fill('20'); await sj[1].fill('15'); await sj[2].fill('30'); await tap('[data-a=saveRound]');
+  await tap('[data-a=addRound]'); await p.check('input[name=skfin] >> nth=1');
+  const sj2 = await p.$$('#modal .num input'); await sj2[0].fill('10'); await sj2[1].fill('3'); await sj2[2].fill('8'); await tap('[data-a=saveRound]');
+  await shot('skyjo');
+
   // ---------- Jeu de dés ----------
   await startGame('farkle', ['Roger', 'Marie', 'Léa']);
   await p.fill('#fk-man', '1500'); await tap('[data-a=fkAddMan]'); await tap('[data-a=fkBank]');

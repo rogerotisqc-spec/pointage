@@ -53,3 +53,5 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   table. Au Mille Bornes, les partenaires partagent un seul jeu : la saisie se fait par équipe.
 - Skip-Bo : pointage officiel.
 - Play Nine : 9 trous seulement.
+- Skyjo : règles officielles (partie à 100, le plus bas gagne, colonne de 3 identiques retirée,
+  doublement de celui qui termine s'il n'a pas strictement le plus bas et que son pointage est positif).
