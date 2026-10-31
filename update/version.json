@@ -1,6 +1,6 @@
 {
- "version": "2.4",
- "notes": "• Correction : sur tablette, les points des dés remplissent maintenant les carrés, et les dés sont plus grands.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.4.apk",
+ "version": "2.5",
+ "notes": "• Nouveau : feuille de pointage pour le Scrabble. Tapez le mot, touchez les lettres sur une case bonus (L×2, L×3, joker), choisissez le multiplicateur de mot : l'app calcule avec les valeurs françaises. Plusieurs mots par tour, bonus Scrabble +50, et calcul automatique de la fin de partie (lettres restantes).",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.5.apk",
  "size": 99161
 }

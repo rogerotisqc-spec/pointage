@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>body{padding-top:env(safe-area-inset-top)} .top{top:env(safe-area-inset-top,0px)}</style>
-<script>window.WEB_VERSION = "2.4";</script>
+<script>window.WEB_VERSION = "2.5";</script>
 
 <style>
 :root{
@@ -313,6 +313,19 @@ table.p10 tr.fin td{border-top:2px solid var(--line)}
 .switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:.15s}
 .switch.on{background:var(--brand)}
 .switch.on::after{left:25px}
+.wordin{text-transform:uppercase;letter-spacing:.08em;font-weight:700;font-size:20px}
+.tiles{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;min-height:10px}
+.tile-l{position:relative;width:clamp(40px, 9vw, 58px);aspect-ratio:1;border-radius:8px;background:#f1dfb8;color:#3b2a14;border:2px solid #d7bf8c;font-weight:800;font-size:clamp(20px, 4.4vw, 28px);display:grid;place-items:center;box-shadow:0 2px 0 #c7a96c}
+.tile-l sub{position:absolute;right:4px;bottom:1px;font-size:.45em;font-weight:700}
+.tile-l .tag2{position:absolute;left:0;right:0;top:-9px;margin:auto;width:max-content;font-size:10px;font-weight:800;padding:1px 4px;border-radius:5px;color:#fff;letter-spacing:0}
+.tile-l.l2{background:#cfe8fb;border-color:#5aa7e0}.tile-l.l2 .tag2{background:#3d8fd0}
+.tile-l.l3{background:#9ec3f0;border-color:#2563c4}.tile-l.l3 .tag2{background:#2563c4}
+.tile-l.j{background:#fff;border-style:dashed;color:#8a7a60}.tile-l.j .tag2{background:#8a7a60}
+.wmult{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.wmult button{flex:1;min-width:56px;min-height:42px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface2);font-weight:700;font-size:14px}
+.wmult button.on{background:#d9485f;border-color:#d9485f;color:#fff}
+.wmult button.on.x1{background:var(--brand);border-color:var(--brand)}
+.wordlist .li{padding:8px 12px}
 .bar{height:6px;border-radius:3px;background:var(--surface2);margin-top:5px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent)}
 </style>
@@ -425,7 +438,7 @@ const dateFr = ts => new Date(ts).toLocaleDateString('fr-CA',{day:'numeric',mont
 const $ = id => document.getElementById(id);
 
 /* ====================== Jeux ====================== */
-const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10'];
+const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble'];
 const GAMES = {
   generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
   playnine:   {name:'Play Nine',      color:'#2b8a3e', badge:'9',  desc:'9 trous · le plus bas gagne', round:'Trou', low:true, helper:'playnine'},
@@ -434,6 +447,7 @@ const GAMES = {
   skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'25 + 5 par carte · premier à 500', round:'Manche', target:500},
   millebornes:{name:'Mille Bornes',   color:'#d9a400', badge:'1000', desc:'Premier à 5 000', round:'Manche', target:5000},
   phase10:    {name:'Phase 10',       color:'#6741d9', badge:'10', desc:'10 phases · le moins de points', round:'Manche', low:true, helper:'phase10'},
+  scrabble:   {name:'Scrabble',       color:'#9c6b2f', badge:'S',  desc:'Calcul des mots · fin de partie', round:'Tour'},
   farkle:     {name:'Jeu de dés',   color:'#0b7285', badge:'⚄',  desc:'Entrée à 1 000 · partie à 25 000', round:'Tour'}
 };
 const PHASES = [
@@ -454,6 +468,7 @@ const PHASE_EX = [[[5,5,5],[9,9,9]],[[8,8,8],[3,4,5,6]],[[2,2,2,2],[6,7,8,9]],[[
 const PHASE_EXPL = ['Deux groupes de 3 cartes de même chiffre.','Trois cartes de même chiffre et 4 chiffres qui se suivent.','Quatre cartes de même chiffre et 4 chiffres qui se suivent.',
   '7 chiffres qui se suivent, couleurs mélangées.','8 chiffres qui se suivent, couleurs mélangées.','9 chiffres qui se suivent, couleurs mélangées.','Deux groupes de 4 cartes de même chiffre.',
   '7 cartes de la même couleur, n’importe quels chiffres.','Cinq cartes de même chiffre et deux autres de même chiffre.','Cinq cartes de même chiffre et trois autres de même chiffre.'];
+function isTurnGame(g){ return g.type === 'farkle' || g.type === 'scrabble'; }
 function gameName(g){ return g.type === 'generic' ? (g.title || 'Pointage libre') : GAMES[g.type].name; }
 function houseKey(type, title){ return type === 'generic' ? 'generic:' + (title||'').trim().toLowerCase() : type; }
 
@@ -539,6 +554,22 @@ function rulesHtml(type, g){
     <h3>Pointage (cartes restées en main)</h3><table>
       <tr><td>1 à 9</td><td>5</td></tr><tr><td>10 à 12</td><td>10</td></tr><tr><td>Passe</td><td>15</td></tr><tr><td>Joker</td><td>25</td></tr></table>
     <p>Gagnant : le premier à réussir la phase 10. En cas d’égalité, le moins de points.</p>`;
+  case 'scrabble': return `
+    <h3>But</h3><p>Marquer le plus de points en formant des mots sur la grille.</p>
+    <h3>Mise en place</h3><p>Chaque joueur pige 7 lettres. Le premier mot doit couvrir la case centrale (étoile), qui compte comme un mot compte double.</p>
+    <h3>Un tour</h3><ul>
+      <li>Poser une ou plusieurs lettres sur une même ligne ou une même colonne, en formant des mots reliés à ceux déjà en place. Puis repiger jusqu’à 7 lettres.</li>
+      <li>Ou échanger des lettres (s’il en reste au moins 7 dans le sac), ou passer : 0 point.</li></ul>
+    <h3>Pointage d’un mot</h3><ul>
+      <li>Additionner la valeur des lettres. <b>Lettre compte double / triple</b> : seulement la lettre posée sur la case.</li>
+      <li>Puis <b>mot compte double / triple</b> : tout le mot. Deux cases « mot compte double » dans le même mot : ×4.</li>
+      <li>Les cases bonus ne comptent que le tour où une lettre y est posée.</li>
+      <li>Chaque mot formé ou prolongé pendant le tour compte, y compris les mots croisés.</li>
+      <li>Le <b>joker</b> (lettre blanche) vaut 0.</li>
+      <li><b>Scrabble</b> : poser ses 7 lettres d’un coup donne 50 points de plus.</li></ul>
+    <h3>Valeur des lettres (édition française)</h3>
+    <table><tr><td>A E I L N O R S T U</td><td>1</td></tr><tr><td>D G M</td><td>2</td></tr><tr><td>B C P</td><td>3</td></tr><tr><td>F H V</td><td>4</td></tr><tr><td>J Q</td><td>8</td></tr><tr><td>K W X Y Z</td><td>10</td></tr></table>
+    <h3>Fin de partie</h3><p>Quand le sac est vide et qu’un joueur a posé toutes ses lettres, ou que personne ne peut plus jouer : chaque joueur soustrait la valeur des lettres qui lui restent. Celui qui a vidé son chevalet ajoute le total des lettres restantes des autres. Le bouton « Fin de partie » fait ce calcul.</p>`;
   case 'farkle': return `
     <h3>But</h3><p>Être le premier à arriver exactement à ${fmt(f.target)} points.</p>
     <h3>Un tour</h3><ul>
@@ -568,7 +599,7 @@ function rulesHtml(type, g){
 /* ====================== Calculs ====================== */
 function totals(g){
   const t = {}; g.players.forEach(p => t[p.key] = 0);
-  if(g.type === 'farkle') g.turns.forEach(x => { if(x.pk in t) t[x.pk] += x.pts; });
+  if(isTurnGame(g)) g.turns.forEach(x => { if(x.pk in t) t[x.pk] += x.pts; });
   else g.rounds.forEach(r => { for(const k in r.s) if(k in t) t[k] += Number(r.s[k])||0; });
   return t;
 }
@@ -715,7 +746,7 @@ function f7Pts(h){
 function dealerIdx(g){ const n = g.players.length; return (((g.dealer0||0) + g.rounds.length) % n + n) % n; }
 function dealerName(g){ return (g.players[dealerIdx(g)] || {}).name || '?'; }
 function dealerBanner(g){
-  if(g.type === 'farkle' || g.finished || (g.opts.holes && g.rounds.length >= g.opts.holes)) return '';
+  if(isTurnGame(g) || g.finished || (g.opts.holes && g.rounds.length >= g.opts.holes)) return '';
   const G = GAMES[g.type];
   return `<button class="dealer" data-a="dealer"><span class="ic">🃏</span><div class="grow">À <b>${esc(dealerName(g))}</b> de brasser<small>${G.round} ${g.rounds.length + 1}</small></div><span class="chg">Changer</span></button>`;
 }
@@ -829,7 +860,7 @@ function vSetup(){
     ${db.players.length || S.guests.length ? `<div class="chips">${rosterChips}${guestChips}</div>` : `<p class="hint" style="margin-bottom:8px">Aucun joueur dans votre liste pour l’instant. Ajoutez un nom ci-dessous.</p>`}
     <div class="row" style="margin-top:12px"><input id="guestName" class="field" placeholder="Ajouter un nom…" autocomplete="off" enterkeyhint="done"></div>
     <div class="row" style="margin-top:8px"><button class="btn sm" style="flex:1" data-a="addGuest">+ Invité (sans profil)</button><button class="btn sm" style="flex:1" data-a="addRoster">+ À ma liste</button></div>
-    ${type !== 'farkle' && S.sel.length > 1 ? `<h2 class="sec">Premier à brasser</h2><div class="chips">${S.sel.map(k => {
+    ${type !== 'farkle' && type !== 'scrabble' && S.sel.length > 1 ? `<h2 class="sec">Premier à brasser</h2><div class="chips">${S.sel.map(k => {
         const nm = (db.players.find(p => p.id === k) || S.guests.find(g => g.key === k) || {}).name || '?';
         const on = (S.sel.includes(S.dealer) ? S.dealer : S.sel[0]) === k;
         return `<button class="chip ${on?'on':''}" data-a="setDealer0" data-k="${k}" style="padding-left:14px">${on?'🃏 ':''}${esc(nm)}</button>`; }).join('')}</div>
@@ -881,6 +912,7 @@ function startGame(){
 function vSheet(){
   const g = curGame(); if(!g) return vHome();
   if(g.type === 'farkle') return vFarkle(g);
+  if(g.type === 'scrabble') return vScrabble(g);
   const G = GAMES[g.type], r = ranking(g), t = totals(g);
   const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
   const end = !g.finished && endInfo(g);
@@ -982,6 +1014,59 @@ function vFarkle(g){
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
+/* ---------- Scrabble ---------- */
+const SCR_VAL = {A:1,B:3,C:3,D:2,E:1,F:4,G:2,H:4,I:1,J:8,K:10,L:1,M:2,N:1,O:1,P:3,Q:8,R:1,S:1,T:1,U:1,V:4,W:10,X:10,Y:10,Z:10};
+function scrLetters(w){ return String(w || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z]/g, '').split(''); }
+function scrWordScore(letters, marks, mult){
+  let sum = 0; letters.forEach((l, i) => { const m = marks[i] || 0; const v = m === 3 ? 0 : SCR_VAL[l] || 0; sum += v * (m === 1 ? 2 : m === 2 ? 3 : 1); });
+  return sum * (mult || 1);
+}
+function scrState(){ if(!S.scr) S.scr = {word:'', marks:[], mult:1, words:[], bingo:false}; return S.scr; }
+function scrTurnTotal(){ const st = scrState(); return st.words.reduce((a, w) => a + w.pts, 0) + (st.bingo ? 50 : 0); }
+function vScrabble(g){
+  const t = totals(g), r = ranking(g), cur = g.players[g.cur] || g.players[0], st = scrState();
+  const letters = scrLetters(st.word), wpts = scrWordScore(letters, st.marks, st.mult), tt = scrTurnTotal();
+  const MK = ['', 'l2', 'l3', 'j'], TG = ['', 'L×2', 'L×3', 'joker'];
+  const players = `<div class="card list fk-players" style="margin:12px 16px 0">${g.players.map((p,i) => `<button class="li ${i===g.cur && !g.finished?'cur':''}" data-a="scrCur" data-i="${i}"><span class="av" style="background:${p.color}">${initial(p.name)}</span>
+      <div class="grow"><div class="t">${esc(p.name)}</div></div><div class="t num-t" style="font-size:20px">${fmt(t[p.key])}</div></button>`).join('')}</div>`;
+  const panel = g.finished ? '' : `<div class="card turnbox">
+    <div class="row"><div class="who" style="flex:1">Au tour de<b>${esc(cur.name)}</b></div>
+      <div style="text-align:right"><div class="who">Points du tour</div><div class="turnpts num-t">${fmt(tt)}</div></div></div>
+    <label class="lbl" for="scrWord">Mot formé</label>
+    <input id="scrWord" class="field wordin" value="${esc(st.word)}" placeholder="Tapez le mot" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="done">
+    ${letters.length ? `<div class="tiles">${letters.map((l,i) => { const m = st.marks[i] || 0; return `<button class="tile-l ${MK[m]}" data-a="scrMark" data-i="${i}" aria-label="${l}">${m ? `<span class="tag2">${TG[m]}</span>` : ''}${l}<sub>${m === 3 ? 0 : SCR_VAL[l]}</sub></button>`; }).join('')}</div>
+      <p class="hint" style="margin:6px 2px 0">Touchez une lettre posée sur une case bonus : L×2 → L×3 → joker → normale.</p>
+      <div class="wmult">${[1,2,3,4,9].map(m => `<button class="${st.mult===m?'on':''} ${m===1?'x1':''}" data-a="scrMult" data-v="${m}">${m===1 ? 'Mot ×1' : 'Mot ×' + m}</button>`).join('')}</div>
+      <button class="btn primary block" style="margin-top:10px" data-a="scrAddWord">Ajouter « ${esc(letters.join(''))} » : ${fmt(wpts)} pts</button>` : ''}
+    ${st.words.length ? `<div class="card list wordlist" style="margin-top:12px">${st.words.map((w,i) => `<div class="li"><div class="grow"><div class="t">${esc(w.word)}</div><div class="s">${esc(w.detail)}</div></div><b class="num-t">${fmt(w.pts)}</b><button class="btn sm" data-a="scrRmWord" data-i="${i}" aria-label="Retirer">✕</button></div>`).join('')}</div>` : ''}
+    <label class="chk" style="margin-top:8px"><input type="checkbox" id="scrBingo" ${st.bingo?'checked':''}> Scrabble ! 7 lettres posées : +50</label>
+    <div class="row" style="margin-top:8px"><div class="num" style="width:auto;flex:1"><input id="scr-man" inputmode="numeric" placeholder="Ou saisir un total" style="text-align:left"></div><button class="btn sm" data-a="scrMan">Ajouter</button></div>
+    <div class="row" style="margin-top:14px"><button class="btn" style="flex:1" data-a="scrPass">Passer / échanger</button>
+      <button class="btn primary" style="flex:1.4" data-a="scrDone" ${tt>0?'':'disabled'}>Valider ${tt?fmt(tt):''}</button></div>
+    <button class="btn sm block" style="margin-top:10px" data-a="scrEnd">🏁 Fin de partie : lettres restantes</button>
+  </div>`;
+  const log = g.turns.length ? `<h2 class="sec" style="margin:20px 18px 8px">Derniers tours</h2><div class="card list log">${g.turns.slice().reverse().slice(0,12).map(x => {
+      const p = g.players.find(p => p.key === x.pk) || {name:'?'};
+      return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div><div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div></div>`; }).join('')}</div>` : '';
+  return `${topbar(gameName(g), 'Le plus haut gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="scrabble" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+    ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
+    ${players}${panel}${log}<div style="height:40px"></div>`;
+}
+function scrNext(g, turn){
+  g.turns.push(turn); g.cur = (g.cur + 1) % g.players.length; S.scr = null; g.updated = Date.now(); save(); render();
+  const t = $('scrWord'); if(t) t.focus();
+}
+function scrEndModal(){
+  const g = curGame();
+  openModal(`<div class="mhead"><h2>Fin de partie</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody"><p class="hint" style="margin-top:0">Tapez les lettres qui restent à chaque joueur (laissez vide s’il n’en a plus).</p>
+      ${g.players.map(p => `<div class="card prow"><div class="ph"><span class="av" style="background:${p.color}">${initial(p.name)}</span><div class="nm">${esc(p.name)}</div><b class="num-t" id="scrRest-${p.key}">0</b></div>
+        <input class="field wordin" style="margin-top:8px" id="scrLeft-${p.key}" data-scrleft="1" placeholder="Ex. : QE" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>`).join('')}
+      <p class="hint">Le joueur qui n’a plus de lettres reçoit la valeur des lettres restantes des autres.</p></div>
+    <div class="mfoot"><button class="btn" data-a="close">Annuler</button><button class="btn primary" data-a="scrEndOk">Appliquer et terminer</button></div>`);
+}
+function scrLeftVal(pk){ const el = $('scrLeft-' + pk); return el ? scrLetters(el.value).reduce((a, l) => a + (SCR_VAL[l] || 0), 0) : 0; }
+
 /* ---------- Commande vocale (jeu de dés) ---------- */
 const VOICE_NUM = {un:1, une:1, uns:1, deux:2, trois:3, quatre:4, cinq:5, six:6};
 function voiceAvailable(){ return !!((bridge && bridge.listen) || window.SpeechRecognition || window.webkitSpeechRecognition); }
@@ -1067,7 +1152,7 @@ function scoreSeries(g){
   // cumul par joueur : après chaque manche, ou après chacun de ses tours (jeu de dés)
   return g.players.map(p => {
     const pts = [0]; let c = 0;
-    if(g.type === 'farkle') g.turns.forEach(x => { if(x.pk === p.key){ c += x.pts; pts.push(c); } });
+    if(isTurnGame(g)) g.turns.forEach(x => { if(x.pk === p.key){ c += x.pts; pts.push(c); } });
     else g.rounds.forEach(r => { c += Number(r.s[p.key]) || 0; pts.push(c); });
     return {p, pts};
   });
@@ -1102,7 +1187,7 @@ function chartHtml(g, id){
   CH[id] = {g, ser, n, L, W, Rm, H, x};
   const legend = ser.length >= 2 ? `<div class="legend">${ser.map(sr => `<span><i style="background:${sr.p.color}"></i>${esc(sr.p.name)}</span>`).join('')}</div>` : '';
   return `<div class="chart" id="${id}"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Évolution des scores par ${GAMES[g.type].round.toLowerCase()}">${svg}</svg><div class="ctip" id="${id}-tip" hidden></div></div>${legend}
-    <p class="hint" style="margin-top:6px">Axe horizontal : ${g.type === 'farkle' ? 'tours de chaque joueur' : GAMES[g.type].round.toLowerCase() + 's'}. Touchez le graphique pour voir les pointages.</p>`;
+    <p class="hint" style="margin-top:6px">Axe horizontal : ${isTurnGame(g) ? 'tours de chaque joueur' : GAMES[g.type].round.toLowerCase() + 's'}. Touchez le graphique pour voir les pointages.</p>`;
 }
 function chartHover(e){
   const rect = e.target.closest('rect[data-chart]'); if(!rect) return;
@@ -1112,7 +1197,7 @@ function chartHover(e){
   const xh = $(rect.dataset.chart + '-xh'); xh.setAttribute('x1', c.x(i)); xh.setAttribute('x2', c.x(i)); xh.setAttribute('visibility', 'visible');
   const tip = $(rect.dataset.chart + '-tip');
   const rows = c.ser.map(sr => ({sr, v: sr.pts[Math.min(i, sr.pts.length - 1)]})).sort((a,b) => isLow(c.g) ? a.v - b.v : b.v - a.v);
-  tip.innerHTML = `<div class="h">${c.g.type === 'farkle' ? 'Tour ' : GAMES[c.g.type].round + ' '}${i}</div>` + rows.map(r => `<div class="r"><i style="background:${r.sr.p.color}"></i><span>${esc(r.sr.p.name)}</span><b class="num-t">${fmt(r.v)}</b></div>`).join('');
+  tip.innerHTML = `<div class="h">${isTurnGame(c.g) ? 'Tour ' : GAMES[c.g.type].round + ' '}${i}</div>` + rows.map(r => `<div class="r"><i style="background:${r.sr.p.color}"></i><span>${esc(r.sr.p.name)}</span><b class="num-t">${fmt(r.v)}</b></div>`).join('');
   tip.hidden = false; const px = c.x(i) * bb.width / c.W;
   tip.style.left = Math.max(0, Math.min(bb.width - tip.offsetWidth, px + (px > bb.width / 2 ? -tip.offsetWidth - 10 : 10))) + 'px';
 }
@@ -1136,7 +1221,7 @@ function vResults(){
     <h2 class="sec">Classement</h2>
     <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank-1]||x.rank}</span><span class="av" style="background:${x.p.color}">${initial(x.p.name)}</span>
       <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type==='phase10'?`<div class="s">Phase ${Math.min(x.phase,10)}${x.phase>10?' réussie':''}</div>`:''}</div><div class="t num-t" style="font-size:20px">${fmt(x.total)}</div></div>`).join('')}</div>
-    ${(g.type === 'farkle' ? g.turns.length : g.rounds.length) ? `<h2 class="sec">Évolution des scores</h2><div class="card" style="padding:12px 12px 10px">${chartHtml(g, 'chr')}</div>` : ''}
+    ${(isTurnGame(g) ? g.turns.length : g.rounds.length) ? `<h2 class="sec">Évolution des scores</h2><div class="card" style="padding:12px 12px 10px">${chartHtml(g, 'chr')}</div>` : ''}
     ${guests.length ? `<h2 class="sec">Invités</h2><div class="card list">${guests.map(p => `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">Pas dans votre liste de joueurs</div></div><button class="btn sm" data-a="saveGuest" data-k="${p.key}">+ À ma liste</button></div>`).join('')}</div>` : ''}
     <div style="display:grid;gap:10px;margin-top:22px">
       <button class="btn primary block" data-a="rematch">Revanche avec les mêmes joueurs</button>
@@ -1225,9 +1310,9 @@ function recordsFor(gs){
     const r = ranking(g); const w = r[0], second = r.find(x => x.rank > 1);
     if(!(g.winner)){ const v = w.total; if(!bestWin || (low ? v < bestWin.v : v > bestWin.v)) bestWin = {v, who: w.p.name, g}; }
     if(second){ const m = Math.abs(w.total - second.total); if(!margin || m > margin.v) margin = {v: m, who: w.p.name, g}; }
-    const len = g.type === 'farkle' ? g.turns.length : g.rounds.length; if(!longest || len > longest.v) longest = {v: len, g};
+    const len = isTurnGame(g) ? g.turns.length : g.rounds.length; if(!longest || len > longest.v) longest = {v: len, g};
   });
-  const unit = g0.type === 'farkle' ? 'tours' : GAMES[g0.type].round.toLowerCase() + 's';
+  const unit = isTurnGame(g0) ? 'tours' : GAMES[g0.type].round.toLowerCase() + 's';
   const out = [];
   if(bestWin) out.push([low ? 'Meilleur pointage gagnant (le plus bas)' : 'Meilleur pointage gagnant', fmt(bestWin.v), bestWin.who + ' · ' + dateFr(bestWin.g.created)]);
   if(margin) out.push(['Plus grande avance', fmt(margin.v) + ' pts', margin.who + ' · ' + dateFr(margin.g.created)]);
@@ -1495,7 +1580,7 @@ function openMenu(){
   openModal(`<div class="mhead"><h2>${esc(gameName(g))}</h2><button class="icon-btn" data-a="close">✕</button></div>
     <div class="mbody"><div class="card list menu">
       ${g.finished ? `<button class="li" data-a="reopen">↩︎ Rouvrir la partie</button>` : `<button class="li" data-a="finish">🏁 Terminer la partie</button>`}
-      ${g.type!=='farkle' && g.rounds.length && !g.finished ? `<button class="li" data-a="undoRound">↶ Supprimer la dernière manche</button>` : ''}
+      ${!isTurnGame(g) && g.rounds.length && !g.finished ? `<button class="li" data-a="undoRound">↶ Supprimer la dernière manche</button>` : ''}
       ${!g.finished ? `<button class="li" data-a="addLate">➕ Ajouter un joueur</button>` : ''}
       <button class="li" data-a="rematch">🔁 Revanche (nouvelle partie)</button>
       <button class="li" data-a="chart">📈 Évolution des scores</button>
@@ -1520,7 +1605,7 @@ function fbContext(){
   if(g){
     const t = totals(g);
     ctx.jeu = gameName(g);
-    ctx.avancement = g.type === 'farkle' ? g.turns.length + ' tour(s)' : g.rounds.length + ' ' + GAMES[g.type].round.toLowerCase() + '(s)';
+    ctx.avancement = isTurnGame(g) ? g.turns.length + ' tour(s)' : g.rounds.length + ' ' + GAMES[g.type].round.toLowerCase() + '(s)';
     ctx.pointage = g.players.map(p => p.name + ' ' + fmt(t[p.key])).join(' · ');
   }
   return {ctx, game: g};
@@ -1690,6 +1775,26 @@ const A = {
   fbSend: () => { const it = fbBuild(); if(!it) return toast('Écrivez quelques mots d’abord'); const q = fbQueue(); q.push(it); fbSaveQueue(q); closeModal(); toast('Envoi…'); fbFlush(false); },
   fbRetry: () => fbFlush(false),
   voice: () => voiceStart(),
+  scrCur: el => { const g = curGame(); if(g.finished) return; if(scrTurnTotal()) return toast('Validez ou passez le tour en cours d’abord'); g.cur = Number(el.dataset.i); S.scr = null; save(); render(); },
+  scrMark: el => { const st = scrState(), i = Number(el.dataset.i); st.marks[i] = ((st.marks[i] || 0) + 1) % 4; render(); },
+  scrMult: el => { scrState().mult = Number(el.dataset.v); render(); },
+  scrAddWord: () => { const st = scrState(), letters = scrLetters(st.word); if(!letters.length) return;
+    const pts = scrWordScore(letters, st.marks, st.mult);
+    const bon = letters.map((l,i) => ({1:l+'×2', 2:l+'×3', 3:l+' joker'})[st.marks[i]||0]).filter(Boolean);
+    st.words.push({word: letters.join(''), pts, detail: [bon.join(', '), st.mult > 1 ? 'mot ×' + st.mult : ''].filter(Boolean).join(' · ') || 'sans bonus'});
+    st.word = ''; st.marks = []; st.mult = 1; render(); const t = $('scrWord'); if(t) t.focus(); },
+  scrRmWord: el => { scrState().words.splice(Number(el.dataset.i), 1); render(); },
+  scrMan: () => { const v = num($('scr-man').value); if(!v) return; scrState().words.push({word:'Total saisi', pts: v, detail:'saisie manuelle'}); render(); },
+  scrDone: () => { const g = curGame(), st = scrState(), tt = scrTurnTotal(); if(tt <= 0) return;
+    const note = st.words.map(w => w.word + ' ' + fmt(w.pts)).join(' · ') + (st.bingo ? ' · Scrabble ! +50' : '');
+    scrNext(g, {pk: g.players[g.cur].key, pts: tt, note, t: Date.now()}); },
+  scrPass: () => { const g = curGame(); scrNext(g, {pk: g.players[g.cur].key, pts: 0, note: 'Passe ou échange', t: Date.now()}); },
+  scrEnd: () => scrEndModal(),
+  scrEndOk: () => { const g = curGame(); const left = {}; g.players.forEach(p => left[p.key] = scrLeftVal(p.key));
+    const out = g.players.filter(p => !$('scrLeft-' + p.key).value.trim()); const others = Object.values(left).reduce((a,b) => a + b, 0);
+    g.players.forEach(p => { if(left[p.key]) g.turns.push({pk: p.key, pts: -left[p.key], note: 'Fin : lettres restantes ' + scrLetters($('scrLeft-'+p.key).value).join('') + ' (−' + left[p.key] + ')', t: Date.now()}); });
+    if(out.length === 1 && others) g.turns.push({pk: out[0].key, pts: others, note: 'Fin : a vidé son chevalet (+' + others + ')', t: Date.now()});
+    g.finished = true; g.updated = Date.now(); S.scr = null; closeModal(); save(); go('results'); },
   undo: () => histUndo(),
   redo: () => histRedo(),
   copyExp: () => { const t = $('expTxt'); const done = () => toast('Copié');
@@ -1732,10 +1837,13 @@ document.addEventListener('input', e => {
   const t = e.target;
   if(t.id === 'house'){ const v = t.value; if(v.trim()) db.house[t.dataset.hk] = v; else delete db.house[t.dataset.hk]; save(); }
   if(t.dataset && t.dataset.sb) sbUpdate();
+  if(t.id === 'scrWord'){ const st = scrState(); st.word = t.value; st.marks = []; clearTimeout(window.__scrT); window.__scrT = setTimeout(() => { const pos = t.selectionStart; render(); const n = $('scrWord'); if(n){ n.focus(); try{ n.setSelectionRange(pos, pos); }catch(e){} } }, 350); }
+  if(t.dataset && t.dataset.scrleft){ const pk = t.id.slice(8); $('scrRest-' + pk).textContent = scrLeftVal(pk); }
 });
 document.addEventListener('change', e => {
   const t = e.target;
   if(t.name === 'sbw') sbUpdate();
+  if(t.id === 'scrBingo') { scrState().bingo = t.checked; render(); }
   if(t.id === 'importFile' && t.files[0]){ const r = new FileReader(); r.onload = () => window.onImportData(r.result); r.readAsText(t.files[0]); }
 });
 document.addEventListener('keydown', e => {
@@ -1745,6 +1853,8 @@ document.addEventListener('keydown', e => {
   else if(id === 'newPlayer'){ e.preventDefault(); A.addPlayer(); }
   else if(id === 'pr'){ e.preventDefault(); A.promptOk(); }
   else if(id === 'fk-man'){ e.preventDefault(); A.fkAddMan(); }
+  else if(id === 'scrWord'){ e.preventDefault(); clearTimeout(window.__scrT); render(); }
+  else if(id === 'scr-man'){ e.preventDefault(); A.scrMan(); }
   else if(e.target.closest && e.target.closest('#modal .num')){ // passe au champ suivant
     e.preventDefault(); const ins = [...document.querySelectorAll('#modal .num input')]; const i = ins.indexOf(e.target);
     if(i >= 0 && i < ins.length-1) ins[i+1].focus(); else e.target.blur(); }
