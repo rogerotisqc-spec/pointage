@@ -48,5 +48,6 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   aucun dé n'a compté pendant le tour, six dés identiques = victoire immédiate.
 - Uno : choix au début de la partie. Officielle (par défaut) : celui qui termine la manche marque les
   cartes des autres, premier à 500 gagne. Maison : chacun compte ses cartes, le plus bas gagne.
-- Skip-Bo : pointage officiel.
+- Skip-Bo : pointage officiel ; individuel ou en équipes (choix au début). En équipes, g.players
+  contient les équipes, g.members les joueurs de chaque équipe, g.seat l'ordre autour de la table.
 - Play Nine : 9 trous seulement.

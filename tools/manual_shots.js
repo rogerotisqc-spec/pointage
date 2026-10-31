@@ -99,11 +99,13 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   for (const v of [5, 5, -5, 3, 5, 5, -5, 7]) await tap(`[data-a=p9k][data-k="${kp[0]}"][data-v="${v}"]`);
   await shot('playnine-calculatrice'); await tap('[data-a=close]');
 
-  // ---------- Skip-Bo ----------
-  await startGame('skipbo', ['Roger', 'Marie', 'Léa']);
+  // ---------- Skip-Bo en équipes ----------
+  await startGame('skipbo', ['Roger', 'Léa', 'Marie', 'Zoé'], async () => { await tap('[data-a=setTeams][data-v="1"]'); await p.evaluate(() => window.scrollTo(0, 9999)); await shot('skipbo-equipes'); });
   await tap('[data-a=addRound]'); await p.check('input[name=sbw] >> nth=0');
-  const sb = await p.$$('[data-sb]'); await sb[1].fill('4'); await sb[2].fill('7');
-  await shot('skipbo-saisie'); await tap('[data-a=close]');
+  await p.fill('#sb-tm1-0', '4'); await p.fill('#sb-tm1-1', '6'); await p.dispatchEvent('#sb-tm1-1', 'input');
+  await shot('skipbo-saisie'); await tap('[data-a=saveRound]');
+  await tap('[data-a=addRound]'); await p.check('input[name=sbw] >> nth=1'); await p.fill('#sb-tm0-0', '2'); await tap('[data-a=saveRound]');
+  await tap('[data-a=menu]'); await tap('[data-a=finish]'); await shot('skipbo-resultat');
 
   // ---------- Mille Bornes ----------
   await startGame('millebornes', ['Roger', 'Marie']);

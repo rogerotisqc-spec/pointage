@@ -1,6 +1,6 @@
 {
- "version": "2.9",
- "notes": "• Uno : choix de la façon de compter au début de la partie. Officielle : celui qui termine la manche marque la valeur des cartes des autres, et le premier à 500 gagne. Maison : chacun compte ses cartes, le plus bas gagne. Règles et manuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.9.apk",
+ "version": "3.0",
+ "notes": "• Skip-Bo : choix entre jeu individuel et jeu en équipes au début de la partie. En équipes, on forme les équipes (A, B ou C) ; l'équipe qui termine la manche marque 25 + 5 par carte restante chez les adversaires. Résultat et statistiques par équipe (chaque membre de l'équipe gagnante reçoit la victoire). Règles et manuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.0.apk",
  "size": 103257
 }

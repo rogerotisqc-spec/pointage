@@ -436,7 +436,7 @@ const GAMES = {
   playnine:   {name:'Play Nine',      color:'#2b8a3e', badge:'9',  desc:'9 trous · le plus bas gagne', round:'Trou', low:true, helper:'playnine'},
   flip7:      {name:'Flip 7',         color:'#e8590c', badge:'7',  desc:'Premier à 200', round:'Manche', target:200, helper:'flip7'},
   uno:        {name:'Uno',            color:'#c92a2a', badge:'U',  desc:'Officiel ou maison · partie à 500', round:'Manche', target:500, helper:'uno'},
-  skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'25 + 5 par carte · premier à 500', round:'Manche', target:500},
+  skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'Individuel ou en équipes · 500', round:'Manche', target:500},
   millebornes:{name:'Mille Bornes',   color:'#d9a400', badge:'1000', desc:'Premier à 5 000', round:'Manche', target:5000},
   phase10:    {name:'Phase 10',       color:'#6741d9', badge:'10', desc:'10 phases · le moins de points', round:'Manche', low:true, helper:'phase10'},
   scrabble:   {name:'Scrabble',       color:'#9c6b2f', badge:'S',  desc:'Calcul des mots · fin de partie', round:'Tour'},
@@ -460,6 +460,9 @@ const PHASE_EX = [[[5,5,5],[9,9,9]],[[8,8,8],[3,4,5,6]],[[2,2,2,2],[6,7,8,9]],[[
 const PHASE_EXPL = ['Deux groupes de 3 cartes de même chiffre.','Trois cartes de même chiffre et 4 chiffres qui se suivent.','Quatre cartes de même chiffre et 4 chiffres qui se suivent.',
   '7 chiffres qui se suivent, couleurs mélangées.','8 chiffres qui se suivent, couleurs mélangées.','9 chiffres qui se suivent, couleurs mélangées.','Deux groupes de 4 cartes de même chiffre.',
   '7 cartes de la même couleur, n’importe quels chiffres.','Cinq cartes de même chiffre et deux autres de même chiffre.','Cinq cartes de même chiffre et trois autres de même chiffre.'];
+// Équipes : g.players contient les équipes (pour le pointage) ; g.members[clé d'équipe] les vrais joueurs ; g.seat l'ordre autour de la table
+function realPlayers(g){ return g.team ? g.seat : g.players; }
+function membersOf(g, p){ return g.team ? (g.members[p.key] || []) : [p]; }
 function isTurnGame(g){ return g.type === 'farkle' || g.type === 'scrabble'; }
 function gameName(g){ return g.type === 'generic' ? (g.title || 'Pointage libre') : GAMES[g.type].name; }
 function houseKey(type, title){ return type === 'generic' ? 'generic:' + (title||'').trim().toLowerCase() : type; }
@@ -519,7 +522,12 @@ function rulesHtml(type, g){
       <li>On joue sur ces piles depuis sa main, le dessus de son talon ou le dessus de ses défausses. Les cartes Skip-Bo sont des jokers.</li>
       <li>Si on vide sa main, on repige 5 cartes et on continue.</li>
       <li>Le tour se termine en déposant une carte sur une de ses 4 piles de défausse.</li></ul>
-    <h3>Pointage officiel</h3><p>Le gagnant de la manche marque <b>25 points + 5 points par carte</b> restant dans le talon de chaque adversaire. Premier à ${fmt((g&&g.opts.target)||500)}.</p>`;
+    <h3>Pointage officiel</h3><p>Le gagnant de la manche marque <b>25 points + 5 points par carte</b> restant dans le talon de chaque adversaire. Premier à ${fmt((g&&g.opts.target)||500)}.</p>
+    <h3>En équipes${g && g.team ? ' (cette partie)' : ''}</h3><ul>
+      <li>À 4 joueurs (ou 6), on forme des équipes de deux ; les partenaires s’assoient face à face.</li>
+      <li>Les partenaires s’entraident : selon l’édition du jeu, on peut jouer les cartes du talon et des piles de défausse de son partenaire. Notez votre façon de faire dans « Nos règles maison ».</li>
+      <li>L’<b>équipe</b> qui termine la manche marque 25 points + 5 points par carte restant dans le talon <b>de chaque joueur adverse</b>. Les points vont au total de l’équipe, et la première équipe à ${fmt((g&&g.opts.target)||500)} gagne.</li></ul>
+    <p class="hint">Choisissez « Individuel » ou « En équipes » au début de la partie.</p>`;
   case 'millebornes': return `
     <h3>But</h3><p>Parcourir exactement 1 000 km par manche. La partie se joue en ${fmt((g&&g.opts.target)||5000)} points. Souvent en équipes à 4 ou 6 joueurs (inscrivez l’équipe comme un joueur).</p>
     <h3>Un tour</h3><p>6 cartes en main. Piger une carte, puis en jouer ou en défausser une.</p>
@@ -736,8 +744,8 @@ function f7Pts(h){
   return s*(h.x2?2:1) + h.mods.reduce((a,b)=>a+b,0) + (h.bonus?15:0);
 }
 
-function dealerIdx(g){ const n = g.players.length; return (((g.dealer0||0) + g.rounds.length) % n + n) % n; }
-function dealerName(g){ return (g.players[dealerIdx(g)] || {}).name || '?'; }
+function dealerIdx(g){ const n = realPlayers(g).length; return (((g.dealer0||0) + g.rounds.length) % n + n) % n; }
+function dealerName(g){ return (realPlayers(g)[dealerIdx(g)] || {}).name || '?'; }
 function dealerBanner(g){
   if(isTurnGame(g) || g.finished || (g.opts.holes && g.rounds.length >= g.opts.holes)) return '';
   const G = GAMES[g.type];
@@ -809,11 +817,14 @@ function vHome(){
 
 /* ---------- Préparation d'une partie ---------- */
 function startSetup(type, preset){
-  const sel = preset ? preset.players.map(p => p.guest ? p.key : p.rid).filter(Boolean)
+  const pp = preset ? realPlayers(preset) : [];
+  const sel = preset ? pp.map(p => p.guest ? p.key : p.rid).filter(Boolean)
                      : (db.lastSel[type]||[]).filter(id => db.players.some(p => p.id === id));
-  const guests = preset ? preset.players.filter(p => p.guest).map(p => ({key:p.key, name:p.name})) : [];
+  const guests = preset ? pp.filter(p => p.guest).map(p => ({key:p.key, name:p.name})) : [];
+  const teamOf = {};
+  if(preset && preset.team) preset.players.forEach((t, ti) => (preset.members[t.key] || []).forEach(m => { teamOf[m.guest ? m.key : m.rid] = ti; }));
   go('setup', {setupType:type, sel, guests, dealer:null, setupTitle: preset ? preset.title||'' : '', setupLow: preset ? !!preset.opts.low : false,
-               setupOpts: preset ? JSON.parse(JSON.stringify(preset.opts)) : null});
+               setupOpts: preset ? Object.assign(JSON.parse(JSON.stringify(preset.opts)), preset.team ? {teams: true, nteams: preset.players.length} : {}) : null, teamOf});
 }
 function vSetup(){
   const type = S.setupType, G = GAMES[type];
@@ -849,6 +860,17 @@ function vSetup(){
       <p class="hint">Partie à ${fmt(f.target)} · ${fmt(f.entry)} pour entrer · −${fmt(f.pen)} à partir de ${fmt(f.penFrom)}</p>`;
   } else if(G.target){
     opts = `<label class="lbl" for="o-target">Partie à</label><input id="o-target" class="field" inputmode="numeric" value="${o.target||G.target}">`;
+    if(type === 'skipbo'){
+      const nt = o.nteams || 2, tn = ['A','B','C'];
+      const nameOf = k => (db.players.find(p => p.id === k) || S.guests.find(g => g.key === k) || {}).name || '?';
+      opts = `<label class="lbl">Façon de jouer</label>
+        <div class="seg"><button data-a="setTeams" data-v="0" class="${!o.teams?'on':''}">Individuel</button><button data-a="setTeams" data-v="1" class="${o.teams?'on':''}">En équipes</button></div>
+        ${o.teams ? `<div class="seg" style="margin-top:8px">${[2,3].map(n => `<button data-a="setNTeams" data-v="${n}" class="${nt===n?'on':''}">${n} équipes</button>`).join('')}</div>
+          ${S.sel.length ? `<div style="margin-top:10px">${S.sel.map((k, i) => { const cur = teamIdx(k, i, nt);
+            return `<div class="line"><div class="l"><b>${esc(nameOf(k))}</b></div><div class="seg" style="width:${nt*58}px">${[...Array(nt).keys()].map(t => `<button data-a="setTeamOf" data-k="${k}" data-v="${t}" class="${cur===t?'on':''}">${tn[t]}</button>`).join('')}</div></div>`; }).join('')}</div>
+            <p class="hint">Partenaires assis face à face. ${teamSummary(nt, nameOf)}</p>` : '<p class="hint">Choisissez d’abord les joueurs ci-dessus.</p>'}` :
+          '<p class="hint">Chacun pour soi : le gagnant de la manche marque 25 + 5 par carte restante dans le talon des autres.</p>'}` + opts;
+    }
     if(type === 'uno'){ const off = (o.mode || db.unoMode || 'official') === 'official';
       opts = `<label class="lbl">Façon de compter</label>
       <div class="seg"><button data-a="setUnoMode" data-v="official" class="${off?'on':''}">Officielle</button><button data-a="setUnoMode" data-v="house" class="${!off?'on':''}">Maison</button></div>
@@ -871,6 +893,8 @@ function vSetup(){
   </main>
   <button class="btn primary fab" data-a="start" ${S.sel.length?'':'disabled'}>Commencer${S.sel.length?` · ${S.sel.length} joueur${S.sel.length>1?'s':''}`:''}</button>`;
 }
+function teamIdx(k, i, nt){ const t = S.teamOf && S.teamOf[k]; return (t != null && t < nt) ? t : i % nt; }
+function teamSummary(nt, nameOf){ const tn = ['A','B','C']; return [...Array(nt).keys()].map(t => 'Équipe ' + tn[t] + ' : ' + (S.sel.filter((k,i) => teamIdx(k,i,nt) === t).map(nameOf).join(' et ') || '—')).join(' · '); }
 function readSetupFields(){
   // conserve ce qui a été tapé avant un re-rendu
   const o = S.setupOpts = S.setupOpts || {};
@@ -886,6 +910,7 @@ function startGame(){
   readSetupFields();
   const type = S.setupType, G = GAMES[type], o = S.setupOpts || {};
   if(type === 'skipbo' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
+  if(type === 'skipbo' && o.teams && S.sel.length < (o.nteams || 2)) return toast('Il faut au moins un joueur par équipe');
   const players = S.sel.map(k => {
     const p = db.players.find(x => x.id === k);
     if(p) return {key:'p'+p.id, rid:p.id, name:p.name, color:p.color, guest:false};
@@ -907,6 +932,16 @@ function startGame(){
   db.lastSel[type] = S.sel.filter(k => db.players.some(p => p.id === k));
   const g = {id:uid(), type, title, created:Date.now(), updated:Date.now(), finished:false, players, rounds:[], turns:[], cur:0, opts,
              dealer0: Math.max(0, S.sel.indexOf(S.sel.includes(S.dealer) ? S.dealer : S.sel[0]))};
+  if(type === 'skipbo' && o.teams){
+    const nt = o.nteams || 2, tn = ['A','B','C'], teams = [], members = {};
+    for(let t = 0; t < nt; t++){
+      const mem = players.filter((p, i) => teamIdx(S.sel[i], i, nt) === t);
+      if(!mem.length) return toast('Chaque équipe doit avoir au moins un joueur');
+      const key = 'tm' + t; members[key] = mem;
+      teams.push({key, name: mem.map(m => m.name).join(' et '), color: mem[0].color, team: tn[t]});
+    }
+    g.team = true; g.seat = players; g.members = members; g.players = teams;
+  }
   db.games.push(g); save();
   S = {view:'sheet', gameId:g.id, stack:[{view:'home'}], turn:0, dice:[]};
   render(true);
@@ -1193,7 +1228,7 @@ function chartHtml(g, id){
   if(ser.length <= 4){ // étiquettes directes en bout de ligne, décalées pour ne pas se chevaucher
     const ends = ser.map(sr => ({sr, yy: y(sr.pts[sr.pts.length-1]), xx: x(sr.pts.length-1)})).sort((a,b) => a.yy - b.yy);
     for(let i = 1; i < ends.length; i++) if(ends[i].yy - ends[i-1].yy < 13) ends[i].yy = ends[i-1].yy + 13;
-    ends.forEach(e => { const nm = e.sr.p.name.length > 8 ? e.sr.p.name.slice(0,7) + '.' : e.sr.p.name; svg += `<text class="lbl" x="${e.xx + 7}" y="${e.yy + 4}">${esc(nm)}</text>`; });
+    ends.forEach(e => { const nm = e.sr.p.team ? 'Équipe ' + e.sr.p.team : (e.sr.p.name.length > 8 ? e.sr.p.name.slice(0,7) + '.' : e.sr.p.name); svg += `<text class="lbl" x="${e.xx + 7}" y="${e.yy + 4}">${esc(nm)}</text>`; });
   }
   svg += `<line id="${id}-xh" class="xh" x1="0" x2="0" y1="${T}" y2="${H-B}" visibility="hidden"/>`;
   svg += `<rect data-chart="${id}" x="${L}" y="0" width="${W-L-Rm}" height="${H}" fill="transparent"/>`;
@@ -1225,14 +1260,14 @@ function openChart(){
 /* ---------- Résultat ---------- */
 function vResults(){
   const g = curGame(); const r = ranking(g); const med = ['🥇','🥈','🥉'];
-  const guests = g.players.filter(p => p.guest && !db.players.some(x => x.name.toLowerCase() === p.name.toLowerCase()));
+  const guests = realPlayers(g).filter(p => p.guest && !db.players.some(x => x.name.toLowerCase() === p.name.toLowerCase()));
   return `${topbar('Résultat', gameName(g) + ' · ' + dateFr(g.created))}
   <main class="pad">
     <div class="card" style="padding:22px 16px;text-align:center"><div style="font-size:44px">🏆</div>
       <h2 style="font-size:24px;margin-top:6px">${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(' et '))}</h2>${g.winner?'<p class="hint" style="margin:4px 0 0">🎲 Six dés identiques</p>':''}
-      <p class="hint" style="margin-top:4px">${r.filter(x=>x.rank===1).length>1?'remportent':'remporte'} la partie</p></div>
+      <p class="hint" style="margin-top:4px">${g.team ? 'équipe ' + esc(r.filter(x=>x.rank===1).map(x=>x.p.team).join(', ')) + ' · ' + (r[0] && membersOf(g, r[0].p).length > 1 ? 'remportent' : 'remporte') : (r.filter(x=>x.rank===1).length>1?'remportent':'remporte')} la partie</p></div>
     <h2 class="sec">Classement</h2>
-    <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank-1]||x.rank}</span><span class="av" style="background:${x.p.color}">${initial(x.p.name)}</span>
+    <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank-1]||x.rank}</span><span class="av" style="background:${x.p.color}">${g.team ? esc(x.p.team) : initial(x.p.name)}</span>
       <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type==='phase10'?`<div class="s">Phase ${Math.min(x.phase,10)}${x.phase>10?' réussie':''}</div>`:''}</div><div class="t num-t" style="font-size:20px">${fmt(x.total)}</div></div>`).join('')}</div>
     ${(isTurnGame(g) ? g.turns.length : g.rounds.length) ? `<h2 class="sec">Évolution des scores</h2><div class="card" style="padding:12px 12px 10px">${chartHtml(g, 'chr')}</div>` : ''}
     ${guests.length ? `<h2 class="sec">Invités</h2><div class="card list">${guests.map(p => `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">Pas dans votre liste de joueurs</div></div><button class="btn sm" data-a="saveGuest" data-k="${p.key}">+ À ma liste</button></div>`).join('')}</div>` : ''}
@@ -1296,7 +1331,7 @@ function computeStats(gs){
   const st = {};
   const get = p => { const k = pkey(p.name); return st[k] = st[k] || {name:p.name, color:p.color, n:0, w:0, seq:[], vs:{}, games:{}}; };
   gs.forEach(g => {
-    const r = ranking(g), winners = r.filter(x => x.rank === 1).map(x => x.p);
+    const r = ranking(g).flatMap(x => membersOf(g, x.p).map(m => ({p: m, rank: x.rank}))), winners = r.filter(x => x.rank === 1).map(x => x.p);
     r.forEach(x => {
       const s1 = get(x.p), won = x.rank === 1, gk = statKey(g);
       s1.n++; if(won) s1.w++; s1.seq.push(won); s1.color = x.p.color;
@@ -1515,9 +1550,10 @@ function openRound(idx){
   } else if(g.type === 'skipbo'){
     M = {round:idx};
     const w = (rd.m||{}).w; const left = (rd.m||{}).left || {};
-    body = `<p class="hint" style="margin:0 0 10px">Qui a vidé son talon ?</p>${g.players.map(p => `<label class="radio"><input type="radio" name="sbw" value="${p.key}" ${w===p.key?'checked':''}> <span class="av" style="background:${p.color};width:30px;height:30px">${initial(p.name)}</span> ${esc(p.name)}</label>`).join('')}
-      <h2 class="sec">Cartes restantes dans le talon des autres</h2>
-      ${g.players.map(p => `<div class="card prow" id="sbrow-${p.key}"><div class="ph"><div class="nm">${esc(p.name)}</div><div class="num" style="width:110px"><input id="sb-${p.key}" data-sb="1" inputmode="numeric" value="${left[p.key]!=null?left[p.key]:''}" placeholder="0"></div></div></div>`).join('')}
+    body = `<p class="hint" style="margin:0 0 10px">${g.team ? 'Quelle équipe a gagné la manche ?' : 'Qui a vidé son talon ?'}</p>${g.players.map(p => `<label class="radio"><input type="radio" name="sbw" value="${p.key}" ${w===p.key?'checked':''}> <span class="av" style="background:${p.color};width:30px;height:30px">${g.team ? esc(p.team) : initial(p.name)}</span> ${g.team ? 'Équipe ' + esc(p.team) + ' · ' : ''}${esc(p.name)}</label>`).join('')}
+      <h2 class="sec">Cartes restantes dans le talon ${g.team ? 'des joueurs adverses' : 'des autres'}</h2>
+      ${g.players.map(p => `<div id="sbrow-${p.key}">${membersOf(g, p).map((m, mi) => { const id = g.team ? p.key + '-' + mi : p.key;
+        return `<div class="card prow"><div class="ph"><div class="nm">${esc(m.name)}${g.team ? ` <span class="hint" style="margin:0">· équipe ${esc(p.team)}</span>` : ''}</div><div class="num" style="width:110px"><input id="sb-${id}" data-sb="1" data-team="${p.key}" inputmode="numeric" value="${left[id]!=null?left[id]:''}" placeholder="0"></div></div></div>`; }).join('')}</div>`).join('')}
       <div class="card prow"><div class="ph"><div class="nm">Points du gagnant</div><div class="ptotal num-t" id="sb-total">–</div></div><p class="hint" style="margin:4px 0 0">25 + 5 par carte restante</p></div>`;
   } else {
     M = {round:idx, f7:{}};
@@ -1575,7 +1611,8 @@ function p9Render(pk){
 function sbUpdate(){
   const g = curGame(); const w = (document.querySelector('input[name=sbw]:checked')||{}).value;
   let sum = 0;
-  g.players.forEach(p => { const row = $('sbrow-'+p.key); if(row) row.style.display = p.key === w ? 'none' : ''; if(p.key !== w) sum += Math.max(0, num($('sb-'+p.key).value)); });
+  g.players.forEach(p => { const row = $('sbrow-'+p.key); if(row) row.style.display = p.key === w ? 'none' : ''; });
+  document.querySelectorAll('#modal [data-sb]').forEach(i => { if(i.dataset.team !== w) sum += Math.max(0, num(i.value)); });
   $('sb-total').textContent = w ? fmt(25 + 5*sum) : '–';
 }
 function unoUpdate(){
@@ -1604,7 +1641,7 @@ function saveRound(){
     const w = (document.querySelector('input[name=sbw]:checked')||{}).value;
     if(!w) return toast('Choisissez le gagnant de la manche');
     let sum = 0; rd.m = {w, left:{}};
-    g.players.forEach(p => { if(p.key !== w){ const n = Math.max(0, num($('sb-'+p.key).value)); rd.m.left[p.key] = n; sum += n; } });
+    document.querySelectorAll('#modal [data-sb]').forEach(i => { if(i.dataset.team !== w){ const n = Math.max(0, num(i.value)); rd.m.left[i.id.slice(3)] = n; sum += n; } });
     g.players.forEach(p => rd.s[p.key] = p.key === w ? 25 + 5*sum : 0);
   } else {
     if(g.type === 'phase10' && M.round !== null) rd.m = g.rounds[M.round].m || {};
@@ -1623,7 +1660,7 @@ function openMenu(){
     <div class="mbody"><div class="card list menu">
       ${g.finished ? `<button class="li" data-a="reopen">↩︎ Rouvrir la partie</button>` : `<button class="li" data-a="finish">🏁 Terminer la partie</button>`}
       ${!isTurnGame(g) && g.rounds.length && !g.finished ? `<button class="li" data-a="undoRound">↶ Supprimer la dernière manche</button>` : ''}
-      ${!g.finished ? `<button class="li" data-a="addLate">➕ Ajouter un joueur</button>` : ''}
+      ${!g.finished && !g.team ? `<button class="li" data-a="addLate">➕ Ajouter un joueur</button>` : ''}
       <button class="li" data-a="rematch">🔁 Revanche (nouvelle partie)</button>
       <button class="li" data-a="chart">📈 Évolution des scores</button>
       <button class="li" data-a="feedback">💬 Signaler un problème / suggérer</button>
@@ -1728,6 +1765,9 @@ const A = {
   addGuest: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const k = 'g' + uid(); S.guests.push({key:k, name:n}); S.sel.push(k); render(); },
   addRoster: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const p = newPlayer(n); if(p){ S.sel.push(p.id); render(); toast(n + ' ajouté à votre liste'); } },
   setScrMode: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {simple: el.dataset.v === '1'}); render(); },
+  setTeams: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {teams: el.dataset.v === '1'}); render(); },
+  setNTeams: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {nteams: Number(el.dataset.v)}); render(); },
+  setTeamOf: el => { readSetupFields(); S.teamOf = Object.assign(S.teamOf||{}, {[el.dataset.k]: Number(el.dataset.v)}); render(); },
   setUnoMode: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {mode: el.dataset.v}); render(); },
   setLow: el => { readSetupFields(); S.setupLow = el.dataset.v === '1'; render(); },
   setHoles: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {holes: Number(el.dataset.v)}); render(); },
@@ -1774,7 +1814,7 @@ const A = {
   setDealer0: el => { readSetupFields(); S.dealer = el.dataset.k; render(); },
   dealer: () => { const g = curGame();
     openModal(`<div class="mhead"><h2>Qui brasse la ${GAMES[g.type].round.toLowerCase()} ${g.rounds.length+1} ?</h2><button class="icon-btn" data-a="close">✕</button></div>
-      <div class="mbody"><div class="card list">${g.players.map((p,i) => `<button class="li" data-a="pickDealer" data-i="${i}"><span class="av" style="background:${p.color}">${initial(p.name)}</span><div class="grow"><div class="t">${esc(p.name)}</div></div>${i===dealerIdx(g)?'🃏':''}</button>`).join('')}</div>
+      <div class="mbody"><div class="card list">${realPlayers(g).map((p,i) => `<button class="li" data-a="pickDealer" data-i="${i}"><span class="av" style="background:${p.color}">${initial(p.name)}</span><div class="grow"><div class="t">${esc(p.name)}</div></div>${i===dealerIdx(g)?'🃏':''}</button>`).join('')}</div>
       <p class="hint">Les manches suivantes continueront dans l’ordre à partir de ce joueur.</p></div>`); },
   pickDealer: el => { const g = curGame(); g.dealer0 = Number(el.dataset.i) - g.rounds.length; save(); closeModal(); render(); },
   menu: () => openMenu(),
@@ -1789,18 +1829,18 @@ const A = {
       save(); render(); }); },
   delGame: () => { closeModal(); const g = curGame(); confirmBox('Supprimer définitivement cette partie ?', 'Supprimer', () => { db.games = db.games.filter(x => x.id !== g.id); save(); tab('home'); }, true); },
   rematch: () => { closeModal(); const g = curGame(); const st = [{view:'home'}]; S = {view:'home', stack:[]}; startSetup(g.type, g); S.stack = st; render(true); },
-  saveGuest: el => { const g = curGame(); const p = g.players.find(x => x.key === el.dataset.k); const np = newPlayer(p.name, p.color);
-    if(np){ db.games.forEach(gg => gg.players.forEach(x => { if(x.guest && x.name.toLowerCase() === np.name.toLowerCase()){ x.guest = false; x.rid = np.id; } })); save(); render(); toast(np.name + ' est dans votre liste'); } },
+  saveGuest: el => { const g = curGame(); const p = realPlayers(g).find(x => x.key === el.dataset.k); const np = newPlayer(p.name, p.color);
+    if(np){ db.games.forEach(gg => realPlayers(gg).forEach(x => { if(x.guest && x.name.toLowerCase() === np.name.toLowerCase()){ x.guest = false; x.rid = np.id; } })); save(); render(); toast(np.name + ' est dans votre liste'); } },
   confirmOk: () => { const fn = M.confirm; closeModal(); fn(); },
   promptOk: () => { const fn = M.prompt, v = $('pr').value; closeModal(); fn(v); },
   officialRules: el => openUrl('https://www.google.com/search?q=' + encodeURIComponent('règles officielles ' + el.dataset.q + ' pdf')),
   addPlayer: () => { const i = $('newPlayer'); const n = i.value.trim(); if(!n) return toast('Tapez un nom'); if(newPlayer(n)){ render(); setTimeout(()=>{ const x=$('newPlayer'); if(x) x.focus(); }, 30); } },
   renamePlayer: el => { const p = db.players.find(x => x.id === el.dataset.id); promptBox('Renommer', p.name, n => { n = n.trim(); if(!n) return; p.name = n;
-      db.games.forEach(g => g.players.forEach(x => { if(x.rid === p.id) x.name = n; })); save(); render(); }); },
+      db.games.forEach(g => { realPlayers(g).forEach(x => { if(x.rid === p.id) x.name = n; }); if(g.team) g.players.forEach(t => t.name = g.members[t.key].map(m => m.name).join(' et ')); }); save(); render(); }); },
   delPlayer: el => { const p = db.players.find(x => x.id === el.dataset.id); confirmBox('Retirer ' + p.name + ' de la liste ?', 'Retirer', () => { db.players = db.players.filter(x => x.id !== p.id); save(); render(); toast('Son nom reste dans l’historique'); }, true); },
   movePlayer: el => { const i = db.players.findIndex(x => x.id === el.dataset.id); if(i>0){ const [p] = db.players.splice(i,1); db.players.splice(i-1,0,p); save(); render(); } },
   recolor: el => { const p = db.players.find(x => x.id === el.dataset.id); p.color = PALETTE[(PALETTE.indexOf(p.color)+1) % PALETTE.length];
-      db.games.forEach(g => g.players.forEach(x => { if(x.rid === p.id) x.color = p.color; })); save(); render(); },
+      db.games.forEach(g => realPlayers(g).forEach(x => { if(x.rid === p.id) x.color = p.color; })); save(); render(); },
   statF: el => { S.statF = el.dataset.v; render(); },
   abToggle: () => { if(abOn() && abInfo().folder){ try{ localStorage.setItem('pointage.autobackup', '0'); }catch(e){} toast('Sauvegarde automatique désactivée'); render(); }
     else if(abInfo().folder){ try{ localStorage.setItem('pointage.autobackup', '1'); }catch(e){} autoBackupNow(true); toast('Sauvegarde automatique activée'); render(); }
