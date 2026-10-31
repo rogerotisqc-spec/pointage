@@ -46,5 +46,7 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 - Jeu de dés : partie à 25 000, entrée à 1 000 en un tour, objectif à atteindre exactement (un
   dépassement termine le tour sans gain ni perte), pénalité de 1 000 à partir de 20 000 seulement si
   aucun dé n'a compté pendant le tour, six dés identiques = victoire immédiate.
-- Uno : chacun compte ses propres cartes, le plus bas gagne. Skip-Bo : pointage officiel.
+- Uno : choix au début de la partie. Officielle (par défaut) : celui qui termine la manche marque les
+  cartes des autres, premier à 500 gagne. Maison : chacun compte ses cartes, le plus bas gagne.
+- Skip-Bo : pointage officiel.
 - Play Nine : 9 trous seulement.

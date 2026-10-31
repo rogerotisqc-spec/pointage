@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 2.8</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 2.9</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -203,7 +203,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><b>Qui joue ?</b> Touchez les joueurs <b>dans l’ordre du jeu</b> : le numéro dans le rond indique l’ordre. Touchez de nouveau pour retirer quelqu’un.</li>
         <li><b>Invité</b> : tapez un nom puis <span class="ui">+ Invité (sans profil)</span>. À la fin de la partie, l’app proposera de l’ajouter à votre liste. <span class="ui">+ À ma liste</span> l’inscrit tout de suite.</li>
         <li><b>Premier à brasser</b> : touchez le joueur qui brasse la première manche.</li>
-        <li><b>Options</b> selon le jeu : pointage visé, mode du Scrabble, valeurs du jeu de dés, etc.</li>
+        <li><b>Options</b> selon le jeu : pointage visé, façon de compter au Uno, mode du Scrabble, valeurs du jeu de dés, etc.</li>
         <li>Touchez <span class="ui">Commencer</span>.</li></ol>
       <div class="tip"><b>Astuce :</b> l’app retient les derniers joueurs choisis pour chaque jeu.</div>
     </div><figure><img src="img/nouvelle-partie.webp" alt="Préparation d’une partie" loading="lazy"><figcaption>Joueurs dans l’ordre, un invité, et le premier à brasser.</figcaption></figure></div>
@@ -274,9 +274,12 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     </div>
 
     <h3 id="uno">Uno</h3>
-    <div class="row2"><div class="txt" data-kw="uno 500 cartes en main chacun ses cartes plus bas gagne joker +4 +2 inversion passe 20 50 calculatrice">
-      <p>Règle de la maison : <b>chacun compte les cartes qui lui restent</b> et le plus bas gagne quand quelqu’un atteint 500. La calculatrice 🧮 ajoute la valeur de chaque carte touchée : chiffres, 20 pour +2 / Inversion / Passe, 50 pour les jokers.</p>
-    </div><figure><img src="img/uno-saisie.webp" alt="Saisie Uno" loading="lazy"><figcaption>Calculatrice des cartes restantes.</figcaption></figure></div>
+    <div class="row2 many"><div class="txt" data-kw="uno 500 cartes en main officiel officielle maison façon de compter gagnant de la manche marque les cartes des autres chacun ses cartes plus haut plus bas gagne joker +4 +2 inversion passe 20 50 calculatrice">
+      <p>À la préparation de la partie, choisissez la <b>façon de compter</b> :</p>
+      <ul><li><b>Officielle</b> : quand un joueur n’a plus de cartes, il <b>marque la valeur des cartes qui restent chez les autres</b>. Le premier à 500 gagne. À la saisie, touchez <b>qui n’a plus de cartes</b>, puis inscrivez la valeur des cartes de chaque autre joueur : l’app additionne le tout pour le gagnant de la manche (🏁 dans le tableau).</li>
+        <li><b>Maison</b> : <b>chacun compte les cartes qui lui restent</b> et les ajoute à son propre total. Quand quelqu’un atteint 500, le plus bas gagne.</li></ul>
+      <p>Dans les deux cas, la calculatrice 🧮 ajoute la valeur de chaque carte touchée : chiffres, 20 pour +2 / Inversion / Passe, 50 pour les jokers. L’app retient le dernier choix pour la partie suivante.</p>
+    </div><div class="figs"><figure><img src="img/uno-mode.webp" alt="Choix de la façon de compter au Uno" loading="lazy"><figcaption>Le choix Officielle ou Maison, à la préparation.</figcaption></figure><figure><img src="img/uno-saisie.webp" alt="Saisie Uno officielle" loading="lazy"><figcaption>Mode officiel : Roger termine la manche et marque les cartes des autres.</figcaption></figure></div></div>
 
     <h3 id="skipbo">Skip-Bo</h3>
     <div class="row2"><div class="txt" data-kw="skip-bo skipbo talon gagnant 25 points 5 par carte 500 pointage officiel">
@@ -429,7 +432,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 2.8 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 2.9 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){

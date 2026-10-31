@@ -1,6 +1,6 @@
 {
- "version": "2.8",
- "notes": "• Correction : les tuiles des jeux sur l'accueil ont de nouveau toutes la même taille (trois colonnes sur tablette).",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.8.apk",
+ "version": "2.9",
+ "notes": "• Uno : choix de la façon de compter au début de la partie. Officielle : celui qui termine la manche marque la valeur des cartes des autres, et le premier à 500 gagne. Maison : chacun compte ses cartes, le plus bas gagne. Règles et manuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.9.apk",
  "size": 103257
 }

@@ -79,12 +79,13 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await tap('[data-a=close]');
   await tap('[data-a=dealer]'); await shot('brasseur'); await tap('[data-a=close]');
 
-  // ---------- Uno : calculatrice des cartes ----------
-  await startGame('uno', ['Roger', 'Zoé', 'Léa']);
-  await tap('[data-a=addRound]');
-  const ku = await p.$$eval('.calc-t', e => e.map(x => x.dataset.k));
+  // ---------- Uno : façon de compter, puis saisie officielle ----------
+  await startGame('uno', ['Roger', 'Zoé', 'Léa'], async () => { await tap('[data-a=setUnoMode][data-v=official]'); await p.evaluate(() => window.scrollTo(0, 9999)); await shot('uno-mode'); });
+  await tap('[data-a=addRound]'); await p.check('input[name=unow] >> nth=0');
+  const ku = await p.$$eval('[data-uno]', e => e.map(x => x.id.slice(3)));
   await tap(`.calc-t[data-k="${ku[1]}"]`);
   for (const v of [7, 20, 50]) await tap(`[data-a=addv][data-for="in-${ku[1]}"][data-v="${v}"]`);
+  await p.fill(`#in-${ku[2]}`, '33'); await p.dispatchEvent(`#in-${ku[2]}`, 'input');
   await shot('uno-saisie');
   await tap('[data-a=close]');
 

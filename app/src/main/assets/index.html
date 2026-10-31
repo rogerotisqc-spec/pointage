@@ -435,7 +435,7 @@ const GAMES = {
   generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
   playnine:   {name:'Play Nine',      color:'#2b8a3e', badge:'9',  desc:'9 trous · le plus bas gagne', round:'Trou', low:true, helper:'playnine'},
   flip7:      {name:'Flip 7',         color:'#e8590c', badge:'7',  desc:'Premier à 200', round:'Manche', target:200, helper:'flip7'},
-  uno:        {name:'Uno',            color:'#c92a2a', badge:'U',  desc:'Chacun ses cartes · le plus bas gagne', round:'Manche', target:500, low:true, helper:'uno'},
+  uno:        {name:'Uno',            color:'#c92a2a', badge:'U',  desc:'Officiel ou maison · partie à 500', round:'Manche', target:500, helper:'uno'},
   skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'25 + 5 par carte · premier à 500', round:'Manche', target:500},
   millebornes:{name:'Mille Bornes',   color:'#d9a400', badge:'1000', desc:'Premier à 5 000', round:'Manche', target:5000},
   phase10:    {name:'Phase 10',       color:'#6741d9', badge:'10', desc:'10 phases · le moins de points', round:'Manche', low:true, helper:'phase10'},
@@ -503,10 +503,11 @@ function rulesHtml(type, g){
       <li><b>+2</b> : le suivant pige 2 et passe son tour. <b>Inversion</b> : change le sens. <b>Passe</b> : le suivant passe son tour.</li>
       <li><b>Joker</b> : choisir la couleur. <b>Joker +4</b> : choisir la couleur, le suivant pige 4 et passe son tour.</li>
       <li>Dire « Uno ! » quand il ne reste qu’une carte, sinon on pige 2 cartes de pénalité.</li></ul>
-    <h3>Pointage maison</h3><p>À la fin de la manche, chaque joueur compte les cartes qui lui restent en main :</p>
-    <table><tr><td>Chiffres</td><td>valeur</td></tr><tr><td>+2, Inversion, Passe</td><td>20</td></tr><tr><td>Joker, Joker +4</td><td>50</td></tr></table>
-    <p>Quand un joueur atteint ${fmt((g&&g.opts.target)||500)}, la partie se termine : <b>le plus bas gagne</b>.</p>
-    <p class="hint">Règle officielle : le gagnant de la manche marque les points des cartes des autres, premier à 500.</p>`;
+    <h3>Valeur des cartes restantes</h3>
+    <table><tr><td>Chiffres (0 à 9)</td><td>valeur</td></tr><tr><td>+2, Inversion, Passe</td><td>20</td></tr><tr><td>Joker, Joker +4</td><td>50</td></tr></table>
+    <h3>Deux façons de compter (choix au début de la partie)</h3>
+    <p><b>Officielle${g && g.opts.mode === 'official' ? ' (cette partie)' : ''}</b> : quand un joueur n’a plus de cartes, la manche se termine. <b>Il marque la valeur de toutes les cartes qui restent dans la main des autres joueurs</b> ; les autres ne marquent rien. Le premier à atteindre ${fmt((g&&g.opts.target)||500)} points <b>gagne</b>.</p>
+    <p><b>Maison${g && g.opts.mode === 'house' ? ' (cette partie)' : ''}</b> : à la fin de la manche, <b>chacun compte les cartes qui lui restent</b> et les ajoute à son propre total. Quand un joueur atteint ${fmt((g&&g.opts.target)||500)}, la partie se termine et <b>le plus bas pointage gagne</b>.</p>`;
   case 'skipbo': return `
     <h3>But</h3><p>Être le premier à vider son talon (sa pile de départ).</p>
     <h3>Mise en place</h3><ul>
@@ -848,7 +849,10 @@ function vSetup(){
       <p class="hint">Partie à ${fmt(f.target)} · ${fmt(f.entry)} pour entrer · −${fmt(f.pen)} à partir de ${fmt(f.penFrom)}</p>`;
   } else if(G.target){
     opts = `<label class="lbl" for="o-target">Partie à</label><input id="o-target" class="field" inputmode="numeric" value="${o.target||G.target}">`;
-    if(type === 'uno') opts += `<p class="hint">Chacun compte ses propres cartes ; quand un joueur atteint ce total, le plus bas gagne.</p>`;
+    if(type === 'uno'){ const off = (o.mode || db.unoMode || 'official') === 'official';
+      opts = `<label class="lbl">Façon de compter</label>
+      <div class="seg"><button data-a="setUnoMode" data-v="official" class="${off?'on':''}">Officielle</button><button data-a="setUnoMode" data-v="house" class="${!off?'on':''}">Maison</button></div>
+      <p class="hint">${off ? 'Le joueur qui termine la manche marque la valeur des cartes des autres. Le premier à atteindre le total gagne.' : 'Chacun compte ses propres cartes. Quand un joueur atteint le total, le plus bas gagne.'}</p>` + opts; }
   }
   const rosterChips = db.players.map(p => chip(p.id, p.name, p.color, false)).join('');
   const guestChips = S.guests.map(g => chip(g.key, g.name, '#868e96', true)).join('');
@@ -897,6 +901,7 @@ function startGame(){
   else if(type === 'scrabble'){ opts.simple = !!o.simple; }
   else if(type === 'farkle'){ opts.f = Object.assign({}, FD, db.farkle, o.f||{}); db.farkle = Object.assign({}, opts.f); }
   else if(G.target){ opts.target = o.target || G.target; }
+  if(type === 'uno'){ opts.mode = o.mode || db.unoMode || 'official'; opts.low = opts.mode === 'house'; db.unoMode = opts.mode; }
   const title = type === 'generic' ? (S.setupTitle||'').trim() : '';
   if(title && !db.titles.some(t => t.toLowerCase() === title.toLowerCase())) db.titles.unshift(title);
   db.lastSel[type] = S.sel.filter(k => db.players.some(p => p.id === k));
@@ -929,7 +934,7 @@ function vSheet(){
     <tbody>${g.rounds.map((rd,i) => `<tr><td class="lbl">${G.round} ${i+1}</td>${g.players.map(p => {
         const v = rd.s[p.key]; const has = v !== undefined && v !== null;
         const tick = '';
-        const extra = g.type==='skipbo' && rd.m && rd.m.w === p.key ? ' 🏁' : '';
+        const extra = (g.type==='skipbo' || g.type==='uno') && rd.m && rd.m.w === p.key ? ' 🏁' : '';
         return `<td><button data-a="editRound" data-i="${i}" class="num-t ${v<0?'neg':''}">${has?fmt(v):'–'}${tick}${extra}</button></td>`; }).join('')}</tr>`).join('')}</tbody>
     <tfoot><tr><td class="lbl">Total</td>${g.players.map(p=>`<td class="num-t ${t[p.key]<0?'neg':''}">${fmt(t[p.key])}</td>`).join('')}</tr></tfoot></table></div>`;
   const next = g.rounds.length + 1;
@@ -1496,6 +1501,17 @@ function openRound(idx){
       <div class="ptabs" id="mb-tabs"></div><div class="mbody" id="mb-body"></div>
       <div class="mfoot">${editing?`<button class="btn danger" data-a="delRound">Supprimer</button>`:''}<button class="btn" data-a="mbNext">Joueur suivant ›</button><button class="btn primary" data-a="saveRound">Enregistrer</button></div>`);
     M.type = g.type; M.round = editing ? idx : null; mbRender(); return;
+  } else if(g.type === 'uno' && g.opts.mode === 'official'){
+    M = {round:idx};
+    const w = (rd.m||{}).w; const left = (rd.m||{}).left || {};
+    body = `<p class="hint" style="margin:0 0 10px">Qui n’a plus de cartes ?</p>${g.players.map(p => `<label class="radio"><input type="radio" name="unow" value="${p.key}" ${w===p.key?'checked':''}> <span class="av" style="background:${p.color};width:30px;height:30px">${initial(p.name)}</span> ${esc(p.name)}</label>`).join('')}
+      <h2 class="sec">Valeur des cartes restantes chez les autres</h2>
+      ${g.players.map(p => { const id = 'in-' + p.key;
+        return `<div class="card prow" id="unorow-${p.key}"><div class="ph"><span class="av" style="background:${p.color}">${initial(p.name)}</span><div class="nm">${esc(p.name)}</div>
+          <button class="calc-t" data-a="helper" data-k="${p.key}" aria-label="Calculatrice">🧮</button><div class="num" style="width:110px"><input id="${id}" data-uno="1" inputmode="numeric" value="${left[p.key]!=null?left[p.key]:''}" placeholder="0"></div></div>
+          <div class="helper" id="hl-${p.key}"><div class="keys">${HELPERS.uno.map(([l,pts]) => `<button class="key ${l.length>3?'wide':''}" data-a="addv" data-for="${id}" data-v="${pts}">${l}${l.length>3?` · ${pts}`:''}</button>`).join('')}
+          <button class="key" data-a="zero" data-for="${id}">0</button></div><p class="expr">Chaque touche ajoute la valeur d’une carte.</p></div></div>`; }).join('')}
+      <div class="card prow"><div class="ph"><div class="nm">Points du gagnant de la manche</div><div class="ptotal num-t" id="uno-total">–</div></div><p class="hint" style="margin:4px 0 0">Total des cartes restantes chez les autres joueurs</p></div>`;
   } else if(g.type === 'skipbo'){
     M = {round:idx};
     const w = (rd.m||{}).w; const left = (rd.m||{}).left || {};
@@ -1534,6 +1550,7 @@ function openRound(idx){
     <div class="mfoot">${editing?`<button class="btn danger" data-a="delRound">Supprimer</button>`:''}<button class="btn primary" data-a="saveRound">Enregistrer</button></div>`);
   M.type = g.type; M.round = editing ? idx : null;
   if(g.type === 'skipbo') sbUpdate();
+  if(g.type === 'uno' && g.opts.mode === 'official') unoUpdate();
   if(M.p9) Object.keys(M.p9).forEach(p9Render);
   setTimeout(() => { const first = document.querySelector('#modal .num input'); if(first && !editing && g.type!=='skipbo') first.focus(); }, 120);
 }
@@ -1561,6 +1578,11 @@ function sbUpdate(){
   g.players.forEach(p => { const row = $('sbrow-'+p.key); if(row) row.style.display = p.key === w ? 'none' : ''; if(p.key !== w) sum += Math.max(0, num($('sb-'+p.key).value)); });
   $('sb-total').textContent = w ? fmt(25 + 5*sum) : '–';
 }
+function unoUpdate(){
+  const g = curGame(); const w = (document.querySelector('input[name=unow]:checked')||{}).value; let sum = 0;
+  g.players.forEach(p => { const row = $('unorow-'+p.key); if(row) row.style.display = p.key === w ? 'none' : ''; if(p.key !== w) sum += Math.max(0, num($('in-'+p.key).value)); });
+  $('uno-total').textContent = w ? fmt(sum) : '–';
+}
 function f7Update(pk){
   const h = M.f7[pk]; const v = f7Pts(h);
   $('in-'+pk).value = (h.nums.length || h.mods.length || h.bust || h.bonus) ? v : '';
@@ -1572,6 +1594,12 @@ function saveRound(){
   const g = curGame(); const rd = {s:{}, m:{}};
   if(g.type === 'millebornes'){
     g.players.forEach(p => { const m = Object.assign({}, M.mb[p.key]); m.km = mbKm(m); rd.m[p.key] = m; rd.s[p.key] = mbPts(m, mbOthers(p.key)); });
+  } else if(g.type === 'uno' && g.opts.mode === 'official'){
+    const w = (document.querySelector('input[name=unow]:checked')||{}).value;
+    if(!w) return toast('Choisissez qui n’a plus de cartes');
+    let sum = 0; rd.m = {w, left:{}};
+    g.players.forEach(p => { if(p.key !== w){ const n = Math.max(0, num($('in-'+p.key).value)); rd.m.left[p.key] = n; sum += n; } });
+    g.players.forEach(p => rd.s[p.key] = p.key === w ? sum : 0);
   } else if(g.type === 'skipbo'){
     const w = (document.querySelector('input[name=sbw]:checked')||{}).value;
     if(!w) return toast('Choisissez le gagnant de la manche');
@@ -1700,6 +1728,7 @@ const A = {
   addGuest: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const k = 'g' + uid(); S.guests.push({key:k, name:n}); S.sel.push(k); render(); },
   addRoster: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const p = newPlayer(n); if(p){ S.sel.push(p.id); render(); toast(n + ' ajouté à votre liste'); } },
   setScrMode: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {simple: el.dataset.v === '1'}); render(); },
+  setUnoMode: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {mode: el.dataset.v}); render(); },
   setLow: el => { readSetupFields(); S.setupLow = el.dataset.v === '1'; render(); },
   setHoles: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {holes: Number(el.dataset.v)}); render(); },
   start: () => startGame(),
@@ -1709,8 +1738,8 @@ const A = {
   delRound: () => { const g = curGame(), i = M.round; closeModal(); confirmBox('Supprimer la manche ' + (i+1) + ' ?', 'Supprimer', () => { g.rounds.splice(i,1); g.updated = Date.now(); save(); render(); }, true); },
   sign: el => { const i = $(el.dataset.for); const v = i.value.trim(); i.value = v.startsWith('-') ? v.slice(1) : '-' + (v || ''); i.focus(); },
   helper: el => { const h = $('hl-' + el.dataset.k); h.classList.toggle('open'); el.classList.toggle('on'); },
-  addv: el => { const i = $(el.dataset.for); i.value = num(i.value) + Number(el.dataset.v); },
-  zero: el => { $(el.dataset.for).value = 0; },
+  addv: el => { const i = $(el.dataset.for); i.value = num(i.value) + Number(el.dataset.v); if(i.dataset.uno) unoUpdate(); },
+  zero: el => { const i = $(el.dataset.for); i.value = 0; if(i.dataset.uno) unoUpdate(); },
   f7: el => { const k = el.dataset.k, h = M.f7[k], v = Number(el.dataset.v), op = el.dataset.op;
     if(op==='n'){ h.nums.push(v); h.bust = false; if(new Set(h.nums).size >= 7) h.bonus = true; }
     else if(op==='m'){ h.mods.push(v); h.bust = false; }
@@ -1856,12 +1885,14 @@ document.addEventListener('input', e => {
   const t = e.target;
   if(t.id === 'house'){ const v = t.value; if(v.trim()) db.house[t.dataset.hk] = v; else delete db.house[t.dataset.hk]; save(); }
   if(t.dataset && t.dataset.sb) sbUpdate();
+  if(t.dataset && t.dataset.uno) unoUpdate();
   if(t.id === 'scrWord'){ const st = scrState(); st.word = t.value; st.marks = []; clearTimeout(window.__scrT); window.__scrT = setTimeout(() => { const pos = t.selectionStart; render(); const n = $('scrWord'); if(n){ n.focus(); try{ n.setSelectionRange(pos, pos); }catch(e){} } }, 350); }
   if(t.dataset && t.dataset.scrleft){ const pk = t.id.slice(8); $('scrRest-' + pk).textContent = scrLeftVal(pk); }
 });
 document.addEventListener('change', e => {
   const t = e.target;
   if(t.name === 'sbw') sbUpdate();
+  if(t.name === 'unow') unoUpdate();
   if(t.id === 'scrBingo') { scrState().bingo = t.checked; render(); }
   if(t.id === 'importFile' && t.files[0]){ const r = new FileReader(); r.onload = () => window.onImportData(r.result); r.readAsText(t.files[0]); }
 });
