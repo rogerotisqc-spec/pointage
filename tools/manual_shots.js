@@ -4,20 +4,21 @@ const { chromium } = require('playwright');
 const path = require('path');
 const OUT = process.argv[2];
 const APP = 'file://' + path.resolve(__dirname, '../app/src/main/assets/index.html');
+const VER = (require('fs').readFileSync(path.resolve(__dirname, '../app/src/main/AndroidManifest.xml'), 'utf8').match(/versionName="([^"]+)"/) || [])[1] || '?';
 const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/index.html');
 
 (async () => {
   const b = await chromium.launch();
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
-  await ctx.addInitScript(() => {
+  await ctx.addInitScript((VER_) => {
     // Simule l'app Android pour montrer ses fonctions (mises à jour, sauvegarde automatique)
     window.AndroidBridge = {
-      getVersion: () => '2.7', keepScreenOn() {}, checkUpdate() { setTimeout(() => window.onUpdateInfo(JSON.stringify({ version: '2.7', apk: 'x' })), 20); },
+      getVersion: () => VER_, keepScreenOn() {}, checkUpdate() { setTimeout(() => window.onUpdateInfo(JSON.stringify({ version: '2.7', apk: 'x' })), 20); },
       installUpdate() {}, backupInfo: () => JSON.stringify({ folder: 'Documents', last: Date.now() - 120000 }),
       pickBackupFolder() {}, writeBackup() {}, listen() { setTimeout(() => window.onSpeech(JSON.stringify(['trois cinq et un un'])), 20); }
     };
     try { localStorage.setItem('pointage.autobackup', '1'); localStorage.setItem('pointage.lastCheck', String(Date.now())); localStorage.setItem('pointage.fbname', 'Roger'); } catch (e) {}
-  });
+  }, VER);
   const p = await ctx.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   const shot = async (name, opts) => { await p.waitForTimeout(250); await p.evaluate(() => { const t = document.getElementById('toast'); if (t) { t.style.transition = 'none'; t.classList.remove('on'); } }); await p.waitForTimeout(30); await p.screenshot({ path: path.join(OUT, name + '.png'), ...(opts || {}) }); };
@@ -164,6 +165,7 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
 
   // ---------- Accueil, historique, stats, réglages ----------
   await p.evaluate(() => tab('home')); await shot('accueil');
+  await p.evaluate(() => { const h = [...document.querySelectorAll('h2.sec')].find(x => /Nouvelle/.test(x.textContent)); window.scrollTo(0, h.getBoundingClientRect().top + window.scrollY - 90); }); await shot('accueil-tuiles');
   await tap('[data-a=tab][data-v=history]'); await shot('historique');
   await tap('[data-a=tab][data-v=stats]'); await shot('statistiques', { fullPage: true });
   await tap('[data-a=statPlayer] >> nth=0'); await shot('fiche-joueur'); await tap('[data-a=close]');

@@ -48,6 +48,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .sec:first-child{margin-top:4px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (min-width:640px){.tiles{grid-template-columns:repeat(3,1fr);gap:14px}}
 .tile{position:relative;padding:14px 12px 12px;min-height:116px;display:flex;flex-direction:column;gap:8px;text-align:left}
 .tile:active{transform:scale(.98)}
 .badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;letter-spacing:-.02em;flex:none}
@@ -299,7 +300,7 @@ table.p10 tr.fin td{border-top:2px solid var(--line)}
 .switch.on{background:var(--brand)}
 .switch.on::after{left:25px}
 .wordin{text-transform:uppercase;letter-spacing:.08em;font-weight:700;font-size:20px}
-.tiles{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;min-height:10px}
+.scr-tiles{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;min-height:10px}
 .tile-l{position:relative;width:clamp(40px, 9vw, 58px);aspect-ratio:1;border-radius:8px;background:#f1dfb8;color:#3b2a14;border:2px solid #d7bf8c;font-weight:800;font-size:clamp(20px, 4.4vw, 28px);display:grid;place-items:center;box-shadow:0 2px 0 #c7a96c}
 .tile-l sub{position:absolute;right:4px;bottom:1px;font-size:.45em;font-weight:700}
 .tile-l .tag2{position:absolute;left:0;right:0;top:-9px;margin:auto;width:max-content;font-size:10px;font-weight:800;padding:1px 4px;border-radius:5px;color:#fff;letter-spacing:0}
@@ -1035,7 +1036,7 @@ function vScrabble(g){
       <div style="text-align:right"><div class="who">Points du tour</div><div class="turnpts num-t">${fmt(tt)}</div></div></div>
     <label class="lbl" for="scrWord">Mot formé</label>
     <input id="scrWord" class="field wordin" value="${esc(st.word)}" placeholder="Tapez le mot" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="done">
-    ${letters.length ? `<div class="tiles">${letters.map((l,i) => { const m = st.marks[i] || 0; return `<button class="tile-l ${MK[m]}" data-a="scrMark" data-i="${i}" aria-label="${l}">${m ? `<span class="tag2">${TG[m]}</span>` : ''}${l}<sub>${m === 3 ? 0 : SCR_VAL[l]}</sub></button>`; }).join('')}</div>
+    ${letters.length ? `<div class="scr-tiles">${letters.map((l,i) => { const m = st.marks[i] || 0; return `<button class="tile-l ${MK[m]}" data-a="scrMark" data-i="${i}" aria-label="${l}">${m ? `<span class="tag2">${TG[m]}</span>` : ''}${l}<sub>${m === 3 ? 0 : SCR_VAL[l]}</sub></button>`; }).join('')}</div>
       <p class="hint" style="margin:6px 2px 0">Touchez une lettre posée sur une case bonus : L×2 → L×3 → joker → normale.</p>
       <div class="wmult">${[1,2,3,4,9].map(m => `<button class="${st.mult===m?'on':''} ${m===1?'x1':''}" data-a="scrMult" data-v="${m}">${m===1 ? 'Mot ×1' : 'Mot ×' + m}</button>`).join('')}</div>
       <button class="btn primary block" style="margin-top:10px" data-a="scrAddWord">Ajouter « ${esc(letters.join(''))} » : ${fmt(wpts)} pts</button>` : ''}

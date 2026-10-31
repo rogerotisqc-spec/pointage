@@ -84,6 +84,8 @@ size_mo = (f"{round(n/1024)} Ko" if n < 1048576 else f"{n/1048576:.1f} Mo".repla
 man_src = os.path.join(root, "manual")
 if os.path.isdir(man_src):
     shutil.copytree(man_src, os.path.join(docs, "manuel"), dirs_exist_ok=True)
+    mi = os.path.join(docs, "manuel", "index.html")
+    open(mi, "w", encoding="utf-8").write(open(mi, encoding="utf-8").read().replace("{{VER}}", VER))
 
 # ---------- page d'accueil ----------
 open(os.path.join(docs, ".nojekyll"), "w").write("")

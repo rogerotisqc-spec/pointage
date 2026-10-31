@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 2.7</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version {{VER}}</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -172,7 +172,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     </div><figure><img src="img/installation.webp" alt="Page d’installation sur un téléphone Android" loading="lazy"><figcaption>La page d’installation reconnaît l’appareil et met la bonne option en premier.</figcaption></figure></div>
   </section>
 
-  <section class="s" id="accueil" data-kw="accueil écran principal parties en cours reprendre nouvelle partie onglets jeux joueurs historique stats menu bas bandeau">
+  <section class="s" id="accueil" data-kw="accueil tuiles écran principal parties en cours reprendre nouvelle partie onglets jeux joueurs historique stats menu bas bandeau">
     <h2><span class="n">2</span>L’accueil</h2>
     <div class="row2"><div class="txt">
       <p><b>Parties en cours</b> : les parties non terminées, avec le pointage de chacun. Touchez-en une pour la reprendre là où vous étiez.</p>
@@ -180,7 +180,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
       <p>En haut à droite : 📘 ouvre ce manuel, ⚙︎ ouvre les <a href="#reglages">Réglages</a>.</p>
       <p>En bas : les onglets <b>Jeux</b>, <b>Joueurs</b>, <b>Historique</b> et <b>Stats</b>.</p>
       <div class="tip"><b>Bandeaux :</b> un bandeau jaune peut apparaître en haut de l’accueil, par exemple quand une nouvelle version est disponible. Touchez-le pour agir.</div>
-    </div><figure><img src="img/accueil.webp" alt="Écran d’accueil" loading="lazy"><figcaption>L’accueil, avec les parties en cours.</figcaption></figure></div>
+    </div><div class="figs" style="margin-top:0"><figure><img src="img/accueil.webp" alt="Écran d’accueil" loading="lazy"><figcaption>L’accueil, avec les parties en cours.</figcaption></figure><figure><img src="img/accueil-tuiles.webp" alt="Tuiles des jeux" loading="lazy"><figcaption>Les tuiles « Nouvelle partie » (trois colonnes sur tablette).</figcaption></figure></div></div>
   </section>
 
   <section class="s" id="joueurs" data-kw="joueurs liste permanente ajouter renommer retirer supprimer couleur ordre famille profil invité">
@@ -429,7 +429,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 2.7 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version {{VER}} · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){
