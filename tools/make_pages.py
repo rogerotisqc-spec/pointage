@@ -85,7 +85,8 @@ man_src = os.path.join(root, "manual")
 if os.path.isdir(man_src):
     shutil.copytree(man_src, os.path.join(docs, "manuel"), dirs_exist_ok=True)
     mi = os.path.join(docs, "manuel", "index.html")
-    open(mi, "w", encoding="utf-8").write(open(mi, encoding="utf-8").read().replace("{{VER}}", VER))
+    txt = open(mi, encoding="utf-8").read().replace("{{VER}}", VER)   # lire AVANT d'ouvrir en écriture
+    open(mi, "w", encoding="utf-8").write(txt)
 
 # ---------- page d'accueil ----------
 open(os.path.join(docs, ".nojekyll"), "w").write("")
