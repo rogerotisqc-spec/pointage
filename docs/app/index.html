@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>body{padding-top:env(safe-area-inset-top)} .top{top:env(safe-area-inset-top,0px)}</style>
-<script>window.WEB_VERSION = "2.3";</script>
+<script>window.WEB_VERSION = "2.4";</script>
 
 <style>
 :root{
@@ -200,12 +200,12 @@ table.sheet tfoot td.lbl{font-size:13px}
 .turnbox .who{font-size:14px;color:var(--muted);font-weight:600}
 .turnbox .who b{color:var(--ink);font-size:20px;display:block}
 .turnpts{font-size:40px;font-weight:850;letter-spacing:-.03em;color:var(--brand);line-height:1.1}
-.dice{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px}
-.die{aspect-ratio:1;border-radius:12px;background:var(--surface);border:2px solid var(--ink);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:16%;max-width:58px;width:100%;justify-self:center}
+.dice{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(6px, 1.5vw, 14px);margin-top:12px}
+.die{aspect-ratio:1;border-radius:18%;background:var(--surface);border:2px solid var(--ink);padding:0;width:100%;max-width:clamp(48px, 13vw, 96px);justify-self:center;display:block;position:relative;overflow:hidden}
 .die:active{transform:scale(.94)}
-.die span{width:68%;aspect-ratio:1;border-radius:50%;background:var(--ink);place-self:center;visibility:hidden}
-.die.sm{width:38px;height:38px;max-width:none;flex:none;border-width:1.5px;border-radius:8px;padding:5px}
-.die.sm span{width:6px;height:6px}
+.die svg{display:block;width:100%;height:100%}
+.die svg circle{fill:var(--ink)}
+.die.sm{width:clamp(38px, 7vw, 56px);height:clamp(38px, 7vw, 56px);max-width:none;flex:none;border-width:1.5px}
 .tray{display:flex;flex-wrap:wrap;gap:6px;min-height:44px;margin-top:10px;padding:6px;border-radius:12px;background:var(--surface2);border:1px dashed var(--line);align-items:center}
 .tray .ph{font-size:13px;color:var(--muted);padding:0 6px}
 .sel-v{font-size:14px;margin-top:8px;font-weight:600}
@@ -934,7 +934,12 @@ function p9Table(g, t){
 
 /* ---------- Dés (Farkle) ---------- */
 const PIPS = {1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
-function dieHtml(v, cls, attrs){ return `<button class="die ${cls||''}" ${attrs||''} aria-label="${v}">${[0,1,2,3,4,5,6,7,8].map(i=>`<span style="${PIPS[v].includes(i)?'visibility:visible':''}"></span>`).join('')}</button>`; }
+// Points dessinés en vectoriel : ils remplissent toujours le carré, quelle que soit sa taille
+function dieHtml(v, cls, attrs){
+  const pos = [26, 50, 74];
+  const dots = PIPS[v].map(i => `<circle cx="${pos[i % 3]}" cy="${pos[Math.floor(i / 3)]}" r="10"/>`).join('');
+  return `<button class="die ${cls||''}" ${attrs||''} aria-label="${v}"><svg viewBox="0 0 100 100" aria-hidden="true">${dots}</svg></button>`;
+}
 function isEntered(g, pk){ return g.turns.some(x => x.pk === pk && x.pts > 0); }
 function vFarkle(g){
   const f = g.opts.f, t = totals(g), r = ranking(g);

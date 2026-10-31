@@ -1,6 +1,6 @@
 {
- "version": "2.3",
- "notes": "• Nouveau : sauvegarde automatique aussi dans l'app web, sur ordinateur avec Chrome ou Edge (⚙︎ Réglages → Sauvegarde).",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.3.apk",
+ "version": "2.4",
+ "notes": "• Correction : sur tablette, les points des dés remplissent maintenant les carrés, et les dés sont plus grands.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.4.apk",
  "size": 99161
 }
