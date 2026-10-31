@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>body{padding-top:env(safe-area-inset-top)} .top{top:env(safe-area-inset-top,0px)}</style>
-<script>window.WEB_VERSION = "2.6";</script>
+<script>window.WEB_VERSION = "2.7";</script>
 
 <style>
 :root{
@@ -438,6 +438,7 @@ const dateFr = ts => new Date(ts).toLocaleDateString('fr-CA',{day:'numeric',mont
 const $ = id => document.getElementById(id);
 
 /* ====================== Jeux ====================== */
+const MANUAL_URL = 'https://rogerotisqc-spec.github.io/pointage/manuel/';
 const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble'];
 const GAMES = {
   generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
@@ -799,6 +800,7 @@ function topbar(title, sub, right){
 function vHome(){
   const open = db.games.filter(g => !g.finished).sort((a,b) => b.updated - a.updated);
   return `<header class="top"><div class="grow"><h1>Pointage</h1><p class="sub">Les jeux de la famille${appVersion() ? ' · v' + esc(appVersion()) : ''}</p></div>
+    <a class="icon-btn" href="${MANUAL_URL}" target="_blank" rel="noopener" aria-label="Manuel d’utilisation" style="text-decoration:none;color:inherit">📘</a>
     <button class="icon-btn" data-a="go" data-v="settings" aria-label="Réglages">⚙︎</button></header>
   ${updateBanner()}${abPausedBanner()}
   <main class="pad">
@@ -1443,6 +1445,9 @@ function vSettings(){
   return `${topbar('Réglages')}
   <main class="pad">
     ${updateCard()}
+    <h2 class="sec">Aide</h2>
+    <div class="card" style="padding:14px"><p style="margin:0 0 12px">Le manuel explique chaque fonction, avec des images et une recherche par mot-clé.</p>
+      <a class="btn block" style="text-decoration:none" href="${MANUAL_URL}" target="_blank" rel="noopener">📘 Ouvrir le manuel d’utilisation</a></div>
     <h2 class="sec">Commentaires</h2>
     <div class="card" style="padding:14px">
       <p style="margin:0 0 12px">Un problème pendant une partie, ou une idée d’amélioration ? Envoyez-le directement au responsable de l’app.</p>

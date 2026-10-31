@@ -1,6 +1,6 @@
 {
- "version": "2.6",
- "notes": "• Nouveau : Scrabble en « saisie simple », à choisir avant la partie : on inscrit seulement le total de chaque tour.\n• Nouveau : l'écran reste allumé tant que l'app est ouverte (désactivable dans ⚙︎ Réglages → Affichage).",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.6.apk",
+ "version": "2.7",
+ "notes": "• Nouveau : manuel d'utilisation illustré, avec table des matières et recherche par mot-clé. Bouton 📘 sur l'accueil et dans ⚙︎ Réglages → Aide.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.7.apk",
  "size": 103257
 }

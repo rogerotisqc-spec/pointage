@@ -80,6 +80,11 @@ if os.path.exists(apk):
 n = os.path.getsize(apk) if os.path.exists(apk) else 0
 size_mo = (f"{round(n/1024)} Ko" if n < 1048576 else f"{n/1048576:.1f} Mo".replace(".", ",")) if n else "APK"
 
+# ---------- manuel d'utilisation ----------
+man_src = os.path.join(root, "manual")
+if os.path.isdir(man_src):
+    shutil.copytree(man_src, os.path.join(docs, "manuel"), dirs_exist_ok=True)
+
 # ---------- page d'accueil ----------
 open(os.path.join(docs, ".nojekyll"), "w").write("")
 landing = open(os.path.join(root, "tools/landing.html"), encoding="utf-8").read()

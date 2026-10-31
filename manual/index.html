@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f5c45">
+<title>Manuel Pointage</title>
+<link rel="icon" href="../favicon.png">
+<style>
+/* Mise en page : en-tête avec recherche, table des matières à gauche (écran large) ou repliable (téléphone), sections illustrées */
+:root{
+  --bg:#f3f0e8; --surface:#fffdf8; --surface2:#f8f5ee; --ink:#1c2420; --muted:#5f6964; --line:#e2dccd;
+  --brand:#1f5c45; --brand-soft:#e3eee8; --accent:#c98504; --mark:#ffe28a; --mark-ink:#1c2420;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 6px 18px rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#101412; --surface:#191f1c; --surface2:#1f2622; --ink:#ecf0ed; --muted:#9aa49e; --line:#2b3430;
+    --brand:#3a9d76; --brand-soft:#1d2a24; --accent:#f0a91c; --mark:#6b5414; --mark-ink:#fff4cf; --shadow:0 1px 2px rgba(0,0,0,.4); color-scheme:dark; }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:120px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--brand)}
+header.top{position:sticky;top:0;z-index:10;background:#1f5c45;color:#fff;padding:calc(10px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 12px max(16px, env(safe-area-inset-left));box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.top .in{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;flex:none}
+.brand img{width:36px;height:36px;border-radius:9px}
+.brand b{font-size:19px;letter-spacing:-.01em}.brand span{font-size:13px;opacity:.8;display:block;line-height:1.1}
+.search{flex:1;min-width:220px;position:relative}
+.search input{width:100%;min-height:44px;border-radius:12px;border:0;padding:0 40px 0 42px;font:inherit;font-size:16px;background:#fff;color:#1c2420}
+.search input:focus{outline:3px solid #f0a91c}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.search .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#5f6964;pointer-events:none}
+.search button{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;border-radius:8px;background:transparent;font-size:18px;cursor:pointer;color:#5f6964}
+.tocbtn{display:none;min-height:40px;padding:0 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,.5);background:transparent;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:270px minmax(0,1fr);gap:28px;padding:22px max(16px, env(safe-area-inset-right)) 60px max(16px, env(safe-area-inset-left))}
+nav.toc{position:sticky;top:96px;align-self:start;max-height:calc(100vh - 110px);overflow:auto;padding-right:4px}
+.toc h2{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 8px}
+.toc ol{list-style:none;margin:0;padding:0;counter-reset:t}
+.toc li{margin:1px 0}
+.toc a{display:block;padding:5px 10px;border-radius:8px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.35}
+.toc a:hover{background:var(--surface2)}
+.toc a.on{background:var(--brand-soft);color:var(--brand);font-weight:700}
+.toc ol ol{margin:2px 0 6px 10px;border-left:2px solid var(--line);padding-left:6px}
+.toc ol ol a{font-size:13.5px;padding:3px 10px}
+main{min-width:0}
+.results{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:22px;box-shadow:var(--shadow)}
+.results h2{font-size:15px;margin:0 0 8px}
+.results ul{margin:0;padding:0;list-style:none}
+.results li{padding:8px 0;border-top:1px solid var(--line)}
+.results li:first-child{border-top:0}
+.results a{font-weight:700;text-decoration:none}
+.results p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.intro{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:26px;box-shadow:var(--shadow)}
+.intro h1{margin:0 0 6px;font-size:28px;letter-spacing:-.01em;text-wrap:balance}
+.intro p{margin:6px 0;max-width:68ch}
+.chipsrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chipsrow a{font-size:13.5px;padding:4px 11px;border-radius:999px;background:var(--brand-soft);color:var(--brand);text-decoration:none;font-weight:600}
+section.s{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:18px;box-shadow:var(--shadow)}
+section.s>h2{margin:0 0 4px;font-size:22px;letter-spacing:-.01em;display:flex;align-items:baseline;gap:10px;text-wrap:balance}
+section.s>h2 .n{font-size:14px;color:var(--brand);font-weight:800;min-width:26px}
+section.s h3{font-size:17px;margin:18px 0 4px}
+.lead{color:var(--muted);margin:0 0 12px;max-width:68ch}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:22px;align-items:start}
+.row2.many{grid-template-columns:minmax(0,1fr)}
+.txt p,.txt li{max-width:68ch}
+.txt ol,.txt ul{padding-left:22px;margin:8px 0}
+.txt li{margin:5px 0}
+figure{margin:0}
+figure img{width:100%;height:auto;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow);display:block;background:var(--surface2)}
+figcaption{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.4}
+.figs{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin-top:12px}
+.tip{border-left:4px solid var(--accent);background:var(--surface2);border-radius:0 10px 10px 0;padding:9px 13px;margin:12px 0;font-size:15px;max-width:68ch}
+.tip b:first-child{color:var(--accent)}
+kbd,.ui{font:inherit;font-weight:700;background:var(--surface2);border:1px solid var(--line);border-radius:6px;padding:0 6px;white-space:nowrap}
+table.t{border-collapse:collapse;width:100%;max-width:560px;font-size:15px;margin:8px 0}
+table.t td,table.t th{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.t th{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 1px}
+.top-link{display:inline-block;margin-top:10px;font-size:13.5px}
+footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 40px}
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr)}
+  nav.toc{position:fixed;inset:0 auto 0 0;top:0;width:min(86vw,330px);max-height:none;background:var(--surface);z-index:30;padding:calc(18px + env(safe-area-inset-top)) 14px 30px;box-shadow:6px 0 30px rgba(0,0,0,.25);transform:translateX(-105%);transition:transform .2s}
+  nav.toc.open{transform:none}
+  .tocbtn{display:inline-flex;align-items:center}
+  .row2{grid-template-columns:minmax(0,1fr)}
+  .row2 figure{max-width:300px}
+  section.s{padding:16px}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:25}
+}
+@media (prefers-reduced-motion: reduce){ nav.toc{transition:none} }
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 2.7</span></div></a>
+  <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
+  <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
+</div></header>
+<div class="scrim" id="scrim" hidden></div>
+<div class="wrap">
+<nav class="toc" id="toc" aria-label="Table des matières">
+  <h2>Table des matières</h2>
+  <ol>
+    <li><a href="#installer">1. Installer l’app</a></li>
+    <li><a href="#accueil">2. L’accueil</a></li>
+    <li><a href="#joueurs">3. Les joueurs</a></li>
+    <li><a href="#nouvelle">4. Commencer une partie</a></li>
+    <li><a href="#feuille">5. La feuille de pointage</a>
+      <ol>
+        <li><a href="#manche">Inscrire une manche</a></li>
+        <li><a href="#brasseur">Le brasseur</a></li>
+        <li><a href="#menu">Le menu ⋮ d’une partie</a></li>
+      </ol></li>
+    <li><a href="#annuler">6. Annuler / rétablir</a></li>
+    <li><a href="#jeux">7. Les jeux</a>
+      <ol>
+        <li><a href="#libre">Pointage libre</a></li>
+        <li><a href="#playnine">Play Nine</a></li>
+        <li><a href="#flip7">Flip 7</a></li>
+        <li><a href="#uno">Uno</a></li>
+        <li><a href="#skipbo">Skip-Bo</a></li>
+        <li><a href="#millebornes">Mille Bornes</a></li>
+        <li><a href="#phase10">Phase 10</a></li>
+        <li><a href="#scrabble">Scrabble</a></li>
+        <li><a href="#des">Jeu de dés</a></li>
+        <li><a href="#voix">Commande vocale</a></li>
+      </ol></li>
+    <li><a href="#regles">8. Règles et règles maison</a></li>
+    <li><a href="#resultat">9. Résultat et graphique</a></li>
+    <li><a href="#historique">10. Historique</a></li>
+    <li><a href="#stats">11. Statistiques</a></li>
+    <li><a href="#reglages">12. Réglages</a>
+      <ol>
+        <li><a href="#maj">Mises à jour</a></li>
+        <li><a href="#rapports">Signaler un problème</a></li>
+        <li><a href="#sauvegarde">Sauvegarde</a></li>
+        <li><a href="#ecran">Écran allumé</a></li>
+      </ol></li>
+    <li><a href="#faq">13. Questions fréquentes</a></li>
+  </ol>
+</nav>
+
+<main id="debut">
+  <div class="results" id="results" hidden></div>
+
+  <div class="intro" data-search>
+    <h1>Bienvenue dans Pointage</h1>
+    <p>Pointage remplace les feuilles de papier pour les jeux de société de la famille. L’app calcule les totaux, suit qui brasse, connaît les règles de pointage de chaque jeu et garde l’historique de toutes les parties.</p>
+    <p>Utilisez la <b>table des matières</b> pour aller à une fonction, ou la <b>recherche</b> en haut pour trouver un mot (par exemple « joker », « brasser » ou « sauvegarde »).</p>
+    <div class="chipsrow"><a href="#libre">Pointage libre</a><a href="#playnine">Play Nine</a><a href="#flip7">Flip 7</a><a href="#uno">Uno</a><a href="#skipbo">Skip-Bo</a><a href="#millebornes">Mille Bornes</a><a href="#phase10">Phase 10</a><a href="#scrabble">Scrabble</a><a href="#des">Jeu de dés</a></div>
+  </div>
+
+  <section class="s" id="installer" data-kw="installer installation télécharger apk android iphone ipad ordinateur pc lien qr code tinyurl écran d'accueil play protect sources inconnues">
+    <h2><span class="n">1</span>Installer l’app</h2>
+    <p class="lead">Une seule adresse pour toute la famille : <b>tinyurl.com/pointagef</b> (ou le code QR). La page propose automatiquement la bonne version selon l’appareil.</p>
+    <div class="row2"><div class="txt">
+      <h3>Android (téléphone ou tablette)</h3>
+      <ol><li>Ouvrez l’adresse dans Chrome et touchez <span class="ui">Télécharger l’app</span>.</li>
+        <li>Si Chrome avertit que le fichier peut être dangereux, choisissez <b>Télécharger quand même</b>.</li>
+        <li>Ouvrez le fichier téléchargé. Android demande d’autoriser l’installation d’applications : activez l’option, puis revenez en arrière.</li>
+        <li>Si Play Protect affiche un avertissement : <b>Plus de détails</b>, puis <b>Installer quand même</b>.</li></ol>
+      <h3>iPhone et iPad</h3>
+      <ol><li>Ouvrez l’adresse dans <b>Safari</b> et touchez <span class="ui">Ouvrir l’app</span>.</li>
+        <li>Touchez <b>Partager</b> (le carré avec une flèche), puis <b>Sur l’écran d’accueil</b> et <b>Ajouter</b>.</li>
+        <li>Lancez ensuite Pointage depuis son icône : l’app s’ouvre en plein écran et fonctionne même sans Internet.</li></ol>
+      <h3>Ordinateur</h3>
+      <p>Ouvrez l’adresse et choisissez <span class="ui">Ouvrir l’app</span> : elle fonctionne dans tout navigateur.</p>
+      <div class="tip"><b>Bon à savoir :</b> l’app Android et l’app web gardent leurs données séparément, même sur le même appareil. Pour passer de l’une à l’autre, utilisez Exporter puis Importer une sauvegarde (section <a href="#sauvegarde">Sauvegarde</a>).</div>
+    </div><figure><img src="img/installation.webp" alt="Page d’installation sur un téléphone Android" loading="lazy"><figcaption>La page d’installation reconnaît l’appareil et met la bonne option en premier.</figcaption></figure></div>
+  </section>
+
+  <section class="s" id="accueil" data-kw="accueil écran principal parties en cours reprendre nouvelle partie onglets jeux joueurs historique stats menu bas bandeau">
+    <h2><span class="n">2</span>L’accueil</h2>
+    <div class="row2"><div class="txt">
+      <p><b>Parties en cours</b> : les parties non terminées, avec le pointage de chacun. Touchez-en une pour la reprendre là où vous étiez.</p>
+      <p><b>Nouvelle partie</b> : une tuile par jeu. Le petit livre 📖 d’une tuile ouvre les règles du jeu sans commencer de partie.</p>
+      <p>En haut à droite : 📘 ouvre ce manuel, ⚙︎ ouvre les <a href="#reglages">Réglages</a>.</p>
+      <p>En bas : les onglets <b>Jeux</b>, <b>Joueurs</b>, <b>Historique</b> et <b>Stats</b>.</p>
+      <div class="tip"><b>Bandeaux :</b> un bandeau jaune peut apparaître en haut de l’accueil, par exemple quand une nouvelle version est disponible. Touchez-le pour agir.</div>
+    </div><figure><img src="img/accueil.webp" alt="Écran d’accueil" loading="lazy"><figcaption>L’accueil, avec les parties en cours.</figcaption></figure></div>
+  </section>
+
+  <section class="s" id="joueurs" data-kw="joueurs liste permanente ajouter renommer retirer supprimer couleur ordre famille profil invité">
+    <h2><span class="n">3</span>Les joueurs</h2>
+    <div class="row2"><div class="txt">
+      <p>L’onglet <b>Joueurs</b> contient la liste permanente de la famille. Inscrivez chaque personne une fois ; ensuite, il suffira de toucher son nom au début d’une partie.</p>
+      <ul><li><b>Ajouter</b> : tapez le nom et touchez <span class="ui">Ajouter</span>.</li>
+        <li><b>Renommer</b> : le nom change aussi dans l’historique.</li>
+        <li><b>Couleur</b> : touchez le rond de couleur pour passer à la couleur suivante.</li>
+        <li><b>↑</b> : remonte un joueur dans la liste.</li>
+        <li><b>✕</b> : retire le joueur de la liste ; ses parties restent dans l’historique.</li></ul>
+      <p>Un visiteur peut jouer sans être inscrit : voyez « invité » à la section suivante.</p>
+    </div><figure><img src="img/joueurs.webp" alt="Liste des joueurs" loading="lazy"><figcaption>La liste permanente des joueurs.</figcaption></figure></div>
+  </section>
+
+  <section class="s" id="nouvelle" data-kw="commencer nouvelle partie sélectionner joueurs ordre invité sans profil premier à brasser options partie à objectif cible nom du jeu">
+    <h2><span class="n">4</span>Commencer une partie</h2>
+    <div class="row2"><div class="txt">
+      <ol><li>Touchez la tuile du jeu sur l’accueil.</li>
+        <li><b>Qui joue ?</b> Touchez les joueurs <b>dans l’ordre du jeu</b> : le numéro dans le rond indique l’ordre. Touchez de nouveau pour retirer quelqu’un.</li>
+        <li><b>Invité</b> : tapez un nom puis <span class="ui">+ Invité (sans profil)</span>. À la fin de la partie, l’app proposera de l’ajouter à votre liste. <span class="ui">+ À ma liste</span> l’inscrit tout de suite.</li>
+        <li><b>Premier à brasser</b> : touchez le joueur qui brasse la première manche.</li>
+        <li><b>Options</b> selon le jeu : pointage visé, mode du Scrabble, valeurs du jeu de dés, etc.</li>
+        <li>Touchez <span class="ui">Commencer</span>.</li></ol>
+      <div class="tip"><b>Astuce :</b> l’app retient les derniers joueurs choisis pour chaque jeu.</div>
+    </div><figure><img src="img/nouvelle-partie.webp" alt="Préparation d’une partie" loading="lazy"><figcaption>Joueurs dans l’ordre, un invité, et le premier à brasser.</figcaption></figure></div>
+  </section>
+
+  <section class="s" id="feuille" data-kw="feuille de pointage totaux classement manche tableau meneur étoile rang terminer partie cible atteinte">
+    <h2><span class="n">5</span>La feuille de pointage</h2>
+    <div class="row2"><div class="txt">
+      <p>En haut, une case par joueur montre son <b>total</b> et son <b>rang</b> (★ pour le meneur). Dessous, le tableau des manches.</p>
+      <p>Quand un joueur atteint le pointage visé, un bandeau 🏁 l’annonce : touchez <span class="ui">Terminer</span> pour voir le résultat. Vous pouvez aussi terminer à tout moment par le menu ⋮.</p>
+      <p>Dans la barre du haut : ↶ ↷ (<a href="#annuler">annuler / rétablir</a>), 📖 (règles du jeu) et ⋮ (menu).</p>
+    </div><figure><img src="img/feuille.webp" alt="Feuille de pointage" loading="lazy"><figcaption>Une partie de Flip 7 après trois manches.</figcaption></figure></div>
+
+    <h3 id="manche">Inscrire une manche</h3>
+    <div class="row2"><div class="txt">
+      <ol><li>Touchez le bouton du bas <span class="ui">+ Manche</span>.</li>
+        <li>Inscrivez les points de chaque joueur. La touche <kbd>±</kbd> rend un nombre négatif. La touche Entrée du clavier passe au joueur suivant.</li>
+        <li>Pour plusieurs jeux, la <b>calculatrice 🧮</b> à côté d’un joueur calcule les points à partir des cartes (voir chaque jeu).</li>
+        <li>Touchez <span class="ui">Enregistrer</span>.</li></ol>
+      <p><b>Corriger une manche</b> : touchez n’importe quelle case du tableau. Le bouton <span class="ui">Supprimer</span> retire toute la manche.</p>
+    </div><figure><img src="img/flip7-calculatrice.webp" alt="Saisie d’une manche avec calculatrice" loading="lazy"><figcaption>Saisie d’une manche, calculatrice ouverte.</figcaption></figure></div>
+
+    <h3 id="brasseur">Le brasseur</h3>
+    <div class="row2"><div class="txt">
+      <p>Le bandeau 🃏 en haut de la feuille indique <b>à qui c’est de brasser</b>. Après chaque manche enregistrée, l’app le rappelle et passe au joueur suivant, dans l’ordre de départ.</p>
+      <p>On s’est trompé ? Touchez <span class="ui">Changer</span> et choisissez le bon joueur : la suite repart de lui.</p>
+    </div><figure><img src="img/brasseur.webp" alt="Choix du brasseur" loading="lazy"><figcaption>Corriger le brasseur.</figcaption></figure></div>
+
+    <h3 id="menu">Le menu ⋮ d’une partie</h3>
+    <div class="row2"><div class="txt">
+      <ul><li><b>Terminer</b> ou <b>Rouvrir</b> la partie.</li>
+        <li><b>Supprimer la dernière manche</b>.</li>
+        <li><b>Ajouter un joueur</b> en cours de partie.</li>
+        <li><b>Revanche</b> : nouvelle partie avec les mêmes joueurs.</li>
+        <li><b>Évolution des scores</b> : le <a href="#resultat">graphique</a>.</li>
+        <li><b>Signaler un problème / suggérer</b> (voir <a href="#rapports">Rapports</a>).</li>
+        <li><b>Supprimer cette partie</b>, définitivement.</li></ul>
+    </div><figure><img src="img/menu-partie.webp" alt="Menu d’une partie" loading="lazy"><figcaption>Le menu ⋮.</figcaption></figure></div>
+  </section>
+
+  <section class="s" id="annuler" data-kw="annuler rétablir défaire refaire erreur retour arrière flèche historique d'actions undo redo">
+    <h2><span class="n">6</span>Annuler / rétablir</h2>
+    <div class="txt">
+      <p>Les flèches <b>↶</b> (annuler) et <b>↷</b> (rétablir), en haut de chaque feuille de pointage, défont ou refont <b>n’importe quelle action</b> de la partie : manche saisie ou modifiée, tour de dés, points ajoutés au tour, marqueur de Phase 10, couleur, brasseur, fin de partie.</p>
+      <p>On peut remonter jusqu’à 60 actions. L’historique d’annulation est gardé tant que l’app reste ouverte.</p>
+      <div class="tip"><b>Exemple :</b> au jeu de dés, un tour a été encaissé par erreur. Touchez ↶ : le tour revient, avec ses points, au même joueur.</div>
+    </div>
+  </section>
+
+  <section class="s" id="jeux" data-kw="jeux liste">
+    <h2><span class="n">7</span>Les jeux</h2>
+    <p class="lead">Chaque jeu a sa feuille adaptée. Le résumé des règles est toujours à portée de main avec 📖.</p>
+
+    <h3 id="libre">Pointage libre</h3>
+    <div class="txt" data-kw="pointage libre générique n'importe quel jeu rummikub nom du jeu plus haut plus bas gagne">
+      <p>Pour n’importe quel jeu. À la préparation : le <b>nom du jeu</b> (l’app retient les noms déjà utilisés), <b>qui gagne</b> (le plus haut ou le plus bas pointage) et un <b>pointage visé</b> facultatif. On inscrit ensuite les points manche par manche. Les règles maison de chaque jeu libre sont gardées séparément.</p>
+    </div>
+
+    <h3 id="playnine">Play Nine</h3>
+    <div class="row2 many"><div class="txt" data-kw="play nine golf trous 9 sous-total écart meneur colonnes annulent hole in one -5 bonus colonnes calculatrice cartes">
+      <p>La feuille reprend la carte officielle : <b>9 trous</b>, un <b>sous-total</b> après chaque trou, et l’<b>écart avec le meneur</b> dans la case de chaque joueur. Le plus bas gagne. Jusqu’à 6 joueurs tiennent à l’écran.</p>
+      <p><b>Calculatrice des 8 cartes</b> (🧮) : touchez une carte de la grille, puis sa valeur. Les colonnes identiques s’annulent, une paire de −5 vaut −10, et les bonus de colonnes appariées (−10, −15, −20) s’ajoutent seuls.</p>
+    </div><div class="figs"><figure><img src="img/playnine.webp" alt="Carte de Play Nine" loading="lazy"><figcaption>La carte de 9 trous avec sous-totaux.</figcaption></figure><figure><img src="img/playnine-calculatrice.webp" alt="Calculatrice Play Nine" loading="lazy"><figcaption>La calculatrice des 8 cartes.</figcaption></figure></div></div>
+
+    <h3 id="flip7">Flip 7</h3>
+    <div class="txt" data-kw="flip 7 200 points cartes chiffres x2 modificateurs bonus 15 éliminé doublon calculatrice">
+      <p>Premier à 200. La calculatrice 🧮 (image de la section <a href="#manche">Inscrire une manche</a>) : touchez les cartes chiffres du joueur, la carte <b>×2</b> et les modificateurs <b>+2 à +10</b>. Le bonus <b>Flip 7 (+15)</b> s’active seul à 7 chiffres différents ; <b>Éliminé</b> met le joueur à 0. Un doublon est signalé.</p>
+    </div>
+
+    <h3 id="uno">Uno</h3>
+    <div class="row2"><div class="txt" data-kw="uno 500 cartes en main chacun ses cartes plus bas gagne joker +4 +2 inversion passe 20 50 calculatrice">
+      <p>Règle de la maison : <b>chacun compte les cartes qui lui restent</b> et le plus bas gagne quand quelqu’un atteint 500. La calculatrice 🧮 ajoute la valeur de chaque carte touchée : chiffres, 20 pour +2 / Inversion / Passe, 50 pour les jokers.</p>
+    </div><figure><img src="img/uno-saisie.webp" alt="Saisie Uno" loading="lazy"><figcaption>Calculatrice des cartes restantes.</figcaption></figure></div>
+
+    <h3 id="skipbo">Skip-Bo</h3>
+    <div class="row2"><div class="txt" data-kw="skip-bo skipbo talon gagnant 25 points 5 par carte 500 pointage officiel">
+      <p>Pointage officiel : choisissez <b>qui a vidé son talon</b>, puis inscrivez les <b>cartes restantes</b> dans le talon des autres. Le gagnant reçoit 25 points + 5 par carte restante, calculés automatiquement. Premier à 500.</p>
+    </div><figure><img src="img/skipbo-saisie.webp" alt="Saisie Skip-Bo" loading="lazy"><figcaption>Le gagnant et les cartes restantes.</figcaption></figure></div>
+
+    <h3 id="millebornes">Mille Bornes</h3>
+    <div class="row2 many"><div class="txt" data-kw="mille bornes 1000 5000 bornes kilomètres 25 50 75 100 200 bottes coups fourrés capot allonge retardement sans les 200 manche terminée primes auto">
+      <p>Saisie par cartes : un onglet par joueur en haut (avec son total), et <span class="ui">Joueur suivant ›</span> pour passer au prochain.</p>
+      <ul><li><b>Bornes</b> : le nombre de cartes de chaque valeur (deux cartes 200 au maximum).</li>
+        <li><b>Bottes jouées</b>, puis combien étaient des <b>coups fourrés</b>.</li>
+        <li><b>Primes AUTO</b> : les 4 bottes, la manche terminée (1 000 km), sans les 200 et le capot se cochent seuls selon les cartes. Touchez-en une pour forcer l’inverse.</li>
+        <li><b>Allonge</b> et <b>retardement</b> se cochent à la main.</li></ul>
+    </div><div class="figs"><figure><img src="img/millebornes-saisie.webp" alt="Bornes Mille Bornes" loading="lazy"><figcaption>Les bornes et les bottes.</figcaption></figure><figure><img src="img/millebornes-primes.webp" alt="Primes Mille Bornes" loading="lazy"><figcaption>Les primes, dont celles cochées automatiquement.</figcaption></figure></div></div>
+
+    <h3 id="phase10">Phase 10</h3>
+    <div class="row2 many"><div class="txt" data-kw="phase 10 phases tableau progression marqueur cercle couleur objectif suite brelan carré même couleur avancer">
+      <p>Le <b>tableau de progression</b> montre les 10 phases (lignes) et une colonne par joueur, avec un cercle de sa couleur à sa phase actuelle.</p>
+      <ul><li><b>Couleur</b> : touchez le carré en haut d’une colonne et choisissez parmi 16 couleurs (si elle est prise, les deux joueurs échangent).</li>
+        <li><b>Avancer</b> un joueur : touchez la case suivante de sa colonne (cercle pointillé).</li>
+        <li><b>Voir l’objectif</b> : touchez le marqueur d’un joueur. Une fenêtre montre sa phase avec un exemple de cartes et un bouton <span class="ui">Phase réussie ›</span>.</li>
+        <li>Les points s’inscrivent comme d’habitude avec <span class="ui">+ Manche</span>. Le classement tient compte d’abord de la phase, puis des points.</li></ul>
+    </div><div class="figs"><figure><img src="img/phase10.webp" alt="Tableau Phase 10" loading="lazy"><figcaption>Le tableau de progression.</figcaption></figure><figure><img src="img/phase10-objectif.webp" alt="Objectif Phase 10" loading="lazy"><figcaption>L’objectif d’un joueur.</figcaption></figure><figure><img src="img/phase10-couleurs.webp" alt="Couleurs Phase 10" loading="lazy"><figcaption>Le choix des couleurs.</figcaption></figure></div></div>
+
+    <h3 id="scrabble">Scrabble</h3>
+    <div class="row2 many"><div class="txt" data-kw="scrabble mot lettres valeur lettre compte double triple mot compte double triple joker blanc scrabble 50 bonus sept lettres fin de partie lettres restantes chevalet saisie simple calculateur passer échanger">
+      <p>À la préparation, choisissez la <b>feuille de pointage</b> :</p>
+      <ul><li><b>Calculateur de mots</b> : tapez le mot ; il s’affiche en tuiles avec la valeur de chaque lettre (édition française, accents ignorés). Touchez une lettre posée sur une case bonus : <b>L×2 → L×3 → joker → normale</b>. Choisissez le multiplicateur du mot (×2, ×3, ou ×4 et ×9 pour deux cases), puis <span class="ui">Ajouter</span>. Ajoutez ainsi chaque mot formé pendant le tour.</li>
+        <li><b>Saisie simple</b> : chacun calcule ses mots et inscrit le total de son tour.</li></ul>
+      <p>Dans les deux cas : la case <b>Scrabble ! +50</b> quand on pose ses 7 lettres, <span class="ui">Passer / échanger</span> pour 0 point, et <span class="ui">Valider</span>. L’app passe ensuite au joueur suivant.</p>
+      <p><b>Fin de partie</b> 🏁 : tapez les lettres qui restent à chacun. L’app retire leur valeur et la donne à celui qui a vidé son chevalet.</p>
+    </div><div class="figs"><figure><img src="img/scrabble-calculateur.webp" alt="Calculateur Scrabble" loading="lazy"><figcaption>QUARTZ, Z sur lettre compte triple, mot compte double : 84.</figcaption></figure><figure><img src="img/scrabble-simple.webp" alt="Scrabble saisie simple" loading="lazy"><figcaption>La saisie simple.</figcaption></figure><figure><img src="img/scrabble-fin.webp" alt="Fin de partie Scrabble" loading="lazy"><figcaption>La fin de partie et les lettres restantes.</figcaption></figure></div></div>
+
+    <h3 id="des">Jeu de dés (10 000)</h3>
+    <div class="row2 many"><div class="txt" data-kw="dés jeu de dés 10000 25000 farkle entrer 1000 raté pénalité zone -1000 encaisser objectif exact dépasser six dés identiques victoire suite trois paires valeurs">
+      <p>Le joueur dont c’est le tour est mis en évidence. Après chaque lancer :</p>
+      <ol><li>Touchez les <b>dés gardés</b> : l’app affiche leur valeur. Touchez un dé du plateau pour le retirer.</li>
+        <li><span class="ui">Ajouter au tour</span> cumule ces points ; relancez et recommencez.</li>
+        <li><span class="ui">Encaisser</span> ajoute les points du tour au total et passe au joueur suivant.</li>
+        <li><span class="ui">💥 Raté</span> : aucun dé ne compte, les points du tour sont perdus.</li></ol>
+      <table class="t"><tr><th>Règle maison</th><th>Ce que fait l’app</th></tr>
+        <tr><td>Entrer à 1 000</td><td>Il faut 1 000 points en un seul tour pour commencer à accumuler. L’étiquette « pas entré » le rappelle.</td></tr>
+        <tr><td>Objectif exact</td><td>Il faut arriver pile à l’objectif (25 000). Si des points font dépasser, le tour s’arrête sans gain ni perte.</td></tr>
+        <tr><td>Zone de pénalité</td><td>À partir de 20 000, un raté coûte 1 000, <b>seulement si aucun dé n’a compté</b> pendant le tour.</td></tr>
+        <tr><td>Six dés identiques</td><td>Victoire immédiate, peu importe le pointage.</td></tr></table>
+      <p>Les valeurs (objectif, entrée, pénalité, suite, trois paires) se règlent dans <b>Valeurs et règles</b> à la préparation.</p>
+    </div><div class="figs"><figure><img src="img/des.webp" alt="Jeu de dés" loading="lazy"><figcaption>Dés gardés : 1, 1, 1 et 5 = 1 050.</figcaption></figure><figure><img src="img/des-zone.webp" alt="Zone de pénalité" loading="lazy"><figcaption>Dans la zone : ce qui reste et le rappel de pénalité.</figcaption></figure></div></div>
+
+    <h3 id="voix">Commande vocale (jeu de dés)</h3>
+    <div class="row2"><div class="txt" data-kw="voix vocale micro parler dire les dés reconnaissance encaisser ajouter raté">
+      <p>Touchez <span class="ui">🎤 Dire les dés</span> et parlez :</p>
+      <ul><li>« trois cinq <b>et</b> un un » → trois 5 et un 1</li>
+        <li>« un, cinq, cinq » → un 1 et deux 5 (trois mots ou plus = une liste)</li>
+        <li>« un cinq » veut dire <b>un 5</b> ; pour un 1 et un 5, dites « un <b>et</b> cinq ».</li></ul>
+      <p>Ce que l’app a compris s’affiche, et les dés vont dans le plateau. Terminez la phrase par « <b>ajouter</b> » ou « <b>encaisser</b> » pour agir tout de suite, ou dites simplement « <b>raté</b> ».</p>
+    </div><figure><img src="img/des-voix.webp" alt="Commande vocale" loading="lazy"><figcaption>« Entendu » montre ce que l’app a compris.</figcaption></figure></div>
+  </section>
+
+  <section class="s" id="regles" data-kw="règles résumé règles maison variantes officielles livre notes">
+    <h2><span class="n">8</span>Règles et règles maison</h2>
+    <div class="row2"><div class="txt">
+      <p>Le bouton 📖 (sur l’accueil ou dans une partie) ouvre un <b>résumé des règles</b> du jeu : mise en place, déroulement et pointage.</p>
+      <p>Sous le résumé, <b>Nos règles maison</b> est un espace libre pour noter vos variantes. Il est enregistré automatiquement, jeu par jeu.</p>
+      <p><span class="ui">Chercher les règles officielles</span> ouvre une recherche sur Internet.</p>
+    </div><figure><img src="img/regles.webp" alt="Règles du jeu" loading="lazy"><figcaption>Le résumé des règles du jeu de dés.</figcaption></figure></div>
+  </section>
+
+  <section class="s" id="resultat" data-kw="résultat fin podium classement gagnant revanche graphique évolution des scores courbe invité ajouter à ma liste">
+    <h2><span class="n">9</span>Résultat et graphique</h2>
+    <div class="row2 many"><div class="txt">
+      <p>À la fin d’une partie : le gagnant, le classement et le <b>graphique d’évolution des scores</b>. <span class="ui">Revanche</span> relance une partie avec les mêmes joueurs. Les invités peuvent être ajoutés à votre liste.</p>
+      <p>Le graphique (aussi dans le menu ⋮ d’une partie en cours) trace une ligne par joueur, dans sa couleur ; l’objectif apparaît en pointillé. <b>Touchez le graphique</b> pour voir le pointage de chacun à une manche précise.</p>
+    </div><div class="figs"><figure><img src="img/resultat.webp" alt="Résultat d’une partie" loading="lazy"><figcaption>L’écran de résultat.</figcaption></figure><figure><img src="img/graphique.webp" alt="Graphique des scores" loading="lazy"><figcaption>Le graphique, détail d’une manche.</figcaption></figure></div></div>
+  </section>
+
+  <section class="s" id="historique" data-kw="historique anciennes parties liste date rouvrir">
+    <h2><span class="n">10</span>Historique</h2>
+    <div class="row2"><div class="txt">
+      <p>L’onglet <b>Historique</b> liste toutes les parties, de la plus récente à la plus ancienne, avec la date et le gagnant (ou « en cours »). Touchez une partie pour revoir sa feuille. Une partie terminée peut être rouverte par le menu ⋮.</p>
+    </div><figure><img src="img/historique.webp" alt="Historique" loading="lazy"><figcaption>L’historique des parties.</figcaption></figure></div>
+  </section>
+
+  <section class="s" id="stats" data-kw="statistiques stats victoires taux série en feu records fiche joueur bête noire jeu fétiche période 12 mois 30 jours meilleur pointage plus grande avance">
+    <h2><span class="n">11</span>Statistiques</h2>
+    <div class="row2 many"><div class="txt">
+      <ul><li><b>Période</b> (Tout, 12 mois, 30 jours) et <b>jeu</b> : filtrent tout l’écran.</li>
+        <li><b>En résumé</b> : nombre de parties, jeu préféré (ou champion du jeu choisi), et le joueur « en feu 🔥 » qui aligne les victoires.</li>
+        <li><b>Joueurs</b> : parties, victoires, taux et série en cours (avec le record).</li>
+        <li><b>Records</b> (quand un jeu est choisi) : meilleur pointage gagnant, plus grande avance, partie la plus longue.</li>
+        <li><b>Fiche joueur</b> : touchez un nom pour voir son jeu fétiche, sa <b>bête noire</b> (celui qui l’a battu le plus souvent) et ses résultats par jeu.</li></ul>
+      <p>Une égalité compte comme une victoire pour chacun.</p>
+    </div><div class="figs"><figure><img src="img/statistiques.webp" alt="Statistiques" loading="lazy"><figcaption>Les statistiques, tous jeux.</figcaption></figure><figure><img src="img/fiche-joueur.webp" alt="Fiche joueur" loading="lazy"><figcaption>La fiche d’un joueur.</figcaption></figure><figure><img src="img/records.webp" alt="Records" loading="lazy"><figcaption>Les records d’un jeu.</figcaption></figure></div></div>
+  </section>
+
+  <section class="s" id="reglages" data-kw="réglages paramètres options engrenage">
+    <h2><span class="n">12</span>Réglages</h2>
+    <div class="row2"><div class="txt">
+      <p>Touchez ⚙︎ sur l’accueil. On y trouve les mises à jour, l’aide, les rapports, la sauvegarde et l’affichage.</p>
+    </div><figure><img src="img/reglages.webp" alt="Réglages" loading="lazy"><figcaption>Les réglages (app Android).</figcaption></figure></div>
+
+    <h3 id="maj">Mises à jour</h3>
+    <div class="txt" data-kw="mise à jour nouvelle version vérifier télécharger installer autoriser cette source">
+      <p><b>App Android</b> : <span class="ui">Vérifier les mises à jour</span> montre la version installée et, s’il y en a une nouvelle, ce qui a changé. <span class="ui">Télécharger et installer</span> fait le reste ; Android demande de confirmer. La première fois, il faut autoriser Pointage à installer des applications (« Autoriser cette source »), puis toucher de nouveau le bouton. L’app vérifie aussi d’elle-même une fois par jour et affiche un bandeau sur l’accueil. Vos parties sont conservées.</p>
+      <p><b>App web</b> (iPhone, ordinateur) : elle se met à jour toute seule.</p>
+    </div>
+
+    <h3 id="rapports">Signaler un problème ou suggérer</h3>
+    <div class="row2"><div class="txt" data-kw="rapport bug anomalie problème suggestion idée commentaire signaler envoyer github">
+      <p>Le bouton <span class="ui">💬 Signaler un problème / suggérer</span> (Réglages, ou menu ⋮ d’une partie) envoie un message au responsable de l’app :</p>
+      <ol><li>Choisissez <b>Un problème</b> ou <b>Une suggestion</b>.</li>
+        <li>Décrivez ce qui s’est passé ou ce que vous proposez ; ajoutez votre prénom si vous voulez.</li>
+        <li>Laissez cochée « Joindre l’état de la partie » : cela aide à reproduire le problème.</li>
+        <li>Touchez <span class="ui">Envoyer</span>. Sans Internet, le rapport part plus tard tout seul.</li></ol>
+      <p>Les rapports sont visibles dans le dépôt public de l’app ; évitez d’y mettre des renseignements personnels.</p>
+    </div><figure><img src="img/rapport.webp" alt="Envoi d’un rapport" loading="lazy"><figcaption>Une suggestion en cours de rédaction.</figcaption></figure></div>
+
+    <h3 id="sauvegarde">Sauvegarde</h3>
+    <div class="txt" data-kw="sauvegarde exporter importer restaurer copie fichier json automatique dossier nouveau téléphone perdre données">
+      <p>Les données restent dans l’appareil. Pour ne rien perdre :</p>
+      <ul><li><b>Exporter une sauvegarde</b> : crée un fichier <code>.json</code> à garder (Google Drive, courriel…).</li>
+        <li><b>Importer une sauvegarde</b> : remplace les données de l’appareil par celles d’un fichier.</li>
+        <li><b>Sauvegarde automatique</b> (app Android, et Chrome ou Edge sur ordinateur) : activez l’interrupteur et choisissez un dossier une fois. Quelques secondes après chaque changement, l’app y écrit <code>Pointage-sauvegarde.json</code>, toujours à jour, plus une copie par mois. Sur ordinateur, le navigateur peut redemander votre accord à la réouverture : un bandeau « Sauvegarde automatique en pause » apparaît alors sur l’accueil ; touchez <span class="ui">Autoriser</span>.</li></ul>
+      <div class="tip"><b>Nouveau téléphone :</b> installez l’app, puis Réglages → Importer une sauvegarde → choisissez <code>Pointage-sauvegarde.json</code>.</div>
+    </div>
+
+    <h3 id="ecran">Garder l’écran allumé</h3>
+    <div class="txt" data-kw="écran veille allumé éteint batterie affichage">
+      <p>Par défaut, l’écran ne se met pas en veille tant que l’app est ouverte. Il s’éteint normalement quand vous changez d’app. Pour revenir à la veille habituelle : Réglages → <b>Affichage</b> → « Garder l’écran allumé ».</p>
+    </div>
+  </section>
+
+  <section class="s" id="faq" data-kw="questions fréquentes faq dépannage problème aide installation bloquée vieille version données disparues iphone">
+    <h2><span class="n">13</span>Questions fréquentes</h2>
+    <div class="txt">
+      <h3>L’installation de l’APK est bloquée.</h3>
+      <p>Ouvrez le fichier depuis l’app <b>Fichiers</b> (dossier Téléchargements) plutôt que depuis le navigateur, autorisez l’installation d’applications inconnues, et, si Play Protect avertit, choisissez « Installer quand même ».</p>
+      <h3>L’app ne voit pas la nouvelle version.</h3>
+      <p>Attendez quelques minutes après l’annonce d’une mise à jour, puis touchez de nouveau <span class="ui">Vérifier les mises à jour</span>.</p>
+      <h3>Je me suis trompé dans une manche.</h3>
+      <p>Touchez ↶ pour annuler la dernière action, ou touchez la case de la manche pour la corriger.</p>
+      <h3>On a oublié qui devait brasser.</h3>
+      <p>Le bandeau 🃏 en haut de la feuille l’indique. S’il se trompe, touchez <span class="ui">Changer</span>.</p>
+      <h3>Mes parties ont disparu.</h3>
+      <p>Les données sont propres à chaque appareil, et séparées entre l’app Android et l’app web. Si vous avez une sauvegarde, utilisez Importer. Activez la sauvegarde automatique pour l’avenir.</p>
+      <h3>Peut-on installer l’APK sur un iPhone ?</h3>
+      <p>Non : sur iPhone et iPad, utilisez l’app web ajoutée à l’écran d’accueil (section <a href="#installer">Installer</a>).</p>
+      <h3>La voix comprend mal.</h3>
+      <p>Parlez près du téléphone, séparez les groupes de dés par « et », et vérifiez la ligne « Entendu ». Si une phrase revient souvent mal comprise, signalez-la avec 💬.</p>
+    </div>
+  </section>
+</main>
+</div>
+<footer>Pointage · manuel de la version 2.7 · <a href="../">Installer l’app</a></footer>
+
+<script>
+(function(){
+  var q = document.getElementById('q'), qx = document.getElementById('qx'), res = document.getElementById('results');
+  var toc = document.getElementById('toc'), tocbtn = document.getElementById('tocbtn'), scrim = document.getElementById('scrim');
+  var norm = function(t){ return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); };
+  // Unités de recherche : chaque section, et chaque sous-titre (h3) avec le texte qui le suit
+  var units = [];
+  document.querySelectorAll('section.s').forEach(function(sec){
+    var h2 = sec.querySelector('h2'), kw = sec.getAttribute('data-kw') || '';
+    var h3s = sec.querySelectorAll('h3[id]');
+    if(!h3s.length){ units.push({id: sec.id, title: h2.textContent.replace(/^\d+/, '').trim(), el: sec, kw: kw, text: sec.textContent}); return; }
+    var first = '';
+    for(var n = h2.nextElementSibling; n && n.tagName !== 'H3'; n = n.nextElementSibling) first += ' ' + n.textContent;
+    units.push({id: sec.id, title: h2.textContent.replace(/^\d+/, '').trim(), el: sec, kw: kw, text: first});
+    h3s.forEach(function(h){ var t = '', k = '';
+      for(var n = h.nextElementSibling; n && n.tagName !== 'H3'; n = n.nextElementSibling){ t += ' ' + n.textContent; n.querySelectorAll && n.querySelectorAll('[data-kw]').forEach(function(x){ k += ' ' + x.getAttribute('data-kw'); }); if(n.getAttribute && n.getAttribute('data-kw')) k += ' ' + n.getAttribute('data-kw'); }
+      units.push({id: h.id, title: h.textContent.trim() + ' · ' + h2.textContent.replace(/^\d+/, '').trim(), el: h, kw: k, text: t}); });
+  });
+  units.forEach(function(u){ u.n = norm(u.title + ' ' + u.kw + ' ' + u.text); u.nt = norm(u.title + ' ' + u.kw); });
+
+  function clearMarks(){ document.querySelectorAll('main mark').forEach(function(m){ m.replaceWith(document.createTextNode(m.textContent)); }); document.querySelectorAll('main').forEach(function(m){ m.normalize(); }); }
+  function markTerms(terms){
+    var walker = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT, { acceptNode: function(n){ return n.parentNode.closest('#results, script, style') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
+    var nodes = []; while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function(node){
+      var txt = node.nodeValue, low = norm(txt), hits = [];
+      terms.forEach(function(t){ var i = low.indexOf(t); while(i >= 0){ hits.push([i, i + t.length]); i = low.indexOf(t, i + t.length); } });
+      if(!hits.length) return;
+      hits.sort(function(a, b){ return a[0] - b[0]; });
+      var frag = document.createDocumentFragment(), pos = 0;
+      hits.forEach(function(h){ if(h[0] < pos) return; frag.appendChild(document.createTextNode(txt.slice(pos, h[0]))); var m = document.createElement('mark'); m.textContent = txt.slice(h[0], h[1]); frag.appendChild(m); pos = h[1]; });
+      frag.appendChild(document.createTextNode(txt.slice(pos))); node.replaceWith(frag);
+    });
+  }
+  function snippet(u, terms){
+    var raw = u.text.replace(/\s+/g, ' ').trim(), low = norm(raw), i = -1;
+    terms.some(function(t){ i = low.indexOf(t); return i >= 0; });
+    if(i < 0) return raw.slice(0, 140) + (raw.length > 140 ? '…' : '');
+    var a = Math.max(0, i - 60), b = Math.min(raw.length, i + 90);
+    return (a ? '…' : '') + raw.slice(a, b) + (b < raw.length ? '…' : '');
+  }
+  var esc = function(s){ return s.replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var timer;
+  function search(){
+    clearMarks();
+    var raw = q.value.trim(); qx.hidden = !raw;
+    var terms = norm(raw).split(/\s+/).filter(function(t){ return t.length >= 2; });
+    document.querySelectorAll('section.s, .intro').forEach(function(s){ s.hidden = false; });
+    if(!terms.length){ res.hidden = true; return; }
+    var found = units.map(function(u){
+      if(!terms.every(function(t){ return u.n.indexOf(t) >= 0; })) return null;
+      var score = 0; terms.forEach(function(t){ if(u.nt.indexOf(t) >= 0) score += 3; score += Math.min(3, u.n.split(t).length - 1); });
+      return {u: u, score: score};
+    }).filter(Boolean).sort(function(a, b){ return b.score - a.score; });
+    res.hidden = false;
+    res.innerHTML = found.length
+      ? '<h2>' + found.length + ' résultat' + (found.length > 1 ? 's' : '') + ' pour « ' + esc(raw) + ' »</h2><ul>' + found.slice(0, 12).map(function(f){ return '<li><a href="#' + f.u.id + '">' + esc(f.u.title) + '</a><p>' + esc(snippet(f.u, terms)) + '</p></li>'; }).join('') + '</ul>'
+      : '<h2>Aucun résultat pour « ' + esc(raw) + ' »</h2><p>Essayez un autre mot, par exemple le nom d’un jeu ou d’un bouton.</p>';
+    var keep = {}; found.forEach(function(f){ keep[(f.u.el.closest('section') || f.u.el).id] = 1; });
+    document.querySelectorAll('section.s').forEach(function(s){ s.hidden = !keep[s.id]; });
+    document.querySelector('.intro').hidden = true;
+    markTerms(terms);
+  }
+  q.addEventListener('input', function(){ clearTimeout(timer); timer = setTimeout(search, 150); });
+  q.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ var a = res.querySelector('a'); if(a){ a.click(); q.blur(); } } if(e.key === 'Escape'){ q.value = ''; search(); } });
+  qx.addEventListener('click', function(){ q.value = ''; search(); q.focus(); });
+  res.addEventListener('click', function(e){ var a = e.target.closest('a'); if(!a) return; var id = a.getAttribute('href').slice(1); var el = document.getElementById(id); var sec = el && (el.closest('section') || el); if(sec) sec.hidden = false; });
+  // Sommaire repliable (téléphone)
+  function setToc(open){ toc.classList.toggle('open', open); scrim.hidden = !open; tocbtn.setAttribute('aria-expanded', open); }
+  tocbtn.addEventListener('click', function(){ setToc(!toc.classList.contains('open')); });
+  scrim.addEventListener('click', function(){ setToc(false); });
+  toc.addEventListener('click', function(e){ if(e.target.closest('a')){ setToc(false); if(q.value){ q.value = ''; search(); } } });
+  // Section courante dans la table des matières
+  var links = {}; toc.querySelectorAll('a').forEach(function(a){ links[a.getAttribute('href').slice(1)] = a; });
+  var targets = Object.keys(links).map(function(id){ return document.getElementById(id); }).filter(Boolean);
+  function spy(){ var cur = null; targets.forEach(function(t){ if(t.offsetParent !== null && t.getBoundingClientRect().top < 140) cur = t.id; });
+    Object.keys(links).forEach(function(id){ links[id].classList.toggle('on', id === cur); }); }
+  document.addEventListener('scroll', function(){ requestAnimationFrame(spy); }, {passive: true}); spy();
+  // Recherche transmise dans l'adresse (#q=mot)
+  if(location.hash.indexOf('#q=') === 0){ q.value = decodeURIComponent(location.hash.slice(3)); search(); }
+})();
+</script>
+</body>
+</html>
