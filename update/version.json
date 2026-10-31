@@ -1,6 +1,6 @@
 {
- "version": "2.5",
- "notes": "• Nouveau : feuille de pointage pour le Scrabble. Tapez le mot, touchez les lettres sur une case bonus (L×2, L×3, joker), choisissez le multiplicateur de mot : l'app calcule avec les valeurs françaises. Plusieurs mots par tour, bonus Scrabble +50, et calcul automatique de la fin de partie (lettres restantes).",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.5.apk",
- "size": 99161
+ "version": "2.6",
+ "notes": "• Nouveau : Scrabble en « saisie simple », à choisir avant la partie : on inscrit seulement le total de chaque tour.\n• Nouveau : l'écran reste allumé tant que l'app est ouverte (désactivable dans ⚙︎ Réglages → Affichage).",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-2.6.apk",
+ "size": 103257
 }

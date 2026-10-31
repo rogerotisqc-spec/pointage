@@ -763,8 +763,9 @@ function render(top){
   const html = ({home:vHome, setup:vSetup, sheet:vSheet, rules:vRules, players:vPlayers, history:vHistory, stats:vStats, settings:vSettings, results:vResults})[v]();
   $('app').innerHTML = html;
   if(top) window.scrollTo(0,0);
-  if(bridge && bridge.keepScreenOn) try{ bridge.keepScreenOn(v === 'sheet'); }catch(e){}
-  else wakeLock(v === 'sheet');
+  const keep = screenOnPref();
+  if(bridge && bridge.keepScreenOn) try{ bridge.keepScreenOn(keep); }catch(e){}
+  else wakeLock(keep);
 }
 function nav(on){
   const it = [['home','🎲','Jeux'],['players','👥','Joueurs'],['history','🕘','Historique'],['stats','🏆','Stats']];
@@ -822,6 +823,10 @@ function vSetup(){
       <label class="lbl" for="o-target">Pointage visé (facultatif)</label>
       <input id="o-target" class="field" inputmode="numeric" placeholder="Aucun" value="${o.target||''}">
       <p class="hint">L’app vous avertit quand un joueur atteint ce pointage.</p>`;
+  } else if(type === 'scrabble'){
+    opts = `<label class="lbl">Feuille de pointage</label>
+      <div class="seg"><button data-a="setScrMode" data-v="0" class="${!o.simple?'on':''}">Calculateur de mots</button><button data-a="setScrMode" data-v="1" class="${o.simple?'on':''}">Saisie simple</button></div>
+      <p class="hint">${o.simple ? 'Chacun calcule ses mots et inscrit seulement le total de son tour.' : 'Tapez le mot et ses cases bonus : l’app calcule les points.'}</p>`;
   } else if(type === 'farkle'){
     const f = Object.assign({}, FD, db.farkle, o.f||{});
     const inp = (id, label, v) => `<div><label class="lbl" for="${id}">${label}</label><input id="${id}" class="field" inputmode="numeric" value="${v}"></div>`;
@@ -880,6 +885,7 @@ function startGame(){
   const opts = {low: type==='generic' ? !!S.setupLow : !!G.low};
   if(type === 'generic'){ opts.target = o.target || 0; }
   else if(type === 'playnine'){ opts.holes = 9; }
+  else if(type === 'scrabble'){ opts.simple = !!o.simple; }
   else if(type === 'farkle'){ opts.f = Object.assign({}, FD, db.farkle, o.f||{}); db.farkle = Object.assign({}, opts.f); }
   else if(G.target){ opts.target = o.target || G.target; }
   const title = type === 'generic' ? (S.setupTitle||'').trim() : '';
@@ -1013,7 +1019,16 @@ function vScrabble(g){
   const MK = ['', 'l2', 'l3', 'j'], TG = ['', 'L×2', 'L×3', 'joker'];
   const players = `<div class="card list fk-players" style="margin:12px 16px 0">${g.players.map((p,i) => `<button class="li ${i===g.cur && !g.finished?'cur':''}" data-a="scrCur" data-i="${i}"><span class="av" style="background:${p.color}">${initial(p.name)}</span>
       <div class="grow"><div class="t">${esc(p.name)}</div></div><div class="t num-t" style="font-size:20px">${fmt(t[p.key])}</div></button>`).join('')}</div>`;
-  const panel = g.finished ? '' : `<div class="card turnbox">
+  const panel = g.finished ? '' : g.opts.simple ? `<div class="card turnbox">
+    <div class="who">Au tour de<b>${esc(cur.name)}</b></div>
+    <label class="lbl" for="scrPts">Points du tour</label>
+    <div class="row"><div class="num" style="width:auto;flex:1"><input id="scrPts" inputmode="numeric" placeholder="0" style="text-align:left;font-size:26px" autocomplete="off" enterkeyhint="done"></div></div>
+    <label class="chk" style="margin-top:8px"><input type="checkbox" id="scrBingoS"> Scrabble ! 7 lettres posées : +50</label>
+    <div class="row" style="margin-top:12px"><button class="btn" style="flex:1" data-a="scrPass">Passer / échanger</button>
+      <button class="btn primary" style="flex:1.4" data-a="scrSimple">Valider</button></div>
+    <button class="btn sm block" style="margin-top:10px" data-a="scrEnd">🏁 Fin de partie : lettres restantes</button>
+    <p class="hint" style="margin-bottom:0">Feuille simplifiée : chacun calcule ses mots lui-même.</p>
+  </div>` : `<div class="card turnbox">
     <div class="row"><div class="who" style="flex:1">Au tour de<b>${esc(cur.name)}</b></div>
       <div style="text-align:right"><div class="who">Points du tour</div><div class="turnpts num-t">${fmt(tt)}</div></div></div>
     <label class="lbl" for="scrWord">Mot formé</label>
@@ -1032,7 +1047,7 @@ function vScrabble(g){
   const log = g.turns.length ? `<h2 class="sec" style="margin:20px 18px 8px">Derniers tours</h2><div class="card list log">${g.turns.slice().reverse().slice(0,12).map(x => {
       const p = g.players.find(p => p.key === x.pk) || {name:'?'};
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div><div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div></div>`; }).join('')}</div>` : '';
-  return `${topbar(gameName(g), 'Le plus haut gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="scrabble" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), g.opts.simple ? 'Saisie simple' : 'Le plus haut gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="scrabble" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
@@ -1424,6 +1439,9 @@ function vSettings(){
       <div style="display:grid;gap:10px"><button class="btn primary block" data-a="export">Exporter une sauvegarde</button>
       <button class="btn block" data-a="import">Importer une sauvegarde</button></div>
       ${backupCard()}</div>
+    <h2 class="sec">Affichage</h2>
+    <div class="card" style="padding:14px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Garder l’écran allumé</b><div class="hint" style="margin:2px 0 0">Tant que l’app est ouverte, l’écran ne se met pas en veille. Il s’éteint normalement quand vous changez d’app.</div></div>
+      <button class="switch ${screenOnPref() ? 'on' : ''}" data-a="screenToggle" aria-label="Garder l’écran allumé"></button></div></div>
     <h2 class="sec">Données</h2>
     <div class="card" style="padding:14px"><p style="margin:0">${db.players.length} joueurs · ${db.games.length} parties</p></div>
     <p class="hint" style="margin-top:22px;text-align:center">Pointage · version ${esc(appVersion() || '?')}${bridge ? '' : ' (web)'}</p>
@@ -1669,6 +1687,7 @@ const A = {
   rmGuest: (el, e) => { e.stopPropagation(); readSetupFields(); const k = el.dataset.k; S.guests = S.guests.filter(g => g.key !== k); S.sel = S.sel.filter(x => x !== k); render(); },
   addGuest: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const k = 'g' + uid(); S.guests.push({key:k, name:n}); S.sel.push(k); render(); },
   addRoster: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const p = newPlayer(n); if(p){ S.sel.push(p.id); render(); toast(n + ' ajouté à votre liste'); } },
+  setScrMode: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {simple: el.dataset.v === '1'}); render(); },
   setLow: el => { readSetupFields(); S.setupLow = el.dataset.v === '1'; render(); },
   setHoles: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {holes: Number(el.dataset.v)}); render(); },
   start: () => startGame(),
@@ -1748,6 +1767,7 @@ const A = {
   abPick: () => abPickFolder(),
   abNow: () => { autoBackupNow(true); toast('Sauvegarde…'); },
   abResume: () => autoBackupNow(true),
+  screenToggle: () => { const on = !screenOnPref(); try{ localStorage.setItem('pointage.screenon', on ? '1' : '0'); }catch(e){} toast(on ? 'L’écran restera allumé' : 'Veille normale de l’écran'); render(); },
   statP: el => { S.statP = el.dataset.v; render(); },
   statPlayer: el => openPlayerStats(el.dataset.k),
   chart: () => { closeModal(); openChart(); },
@@ -1772,6 +1792,9 @@ const A = {
   scrDone: () => { const g = curGame(), st = scrState(), tt = scrTurnTotal(); if(tt <= 0) return;
     const note = st.words.map(w => w.word + ' ' + fmt(w.pts)).join(' · ') + (st.bingo ? ' · Scrabble ! +50' : '');
     scrNext(g, {pk: g.players[g.cur].key, pts: tt, note, t: Date.now()}); },
+  scrSimple: () => { const g = curGame(); const v = num($('scrPts').value); const bingo = $('scrBingoS').checked; const tot = v + (bingo ? 50 : 0);
+    if(!$('scrPts').value.trim() && !bingo) return toast('Inscrivez les points du tour, ou touchez « Passer »');
+    scrNext(g, {pk: g.players[g.cur].key, pts: tot, note: bingo ? fmt(v) + ' + Scrabble 50' : '', t: Date.now()}); const n = $('scrPts'); if(n) n.focus(); },
   scrPass: () => { const g = curGame(); scrNext(g, {pk: g.players[g.cur].key, pts: 0, note: 'Passe ou échange', t: Date.now()}); },
   scrEnd: () => scrEndModal(),
   scrEndOk: () => { const g = curGame(); const left = {}; g.players.forEach(p => left[p.key] = scrLeftVal(p.key));
@@ -1839,6 +1862,7 @@ document.addEventListener('keydown', e => {
   else if(id === 'fk-man'){ e.preventDefault(); A.fkAddMan(); }
   else if(id === 'scrWord'){ e.preventDefault(); clearTimeout(window.__scrT); render(); }
   else if(id === 'scr-man'){ e.preventDefault(); A.scrMan(); }
+  else if(id === 'scrPts'){ e.preventDefault(); A.scrSimple(); }
   else if(e.target.closest && e.target.closest('#modal .num')){ // passe au champ suivant
     e.preventDefault(); const ins = [...document.querySelectorAll('#modal .num input')]; const i = ins.indexOf(e.target);
     if(i >= 0 && i < ins.length-1) ins[i+1].focus(); else e.target.blur(); }
@@ -1852,7 +1876,8 @@ async function wakeLock(on){
     else if(!on && wl){ await wl.release(); wl = null; }
   }catch(e){ wl = null; }
 }
-document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && S.view === 'sheet' && !bridge) wakeLock(true); });
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && screenOnPref() && !bridge) wakeLock(true); });
+function screenOnPref(){ try{ return localStorage.getItem('pointage.screenon') !== '0'; }catch(e){ return true; } }
 async function doExport(){
   const name = 'pointage-sauvegarde-' + new Date().toISOString().slice(0,10) + '.json';
   const data = JSON.stringify(db, null, 1);
