@@ -430,7 +430,7 @@ const $ = id => document.getElementById(id);
 
 /* ====================== Jeux ====================== */
 const MANUAL_URL = 'https://rogerotisqc-spec.github.io/pointage/manuel/';
-const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','skyjo'];
+const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','skyjo','wizard'];
 const GAMES = {
   generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
   playnine:   {name:'Play Nine',      color:'#2b8a3e', badge:'9',  desc:'9 trous · le plus bas gagne', round:'Trou', low:true, helper:'playnine'},
@@ -439,6 +439,7 @@ const GAMES = {
   skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'Individuel ou en équipes · 500', round:'Manche', target:500},
   millebornes:{name:'Mille Bornes',   color:'#d9a400', badge:'1000', desc:'Individuel ou en équipes · 5 000', round:'Manche', target:5000},
   phase10:    {name:'Phase 10',       color:'#6741d9', badge:'10', desc:'10 phases · le moins de points', round:'Manche', low:true, helper:'phase10'},
+  wizard:     {name:'Wizard',         color:'#3949ab', badge:'W',  desc:'Mises et plis · le plus haut gagne', round:'Manche'},
   skyjo:      {name:'Skyjo',          color:'#3b8fd9', badge:'SK', desc:'Partie à 100 · le plus bas gagne', round:'Manche', target:100, low:true, helper:'skyjo'},
   scrabble:   {name:'Scrabble',       color:'#9c6b2f', badge:'S',  desc:'Calcul des mots · fin de partie', round:'Tour'},
   farkle:     {name:'Jeu de dés',   color:'#0b7285', badge:'⚄',  desc:'Entrée à 1 000 · partie à 25 000', round:'Tour'}
@@ -558,6 +559,24 @@ function rulesHtml(type, g){
     <h3>Pointage (cartes restées en main)</h3><table>
       <tr><td>1 à 9</td><td>5</td></tr><tr><td>10 à 12</td><td>10</td></tr><tr><td>Passe</td><td>15</td></tr><tr><td>Joker</td><td>25</td></tr></table>
     <p>Gagnant : le premier à réussir la phase 10. En cas d’égalité, le moins de points.</p>`;
+  case 'wizard': return `
+    <h3>But</h3><p>Prédire exactement le nombre de plis que l’on fera à chaque manche. Le plus haut total à la fin gagne.</p>
+    <h3>Le jeu</h3><p>60 cartes : 4 couleurs de 13 cartes (2 à As), plus 4 <b>Wizards</b> et 4 <b>Bouffons</b>. De 3 à 6 joueurs.</p>
+    <h3>Nombre de manches</h3><p>À la manche 1, chacun reçoit 1 carte ; à la manche 2, 2 cartes, et ainsi de suite jusqu’à épuisement du paquet : <b>20 manches à 3 joueurs, 15 à 4, 12 à 5, 10 à 6</b>.</p>
+    <h3>L’atout</h3><ul>
+      <li>Après la distribution, on retourne la carte du dessus du paquet : sa couleur est l’atout.</li>
+      <li>Si c’est un Bouffon, ou à la dernière manche (plus de cartes), il n’y a pas d’atout.</li>
+      <li>Si c’est un Wizard, celui qui a distribué choisit l’atout.</li></ul>
+    <h3>Les mises</h3><p>En commençant à gauche du donneur, chacun annonce combien de plis il pense faire (de 0 au nombre de cartes reçues).</p>
+    <h3>Les plis</h3><ul>
+      <li>On doit suivre la couleur demandée si on le peut, mais on peut toujours jouer un Wizard ou un Bouffon.</li>
+      <li>Le premier Wizard joué remporte le pli. Sinon, la plus forte carte d’atout ; sinon, la plus forte carte de la couleur demandée.</li>
+      <li>Les Bouffons perdent toujours (si un pli ne contient que des Bouffons, le premier l’emporte).</li></ul>
+    <h3>Pointage</h3><table>
+      <tr><td>Mise exacte</td><td>20 + 10 par pli</td></tr>
+      <tr><td>Mise ratée</td><td>−10 par pli d’écart</td></tr></table>
+    <p class="hint">Exemples : mise 2, 2 plis = 40 · mise 0, 0 pli = 20 · mise 3, 1 pli = −20.</p>
+    ${g && g.opts.noEven ? '<h3>Règle maison (cette partie)</h3><p>Le total des mises ne peut pas être égal au nombre de cartes de la manche : le dernier à miser doit en tenir compte.</p>' : '<p class="hint">Règle maison possible (non officielle) : interdire que le total des mises égale le nombre de cartes. À choisir au début de la partie.</p>'}`;
   case 'skyjo': return `
     <h3>But</h3><p>Avoir le moins de points possible. La partie s’arrête quand un joueur atteint ${fmt((g&&g.opts.target)||100)} points : <b>le plus bas total gagne</b>.</p>
     <h3>Mise en place</h3><p>Chaque joueur reçoit 12 cartes face cachée, en 3 rangées de 4 colonnes. Les cartes valent de −2 à 12. Chacun retourne 2 cartes ; celui dont la somme est la plus élevée commence.</p>
@@ -677,6 +696,7 @@ function endInfo(g){
     const w = g.players.filter(p => phaseOf(g,p.key) > 10);
     return w.length ? w.map(p=>p.name).join(', ') + ' a réussi la phase 10' : null;
   }
+  if(g.type === 'wizard') return g.rounds.length >= g.opts.rounds ? 'Les ' + g.opts.rounds + ' manches sont jouées' : null;
   if(g.opts.holes) return g.rounds.length >= g.opts.holes ? 'Les ' + g.opts.holes + ' trous sont joués' : null;
   const tg = g.type === 'farkle' ? g.opts.f.target : g.opts.target;
   if(g.type === 'farkle'){
@@ -759,7 +779,7 @@ function f7Pts(h){
 function dealerIdx(g){ const n = realPlayers(g).length; return (((g.dealer0||0) + g.rounds.length) % n + n) % n; }
 function dealerName(g){ return (realPlayers(g)[dealerIdx(g)] || {}).name || '?'; }
 function dealerBanner(g){
-  if(isTurnGame(g) || g.finished || (g.opts.holes && g.rounds.length >= g.opts.holes)) return '';
+  if(isTurnGame(g) || g.finished || (g.opts.holes && g.rounds.length >= g.opts.holes) || (g.type === 'wizard' && g.rounds.length >= g.opts.rounds)) return '';
   const G = GAMES[g.type];
   return `<button class="dealer" data-a="dealer"><span class="ic">🃏</span><div class="grow">À <b>${esc(dealerName(g))}</b> de brasser<small>${G.round} ${g.rounds.length + 1}</small></div><span class="chg">Changer</span></button>`;
 }
@@ -856,6 +876,10 @@ function vSetup(){
       <label class="lbl" for="o-target">Pointage visé (facultatif)</label>
       <input id="o-target" class="field" inputmode="numeric" placeholder="Aucun" value="${o.target||''}">
       <p class="hint">L’app vous avertit quand un joueur atteint ce pointage.</p>`;
+  } else if(type === 'wizard'){
+    const n = S.sel.length;
+    opts = `<p style="margin:4px 0 8px">${n >= 3 && n <= 6 ? `<b>${Math.floor(60 / n)} manches</b> pour ${n} joueurs (une carte de plus à chaque manche).` : 'Wizard se joue de 3 à 6 joueurs.'}</p>
+      <label class="chk"><input type="checkbox" id="o-wznoeven" ${o.noEven ? 'checked' : ''}> Règle maison : le total des mises ne peut pas égaler le nombre de cartes</label>`;
   } else if(type === 'scrabble'){
     opts = `<label class="lbl">Feuille de pointage</label>
       <div class="seg"><button data-a="setScrMode" data-v="0" class="${!o.simple?'on':''}">Calculateur de mots</button><button data-a="setScrMode" data-v="1" class="${o.simple?'on':''}">Saisie simple</button></div>
@@ -912,6 +936,7 @@ function readSetupFields(){
   const o = S.setupOpts = S.setupOpts || {};
   if($('o-title')) S.setupTitle = $('o-title').value;
   if($('o-target')) o.target = num($('o-target').value);
+  if($('o-wznoeven')) o.noEven = $('o-wznoeven').checked;
   if($('f-target')){
     o.f = {}; ['target','entry','penFrom','pen','straight','pairs'].forEach(k => o.f[k] = num($('f-'+k).value));
     o.f.useStraight = $('f-useStraight').checked; o.f.usePairs = $('f-usePairs').checked;
@@ -922,6 +947,7 @@ function startGame(){
   readSetupFields();
   const type = S.setupType, G = GAMES[type], o = S.setupOpts || {};
   if(type === 'skipbo' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
+  if(type === 'wizard' && (S.sel.length < 3 || S.sel.length > 6)) return toast('Wizard se joue de 3 à 6 joueurs');
   if(TEAM_GAMES.includes(type) && o.teams && S.sel.length < (o.nteams || 2)) return toast('Il faut au moins un joueur par équipe');
   const players = S.sel.map(k => {
     const p = db.players.find(x => x.id === k);
@@ -936,6 +962,7 @@ function startGame(){
   if(type === 'generic'){ opts.target = o.target || 0; }
   else if(type === 'playnine'){ opts.holes = 9; }
   else if(type === 'scrabble'){ opts.simple = !!o.simple; }
+  else if(type === 'wizard'){ opts.rounds = Math.floor(60 / S.sel.length); opts.noEven = !!o.noEven; }
   else if(type === 'farkle'){ opts.f = Object.assign({}, FD, db.farkle, o.f||{}); db.farkle = Object.assign({}, opts.f); }
   else if(G.target){ opts.target = o.target || G.target; }
   if(type === 'uno'){ opts.mode = o.mode || db.unoMode || 'official'; opts.low = opts.mode === 'house'; db.unoMode = opts.mode; }
@@ -964,6 +991,7 @@ function vSheet(){
   const g = curGame(); if(!g) return vHome();
   if(g.type === 'farkle') return vFarkle(g);
   if(g.type === 'scrabble') return vScrabble(g);
+  if(g.type === 'wizard') return vWizard(g);
   const G = GAMES[g.type], r = ranking(g), t = totals(g);
   const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
   const end = !g.finished && endInfo(g);
@@ -1065,6 +1093,61 @@ function vFarkle(g){
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
+/* ---------- Wizard ---------- */
+function wzScore(bid, tricks){ return bid === tricks ? 20 + 10 * tricks : -10 * Math.abs(bid - tricks); }
+function vWizard(g){
+  const t = totals(g), r = ranking(g), N = g.opts.rounds, done = g.rounds.length, cards = done + 1;
+  const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
+  const end = !g.finished && endInfo(g);
+  const strip = `<div class="scores">${g.players.map(p => { const x = byKey[p.key];
+    return `<div class="pscore ${x.rank===1 && done ?'lead':''}"><span class="rk">${done?(x.rank===1?'★':'#'+x.rank):''}</span>
+      <div class="n"><i style="background:${p.color}"></i>${esc(p.name)}</div><div class="v num-t">${fmt(x.total)}</div>
+      ${g.pend ? `<div class="x">Mise : ${g.pend.bid[p.key] ?? '–'}</div>` : ''}</div>`; }).join('')}</div>`;
+  const cell = (i, p) => { const rd = g.rounds[i], b = rd.m.bid[p.key], k = rd.m.tricks[p.key], v = rd.s[p.key];
+    return `<td><button data-a="editRound" data-i="${i}" class="num-t ${v<0?'neg':''}" style="line-height:1.1">${fmt(v)}<small style="display:block;font-size:11px;font-weight:600;color:var(--muted)">${b}/${k}${b===k?' ✓':''}</small></button></td>`; };
+  let rows = g.rounds.map((rd, i) => `<tr><td class="lbl">${i+1} <small>(${i+1} c.)</small></td>${g.players.map(p => cell(i, p)).join('')}</tr>`).join('');
+  if(g.pend) rows += `<tr class="next"><td class="lbl">${cards} <small>mises</small></td>${g.players.map(p => `<td class="num-t" style="height:46px;font-weight:700">${g.pend.bid[p.key] ?? '–'}</td>`).join('')}</tr>`;
+  const table = done || g.pend ? `<div class="tablewrap"><table class="sheet ${g.players.length >= 5 ? 'compact' : ''}"><thead><tr><th class="lbl">Manche</th>${g.players.map(p=>`<th>${esc(p.name)}</th>`).join('')}</tr></thead>
+    <tbody>${rows}</tbody><tfoot><tr><td class="lbl">Total</td>${g.players.map(p=>`<td class="num-t ${t[p.key]<0?'neg':''}">${fmt(t[p.key])}</td>`).join('')}</tr></tfoot></table></div>
+    <p class="hint" style="margin:6px 18px 0">Sous chaque pointage : mise / plis faits.</p>`
+    : `<div class="tablewrap"><div class="empty">Manche 1 : 1 carte chacun.<br>Inscrivez d’abord les mises, puis les plis faits.</div></div>`;
+  const canPlay = !g.finished && done < N;
+  const sub = done < N ? `Manche ${cards} de ${N} · ${cards} carte${cards>1?'s':''}${cards === N ? ' · sans atout' : ''}` : `${N} manches jouées`;
+  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="wizard" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+    ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
+    ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
+    ${dealerBanner(g)}${strip}${table}<div style="height:100px"></div>
+    ${canPlay ? `<button class="btn primary fab" data-a="wzOpen">${g.pend ? `Plis faits · manche ${cards}` : `Mises · manche ${cards}`}</button>` : ''}`;
+}
+function wzOpen(phase, idx){
+  const g = curGame(), editing = phase === 'edit', rd = editing ? g.rounds[idx] : null;
+  const cards = editing ? idx + 1 : g.rounds.length + 1;
+  M = {wz: {phase, idx, cards, bid: Object.assign({}, editing ? rd.m.bid : (g.pend ? g.pend.bid : {})), tricks: Object.assign({}, editing ? rd.m.tricks : {})}};
+  g.players.forEach(p => { if(M.wz.bid[p.key] == null) M.wz.bid[p.key] = 0; if(M.wz.tricks[p.key] == null) M.wz.tricks[p.key] = phase === 'tricks' ? M.wz.bid[p.key] : 0; });
+  const title = editing ? `Manche ${cards}` : (phase === 'bid' ? `Mises · manche ${cards}` : `Plis faits · manche ${cards}`);
+  openModal(`<div class="mhead"><h2>${title}</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody" id="wz-body"></div>
+    <div class="mfoot">${editing ? `<button class="btn danger" data-a="delRound">Supprimer</button>` : ''}<button class="btn primary" data-a="wzSave">${phase === 'bid' ? 'Enregistrer les mises' : 'Enregistrer'}</button></div>`);
+  M.round = editing ? idx : null; M.type = 'wizard';
+  wzRender();
+}
+function wzRender(){
+  const g = curGame(), w = M.wz, cards = w.cards;
+  const showBid = w.phase !== 'tricks', showTricks = w.phase !== 'bid';
+  const sb = Object.values(w.bid).reduce((a,b) => a + b, 0), st = Object.values(w.tricks).reduce((a,b) => a + b, 0);
+  const step = (pk, f, v, max) => `<div class="stepper"><button data-a="wzStep" data-k="${pk}" data-f="${f}" data-d="-1" ${v<=0?'disabled':''}>−</button><b class="num-t">${v}</b><button class="plus" data-a="wzStep" data-k="${pk}" data-f="${f}" data-d="1" ${v>=max?'disabled':''}>+</button></div>`;
+  const dealer = realPlayers(g)[dealerIdx(g)];
+  $('wz-body').innerHTML = `<p class="hint" style="margin:0 0 10px">${cards} carte${cards>1?'s':''} chacun${w.phase === 'bid' && dealer ? ` · ${esc(dealer.name)} distribue ; on mise en commençant à sa gauche` : ''}.</p>
+    ${g.players.map(p => { const b = w.bid[p.key], k = w.tricks[p.key];
+      return `<div class="crow"><span class="av" style="background:${p.color}">${initial(p.name)}</span><div class="l">${esc(p.name)}${w.phase === 'tricks' ? `<small>Mise : ${b}</small>` : ''}${showTricks ? `<small>${fmt(wzScore(b, k))} pts</small>` : ''}</div>
+        ${showBid ? `<div style="text-align:center"><div class="hint" style="margin:0 0 2px;font-size:11px">Mise</div>${step(p.key, 'bid', b, cards)}</div>` : ''}
+        ${showTricks ? `<div style="text-align:center"><div class="hint" style="margin:0 0 2px;font-size:11px">Plis</div>${step(p.key, 'tricks', k, cards)}</div>` : ''}</div>`; }).join('')}
+    ${showBid ? `<div class="mbtot" style="border-color:${g.opts.noEven && sb === cards ? 'var(--danger)' : 'var(--line)'}"><span>Total des mises</span><b class="num-t" style="color:var(--ink)">${sb} / ${cards}</b></div>
+      <p class="hint" style="margin-top:0">${g.opts.noEven ? (sb === cards ? '<span class="neg">Règle maison : le total ne peut pas égaler ' + cards + '. Le dernier à miser doit changer sa mise.</span>' : 'Règle maison : le total ne doit pas égaler le nombre de cartes.') : (sb > cards ? 'Plus de mises que de plis : quelqu’un va rater.' : sb < cards ? 'Moins de mises que de plis : quelqu’un fera plus que prévu.' : 'Autant de mises que de plis.')}</p>` : ''}
+    ${showTricks ? `<div class="mbtot" style="border-color:${st === cards ? 'var(--ok)' : 'var(--danger)'}"><span>Total des plis</span><b class="num-t" style="color:var(--ink)">${st} / ${cards}</b></div>
+      ${st !== cards ? `<p class="hint neg" style="margin-top:0">Le total des plis doit être ${cards}.</p>` : ''}` : ''}`;
+}
+
 /* ---------- Scrabble ---------- */
 const SCR_VAL = {A:1,B:3,C:3,D:2,E:1,F:4,G:2,H:4,I:1,J:8,K:10,L:1,M:2,N:1,O:1,P:3,Q:8,R:1,S:1,T:1,U:1,V:4,W:10,X:10,Y:10,Z:10};
 function scrLetters(w){ return String(w || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z]/g, '').split(''); }
@@ -1816,7 +1899,19 @@ const A = {
   setHoles: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {holes: Number(el.dataset.v)}); render(); },
   start: () => startGame(),
   addRound: () => openRound(null),
-  editRound: el => { if(curGame().finished) return toast('Partie terminée : rouvrez-la pour modifier'); openRound(Number(el.dataset.i)); },
+  editRound: el => { if(curGame().finished) return toast('Partie terminée : rouvrez-la pour modifier'); if(curGame().type === 'wizard') return wzOpen('edit', Number(el.dataset.i)); openRound(Number(el.dataset.i)); },
+  wzOpen: () => { const g = curGame(); wzOpen(g.pend ? 'tricks' : 'bid', null); },
+  wzStep: el => { const w = M.wz, f = el.dataset.f; w[f][el.dataset.k] = Math.max(0, Math.min(w.cards, w[f][el.dataset.k] + Number(el.dataset.d))); wzRender(); },
+  wzSave: () => { const g = curGame(), w = M.wz, cards = w.cards;
+    const sb = Object.values(w.bid).reduce((a,b) => a + b, 0), st = Object.values(w.tricks).reduce((a,b) => a + b, 0);
+    if(w.phase !== 'tricks' && g.opts.noEven && sb === cards) return toast('Règle maison : le total des mises ne peut pas égaler ' + cards);
+    if(w.phase === 'bid'){ g.pend = {bid: Object.assign({}, w.bid)}; g.updated = Date.now(); save(); closeModal(); render(); toast('Mises enregistrées : à vous de jouer !'); return; }
+    if(st !== cards) return toast('Le total des plis doit être ' + cards);
+    const rd = {s: {}, m: {bid: Object.assign({}, w.bid), tricks: Object.assign({}, w.tricks)}};
+    g.players.forEach(p => rd.s[p.key] = wzScore(w.bid[p.key], w.tricks[p.key]));
+    if(w.phase === 'edit') g.rounds[w.idx] = rd; else { g.rounds.push(rd); delete g.pend; }
+    g.updated = Date.now(); save(); closeModal(); render();
+    const e = endInfo(g); if(e && !g.finished) toast('🏁 ' + e); else if(w.phase !== 'edit') toast('🃏 À ' + dealerName(g) + ' de distribuer'); },
   saveRound: () => saveRound(),
   delRound: () => { const g = curGame(), i = M.round; closeModal(); confirmBox('Supprimer la manche ' + (i+1) + ' ?', 'Supprimer', () => { g.rounds.splice(i,1); g.updated = Date.now(); save(); render(); }, true); },
   sign: el => { const i = $(el.dataset.for); const v = i.value.trim(); i.value = v.startsWith('-') ? v.slice(1) : '-' + (v || ''); i.focus(); },

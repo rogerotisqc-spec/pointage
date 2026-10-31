@@ -152,6 +152,23 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   const sj2 = await p.$$('#modal .num input'); await sj2[0].fill('10'); await sj2[1].fill('3'); await sj2[2].fill('8'); await tap('[data-a=saveRound]');
   await shot('skyjo');
 
+  // ---------- Wizard ----------
+  await startGame('wizard', ['Roger', 'Marie', 'Léa', 'Zoé']);
+  const wk = await p.evaluate(() => curGame().players.map(x => x.key));
+  const wzStep = (i, f, d) => tap(`[data-a=wzStep][data-k="${wk[i]}"][data-f=${f}][data-d="${d}"]`);
+  // manche 1 : mises 1,0,0,0 ; plis 0,0,0,1
+  await tap('[data-a=wzOpen]'); await wzStep(0, 'bid', 1); await tap('[data-a=wzSave]');
+  await tap('[data-a=wzOpen]'); await wzStep(0, 'tricks', -1); await wzStep(3, 'tricks', 1); await tap('[data-a=wzSave]');
+  // manche 2 : mises 1,1,0,1 ; plis 1,1,0,0
+  await tap('[data-a=wzOpen]'); for (const i of [0, 1, 3]) await wzStep(i, 'bid', 1); await tap('[data-a=wzSave]');
+  await tap('[data-a=wzOpen]'); await wzStep(3, 'tricks', -1); await tap('[data-a=wzSave]');
+  // manche 3 : mises 2,0,1,1
+  await tap('[data-a=wzOpen]'); await wzStep(0, 'bid', 1); await wzStep(0, 'bid', 1); await wzStep(2, 'bid', 1); await wzStep(3, 'bid', 1);
+  await shot('wizard-mises'); await tap('[data-a=wzSave]');
+  await tap('[data-a=wzOpen]'); await wzStep(3, 'tricks', -1);
+  await shot('wizard-plis'); await tap('[data-a=wzSave]');
+  await shot('wizard');
+
   // ---------- Jeu de dés ----------
   await startGame('farkle', ['Roger', 'Marie', 'Léa']);
   await p.fill('#fk-man', '1500'); await tap('[data-a=fkAddMan]'); await tap('[data-a=fkBank]');
