@@ -3,6 +3,7 @@ package ca.famille.pointage;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInstaller;
 import android.os.Build;
 import android.provider.Settings;
@@ -456,6 +457,19 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public void openUrl(String url) {
             openExternal(url);
+        }
+
+        @JavascriptInterface
+        public void setOrientation(final String mode) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int o = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                    if ("portrait".equals(mode)) o = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+                    else if ("landscape".equals(mode)) o = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+                    setRequestedOrientation(o);
+                }
+            });
         }
 
         @JavascriptInterface

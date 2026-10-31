@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 3.3</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 3.4</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -140,6 +140,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><a href="#rapports">Signaler un problème</a></li>
         <li><a href="#sauvegarde">Sauvegarde</a></li>
         <li><a href="#ecran">Écran allumé</a></li>
+        <li><a href="#rotation">Rotation de l’écran</a></li>
       </ol></li>
     <li><a href="#faq">13. Questions fréquentes</a></li>
   </ol>
@@ -433,6 +434,14 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <div class="txt" data-kw="écran veille allumé éteint batterie affichage">
       <p>Par défaut, l’écran ne se met pas en veille tant que l’app est ouverte. Il s’éteint normalement quand vous changez d’app. Pour revenir à la veille habituelle : Réglages → <b>Affichage</b> → « Garder l’écran allumé ».</p>
     </div>
+    <h3 id="rotation">Rotation de l’écran</h3>
+    <div class="txt" data-kw="rotation pivoter pivote tourner orientation portrait paysage verrouiller bloquer écran tablette">
+      <p>Réglages → <b>Affichage</b> → « Rotation de l’écran » :</p>
+      <ul><li><b>Automatique</b> (par défaut) : l’écran pivote quand vous tournez l’appareil, selon le réglage du téléphone.</li>
+        <li><b>Portrait</b> : l’écran reste à la verticale, même si l’appareil est tourné.</li>
+        <li><b>Paysage</b> : l’écran reste à l’horizontale (pratique sur une tablette posée sur la table).</li></ul>
+      <p>Le choix est retenu et ne touche que Pointage. Dans la version web, le verrouillage fonctionne seulement si l’app est installée sur un appareil Android ; sur iPhone et iPad, utilisez le verrou de rotation du Centre de contrôle.</p>
+    </div>
   </section>
 
   <section class="s" id="faq" data-kw="questions fréquentes faq dépannage problème aide installation bloquée vieille version données disparues iphone">
@@ -456,7 +465,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 3.3 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 3.4 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){

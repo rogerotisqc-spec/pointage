@@ -1,6 +1,6 @@
 {
- "version": "3.3",
- "notes": "Nouveau jeu : Wizard (mises et plis, 3 à 6 joueurs, règle maison au choix).\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.3.apk",
+ "version": "3.4",
+ "notes": "Nouveau réglage : rotation de l’écran (automatique, portrait ou paysage).\nManuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.4.apk",
  "size": 107353
 }

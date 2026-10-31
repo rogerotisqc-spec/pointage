@@ -1589,6 +1589,8 @@ function vSettings(){
     <h2 class="sec">Affichage</h2>
     <div class="card" style="padding:14px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Garder l’écran allumé</b><div class="hint" style="margin:2px 0 0">Tant que l’app est ouverte, l’écran ne se met pas en veille. Il s’éteint normalement quand vous changez d’app.</div></div>
       <button class="switch ${screenOnPref() ? 'on' : ''}" data-a="screenToggle" aria-label="Garder l’écran allumé"></button></div></div>
+    <div class="card" style="padding:14px;margin-top:10px"><b>Rotation de l’écran</b><div class="hint" style="margin:2px 0 10px">${bridge ? 'Choisissez si l’écran pivote quand vous tournez l’appareil.' : 'Choisissez si l’écran pivote quand vous tournez l’appareil. Dans un navigateur, le verrouillage fonctionne seulement si l’app est installée sur Android ; sur iPhone, utilisez le verrou de rotation du Centre de contrôle.'}</div>
+      <div class="seg">${[['auto','Automatique'],['portrait','Portrait'],['landscape','Paysage']].map(([v,l]) => `<button data-a="setOrient" data-v="${v}" class="${orientPref()===v?'on':''}">${l}</button>`).join('')}</div></div>
     <h2 class="sec">Données</h2>
     <div class="card" style="padding:14px"><p style="margin:0">${db.players.length} joueurs · ${db.games.length} parties</p></div>
     <p class="hint" style="margin-top:22px;text-align:center">Pointage · version ${esc(appVersion() || '?')}${bridge ? '' : ' (web)'}</p>
@@ -1991,6 +1993,7 @@ const A = {
   abPick: () => abPickFolder(),
   abNow: () => { autoBackupNow(true); toast('Sauvegarde…'); },
   abResume: () => autoBackupNow(true),
+  setOrient: el => { const v = el.dataset.v; try{ localStorage.setItem('pointage.orient', v); }catch(e){} applyOrient(); toast({auto:'L’écran pivote librement', portrait:'Écran verrouillé en portrait', landscape:'Écran verrouillé en paysage'}[v]); render(); },
   screenToggle: () => { const on = !screenOnPref(); try{ localStorage.setItem('pointage.screenon', on ? '1' : '0'); }catch(e){} toast(on ? 'L’écran restera allumé' : 'Veille normale de l’écran'); render(); },
   statP: el => { S.statP = el.dataset.v; render(); },
   statPlayer: el => openPlayerStats(el.dataset.k),
@@ -2103,6 +2106,14 @@ async function wakeLock(on){
   }catch(e){ wl = null; }
 }
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && screenOnPref() && !bridge) wakeLock(true); });
+function orientPref(){ try{ const v = localStorage.getItem('pointage.orient'); return v === 'portrait' || v === 'landscape' ? v : 'auto'; }catch(e){ return 'auto'; } }
+function applyOrient(){
+  const v = orientPref();
+  if(bridge && bridge.setOrientation){ try{ bridge.setOrientation(v); }catch(e){} return; }
+  try{ const so = screen.orientation; if(!so) return;
+    if(v === 'auto'){ if(so.unlock) so.unlock(); }
+    else if(so.lock){ const r = so.lock(v); if(r && r.catch) r.catch(() => {}); } }catch(e){}
+}
 function screenOnPref(){ try{ return localStorage.getItem('pointage.screenon') !== '0'; }catch(e){ return true; } }
 async function doExport(){
   const name = 'pointage-sauvegarde-' + new Date().toISOString().slice(0,10) + '.json';
@@ -2136,6 +2147,7 @@ function openUrl(u){ if(bridge && bridge.openUrl) bridge.openUrl(u); else window
 let tt; function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2400); }
 
 render(true);
+applyOrient();
 setTimeout(() => fbFlush(true), 2500);
 // vérification discrète, au plus une fois par jour
 try{ const last = Number(localStorage.getItem('pointage.lastCheck')||0); if(canUpdate() && Date.now() - last > 20*3600*1000) setTimeout(() => checkUpdates(true), 1500); }catch(e){}
