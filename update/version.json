@@ -1,6 +1,6 @@
 {
- "version": "3.0",
- "notes": "• Skip-Bo : choix entre jeu individuel et jeu en équipes au début de la partie. En équipes, on forme les équipes (A, B ou C) ; l'équipe qui termine la manche marque 25 + 5 par carte restante chez les adversaires. Résultat et statistiques par équipe (chaque membre de l'équipe gagnante reçoit la victoire). Règles et manuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.0.apk",
+ "version": "3.1",
+ "notes": "• Mille Bornes : choix entre jeu individuel et jeu en équipes au début de la partie (2 équipes à 4 joueurs, 3 à 6). En équipes, les partenaires partagent un seul jeu : la saisie, le capot, le résultat et les statistiques se font par équipe. Règles et manuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.1.apk",
  "size": 103257
 }

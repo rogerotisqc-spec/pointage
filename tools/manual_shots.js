@@ -108,7 +108,7 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await tap('[data-a=menu]'); await tap('[data-a=finish]'); await shot('skipbo-resultat');
 
   // ---------- Mille Bornes ----------
-  await startGame('millebornes', ['Roger', 'Marie']);
+  await startGame('millebornes', ['Roger', 'Léa', 'Marie', 'Zoé'], async () => { await tap('[data-a=setTeams][data-v="1"]'); });
   await tap('[data-a=addRound]');
   const plus = f => tap(`#mb-body [data-a=mbC][data-f=${f}][data-d="1"]`);
   for (let i = 0; i < 4; i++) await plus('c100'); for (let i = 0; i < 2; i++) await plus('c200');
