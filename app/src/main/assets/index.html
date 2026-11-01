@@ -41,6 +41,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .top .grow h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .icon-btn:disabled{opacity:.35}
 .top .icon-btn.sm{width:36px}
+@media (max-width:440px){ .top{gap:2px;padding-left:8px;padding-right:6px} .top>.icon-btn:first-child{width:36px} .top .icon-btn.sm{width:31px;font-size:18px} .top .grow{margin-left:2px} .top .grow h1{font-size:19px} }
 .mic{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:12px;border-radius:12px;border:1.5px dashed var(--brand);color:var(--brand);font-weight:700;background:var(--surface)}
 .mic.on{background:var(--brand);color:#fff;border-style:solid;animation:pulse 1.2s infinite}
 @keyframes pulse{50%{opacity:.75}}
@@ -916,7 +917,7 @@ function vSetup(){
   }
   const rosterChips = db.players.map(p => chip(p.id, p.name, p.color, false)).join('');
   const guestChips = S.guests.map(g => chip(g.key, g.name, '#868e96', true)).join('');
-  return `${topbar(G.name, 'Nouvelle partie', type!=='generic'?`<button class="icon-btn" data-a="rules" data-t="${type}" aria-label="Règles">📖</button>`:'')}
+  return `${topbar(G.name, 'Nouvelle partie', type!=='generic'?`<button class="icon-btn" data-a="rules" data-t="${type}" aria-label="Règles">📖</button><button class="icon-btn" data-a="ask" data-t="${type}" aria-label="Assistant : poser une question">❓</button>`:'')}
   <main class="pad">
     <h2 class="sec">Qui joue ? <span style="text-transform:none;letter-spacing:0;font-weight:500">(touchez dans l’ordre du jeu)</span></h2>
     ${db.players.length || S.guests.length ? `<div class="chips">${rosterChips}${guestChips}</div>` : `<p class="hint" style="margin-bottom:8px">Aucun joueur dans votre liste pour l’instant. Ajoutez un nom ci-dessous.</p>`}
@@ -1018,7 +1019,7 @@ function vSheet(){
   const canAdd = !g.finished && !(maxRounds && g.rounds.length >= maxRounds);
   const sub = g.type==='playnine' ? `Trou ${Math.min(next, maxRounds)} de ${maxRounds} · le plus bas gagne`
             : (g.opts.target ? `Partie à ${fmt(g.opts.target)} · ${isLow(g)?'le plus bas gagne':'le plus haut gagne'}` : (isLow(g)?'Le plus bas gagne':'Le plus haut gagne'));
-  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="ask" data-t="${g.type}" aria-label="Assistant : poser une question">❓</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(ranking(g).filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${dealerBanner(g)}${g.type === 'phase10' ? p10Board(g) + (g.rounds.length ? '<h2 class="sec" style="margin:20px 18px 0">Points</h2>' : '') : ''}${strip}${table}
@@ -1090,7 +1091,7 @@ function vFarkle(g){
       const p = g.players.find(p => p.key === x.pk) || {name:'?'}; const idx = g.turns.length-1-ri;
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div>
         <div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div>${idx===g.turns.length-1 && !g.finished?`<button class="btn sm" data-a="fkUndo">Annuler</button>`:''}</div>`; }).join('')}</div>` : '';
-  return `${topbar(gameName(g), `Partie à ${fmt(f.target)}`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="farkle" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), `Partie à ${fmt(f.target)}`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="farkle" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="ask" data-t="farkle" aria-label="Assistant : poser une question">❓</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
@@ -1115,7 +1116,7 @@ function vWizard(g){
     : `<div class="tablewrap"><div class="empty">Manche 1 : 1 carte chacun.<br>Inscrivez d’abord les mises, puis les plis faits.</div></div>`;
   const canPlay = !g.finished && done < N;
   const sub = done < N ? `Manche ${cards} de ${N} · ${cards} carte${cards>1?'s':''}${cards === N ? ' · sans atout' : ''}` : `${N} manches jouées`;
-  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="wizard" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="wizard" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="ask" data-t="wizard" aria-label="Assistant : poser une question">❓</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${dealerBanner(g)}${strip}${table}<div style="height:100px"></div>
@@ -1193,7 +1194,7 @@ function vScrabble(g){
   const log = g.turns.length ? `<h2 class="sec" style="margin:20px 18px 8px">Derniers tours</h2><div class="card list log">${g.turns.slice().reverse().slice(0,12).map(x => {
       const p = g.players.find(p => p.key === x.pk) || {name:'?'};
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div><div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div></div>`; }).join('')}</div>` : '';
-  return `${topbar(gameName(g), g.opts.simple ? 'Saisie simple' : 'Le plus haut gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="scrabble" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), g.opts.simple ? 'Saisie simple' : 'Le plus haut gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="scrabble" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="ask" data-t="scrabble" aria-label="Assistant : poser une question">❓</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
@@ -1829,7 +1830,7 @@ const HELP_FAQ = [
   {q:['signaler un problème','faire une suggestion','bug'], a:'Menu ⋮ d’une partie, ou Réglages → « Signaler un problème / suggérer ». Le message va directement au responsable de l’app.'},
   {q:['jouer en équipes','partenaires','équipe'], a:'Au Skip-Bo et au Mille Bornes, choisissez « Équipes » au début de la partie, puis répartissez les joueurs. Au Mille Bornes, les partenaires partagent un seul jeu : on inscrit les points par équipe.'},
   {q:['manuel','mode d’emploi','instructions de l’app'], a:'Le bouton 📘 en haut de l’accueil ouvre le manuel complet, avec images et recherche (Internet requis).'},
-  {q:['comment utiliser l’assistant','poser une question'], a:'Touchez « Poser une question » et parlez, ou écrivez votre question. L’assistant cherche dans les règles des jeux, vos règles maison et le manuel, puis lit la réponse. Il fonctionne sans Internet, mais ne fait pas de calculs.'}
+  {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. L’assistant cherche dans les règles des jeux, vos règles maison et le manuel, puis lit la réponse. Il fonctionne sans Internet, mais ne fait pas de calculs.'}
 ];
 const HELP_STOP = new Set(('a au aux avec ca ce cela ces cet cette comment combien dans de des du elle elles en est et etre faire fait faut il ils je j la le les leur leurs l ma me mes moi mon m ne n nous on ou par pas peut peux pour pourquoi quand que quel quelle quelles quels qu qui quoi sa se ses si son sont sur ta te tes toi ton tu un une vos votre vous y d s t c est-ce estce dois doit devons veux voudrais aimerais savoir dire dis explique expliquer svp stp bonjour merci alors donc bien tout tous toute toutes quoi ai as avons avez ont ete etait il-y-a lorsque lorsqu chose choses fois').split(' '));
 const HELP_SYN = [
@@ -2201,7 +2202,7 @@ const A = {
       <p class="hint">Les manches suivantes continueront dans l’ordre à partir de ce joueur.</p></div>`); },
   pickDealer: el => { const g = curGame(); g.dealer0 = Number(el.dataset.i) - g.rounds.length; save(); closeModal(); render(); },
   menu: () => openMenu(),
-  ask: () => { closeModal(); const g = S.view === 'sheet' ? curGame() : null; const t = g ? g.type : (S.view === 'rules' ? S.rulesType : null); go('ask', {askGame: t || null, askRes: null, askQ: ''}); },
+  ask: el => { closeModal(); const g = S.view === 'sheet' ? curGame() : null; const t = (el && el.dataset && el.dataset.t) || (g ? g.type : (S.view === 'rules' ? S.rulesType : null)); go('ask', {askGame: t || null, askRes: null, askQ: ''}); },
   askGo: () => { const el = $('askQ'); askRun(el ? el.value : ''); },
   askEx: el => askRun(el.textContent),
   askMic: () => voiceStart(),
