@@ -1018,6 +1018,10 @@ function vSheet(){
         const extra = (g.type==='skipbo' || g.type==='uno') && rd.m && rd.m.w === p.key ? ' 🏁' : (g.type==='skyjo' && rd.m && rd.m.fin === p.key ? (rd.m.doubled ? ' <small class="neg">×2</small>' : ' 🏁') : '');
         return `<td><button data-a="editRound" data-i="${i}" class="num-t ${v<0?'neg':''}">${has?fmt(v):'–'}${tick}${extra}</button></td>`; }).join('')}</tr>`).join('')}</tbody>
     <tfoot><tr><td class="lbl">Total</td>${g.players.map(p=>`<td class="num-t ${t[p.key]<0?'neg':''}">${fmt(t[p.key])}</td>`).join('')}</tr></tfoot></table></div>`;
+  const legend = !g.rounds.length ? '' : g.type === 'skipbo' ? (g.team ? '🏁 : l’équipe qui a gagné la manche (un partenaire a vidé son talon).' : '🏁 : le joueur qui a vidé son talon et gagné la manche.')
+    : g.type === 'uno' && g.rounds.some(rd => rd.m && rd.m.w) ? '🏁 : le joueur qui n’avait plus de cartes ; il marque les cartes des autres.'
+    : g.type === 'skyjo' ? '🏁 : le joueur qui a terminé la manche · ×2 : son pointage a été doublé.' : '';
+  if(legend) table += `<p class="hint" style="margin:8px 18px 0">${legend}</p>`;
   const next = g.rounds.length + 1;
   const canAdd = !g.finished && !(maxRounds && g.rounds.length >= maxRounds);
   const sub = g.type==='playnine' ? `Trou ${Math.min(next, maxRounds)} de ${maxRounds} · le plus bas gagne`
@@ -1837,6 +1841,7 @@ const HELP_FAQ = [
   {q:['jouer en équipes','partenaires','équipe'], a:'Au Skip-Bo et au Mille Bornes, choisissez « Équipes » au début de la partie, puis répartissez les joueurs. Au Mille Bornes, les partenaires partagent un seul jeu : on inscrit les points par équipe.'},
   {q:['manuel','mode d’emploi','instructions de l’app'], a:'Le bouton 📘 en haut de l’accueil ouvre le manuel complet, avec images et recherche (Internet requis).'},
   {q:['demander à gemini','utiliser une vraie IA','demander à chatgpt','intelligence artificielle'], a:'Après une question, le bouton ✨ « Demander à Gemini » (ou à une autre IA installée) envoie la question à l’IA du téléphone, avec le jeu en cours, vos règles maison et le lien du manuel. La réponse s’affiche dans cette app ; revenez ensuite avec le bouton Retour. Sur iPhone, choisissez l’app d’IA dans le menu Partager.'},
+  {q:['que veut dire le drapeau','drapeau à damier','drapeau dans le tableau','symbole 🏁'], a:'Dans le tableau des manches, le drapeau 🏁 marque qui a terminé la manche : au Skip-Bo, celui qui a vidé son talon (ou son équipe) ; au Uno (façon officielle), celui qui n’avait plus de cartes et marque les cartes des autres ; au Skyjo, celui qui a retourné toutes ses cartes en premier (×2 si son pointage a été doublé). Une petite légende l’explique sous le tableau.'},
   {q:['changer la voix','voix de l’assistant','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de l’assistant : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];

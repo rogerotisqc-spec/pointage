@@ -1,6 +1,6 @@
 {
- "version": "4.0",
- "notes": "Le bouton ❓ de l’assistant porte une petite étiquette IA quand l’IA est disponible (elle disparaît sans connexion).\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.0.apk",
+ "version": "4.1",
+ "notes": "Une légende sous le tableau explique le drapeau 🏁 (Skip-Bo, Uno, Skyjo).\nManuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.1.apk",
  "size": 136025
 }
