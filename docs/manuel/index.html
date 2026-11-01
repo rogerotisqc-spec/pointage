@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 3.7</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 3.8</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -373,14 +373,15 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     </div><figure><img src="img/regles.webp" alt="Règles du jeu" loading="lazy"><figcaption>Le résumé des règles du jeu de dés.</figcaption></figure></div>
 
     <h3 id="assistant">L’assistant : poser une question</h3>
-    <div class="row2 many"><div class="txt" data-kw="assistant question poser demander aide vocale voix micro parler lire à voix haute réponse hors ligne sans internet comment faire ia intelligence artificielle gemini chatgpt claude copilot siri partager">
-      <p>L’assistant répond aux questions sur les règles des jeux et sur l’utilisation de l’app, <b>sans Internet</b>. Pour l’ouvrir : le bouton ❓ en haut de l’accueil ou en haut de chaque partie, le menu ⋮ d’une partie, ou le bouton en haut du résumé des règles. Ouvert depuis une partie, il cherche d’abord dans ce jeu (touchez ✕ pour chercher partout).</p>
-      <ol><li>Touchez <span class="ui">🎤 Poser une question</span> et parlez naturellement : « au Wizard, combien vaut une mise ratée ? », « comment je corrige une manche ? ». Vous pouvez aussi l’écrire, puis <span class="ui">Demander</span>.</li>
-        <li>La réponse s’affiche et, si vous avez parlé, elle est lue à voix haute. <span class="ui">🔊 Lire à voix haute</span> la relit ; <span class="ui">⏹ Arrêter la lecture</span> l’interrompt.</li>
-        <li>Si ce n’est pas la bonne, regardez <b>Autres réponses possibles</b>. Certaines réponses offrent un bouton pour ouvrir le bon écran (Réglages, Joueurs…) ou le passage du manuel.</li></ol>
-      <p><b>Une vraie IA au besoin</b> : sous la réponse, <span class="ui">✨ Demander à Gemini</span> envoie la question à l’IA déjà installée dans le téléphone (Gemini, ou ChatGPT, Claude, Copilot… avec <span class="ui">Autre IA…</span>). La question part avec le jeu en cours, vos règles maison, le résumé des règles de l’app et le lien de ce manuel, pour que l’IA respecte les règles de la famille. La réponse s’affiche dans l’app d’IA (il faut parfois toucher Envoyer) ; revenez à la partie avec le bouton Retour. C’est utile pour un calcul ou une situation inhabituelle. Il faut Internet, et la question est envoyée à l’entreprise de l’IA choisie. Sur iPhone, <span class="ui">✨ Demander à une IA</span> ouvre le menu Partager : choisissez l’app d’IA. Sur ordinateur, la question est copiée et Gemini s’ouvre : collez-la. Si aucune IA n’est installée, le bouton n’apparaît pas.</p>
-      <p>L’assistant cherche dans le résumé des règles, <b>vos règles maison</b> (elles passent en premier) et ce manuel. Il retrouve le bon passage, mais <b>ne fait pas de calculs</b> et ne raisonne pas : pour « j’ai misé 2 et fait 4 plis », il montre la règle de pointage. Nommer le jeu dans la question aide beaucoup.</p>
-    </div><div class="figs"><figure><img src="img/assistant.webp" alt="Assistant" loading="lazy"><figcaption>Une question posée pendant une partie de dés, et sa réponse.</figcaption></figure><figure><img src="img/assistant-ia.webp" alt="Demander à Gemini" loading="lazy"><figcaption>Le bouton pour passer la question à Gemini.</figcaption></figure></div></div>
+    <div class="row2 many"><div class="txt" data-kw="assistant question poser demander aide vocale voix micro parler lire à voix haute réponse ia intelligence artificielle claude hors ligne sans internet connexion calcul comment faire suivi">
+      <p>L’assistant répond aux questions sur les règles des jeux et sur l’utilisation de l’app. Pour l’ouvrir : le bouton ❓ en haut de l’accueil ou en haut de chaque partie, le menu ⋮ d’une partie, ou le bouton en haut du résumé des règles. Ouvert depuis une partie, il sait de quel jeu il s’agit (touchez ✕ pour une question générale).</p>
+      <ol><li>Touchez <span class="ui">🎤 Poser une question</span> et parlez naturellement : « au Wizard, j’ai misé 2 et fait 4 plis, combien j’ai ? », « comment je corrige une manche ? ». Vous pouvez aussi l’écrire, puis <span class="ui">Demander</span>.</li>
+        <li><b>Avec Internet, une IA répond</b> (« L’IA réfléchit… », quelques secondes). Elle connaît le jeu en cours, <b>vos règles maison</b> (elles passent en premier), le résumé des règles de l’app et tout ce manuel ; au besoin, elle vérifie les règles officielles sur Internet et indique ses sources. Elle sait aussi faire les calculs de points.</li>
+        <li>Si vous avez parlé, la réponse est lue à voix haute. <span class="ui">🔊 Lire à voix haute</span> la relit ; <span class="ui">⏹ Arrêter la lecture</span> l’interrompt.</li>
+        <li>Vous pouvez enchaîner avec une <b>question de suivi</b> (« et si j’avais fait 2 plis ? ») : l’IA se souvient des trois dernières questions tant que l’écran reste ouvert.</li></ol>
+      <p><b>Sans connexion</b> (ou si l’IA ne répond pas, est trop lente, ou si vous touchez <span class="ui">Annuler</span>), l’<b>assistant hors ligne</b> prend le relais et un message l’indique. Il cherche le bon passage dans les règles, vos règles maison et ce manuel, mais ne fait pas de calculs. Ses <b>Autres réponses possibles</b> et ses boutons mènent au bon écran ou au manuel. Le bouton <span class="ui">📖 Réponse hors ligne</span> sous une réponse de l’IA montre aussi ce qu’il trouve.</p>
+      <p><b>À savoir</b> : l’IA peut se tromper ; en cas de doute, vérifiez dans les règles 📖. Les questions, le jeu en cours et vos règles maison sont envoyés à l’IA (Claude, d’Anthropic) par un relais qui limite le nombre de questions par jour. Pour utiliser seulement l’assistant hors ligne : ⚙︎ Réglages → Aide → « Assistant IA ».</p>
+    </div><div class="figs"><figure><img src="img/assistant.webp" alt="Réponse de l’IA" loading="lazy"><figcaption>Une question de calcul pendant une partie de Wizard.</figcaption></figure><figure><img src="img/assistant-horsligne.webp" alt="Assistant hors ligne" loading="lazy"><figcaption>Sans connexion : la réponse de l’assistant hors ligne.</figcaption></figure></div></div>
   </section>
 
   <section class="s" id="resultat" data-kw="résultat fin podium classement gagnant revanche graphique évolution des scores courbe invité ajouter à ma liste">
@@ -476,7 +477,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 3.7 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 3.8 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){

@@ -43,6 +43,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .top .icon-btn.sm{width:36px}
 @media (max-width:440px){ .top{gap:2px;padding-left:8px;padding-right:6px} .top>.icon-btn:first-child{width:36px} .top .icon-btn.sm{width:31px;font-size:18px} .top .grow{margin-left:2px} .top .grow h1{font-size:19px} }
 .mic{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:12px;border-radius:12px;border:1.5px dashed var(--brand);color:var(--brand);font-weight:700;background:var(--surface)}
+.spin{width:22px;height:22px;border-radius:50%;border:3px solid color-mix(in srgb,var(--brand) 25%,transparent);border-top-color:var(--brand);animation:spin .8s linear infinite;flex:none}@keyframes spin{to{transform:rotate(360deg)}}
 .mic.on{background:var(--brand);color:#fff;border-style:solid;animation:pulse 1.2s infinite}
 @keyframes pulse{50%{opacity:.75}}
 .heard{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--surface2);font-size:13.5px}
@@ -1579,6 +1580,8 @@ function vSettings(){
     <h2 class="sec">Aide</h2>
     <div class="card" style="padding:14px"><p style="margin:0 0 12px">Le manuel explique chaque fonction, avec des images et une recherche par mot-clé.</p>
       <a class="btn block" style="text-decoration:none" href="${MANUAL_URL}" target="_blank" rel="noopener">📘 Ouvrir le manuel d’utilisation</a></div>
+    ${aiConfigured() ? `<div class="card" style="padding:14px;margin-top:10px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Assistant IA</b><div class="hint" style="margin:2px 0 0">Avec Internet, une IA répond aux questions posées à l’assistant ❓. Les questions, le jeu en cours et vos règles maison lui sont envoyés. Désactivé : seulement l’assistant hors ligne.</div></div>
+      <button class="switch ${aiPref() ? 'on' : ''}" data-a="iaToggle" aria-label="Assistant IA"></button></div></div>` : ''}
     <h2 class="sec">Commentaires</h2>
     <div class="card" style="padding:14px">
       <p style="margin:0 0 12px">Un problème pendant une partie, ou une idée d’amélioration ? Envoyez-le directement au responsable de l’app.</p>
@@ -1831,7 +1834,7 @@ const HELP_FAQ = [
   {q:['jouer en équipes','partenaires','équipe'], a:'Au Skip-Bo et au Mille Bornes, choisissez « Équipes » au début de la partie, puis répartissez les joueurs. Au Mille Bornes, les partenaires partagent un seul jeu : on inscrit les points par équipe.'},
   {q:['manuel','mode d’emploi','instructions de l’app'], a:'Le bouton 📘 en haut de l’accueil ouvre le manuel complet, avec images et recherche (Internet requis).'},
   {q:['demander à gemini','utiliser une vraie IA','demander à chatgpt','intelligence artificielle'], a:'Après une question, le bouton ✨ « Demander à Gemini » (ou à une autre IA installée) envoie la question à l’IA du téléphone, avec le jeu en cours, vos règles maison et le lien du manuel. La réponse s’affiche dans cette app ; revenez ensuite avec le bouton Retour. Sur iPhone, choisissez l’app d’IA dans le menu Partager.'},
-  {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. L’assistant cherche dans les règles des jeux, vos règles maison et le manuel, puis lit la réponse. Il fonctionne sans Internet, mais ne fait pas de calculs.'}
+  {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
 const HELP_STOP = new Set(('a au aux avec ca ce cela ces cet cette comment combien dans de des du elle elles en est et etre faire fait faut il ils je j la le les leur leurs l ma me mes moi mon m ne n nous on ou par pas peut peux pour pourquoi quand que quel quelle quelles quels qu qui quoi sa se ses si son sont sur ta te tes toi ton tu un une vos votre vous y d s t c est-ce estce dois doit devons veux voudrais aimerais savoir dire dis explique expliquer svp stp bonjour merci alors donc bien tout tous toute toutes quoi ai as avons avez ont ete etait il-y-a lorsque lorsqu chose choses fois').split(' '));
 const HELP_SYN = [
@@ -1998,6 +2001,9 @@ function vAsk(){
       <div class="row" style="margin-top:10px"><input id="askQ" class="field" placeholder="${voiceAvailable() ? 'ou écrivez-la ici' : 'Écrivez votre question'}" value="${esc(S.askQ||'')}" autocomplete="off" enterkeyhint="search"><button class="btn primary" data-a="askGo">Demander</button></div>
       ${g && GAMES[g] ? `<div style="margin-top:10px"><button class="chip on" data-a="askNoGame" style="min-height:36px;padding:0 12px">${badge(g, 24)} Questions sur ${esc(GAMES[g].name)} <span class="x">✕</span></button></div>` : ''}
     </div>
+    ${S.askBusy ? `<div class="card" style="padding:18px;margin-top:14px;display:flex;align-items:center;gap:12px"><span class="spin"></span><div class="grow"><b>L’IA réfléchit…</b><div class="hint" style="margin:2px 0 0">« ${esc(S.askQ)} »</div></div><button class="btn sm" data-a="askCancel">Annuler</button></div>` : ''}
+    ${!S.askBusy && S.askAi ? aiCard() : ''}
+    ${S.askNote && R ? `<p class="hint" style="margin:14px 2px 0;color:var(--accent-ink, inherit)">⚠︎ ${esc(S.askNote)}</p>` : ''}
     ${R ? (sel ? `
       <p class="hint" style="margin:14px 2px 6px">Vous avez demandé : « ${esc(R.q)} »</p>
       ${R.cov < 0.5 ? `<p class="hint" style="margin:0 2px 8px">Je ne suis pas certain d’avoir bien compris ; voici ce qui s’en rapproche le plus.</p>` : ''}
@@ -2012,13 +2018,13 @@ function vAsk(){
           ${sel.u.anchor ? `<button class="btn" data-a="askManual" data-v="${esc(sel.u.anchor)}">📘 Dans le manuel</button>` : ''}
         </div>
       </div>
-      ${R.list.length > 1 ? aiButtons() : ''}
+      ${R.list.length > 1 && !aiConfigured() ? aiButtons() : ''}
       ${R.list.length > 1 ? `<h2 class="sec">Autres réponses possibles</h2><div class="card list">${R.list.map((r, i) => i === (S.askSel||0) ? '' : `<button class="li" data-a="askPick" data-i="${i}" style="text-align:left"><div class="grow"><div class="t">${esc(r.u.title.replace(/^(Règles|Manuel|Nos règles maison) · /, '').replace(/^.* › /, ''))}</div><div class="s">${esc(({faq:'Réponse rapide', rule:'Règles', house:'Nos règles maison', manual:'Manuel'})[r.u.src] + (r.u.g && GAMES[r.u.g] ? ' · ' + GAMES[r.u.g].name : ''))}</div></div><span class="chev">›</span></button>`).join('')}</div>` : ''}`
-      : `<div class="card empty" style="margin-top:14px">Je n’ai rien trouvé pour « ${esc(R.q)} ». Essayez avec d’autres mots, ou nommez le jeu.</div>`) : `
+      : `<div class="card empty" style="margin-top:14px">Je n’ai rien trouvé pour « ${esc(R.q)} ». Essayez avec d’autres mots, ou nommez le jeu.</div>`) : (S.askAi || S.askBusy) ? '' : `
       <h2 class="sec">Exemples</h2>
       <div style="display:flex;flex-wrap:wrap;gap:8px">${askExamples(g).map(x => `<button class="chip" style="padding:0 14px;min-height:40px" data-a="askEx">${esc(x)}</button>`).join('')}</div>`}
-    ${R && !(sel && R.list.length > 1) ? aiButtons() : ''}
-    <p class="hint" style="margin-top:20px">La recherche fonctionne sans Internet : l’assistant cherche dans les règles des jeux, vos règles maison et le manuel. Il retrouve le bon passage, mais ne fait pas de calculs. Le bouton ✨ passe la question à une vraie IA (Internet requis).</p>
+    ${R && !aiConfigured() && !(sel && R.list.length > 1) ? aiButtons() : ''}
+    <p class="hint" style="margin-top:20px">${aiConfigured() ? (aiPref() ? 'Avec Internet, une IA répond à vos questions en tenant compte de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche dans les règles et le manuel (sans calculs).' : 'L’IA est désactivée dans les Réglages : l’assistant hors ligne cherche dans les règles et le manuel (sans calculs).') : 'La recherche fonctionne sans Internet : l’assistant cherche dans les règles des jeux, vos règles maison et le manuel. Il retrouve le bon passage, mais ne fait pas de calculs. Le bouton ✨ passe la question à une vraie IA (Internet requis).'}</p>
   </main>`;
 }
 /* ---------- Passer la question à l'IA du téléphone ---------- */
@@ -2080,16 +2086,83 @@ function askAiSend(pkg){
   if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => toast('Copie impossible'));
   else toast('Copie impossible ici');
 }
-function askRun(text, spoken){
-  text = String(text||'').trim(); if(!text) return toast('Posez une question');
-  speakStop();
-  S.askQ = text; S.askSel = 0; S.askFull = false;
+/* ---------- IA intégrée (relais Cloudflare → Claude) ---------- */
+const AI_URL = 'https://pointage-ia.rogerotisqc.workers.dev';   // relais Cloudflare (server/worker.js)
+const AI_T = '__AI_TOKEN__';
+function aiToken(){ try{ return AI_T.indexOf('__') === 0 ? '' : atob(AI_T.split('.').reverse().join('')); }catch(e){ return ''; } }
+function aiPref(){ try{ return localStorage.getItem('pointage.ia') !== '0'; }catch(e){ return true; } }
+function aiConfigured(){ return !!(AI_URL && aiToken()); }
+function aiReady(){ return aiConfigured() && aiPref() && navigator.onLine !== false; }
+let AI_CTRL = null;
+async function aiAsk(text){
+  const gm = helpGame(text), g = gm.g || S.askGame || null;
+  const real = g && GAMES[g] && g !== 'generic';
+  const body = { q: text, gameName: real ? GAMES[g].name : '', house: real ? String(db.house[g] || '') : '', rules: real ? rulesPlain(g) : '',
+    history: (S.askHist || []).slice(-3) };
+  AI_CTRL = new AbortController();
+  const timer = setTimeout(() => AI_CTRL && AI_CTRL.abort(), 30000);
+  try{
+    const r = await fetch(AI_URL.replace(/\/$/, '') + '/ask', { method:'POST', signal: AI_CTRL.signal,
+      headers:{ 'Content-Type':'application/json', 'X-App-Token': aiToken() }, body: JSON.stringify(body) });
+    const d = await r.json().catch(() => ({}));
+    if(!r.ok || !d.answer) throw new Error(d.error || ('Erreur ' + r.status));
+    return d;
+  } finally { clearTimeout(timer); AI_CTRL = null; }
+}
+function askOffline(text, spoken, note){
+  S.askAi = null; S.askNote = note || '';
+  S.askSel = 0; S.askFull = false;
   S.askRes = helpSearch(text, S.askGame);
   render(true);
   const r = S.askRes.list[0];
   if(spoken && r && speakOk()){ speak(helpSpeakText(r, false)); render(); }
 }
+async function askRun(text, spoken){
+  text = String(text||'').trim(); if(!text) return toast('Posez une question');
+  speakStop();
+  S.askQ = text; S.askRes = null; S.askAi = null; S.askNote = '';
+  if(!aiReady()){
+    const why = aiConfigured() && aiPref() ? 'Pas de connexion Internet : réponse de l’assistant hors ligne.' : '';
+    return askOffline(text, spoken, why);
+  }
+  const id = (S.askId = (S.askId || 0) + 1);
+  S.askBusy = true; render(true);
+  try{
+    const d = await aiAsk(text);
+    if(id !== S.askId || S.view !== 'ask') return;
+    S.askBusy = false; S.askAi = { q: text, answer: d.answer, sources: d.sources || [] };
+    S.askHist = (S.askHist || []).concat([{ q: text, a: d.answer }]).slice(-3);
+    render(true);
+    if(spoken && speakOk()){ speak(aiSpeakText(d.answer)); render(); }
+  }catch(e){
+    if(id !== S.askId) return;
+    S.askBusy = false;
+    if(S.view !== 'ask') return;
+    const msg = e && e.name === 'AbortError' ? 'L’IA a mis trop de temps' : String(e && e.message || 'L’IA ne répond pas');
+    askOffline(text, spoken, msg.replace(/\.$/, '') + '. Voici la réponse de l’assistant hors ligne.');
+  }
+}
+function aiSpeakText(t){
+  return String(t).replace(/×/g, ' fois ').replace(/−/g, ' moins ').replace(/\s\+\s?|\+(?=\d)/g, ' plus ').replace(/=/g, ' égale ').replace(/[·•]/g, ', ')
+    .replace(/⋮/g, ' menu ').replace(/↶/g, ' flèche annuler ').replace(/↷/g, ' flèche rétablir ').replace(/→/g, ', puis ')
+    .replace(/[#*_`>]/g, ' ').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{2190}-\u{21FF}]/gu, ' ').replace(/\s+/g, ' ').trim();
+}
+function aiCard(){
+  const a = S.askAi;
+  return `<p class="hint" style="margin:14px 2px 6px">Vous avez demandé : « ${esc(a.q)} »</p>
+    <div class="card" style="padding:16px">
+      <div class="hint" style="margin:0 0 6px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:12px">✨ Réponse de l’IA</div>
+      ${a.answer.split(/\n+/).filter(x => x.trim()).map(p => `<p style="margin:6px 0;line-height:1.5">${esc(p.replace(/^[-•]\s*/, '• '))}</p>`).join('')}
+      ${a.sources.length ? `<div class="hint" style="margin:10px 0 0">Sources : ${a.sources.map((x, i) => `<a href="#" data-a="askSrc" data-i="${i}" style="color:var(--brand)">${esc(x.title)}</a>`).join(' · ')}</div>` : ''}
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
+        ${speakOk() ? (S.speaking ? `<button class="btn" data-a="askStop">⏹ Arrêter la lecture</button>` : `<button class="btn" data-a="askSpeak">🔊 Lire à voix haute</button>`) : ''}
+        <button class="btn" data-a="askLocal">📖 Réponse hors ligne</button>
+      </div>
+    </div>
+    <p class="hint" style="margin:8px 2px 0">L’IA peut se tromper : en cas de doute, vérifiez dans les règles 📖. Vous pouvez poser une question de suivi.</p>`;
+}
 function askVoice(alts){
+  if(aiReady()){ const a = (alts || []).find(x => String(x).trim()); return a ? askRun(a, true) : render(); }
   let best = null;
   for(const a of alts.slice(0, 5)){ const res = helpSearch(a, S.askGame); const sc = res.list.length ? res.list[0].score : 0; if(!best || sc > best.sc) best = {a, sc}; }
   if(!best) return render();
@@ -2264,18 +2337,22 @@ const A = {
       <p class="hint">Les manches suivantes continueront dans l’ordre à partir de ce joueur.</p></div>`); },
   pickDealer: el => { const g = curGame(); g.dealer0 = Number(el.dataset.i) - g.rounds.length; save(); closeModal(); render(); },
   menu: () => openMenu(),
-  ask: el => { closeModal(); const g = S.view === 'sheet' ? curGame() : null; const t = (el && el.dataset && el.dataset.t) || (g ? g.type : (S.view === 'rules' ? S.rulesType : null)); go('ask', {askGame: t || null, askRes: null, askQ: ''}); },
+  ask: el => { closeModal(); const g = S.view === 'sheet' ? curGame() : null; const t = (el && el.dataset && el.dataset.t) || (g ? g.type : (S.view === 'rules' ? S.rulesType : null)); go('ask', {askGame: t || null, askRes: null, askQ: '', askAi: null, askHist: [], askNote: '', askBusy: false}); },
   askGo: () => { const el = $('askQ'); askRun(el ? el.value : ''); },
   askEx: el => askRun(el.textContent),
   askMic: () => voiceStart(),
   askNoGame: () => { S.askGame = null; if(S.askQ) askRun(S.askQ); else render(); },
   askPick: el => { speakStop(); S.askSel = +el.dataset.i; S.askFull = false; render(true); },
   askFull: () => { S.askFull = true; render(); },
-  askSpeak: () => { const R = S.askRes; if(R && R.list.length){ speak(helpSpeakText(R.list[S.askSel||0], S.askFull)); render(); } },
+  askSpeak: () => { if(S.askAi && !S.askRes){ speak(aiSpeakText(S.askAi.answer)); return render(); } const R = S.askRes; if(R && R.list.length){ speak(helpSpeakText(R.list[S.askSel||0], S.askFull)); render(); } },
   askStop: () => { speakStop(); render(); },
   askOpen: el => { speakStop(); tab(el.dataset.v); },
   askManual: el => openUrl(MANUAL_URL + '#' + el.dataset.v),
   askAi: el => askAiSend(el.dataset.v),
+  askCancel: () => { S.askId = (S.askId || 0) + 1; S.askBusy = false; if(AI_CTRL) AI_CTRL.abort(); askOffline(S.askQ, false, 'Question à l’IA annulée : réponse de l’assistant hors ligne.'); },
+  askLocal: () => { speakStop(); askOffline(S.askQ, false, ''); },
+  askSrc: el => { const x = S.askAi && S.askAi.sources[+el.dataset.i]; if(x) openUrl(x.url); },
+  iaToggle: () => { const on = !aiPref(); try{ localStorage.setItem('pointage.ia', on ? '1' : '0'); }catch(e){} toast(on ? 'IA activée' : 'IA désactivée : assistant hors ligne seulement'); render(); },
   finish: () => { closeModal(); const g = curGame(); g.finished = true; g.updated = Date.now(); save(); go('results'); },
   results: () => go('results'),
   reopen: () => { closeModal(); const g = curGame(); g.finished = false; g.updated = Date.now(); save(); render(); },

@@ -28,6 +28,11 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 - `tools/publish.sh notes.txt <clone du dépôt>` : dépose l'APK (`update/Pointage-X.Y.apk` et
   `update/Pointage.apk`), `update/version.json` (lu par le bouton de mise à jour) et reconstruit `docs/`.
 - `tools/inject_key.py` : insère la clé des rapports (encodée, découpée) au moment de construire.
+- `server/worker.js` : relais IA (Cloudflare Worker `pointage-ia.rogerotisqc.workers.dev`, compte Cloudflare de
+  Roger). Garde la clé Anthropic (secret ANTHROPIC_API_KEY), vérifie APP_TOKEN (= `keystore/ai.token`, injecté
+  dans l'app par `inject_key.py`), compte les questions (KV `LIMITS`), modèle claude-haiku-5-5 + recherche web.
+  Pour le modifier : Roger recolle le fichier dans Cloudflare (Edit code → Deploy). L'IA passe avant
+  l'assistant hors ligne, qui sert sans connexion ou en cas d'erreur.
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 

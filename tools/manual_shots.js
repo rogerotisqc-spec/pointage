@@ -3,7 +3,8 @@
 const { chromium } = require('playwright');
 const path = require('path');
 const OUT = process.argv[2];
-const APP = 'file://' + path.resolve(__dirname, '../app/src/main/assets/index.html');
+// Copie construite (clé, jeton IA et aide du manuel insérés) : lancer build.sh avant
+const APP = 'file://' + path.resolve(__dirname, '../build/assets/index.html');
 const VER = (require('fs').readFileSync(path.resolve(__dirname, '../app/src/main/AndroidManifest.xml'), 'utf8').match(/versionName="([^"]+)"/) || [])[1] || '?';
 const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/index.html');
 
@@ -185,13 +186,20 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await tap('[data-a=rules]'); await shot('regles'); await tap('[data-a=back]');
 
   // ---------- Assistant ----------
-  await tap('[data-a=menu]'); await tap('#modal [data-a=ask]');
-  await p.fill('#askQ', 'Quand est-ce qu’on perd 1000 points ?'); await p.keyboard.press('Enter');
+  await p.route('**/pointage-ia.rogerotisqc.workers.dev/**', r => r.request().method() === 'OPTIONS'
+    ? r.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' } })
+    : r.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer: 'Ta mise de 2 est ratée de 2 plis : tu perds 20 points (−10 par pli d’écart).\nSi tu avais misé 4, tu aurais eu 20 + 10 × 4 = 60 points.', sources: [] }) }));
+  await startGame('wizard', ['Roger', 'Marie', 'Léa']);
+  await tap('.top [data-a=ask]');
+  await p.fill('#askQ', 'J’ai misé 2 et fait 4 plis, combien j’ai ?'); await p.keyboard.press('Enter');
+  await p.waitForSelector('[data-a=askLocal]');
   await shot('assistant');
-  await p.fill('#askQ', 'Au Wizard, j’ai misé 2 et fait 4 plis, combien de points ?'); await p.keyboard.press('Enter');
-  await p.evaluate(() => { const c = document.querySelector('[data-a=askAi]').closest('.card'); window.scrollTo(0, c.getBoundingClientRect().top + scrollY - 420); });
-  await shot('assistant-ia');
-  await tap('[data-a=back]');
+  await ctx.setOffline(true);
+  await p.fill('#askQ', 'Qui doit brasser ?'); await p.keyboard.press('Enter');
+  await shot('assistant-horsligne');
+  await ctx.setOffline(false);
+  await p.evaluate(() => { const g = db.games.filter(x => x.type === 'farkle' && !x.finished).pop(); tab('home'); go('sheet', { gameId: g.id }); });
 
   // ---------- Rapport ----------
   await tap('[data-a=menu]'); await tap('[data-a=feedback]');

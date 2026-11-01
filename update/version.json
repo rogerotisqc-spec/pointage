@@ -1,6 +1,6 @@
 {
- "version": "3.7",
- "notes": "Assistant : bouton ✨ pour passer la question à l’IA du téléphone (Gemini, ChatGPT…) avec le jeu, vos règles maison et le lien du manuel.\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.7.apk",
- "size": 127833
+ "version": "3.8",
+ "notes": "L’assistant ❓ répond maintenant avec une vraie IA (avec Internet) : calculs, règles officielles, questions de suivi. Sans connexion, l’assistant hors ligne prend le relais.\nManuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.8.apk",
+ "size": 131929
 }

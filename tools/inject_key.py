@@ -15,3 +15,11 @@ if os.path.exists(kf):
     print("clé des rapports injectée")
 else:
     print("aucune clé de rapports (keystore/feedback.key absent)")
+# Jeton du relais IA (keystore/ai.token), même encodage
+tf = os.path.join(here, "..", "keystore", "ai.token")
+if os.path.exists(tf):
+    s = open(path, encoding="utf-8").read()
+    b = base64.b64encode(open(tf).read().strip().encode()).decode()
+    s = s.replace("__AI_TOKEN__", ".".join(reversed([b[i:i+9] for i in range(0, len(b), 9)])))
+    open(path, "w", encoding="utf-8").write(s)
+    print("jeton IA injecté")
