@@ -1830,6 +1830,7 @@ const HELP_FAQ = [
   {q:['signaler un problème','faire une suggestion','bug'], a:'Menu ⋮ d’une partie, ou Réglages → « Signaler un problème / suggérer ». Le message va directement au responsable de l’app.'},
   {q:['jouer en équipes','partenaires','équipe'], a:'Au Skip-Bo et au Mille Bornes, choisissez « Équipes » au début de la partie, puis répartissez les joueurs. Au Mille Bornes, les partenaires partagent un seul jeu : on inscrit les points par équipe.'},
   {q:['manuel','mode d’emploi','instructions de l’app'], a:'Le bouton 📘 en haut de l’accueil ouvre le manuel complet, avec images et recherche (Internet requis).'},
+  {q:['demander à gemini','utiliser une vraie IA','demander à chatgpt','intelligence artificielle'], a:'Après une question, le bouton ✨ « Demander à Gemini » (ou à une autre IA installée) envoie la question à l’IA du téléphone, avec le jeu en cours, vos règles maison et le lien du manuel. La réponse s’affiche dans cette app ; revenez ensuite avec le bouton Retour. Sur iPhone, choisissez l’app d’IA dans le menu Partager.'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. L’assistant cherche dans les règles des jeux, vos règles maison et le manuel, puis lit la réponse. Il fonctionne sans Internet, mais ne fait pas de calculs.'}
 ];
 const HELP_STOP = new Set(('a au aux avec ca ce cela ces cet cette comment combien dans de des du elle elles en est et etre faire fait faut il ils je j la le les leur leurs l ma me mes moi mon m ne n nous on ou par pas peut peux pour pourquoi quand que quel quelle quelles quels qu qui quoi sa se ses si son sont sur ta te tes toi ton tu un une vos votre vous y d s t c est-ce estce dois doit devons veux voudrais aimerais savoir dire dis explique expliquer svp stp bonjour merci alors donc bien tout tous toute toutes quoi ai as avons avez ont ete etait il-y-a lorsque lorsqu chose choses fois').split(' '));
@@ -2011,12 +2012,73 @@ function vAsk(){
           ${sel.u.anchor ? `<button class="btn" data-a="askManual" data-v="${esc(sel.u.anchor)}">📘 Dans le manuel</button>` : ''}
         </div>
       </div>
+      ${R.list.length > 1 ? aiButtons() : ''}
       ${R.list.length > 1 ? `<h2 class="sec">Autres réponses possibles</h2><div class="card list">${R.list.map((r, i) => i === (S.askSel||0) ? '' : `<button class="li" data-a="askPick" data-i="${i}" style="text-align:left"><div class="grow"><div class="t">${esc(r.u.title.replace(/^(Règles|Manuel|Nos règles maison) · /, '').replace(/^.* › /, ''))}</div><div class="s">${esc(({faq:'Réponse rapide', rule:'Règles', house:'Nos règles maison', manual:'Manuel'})[r.u.src] + (r.u.g && GAMES[r.u.g] ? ' · ' + GAMES[r.u.g].name : ''))}</div></div><span class="chev">›</span></button>`).join('')}</div>` : ''}`
       : `<div class="card empty" style="margin-top:14px">Je n’ai rien trouvé pour « ${esc(R.q)} ». Essayez avec d’autres mots, ou nommez le jeu.</div>`) : `
       <h2 class="sec">Exemples</h2>
       <div style="display:flex;flex-wrap:wrap;gap:8px">${askExamples(g).map(x => `<button class="chip" style="padding:0 14px;min-height:40px" data-a="askEx">${esc(x)}</button>`).join('')}</div>`}
-    <p class="hint" style="margin-top:20px">Fonctionne sans Internet. L’assistant cherche dans les règles des jeux, vos règles maison et le manuel. Il retrouve le bon passage, mais ne fait pas de calculs.</p>
+    ${R && !(sel && R.list.length > 1) ? aiButtons() : ''}
+    <p class="hint" style="margin-top:20px">La recherche fonctionne sans Internet : l’assistant cherche dans les règles des jeux, vos règles maison et le manuel. Il retrouve le bon passage, mais ne fait pas de calculs. Le bouton ✨ passe la question à une vraie IA (Internet requis).</p>
   </main>`;
+}
+/* ---------- Passer la question à l'IA du téléphone ---------- */
+let AI_APPS = null;
+function aiApps(){
+  if(AI_APPS) return AI_APPS;
+  AI_APPS = [];
+  if(bridge && bridge.aiApps){ try{ AI_APPS = JSON.parse(bridge.aiApps()) || []; }catch(e){} }
+  return AI_APPS;
+}
+function aiMode(){ // 'app' (Android : apps d'IA trouvées), 'share' (menu Partager), 'copy' (ordinateur), null
+  if(bridge && bridge.askAi) return aiApps().length ? 'app' : null;
+  if(navigator.share) return 'share';
+  return 'copy';
+}
+function rulesPlain(t){
+  let html = ''; try{ html = rulesHtml(t, null) || ''; }catch(e){}
+  const d = hText(html), lines = [];
+  d.querySelectorAll('h3, p, li, table').forEach(el => {
+    if(el.tagName === 'P' && el.closest('li')) return;
+    const tx = hClean(el.tagName === 'TABLE' ? [...el.querySelectorAll('tr')].map(r => [...r.children].map(c => c.textContent.trim()).join(' : ')).join(' ; ') : el.textContent); if(!tx) return;
+    lines.push(el.tagName === 'H3' ? '\n' + tx + ' :' : '- ' + tx);
+  });
+  const out = lines.join('\n').trim();
+  return out.length > 2200 ? out.slice(0, 2200) + '…' : out;
+}
+function aiPrompt(R){
+  const g = R.game && GAMES[R.game] && R.game !== 'generic' ? R.game : null;
+  const nm = g ? GAMES[g].name : '';
+  const house = g ? String(db.house[g] || '').trim() : '';
+  const parts = ['J’utilise « Pointage », une app familiale de feuilles de pointage pour les jeux de société.' + (nm ? ` Nous jouons à ${nm}.` : '')];
+  parts.push('Ma question : ' + R.q);
+  if(house) parts.push(`Nos règles maison pour ${nm} (elles passent avant les règles officielles) :\n${house}`);
+  if(g) parts.push(`Résumé des règles de ${nm} utilisé dans l’app (il inclut nos règles de famille) :\n${rulesPlain(g)}`);
+  parts.push('Pour les questions sur l’utilisation de l’app, consulte son manuel : ' + MANUAL_URL);
+  parts.push('Réponds en français, simplement et brièvement.');
+  return parts.join('\n\n');
+}
+function aiButtons(){
+  const m = aiMode(); if(!m) return '';
+  if(m === 'app'){
+    const a = aiApps(), first = a[0];
+    return `<div class="card" style="padding:14px;margin-top:14px"><b>Besoin d’une vraie IA ?</b>
+      <div class="hint" style="margin:2px 0 10px">Pour un calcul ou une situation inhabituelle : la question part vers ${esc(first.name)} avec le jeu, vos règles maison et le lien du manuel. Revenez ensuite avec le bouton Retour.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn primary" data-a="askAi" data-v="${esc(first.pkg)}">✨ Demander à ${esc(first.name)}</button>
+      ${a.length > 1 ? `<button class="btn" data-a="askAi" data-v="">Autre IA…</button>` : ''}</div></div>`;
+  }
+  return `<div class="card" style="padding:14px;margin-top:14px"><b>Besoin d’une vraie IA ?</b>
+    <div class="hint" style="margin:2px 0 10px">${m === 'share' ? 'La question part, avec le jeu, vos règles maison et le lien du manuel, vers l’app d’IA de votre choix (ChatGPT, Gemini…) dans le menu Partager.' : 'La question est copiée avec le jeu, vos règles maison et le lien du manuel ; collez-la dans l’IA qui s’ouvre.'}</div>
+    <button class="btn primary" data-a="askAi" data-v="">✨ Demander à une IA</button></div>`;
+}
+function askAiSend(pkg){
+  const R = S.askRes; if(!R) return;
+  speakStop();
+  const text = aiPrompt(R), m = aiMode();
+  if(m === 'app'){ try{ bridge.askAi(text, pkg || ''); }catch(e){ toast('Impossible d’ouvrir l’IA'); } return; }
+  if(m === 'share'){ navigator.share({text}).catch(() => {}); return; }
+  const done = () => { toast('Question copiée : collez-la dans Gemini'); window.open('https://gemini.google.com/app', '_blank'); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => toast('Copie impossible'));
+  else toast('Copie impossible ici');
 }
 function askRun(text, spoken){
   text = String(text||'').trim(); if(!text) return toast('Posez une question');
@@ -2213,6 +2275,7 @@ const A = {
   askStop: () => { speakStop(); render(); },
   askOpen: el => { speakStop(); tab(el.dataset.v); },
   askManual: el => openUrl(MANUAL_URL + '#' + el.dataset.v),
+  askAi: el => askAiSend(el.dataset.v),
   finish: () => { closeModal(); const g = curGame(); g.finished = true; g.updated = Date.now(); save(); go('results'); },
   results: () => go('results'),
   reopen: () => { closeModal(); const g = curGame(); g.finished = false; g.updated = Date.now(); save(); render(); },

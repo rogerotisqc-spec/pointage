@@ -504,6 +504,39 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public String aiApps() {
+            String[][] apps = {{"com.google.android.apps.bard", "Gemini"}, {"com.openai.chatgpt", "ChatGPT"},
+                {"com.anthropic.claude", "Claude"}, {"com.microsoft.copilot", "Copilot"}, {"ai.perplexity.app.android", "Perplexity"}};
+            JSONArray out = new JSONArray();
+            for (String[] a : apps) {
+                try {
+                    getPackageManager().getPackageInfo(a[0], 0);
+                    JSONObject o = new JSONObject();
+                    o.put("pkg", a[0]); o.put("name", a[1]);
+                    out.put(o);
+                } catch (Exception ignored) { }
+            }
+            return out.toString();
+        }
+
+        @JavascriptInterface
+        public void askAi(final String text, final String pkg) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.putExtra(Intent.EXTRA_TEXT, text);
+                    if (pkg != null && pkg.length() > 0) {
+                        i.setPackage(pkg);
+                        try { startActivity(i); return; } catch (Exception e) { i.setPackage(null); }
+                    }
+                    try { startActivity(Intent.createChooser(i, "Demander à une IA")); } catch (Exception ignored) { }
+                }
+            });
+        }
+
+        @JavascriptInterface
         public void speak(final String text) {
             runOnUiThread(new Runnable() {
                 @Override

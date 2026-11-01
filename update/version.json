@@ -1,6 +1,6 @@
 {
- "version": "3.6",
- "notes": "Bouton ❓ dans chaque partie pour poser une question à l’assistant sur ce jeu.\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.6.apk",
+ "version": "3.7",
+ "notes": "Assistant : bouton ✨ pour passer la question à l’IA du téléphone (Gemini, ChatGPT…) avec le jeu, vos règles maison et le lien du manuel.\nManuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.7.apk",
  "size": 127833
 }

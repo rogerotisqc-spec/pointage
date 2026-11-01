@@ -15,7 +15,7 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
     window.AndroidBridge = {
       getVersion: () => VER_, keepScreenOn() {}, checkUpdate() { setTimeout(() => window.onUpdateInfo(JSON.stringify({ version: '2.7', apk: 'x' })), 20); },
       installUpdate() {}, backupInfo: () => JSON.stringify({ folder: 'Documents', last: Date.now() - 120000 }),
-      pickBackupFolder() {}, writeBackup() {}, listen() { setTimeout(() => window.onSpeech(JSON.stringify(['trois cinq et un un'])), 20); }
+      pickBackupFolder() {}, writeBackup() {}, aiApps: () => JSON.stringify([{ pkg: 'com.google.android.apps.bard', name: 'Gemini' }, { pkg: 'com.openai.chatgpt', name: 'ChatGPT' }]), askAi() {}, listen() { setTimeout(() => window.onSpeech(JSON.stringify(['trois cinq et un un'])), 20); }
     };
     try { localStorage.setItem('pointage.autobackup', '1'); localStorage.setItem('pointage.lastCheck', String(Date.now())); localStorage.setItem('pointage.fbname', 'Roger'); } catch (e) {}
   }, VER);
@@ -188,6 +188,9 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await tap('[data-a=menu]'); await tap('#modal [data-a=ask]');
   await p.fill('#askQ', 'Quand est-ce qu’on perd 1000 points ?'); await p.keyboard.press('Enter');
   await shot('assistant');
+  await p.fill('#askQ', 'Au Wizard, j’ai misé 2 et fait 4 plis, combien de points ?'); await p.keyboard.press('Enter');
+  await p.evaluate(() => { const c = document.querySelector('[data-a=askAi]').closest('.card'); window.scrollTo(0, c.getBoundingClientRect().top + scrollY - 420); });
+  await shot('assistant-ia');
   await tap('[data-a=back]');
 
   // ---------- Rapport ----------
