@@ -184,6 +184,12 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   // ---------- Règles ----------
   await tap('[data-a=rules]'); await shot('regles'); await tap('[data-a=back]');
 
+  // ---------- Assistant ----------
+  await tap('[data-a=menu]'); await tap('#modal [data-a=ask]');
+  await p.fill('#askQ', 'Quand est-ce qu’on perd 1000 points ?'); await p.keyboard.press('Enter');
+  await shot('assistant');
+  await tap('[data-a=back]');
+
   // ---------- Rapport ----------
   await tap('[data-a=menu]'); await tap('[data-a=feedback]');
   await p.fill('#fbMsg', 'Au Mille Bornes, j’aimerais pouvoir jouer en équipes de deux.'); await tap('[data-a=fbType][data-v=suggestion]');

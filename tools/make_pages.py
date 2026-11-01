@@ -50,6 +50,7 @@ html = html.replace("</body>", sw_reg, 1)
 open(os.path.join(app_dir, "index.html"), "w", encoding="utf-8").write(html)
 import subprocess
 subprocess.run([sys.executable, os.path.join(root, "tools/inject_key.py"), os.path.join(app_dir, "index.html")], check=True)
+subprocess.run([sys.executable, os.path.join(root, "tools/inject_help.py"), os.path.join(app_dir, "index.html")], check=True)
 
 json.dump({
     "name": "Pointage", "short_name": "Pointage", "lang": "fr-CA",

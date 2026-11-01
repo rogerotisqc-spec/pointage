@@ -11,6 +11,7 @@ SRC=app/src/main
 # Copie des assets avec la clé des rapports injectée (keystore/feedback.key, jamais publiée en clair)
 rm -rf "$B/assets"; cp -r "$SRC/assets" "$B/assets"
 python3 tools/inject_key.py "$B/assets/index.html"
+python3 tools/inject_help.py "$B/assets/index.html"
 "$AAPT2" link -o "$B/base.apk" -I "$ANDROID_JAR" --manifest "$SRC/AndroidManifest.xml" \
   --java "$B/gen" -A "$B/assets" "$B/res/res.zip" --auto-add-overlay
 

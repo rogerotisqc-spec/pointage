@@ -130,7 +130,8 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><a href="#des">Jeu de dés</a></li>
         <li><a href="#voix">Commande vocale</a></li>
       </ol></li>
-    <li><a href="#regles">8. Règles et règles maison</a></li>
+    <li><a href="#regles">8. Règles et règles maison</a>
+      <ol><li><a href="#assistant">L’assistant : poser une question</a></li></ol></li>
     <li><a href="#resultat">9. Résultat et graphique</a></li>
     <li><a href="#historique">10. Historique</a></li>
     <li><a href="#stats">11. Statistiques</a></li>
@@ -180,7 +181,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <div class="row2"><div class="txt">
       <p><b>Parties en cours</b> : les parties non terminées, avec le pointage de chacun. Touchez-en une pour la reprendre là où vous étiez.</p>
       <p><b>Nouvelle partie</b> : une tuile par jeu. Le petit livre 📖 d’une tuile ouvre les règles du jeu sans commencer de partie.</p>
-      <p>En haut à droite : 📘 ouvre ce manuel, ⚙︎ ouvre les <a href="#reglages">Réglages</a>.</p>
+      <p>En haut à droite : ❓ ouvre l’<a href="#assistant">assistant</a> pour poser une question, 📘 ouvre ce manuel, ⚙︎ ouvre les <a href="#reglages">Réglages</a>.</p>
       <p>En bas : les onglets <b>Jeux</b>, <b>Joueurs</b>, <b>Historique</b> et <b>Stats</b>.</p>
       <div class="tip"><b>Bandeaux :</b> un bandeau jaune peut apparaître en haut de l’accueil, par exemple quand une nouvelle version est disponible. Touchez-le pour agir.</div>
     </div><div class="figs" style="margin-top:0"><figure><img src="img/accueil.webp" alt="Écran d’accueil" loading="lazy"><figcaption>L’accueil, avec les parties en cours.</figcaption></figure><figure><img src="img/accueil-tuiles.webp" alt="Tuiles des jeux" loading="lazy"><figcaption>Les tuiles « Nouvelle partie » (cinq colonnes sur grand écran).</figcaption></figure></div></div>
@@ -370,6 +371,15 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
       <p>Sous le résumé, <b>Nos règles maison</b> est un espace libre pour noter vos variantes. Il est enregistré automatiquement, jeu par jeu.</p>
       <p><span class="ui">Chercher les règles officielles</span> ouvre une recherche sur Internet.</p>
     </div><figure><img src="img/regles.webp" alt="Règles du jeu" loading="lazy"><figcaption>Le résumé des règles du jeu de dés.</figcaption></figure></div>
+
+    <h3 id="assistant">L’assistant : poser une question</h3>
+    <div class="row2 many"><div class="txt" data-kw="assistant question poser demander aide vocale voix micro parler lire à voix haute réponse hors ligne sans internet comment faire">
+      <p>L’assistant répond aux questions sur les règles des jeux et sur l’utilisation de l’app, <b>sans Internet</b>. Pour l’ouvrir : le bouton ❓ en haut de l’accueil, le menu ⋮ d’une partie, ou le bouton en haut du résumé des règles. Ouvert depuis une partie, il cherche d’abord dans ce jeu (touchez ✕ pour chercher partout).</p>
+      <ol><li>Touchez <span class="ui">🎤 Poser une question</span> et parlez naturellement : « au Wizard, combien vaut une mise ratée ? », « comment je corrige une manche ? ». Vous pouvez aussi l’écrire, puis <span class="ui">Demander</span>.</li>
+        <li>La réponse s’affiche et, si vous avez parlé, elle est lue à voix haute. <span class="ui">🔊 Lire à voix haute</span> la relit ; <span class="ui">⏹ Arrêter la lecture</span> l’interrompt.</li>
+        <li>Si ce n’est pas la bonne, regardez <b>Autres réponses possibles</b>. Certaines réponses offrent un bouton pour ouvrir le bon écran (Réglages, Joueurs…) ou le passage du manuel.</li></ol>
+      <p>L’assistant cherche dans le résumé des règles, <b>vos règles maison</b> (elles passent en premier) et ce manuel. Il retrouve le bon passage, mais <b>ne fait pas de calculs</b> et ne raisonne pas : pour « j’ai misé 2 et fait 4 plis », il montre la règle de pointage. Nommer le jeu dans la question aide beaucoup.</p>
+    </div><div class="figs"><figure><img src="img/assistant.webp" alt="Assistant" loading="lazy"><figcaption>Une question posée pendant une partie de dés, et sa réponse.</figcaption></figure></div></div>
   </section>
 
   <section class="s" id="resultat" data-kw="résultat fin podium classement gagnant revanche graphique évolution des scores courbe invité ajouter à ma liste">

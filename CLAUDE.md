@@ -11,6 +11,10 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 2. Si l'écran a changé, adapter `tools/manual_shots.js` puis régénérer les copies d'écran :
    `node tools/manual_shots.js <dossier png>` puis conversion en WebP 520 px dans `manual/img/`.
 3. Vérifier le manuel (recherche, images, table des matières) avant de publier.
+4. L'assistant hors ligne lit le manuel : `tools/inject_help.py` l'insère dans l'app à chaque build
+   (`build.sh` et `make_pages.py`, marqueur `/*HELP*/`). Pour une nouvelle fonction, ajouter aussi une
+   réponse rapide dans `HELP_FAQ` (index.html) et, au besoin, des synonymes dans `HELP_SYN`.
+   Test : `tests/testask.js` (questions types) sur `build/assets/index.html`.
 
 ## Structure
 
@@ -24,6 +28,8 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 - `tools/publish.sh notes.txt <clone du dépôt>` : dépose l'APK (`update/Pointage-X.Y.apk` et
   `update/Pointage.apk`), `update/version.json` (lu par le bouton de mise à jour) et reconstruit `docs/`.
 - `tools/inject_key.py` : insère la clé des rapports (encodée, découpée) au moment de construire.
+- `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
+  réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 
 ## Publier une version
 
