@@ -41,6 +41,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .top .grow h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .icon-btn:disabled{opacity:.35}
 .top .icon-btn.sm{width:36px}
+.icon-btn.ask{position:relative}
+.ia-tag{position:absolute;right:-1px;bottom:3px;font:800 9px/1 system-ui,sans-serif;letter-spacing:.02em;padding:2px 3px;border-radius:5px;background:#fff;color:var(--brand);box-shadow:0 1px 2px rgba(0,0,0,.25);pointer-events:none}
 @media (max-width:440px){ .top{gap:2px;padding-left:8px;padding-right:6px} .top>.icon-btn:first-child{width:36px} .top .icon-btn.sm{width:31px;font-size:18px} .top .grow{margin-left:2px} .top .grow h1{font-size:19px} }
 .mic{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:12px;border-radius:12px;border:1.5px dashed var(--brand);color:var(--brand);font-weight:700;background:var(--surface)}
 .spin{width:22px;height:22px;border-radius:50%;border:3px solid color-mix(in srgb,var(--brand) 25%,transparent);border-top-color:var(--brand);animation:spin .8s linear infinite;flex:none}@keyframes spin{to{transform:rotate(360deg)}}
@@ -835,7 +837,7 @@ function topbar(title, sub, right){
 function vHome(){
   const open = db.games.filter(g => !g.finished).sort((a,b) => b.updated - a.updated);
   return `<header class="top"><div class="grow"><h1>Pointage</h1><p class="sub">Les jeux de la famille${appVersion() ? ' · v' + esc(appVersion()) : ''}</p></div>
-    <button class="icon-btn" data-a="ask" aria-label="Assistant : poser une question">❓</button>
+    <button class="icon-btn ask" data-a="ask" aria-label="Assistant : poser une question">${askIcon()}</button>
     <a class="icon-btn" href="${MANUAL_URL}" target="_blank" rel="noopener" aria-label="Manuel d’utilisation" style="text-decoration:none;color:inherit">📘</a>
     <button class="icon-btn" data-a="go" data-v="settings" aria-label="Réglages">⚙︎</button></header>
   ${updateBanner()}${abPausedBanner()}
@@ -918,7 +920,7 @@ function vSetup(){
   }
   const rosterChips = db.players.map(p => chip(p.id, p.name, p.color, false)).join('');
   const guestChips = S.guests.map(g => chip(g.key, g.name, '#868e96', true)).join('');
-  return `${topbar(G.name, 'Nouvelle partie', type!=='generic'?`<button class="icon-btn" data-a="rules" data-t="${type}" aria-label="Règles">📖</button><button class="icon-btn" data-a="ask" data-t="${type}" aria-label="Assistant : poser une question">❓</button>`:'')}
+  return `${topbar(G.name, 'Nouvelle partie', type!=='generic'?`<button class="icon-btn" data-a="rules" data-t="${type}" aria-label="Règles">📖</button><button class="icon-btn ask" data-a="ask" data-t="${type}" aria-label="Assistant : poser une question">${askIcon()}</button>`:'')}
   <main class="pad">
     <h2 class="sec">Qui joue ? <span style="text-transform:none;letter-spacing:0;font-weight:500">(touchez dans l’ordre du jeu)</span></h2>
     ${db.players.length || S.guests.length ? `<div class="chips">${rosterChips}${guestChips}</div>` : `<p class="hint" style="margin-bottom:8px">Aucun joueur dans votre liste pour l’instant. Ajoutez un nom ci-dessous.</p>`}
@@ -1020,7 +1022,7 @@ function vSheet(){
   const canAdd = !g.finished && !(maxRounds && g.rounds.length >= maxRounds);
   const sub = g.type==='playnine' ? `Trou ${Math.min(next, maxRounds)} de ${maxRounds} · le plus bas gagne`
             : (g.opts.target ? `Partie à ${fmt(g.opts.target)} · ${isLow(g)?'le plus bas gagne':'le plus haut gagne'}` : (isLow(g)?'Le plus bas gagne':'Le plus haut gagne'));
-  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="ask" data-t="${g.type}" aria-label="Assistant : poser une question">❓</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="${g.type}" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(ranking(g).filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${dealerBanner(g)}${g.type === 'phase10' ? p10Board(g) + (g.rounds.length ? '<h2 class="sec" style="margin:20px 18px 0">Points</h2>' : '') : ''}${strip}${table}
@@ -1092,7 +1094,7 @@ function vFarkle(g){
       const p = g.players.find(p => p.key === x.pk) || {name:'?'}; const idx = g.turns.length-1-ri;
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div>
         <div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div>${idx===g.turns.length-1 && !g.finished?`<button class="btn sm" data-a="fkUndo">Annuler</button>`:''}</div>`; }).join('')}</div>` : '';
-  return `${topbar(gameName(g), `Partie à ${fmt(f.target)}`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="farkle" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="ask" data-t="farkle" aria-label="Assistant : poser une question">❓</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), `Partie à ${fmt(f.target)}`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="farkle" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="farkle" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
@@ -1117,7 +1119,7 @@ function vWizard(g){
     : `<div class="tablewrap"><div class="empty">Manche 1 : 1 carte chacun.<br>Inscrivez d’abord les mises, puis les plis faits.</div></div>`;
   const canPlay = !g.finished && done < N;
   const sub = done < N ? `Manche ${cards} de ${N} · ${cards} carte${cards>1?'s':''}${cards === N ? ' · sans atout' : ''}` : `${N} manches jouées`;
-  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="wizard" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="ask" data-t="wizard" aria-label="Assistant : poser une question">❓</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="wizard" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="wizard" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${dealerBanner(g)}${strip}${table}<div style="height:100px"></div>
@@ -1195,7 +1197,7 @@ function vScrabble(g){
   const log = g.turns.length ? `<h2 class="sec" style="margin:20px 18px 8px">Derniers tours</h2><div class="card list log">${g.turns.slice().reverse().slice(0,12).map(x => {
       const p = g.players.find(p => p.key === x.pk) || {name:'?'};
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div><div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div></div>`; }).join('')}</div>` : '';
-  return `${topbar(gameName(g), g.opts.simple ? 'Saisie simple' : 'Le plus haut gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="scrabble" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="ask" data-t="scrabble" aria-label="Assistant : poser une question">❓</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), g.opts.simple ? 'Saisie simple' : 'Le plus haut gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="scrabble" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="scrabble" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
@@ -2067,6 +2069,7 @@ function voiceCards(){
     <div class="card" style="padding:14px;margin-top:10px"><b>Vitesse de lecture</b>
       <div class="seg" style="margin-top:8px">${VOICE_RATES.map(([v, l]) => `<button data-a="voiceRate" data-v="${v}" class="${rate === v ? 'on' : ''}">${l}</button>`).join('')}</div></div>`;
 }
+window.addEventListener('online', () => render()); window.addEventListener('offline', () => render());
 window.onSpeakEnd = msg => { if(!S.speaking) return; S.speaking = false; if(msg) toast(msg); if(S.view === 'ask') render(); };
 /* ---------- Écran ---------- */
 function askExamples(g){
@@ -2177,6 +2180,7 @@ const AI_URL = 'https://pointage-ia.rogerotisqc.workers.dev';   // relais Cloudf
 const AI_T = '__AI_TOKEN__';
 function aiToken(){ try{ return AI_T.indexOf('__') === 0 ? '' : atob(AI_T.split('.').reverse().join('')); }catch(e){ return ''; } }
 function aiPref(){ try{ return localStorage.getItem('pointage.ia') !== '0'; }catch(e){ return true; } }
+function askIcon(){ return '❓' + (aiReady() ? '<span class="ia-tag">IA</span>' : ''); }
 function aiConfigured(){ return !!(AI_URL && aiToken()); }
 function aiReady(){ return aiConfigured() && aiPref() && navigator.onLine !== false; }
 let AI_CTRL = null;

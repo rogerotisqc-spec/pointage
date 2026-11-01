@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 3.9</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 4.0</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -182,7 +182,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <div class="row2"><div class="txt">
       <p><b>Parties en cours</b> : les parties non terminées, avec le pointage de chacun. Touchez-en une pour la reprendre là où vous étiez.</p>
       <p><b>Nouvelle partie</b> : une tuile par jeu. Le petit livre 📖 d’une tuile ouvre les règles du jeu sans commencer de partie.</p>
-      <p>En haut à droite : ❓ ouvre l’<a href="#assistant">assistant</a> pour poser une question, 📘 ouvre ce manuel, ⚙︎ ouvre les <a href="#reglages">Réglages</a>.</p>
+      <p>En haut à droite : ❓ <b>IA</b> ouvre l’<a href="#assistant">assistant</a> pour poser une question, 📘 ouvre ce manuel, ⚙︎ ouvre les <a href="#reglages">Réglages</a>.</p>
       <p>En bas : les onglets <b>Jeux</b>, <b>Joueurs</b>, <b>Historique</b> et <b>Stats</b>.</p>
       <div class="tip"><b>Bandeaux :</b> un bandeau jaune peut apparaître en haut de l’accueil, par exemple quand une nouvelle version est disponible. Touchez-le pour agir.</div>
     </div><div class="figs" style="margin-top:0"><figure><img src="img/accueil.webp" alt="Écran d’accueil" loading="lazy"><figcaption>L’accueil, avec les parties en cours.</figcaption></figure><figure><img src="img/accueil-tuiles.webp" alt="Tuiles des jeux" loading="lazy"><figcaption>Les tuiles « Nouvelle partie » (cinq colonnes sur grand écran).</figcaption></figure></div></div>
@@ -219,7 +219,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <div class="row2"><div class="txt">
       <p>En haut, une case par joueur montre son <b>total</b> et son <b>rang</b> (★ pour le meneur). Dessous, le tableau des manches.</p>
       <p>Quand un joueur atteint le pointage visé, un bandeau 🏁 l’annonce : touchez <span class="ui">Terminer</span> pour voir le résultat. Vous pouvez aussi terminer à tout moment par le menu ⋮.</p>
-      <p>Dans la barre du haut : ↶ ↷ (<a href="#annuler">annuler / rétablir</a>), 📖 (règles du jeu), ❓ (<a href="#assistant">poser une question à l’assistant</a> sur ce jeu) et ⋮ (menu).</p>
+      <p>Dans la barre du haut : ↶ ↷ (<a href="#annuler">annuler / rétablir</a>), 📖 (règles du jeu), ❓ <b>IA</b> (<a href="#assistant">poser une question à l’assistant</a> sur ce jeu) et ⋮ (menu).</p>
     </div><figure><img src="img/feuille.webp" alt="Feuille de pointage" loading="lazy"><figcaption>Une partie de Flip 7 après trois manches.</figcaption></figure></div>
 
     <h3 id="manche">Inscrire une manche</h3>
@@ -375,7 +375,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 
     <h3 id="assistant">L’assistant : poser une question</h3>
     <div class="row2 many"><div class="txt" data-kw="assistant question poser demander aide vocale voix micro parler lire à voix haute réponse ia intelligence artificielle claude hors ligne sans internet connexion calcul comment faire suivi">
-      <p>L’assistant répond aux questions sur les règles des jeux et sur l’utilisation de l’app. Pour l’ouvrir : le bouton ❓ en haut de l’accueil ou en haut de chaque partie, le menu ⋮ d’une partie, ou le bouton en haut du résumé des règles. Ouvert depuis une partie, il sait de quel jeu il s’agit (touchez ✕ pour une question générale).</p>
+      <p>L’assistant répond aux questions sur les règles des jeux et sur l’utilisation de l’app. Pour l’ouvrir : le bouton ❓ en haut de l’accueil ou en haut de chaque partie (une petite étiquette <b>IA</b> l’accompagne quand l’IA est disponible ; sans connexion, elle disparaît et c’est l’assistant hors ligne qui répond), le menu ⋮ d’une partie, ou le bouton en haut du résumé des règles. Ouvert depuis une partie, il sait de quel jeu il s’agit (touchez ✕ pour une question générale).</p>
       <ol><li>Touchez <span class="ui">🎤 Poser une question</span> et parlez naturellement : « au Wizard, j’ai misé 2 et fait 4 plis, combien j’ai ? », « comment je corrige une manche ? ». Vous pouvez aussi l’écrire, puis <span class="ui">Demander</span>.</li>
         <li><b>Avec Internet, une IA répond</b> (« L’IA réfléchit… », quelques secondes). Elle connaît le jeu en cours, <b>vos règles maison</b> (elles passent en premier), le résumé des règles de l’app et tout ce manuel ; au besoin, elle vérifie les règles officielles sur Internet et indique ses sources. Elle sait aussi faire les calculs de points.</li>
         <li>Si vous avez parlé, la réponse est lue à voix haute, avec une voix naturelle quand il y a Internet (voir <a href="#voixia">Voix de l’assistant</a>). <span class="ui">🔊 Lire à voix haute</span> la relit ; <span class="ui">⏹ Arrêter la lecture</span> l’interrompt.</li>
@@ -486,7 +486,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 3.9 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 4.0 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){

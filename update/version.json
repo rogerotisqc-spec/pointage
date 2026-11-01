@@ -1,6 +1,6 @@
 {
- "version": "3.9",
- "notes": "Voix de l’assistant : voix naturelle de Google (4 voix au choix) avec Internet, meilleure voix du téléphone sinon, vitesse de lecture réglable.\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.9.apk",
+ "version": "4.0",
+ "notes": "Le bouton ❓ de l’assistant porte une petite étiquette IA quand l’IA est disponible (elle disparaît sans connexion).\nManuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.0.apk",
  "size": 136025
 }
