@@ -1,6 +1,6 @@
 {
- "version": "4.3",
- "notes": "Voix naturelle : les mots avec apostrophe (l’assistant, c’est…) sont maintenant prononcés d’un seul trait.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.3.apk",
+ "version": "4.4",
+ "notes": "Voix naturelle : prononciation corrigée des mots avec apostrophe (l’IA, c’est, l’assistant…).",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.4.apk",
  "size": 136025
 }

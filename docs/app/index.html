@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>body{padding-top:env(safe-area-inset-top)} .top{top:env(safe-area-inset-top,0px)}</style>
-<script>window.WEB_VERSION = "4.3";</script>
+<script>window.WEB_VERSION = "4.4";</script>
 
 <style>
 :root{
@@ -2017,8 +2017,9 @@ async function cloudSpeak(text, voice){
   TTS_CTRL = new AbortController();
   const r = await fetch(AI_URL.replace(/\/$/, '') + '/tts', { method:'POST', signal: TTS_CTRL.signal,
     headers:{ 'Content-Type':'application/json', 'X-App-Token': aiToken() },
-    // L’apostrophe ordinaire fait épeler « l » (« elle, assistant ») par la voix de Google : on la remplace par l’apostrophe-lettre (U+02BC)
-    body: JSON.stringify({ text: String(text).replace(/[\u2019']/g, '\u02BC'), voice: voice || vPref('cloudName', 'Aoede'), rate: vRate() }) });
+    // La voix de Google prononce mal les élisions (« l’assistant » → « l, assistant » ou « lu-assistant ») :
+    // on colle la lettre au mot (« lassistant »), ce qui donne la bonne prononciation (essais à l’oreille avec Roger)
+    body: JSON.stringify({ text: String(text).replace(/(\p{L})[\u2019'\u02BC](?=\p{L})/gu, '$1'), voice: voice || vPref('cloudName', 'Aoede'), rate: vRate() }) });
   if(!r.ok) throw new Error('voix ' + r.status);
   const blob = await r.blob();
   if(!S.speaking) return;
