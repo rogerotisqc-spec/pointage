@@ -225,6 +225,29 @@ table.sheet tfoot td.lbl{font-size:13px}
 .ptab .n{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}.ptab .n i{width:9px;height:9px;border-radius:50%}
 .ptab .v{font-size:17px;font-weight:800}
 .ptab.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--surface))}
+.aqgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 16px 0}
+@media (min-width:700px){ .aqgrid{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (min-width:1100px){ .aqgrid{grid-template-columns:repeat(7,minmax(0,1fr))} }
+.aqc{background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--cc);border-radius:14px;padding:10px;min-width:0}
+.aqc.off{opacity:.72}
+.aqh{display:flex;justify-content:space-between;align-items:baseline;gap:6px}.aqh b{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.aqh span{font-size:11px;color:var(--muted);font-weight:600}
+.aqs{display:flex;align-items:center;gap:6px;margin:8px 0 6px}
+.aqs>button:not(.aqn){width:36px;height:36px;flex:none;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-size:20px;font-weight:700}
+.aqs>button.plus{background:var(--cc);color:#fff;border-color:transparent}.aqs>button:disabled{opacity:.35}
+.aqn{flex:1;min-width:0;height:44px;border-radius:10px;border:1px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.aqn b{font-size:20px}.aqn small{font-size:11px;color:var(--muted)}
+.aqi{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--muted)}.aqi b{color:var(--ink)}
+.aqsafe{font-style:normal;font-weight:700;color:var(--ok, #2e7d32)}
+.aqdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.aqt th{font-size:12px}.aqpl{display:flex;align-items:center;gap:6px;font-weight:600}.aqpl i{width:10px;height:10px;border-radius:50%;flex:none}
+.aqpick{display:flex;flex-wrap:wrap;gap:6px}
+.aqpick button{padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-weight:600;text-align:left}
+.aqpick button small{color:var(--muted);font-weight:600}
+.aqpick button.on{border-color:var(--cc, var(--brand));background:color-mix(in srgb,var(--cc, var(--brand)) 14%,var(--surface))}
+.aqpick button:disabled{opacity:.35}
+.aqdeal{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;background:var(--surface)}
+.aqdh{display:flex;align-items:center;gap:8px}.aqdh .hint{margin-left:auto}
+.aqdr{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;text-align:center}.aqdr .hint{margin:0 0 2px;font-size:11px}
 .crow{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;margin-bottom:8px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-align:left}
 .crow .l{flex:1;min-width:0;font-size:15px;font-weight:600}.crow .l small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
 .crow .stepper b{min-width:26px}
@@ -437,7 +460,7 @@ const $ = id => document.getElementById(id);
 const MANUAL_URL = 'https://rogerotisqc-spec.github.io/pointage/manuel/';
 const SHARE_URL = 'https://tinyurl.com/pointagef';   // page d'installation (code QR : tools/make_qr.py)
 const QR_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges"><rect width="33" height="33" fill="#fff"/><path d="M2 2h7v1h-7zM11 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM19 2h3v1h-3zM24 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h1v1h-1zM15 3h1v1h-1zM19 3h1v1h-1zM21 3h2v1h-2zM24 3h1v1h-1zM30 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM12 4h2v1h-2zM17 4h1v1h-1zM21 4h1v1h-1zM24 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM14 5h2v1h-2zM18 5h1v1h-1zM20 5h1v1h-1zM24 5h1v1h-1zM26 5h3v1h-3zM30 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h4v1h-4zM18 6h4v1h-4zM24 6h1v1h-1zM26 6h3v1h-3zM30 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM11 7h1v1h-1zM13 7h2v1h-2zM16 7h3v1h-3zM20 7h2v1h-2zM24 7h1v1h-1zM30 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h7v1h-7zM14 9h1v1h-1zM17 9h1v1h-1zM19 9h1v1h-1zM21 9h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM11 10h3v1h-3zM18 10h2v1h-2zM26 10h1v1h-1zM29 10h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM9 11h1v1h-1zM12 11h2v1h-2zM15 11h1v1h-1zM17 11h4v1h-4zM22 11h1v1h-1zM24 11h1v1h-1zM27 11h1v1h-1zM30 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM8 12h1v1h-1zM10 12h3v1h-3zM16 12h3v1h-3zM23 12h4v1h-4zM28 12h3v1h-3zM2 13h1v1h-1zM4 13h2v1h-2zM10 13h1v1h-1zM12 13h2v1h-2zM15 13h2v1h-2zM18 13h2v1h-2zM22 13h1v1h-1zM25 13h2v1h-2zM29 13h1v1h-1zM2 14h2v1h-2zM7 14h3v1h-3zM11 14h1v1h-1zM14 14h1v1h-1zM16 14h2v1h-2zM19 14h1v1h-1zM21 14h5v1h-5zM27 14h1v1h-1zM29 14h2v1h-2zM2 15h1v1h-1zM5 15h1v1h-1zM9 15h1v1h-1zM11 15h2v1h-2zM14 15h1v1h-1zM16 15h2v1h-2zM19 15h1v1h-1zM24 15h1v1h-1zM27 15h1v1h-1zM30 15h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM15 16h1v1h-1zM20 16h1v1h-1zM24 16h1v1h-1zM27 16h1v1h-1zM29 16h2v1h-2zM4 17h1v1h-1zM6 17h1v1h-1zM9 17h2v1h-2zM13 17h2v1h-2zM17 17h1v1h-1zM19 17h6v1h-6zM26 17h2v1h-2zM29 17h1v1h-1zM3 18h3v1h-3zM8 18h1v1h-1zM11 18h2v1h-2zM18 18h2v1h-2zM21 18h4v1h-4zM27 18h1v1h-1zM29 18h2v1h-2zM7 19h1v1h-1zM11 19h1v1h-1zM14 19h2v1h-2zM17 19h3v1h-3zM22 19h3v1h-3zM27 19h2v1h-2zM30 19h1v1h-1zM2 20h1v1h-1zM5 20h2v1h-2zM8 20h1v1h-1zM11 20h2v1h-2zM14 20h1v1h-1zM16 20h4v1h-4zM23 20h1v1h-1zM25 20h2v1h-2zM29 20h2v1h-2zM3 21h1v1h-1zM5 21h1v1h-1zM9 21h1v1h-1zM11 21h3v1h-3zM15 21h2v1h-2zM18 21h3v1h-3zM22 21h2v1h-2zM25 21h3v1h-3zM29 21h1v1h-1zM2 22h1v1h-1zM4 22h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM14 22h1v1h-1zM16 22h2v1h-2zM19 22h1v1h-1zM21 22h6v1h-6zM10 23h3v1h-3zM14 23h1v1h-1zM16 23h2v1h-2zM19 23h1v1h-1zM21 23h2v1h-2zM26 23h1v1h-1zM28 23h3v1h-3zM2 24h7v1h-7zM11 24h2v1h-2zM14 24h2v1h-2zM21 24h2v1h-2zM24 24h1v1h-1zM26 24h2v1h-2zM29 24h2v1h-2zM2 25h1v1h-1zM8 25h1v1h-1zM11 25h1v1h-1zM14 25h1v1h-1zM17 25h1v1h-1zM19 25h2v1h-2zM22 25h1v1h-1zM26 25h2v1h-2zM2 26h1v1h-1zM4 26h3v1h-3zM8 26h1v1h-1zM10 26h1v1h-1zM12 26h1v1h-1zM14 26h1v1h-1zM18 26h2v1h-2zM22 26h5v1h-5zM29 26h1v1h-1zM2 27h1v1h-1zM4 27h3v1h-3zM8 27h1v1h-1zM12 27h2v1h-2zM15 27h1v1h-1zM17 27h3v1h-3zM22 27h2v1h-2zM25 27h2v1h-2zM28 27h1v1h-1zM2 28h1v1h-1zM4 28h3v1h-3zM8 28h1v1h-1zM10 28h3v1h-3zM14 28h1v1h-1zM17 28h3v1h-3zM22 28h1v1h-1zM25 28h3v1h-3zM30 28h1v1h-1zM2 29h1v1h-1zM8 29h1v1h-1zM12 29h3v1h-3zM18 29h2v1h-2zM21 29h2v1h-2zM24 29h2v1h-2zM29 29h1v1h-1zM2 30h7v1h-7zM10 30h1v1h-1zM13 30h1v1h-1zM15 30h1v1h-1zM17 30h2v1h-2zM20 30h3v1h-3zM25 30h3v1h-3zM29 30h2v1h-2z" fill="#000"/></svg>';
-const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','skyjo','wizard'];
+const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','skyjo','wizard','acquire'];
 const GAMES = {
   generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
   playnine:   {name:'Play Nine',      color:'#2b8a3e', badge:'9',  desc:'9 trous · le plus bas gagne', round:'Trou', low:true, helper:'playnine'},
@@ -446,6 +469,7 @@ const GAMES = {
   skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'Individuel ou en équipes · 500', round:'Manche', target:500},
   millebornes:{name:'Mille Bornes',   color:'#d9a400', badge:'1000', desc:'Individuel ou en équipes · 5 000', round:'Manche', target:5000},
   phase10:    {name:'Phase 10',       color:'#6741d9', badge:'10', desc:'10 phases · le moins de points', round:'Manche', low:true, helper:'phase10'},
+  acquire:    {name:'Acquire',        color:'#00695c', badge:'A$', desc:'Chaînes d’hôtels · le plus riche gagne', round:'Fusion'},
   wizard:     {name:'Wizard',         color:'#3949ab', badge:'W',  desc:'Mises et plis · le plus haut gagne', round:'Manche'},
   skyjo:      {name:'Skyjo',          color:'#3b8fd9', badge:'SK', desc:'Partie à 100 · le plus bas gagne', round:'Manche', target:100, low:true, helper:'skyjo'},
   scrabble:   {name:'Scrabble',       color:'#9c6b2f', badge:'S',  desc:'Calcul des mots · fin de partie', round:'Tour'},
@@ -566,6 +590,19 @@ function rulesHtml(type, g){
     <h3>Pointage (cartes restées en main)</h3><table>
       <tr><td>1 à 9</td><td>5</td></tr><tr><td>10 à 12</td><td>10</td></tr><tr><td>Passe</td><td>15</td></tr><tr><td>Joker</td><td>25</td></tr></table>
     <p>Gagnant : le premier à réussir la phase 10. En cas d’égalité, le moins de points.</p>`;
+  case 'acquire': return `
+    <h3>But</h3><p>Être le joueur le plus riche à la fin : argent comptant + primes + vente de ses actions.</p>
+    <h3>Le jeu</h3><p>De 2 à 6 joueurs. 7 chaînes d’hôtels en 3 gammes de prix ; 25 actions par chaîne. Chacun commence avec 6 000 $ et 6 tuiles.</p>
+    <h3>Un tour</h3><ul>
+      <li>Poser une tuile sur le plateau, puis acheter jusqu’à 3 actions de chaînes actives, puis piger une tuile.</li>
+      <li>Une tuile qui touche une tuile isolée fonde une chaîne (2 tuiles et plus) : le fondateur reçoit 1 action gratuite.</li>
+      <li>Une tuile qui grossit une chaîne augmente le prix de ses actions.</li></ul>
+    <h3>Prix des actions</h3><p>Selon la taille de la chaîne : 2, 3, 4, 5, 6 à 10, 11 à 20, 21 à 30, 31 à 40, 41 et plus tuiles. Gamme économique : de 200 $ à 1 000 $ ; standard : 100 $ de plus ; luxe : 200 $ de plus. Prime majoritaire = 10 × le prix ; minoritaire = 5 × le prix. Le tableau complet est dans la feuille (📋 Tableau des prix).</p>
+    <h3>Fusion</h3><ul>
+      <li>Une tuile qui relie deux chaînes les fusionne : la plus grosse absorbe l’autre (égalité : celui qui a posé la tuile choisit). Une chaîne de 11 tuiles et plus est sûre : elle ne peut pas être absorbée.</li>
+      <li>La banque paie les primes de la chaîne qui disparaît : le plus gros actionnaire reçoit la prime majoritaire, le deuxième la minoritaire. Égalité au premier rang : les deux primes sont additionnées et partagées. Égalité au deuxième rang : la minoritaire est partagée. Seul actionnaire : il reçoit les deux primes. Les parts sont arrondies à la centaine supérieure.</li>
+      <li>Chacun, à tour de rôle, vend ses actions de la chaîne disparue (au prix d’avant la fusion), les échange 2 contre 1 action de la survivante, ou les garde.</li></ul>
+    <h3>Fin de la partie</h3><p>Un joueur peut déclarer la fin quand une chaîne a 41 tuiles ou plus, ou quand toutes les chaînes actives sont sûres. On paie alors les primes de toutes les chaînes actives et chacun vend ses actions au prix actuel (celles des chaînes inactives ne valent rien). Le plus riche gagne.</p>`;
   case 'wizard': return `
     <h3>But</h3><p>Prédire exactement le nombre de plis que l’on fera à chaque manche. Le plus haut total à la fin gagne.</p>
     <h3>Le jeu</h3><p>60 cartes : 4 couleurs de 13 cartes (2 à As), plus 4 <b>Wizards</b> et 4 <b>Bouffons</b>. De 3 à 6 joueurs.</p>
@@ -703,6 +740,7 @@ function endInfo(g){
     const w = g.players.filter(p => phaseOf(g,p.key) > 10);
     return w.length ? w.map(p=>p.name).join(', ') + ' a réussi la phase 10' : null;
   }
+  if(g.type === 'acquire') return null;
   if(g.type === 'wizard') return g.rounds.length >= g.opts.rounds ? 'Les ' + g.opts.rounds + ' manches sont jouées' : null;
   if(g.opts.holes) return g.rounds.length >= g.opts.holes ? 'Les ' + g.opts.holes + ' trous sont joués' : null;
   const tg = g.type === 'farkle' ? g.opts.f.target : g.opts.target;
@@ -885,6 +923,12 @@ function vSetup(){
       <label class="lbl" for="o-target">Pointage visé (facultatif)</label>
       <input id="o-target" class="field" inputmode="numeric" placeholder="Aucun" value="${o.target||''}">
       <p class="hint">L’app vous avertit quand un joueur atteint ce pointage.</p>`;
+  } else if(type === 'acquire'){
+    const ed = o.ed || db.aqEd || 'classic';
+    opts = `<label class="lbl">Édition du jeu</label>
+      <div class="aqpick">${Object.keys(AQ_EDS).map(k => `<button data-a="setAqEd" data-v="${k}" class="${ed === k ? 'on' : ''}">${esc(AQ_EDS[k].full)}</button>`).join('')}</div>
+      <p class="hint">Les noms des chaînes et leur gamme de prix changent selon l’édition : choisissez celle qui est écrite sur votre boîte. ${S.sel.length && (S.sel.length < 2 || S.sel.length > 6) ? '<b>Acquire se joue de 2 à 6 joueurs.</b>' : ''}</p>
+      <p class="hint">On garde l’argent papier : l’app suit les chaînes et les actions, calcule les fusions et fait le pointage final.</p>`;
   } else if(type === 'wizard'){
     const n = S.sel.length;
     opts = `<p style="margin:4px 0 8px">${n >= 3 && n <= 6 ? `<b>${Math.floor(60 / n)} manches</b> pour ${n} joueurs (une carte de plus à chaque manche).` : 'Wizard se joue de 3 à 6 joueurs.'}</p>
@@ -957,6 +1001,7 @@ function startGame(){
   const type = S.setupType, G = GAMES[type], o = S.setupOpts || {};
   if(type === 'skipbo' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
   if(type === 'wizard' && (S.sel.length < 3 || S.sel.length > 6)) return toast('Wizard se joue de 3 à 6 joueurs');
+  if(type === 'acquire' && (S.sel.length < 2 || S.sel.length > 6)) return toast('Acquire se joue de 2 à 6 joueurs');
   if(TEAM_GAMES.includes(type) && o.teams && S.sel.length < (o.nteams || 2)) return toast('Il faut au moins un joueur par équipe');
   const players = S.sel.map(k => {
     const p = db.players.find(x => x.id === k);
@@ -972,6 +1017,7 @@ function startGame(){
   else if(type === 'playnine'){ opts.holes = 9; }
   else if(type === 'scrabble'){ opts.simple = !!o.simple; }
   else if(type === 'wizard'){ opts.rounds = Math.floor(60 / S.sel.length); opts.noEven = !!o.noEven; }
+  else if(type === 'acquire'){ opts.ed = AQ_EDS[o.ed] ? o.ed : (db.aqEd || 'classic'); db.aqEd = opts.ed; }
   else if(type === 'farkle'){ opts.f = Object.assign({}, FD, db.farkle, o.f||{}); db.farkle = Object.assign({}, opts.f); }
   else if(G.target){ opts.target = o.target || G.target; }
   if(type === 'uno'){ opts.mode = o.mode || db.unoMode || 'official'; opts.low = opts.mode === 'house'; db.unoMode = opts.mode; }
@@ -990,6 +1036,7 @@ function startGame(){
     }
     g.team = true; g.seat = players; g.members = members; g.players = teams;
   }
+  if(type === 'acquire') aqState(g);
   db.games.push(g); save();
   S = {view:'sheet', gameId:g.id, stack:[{view:'home'}], turn:0, dice:[]};
   render(true);
@@ -1001,6 +1048,7 @@ function vSheet(){
   if(g.type === 'farkle') return vFarkle(g);
   if(g.type === 'scrabble') return vScrabble(g);
   if(g.type === 'wizard') return vWizard(g);
+  if(g.type === 'acquire') return vAcquire(g);
   const G = GAMES[g.type], r = ranking(g), t = totals(g);
   const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
   const end = !g.finished && endInfo(g);
@@ -1106,6 +1154,212 @@ function vFarkle(g){
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
+/* ---------- Acquire ---------- */
+// Calculatrice et pointage (on garde l’argent papier). Prix : chart officiel (paliers 2, 3, 4, 5, 6-10, 11-20, 21-30, 31-40, 41+),
+// +100 $ par gamme (économique, standard, luxe). Prime majoritaire = 10 × prix, minoritaire = 5 × prix.
+const AQ_TIERS = ['Économique', 'Standard', 'Luxe'];
+const AQ_EDS = {
+  classic: { name: 'Classique', full: 'Classique (Avalon Hill / Hasbro 1999)', chains: [
+    ['tower','Tower',0,'#b58900'], ['luxor','Luxor',0,'#c0392b'], ['american','American',1,'#2c5aa0'], ['worldwide','Worldwide',1,'#7b4a2d'],
+    ['festival','Festival',1,'#2e8540'], ['imperial','Imperial',2,'#c2185b'], ['continental','Continental',2,'#00838f']] },
+  ah2016: { name: 'Récente', full: 'Récente (Wizards / Avalon Hill 2016)', chains: [
+    ['worldwide','Worldwide',0,'#7b4a2d'], ['sackson','Sackson',0,'#c0392b'], ['festival','Festival',1,'#2e8540'], ['imperial','Imperial',1,'#e65100'],
+    ['american','American',1,'#2c5aa0'], ['continental','Continental',2,'#00838f'], ['tower','Tower',2,'#b58900']] },
+  h2016: { name: 'Hasbro 2016', full: 'Hasbro 2016 (Spark, Nestor…)', chains: [
+    ['spark','Spark',0,'#b58900'], ['nestor','Nestor',0,'#c0392b'], ['rove','Rove',1,'#2c5aa0'], ['fleet','Fleet',1,'#2e8540'],
+    ['etch','Etch',1,'#6a1b9a'], ['echo','Echo',2,'#c2185b'], ['bolt','Bolt',2,'#00838f']] }
+};
+const AQ_SIZES = [['2',2],['3',3],['4',4],['5',5],['6 à 10',6],['11 à 20',11],['21 à 30',21],['31 à 40',31],['41 et +',41]];
+function aqChains(g){ return (AQ_EDS[g.opts.ed] || AQ_EDS.classic).chains.map(([id, name, tier, color]) => ({id, name, tier, color})); }
+function aqChain(g, id){ return aqChains(g).find(c => c.id === id); }
+function aqPrice(tier, size){
+  if(!size || size < 2) return 0;
+  const b = size >= 41 ? 10 : size >= 31 ? 9 : size >= 21 ? 8 : size >= 11 ? 7 : size >= 6 ? 6 : size;
+  return (b + tier) * 100;
+}
+function aqState(g){
+  if(!g.aq){ g.aq = {size:{}, sh:{}, log:[]}; }
+  aqChains(g).forEach(c => { if(g.aq.size[c.id] == null) g.aq.size[c.id] = 0; if(!g.aq.sh[c.id]) g.aq.sh[c.id] = {}; });
+  return g.aq;
+}
+function aqHeld(g, id, pk){ return (aqState(g).sh[id] || {})[pk] || 0; }
+function aqBank(g, id){ const sh = aqState(g).sh[id] || {}; return 25 - Object.values(sh).reduce((a, b) => a + (b || 0), 0); }
+function aqUp100(x){ return Math.ceil(x / 100) * 100; }
+// Primes d’une chaîne : égalité au 1er rang → (majoritaire + minoritaire) partagées ; seul actionnaire → les deux primes
+function aqBonuses(g, id, size){
+  const c = aqChain(g, id), price = aqPrice(c.tier, size == null ? aqState(g).size[id] : size);
+  const maj = price * 10, min = price * 5, out = {};
+  const hold = g.players.map(p => ({pk: p.key, n: aqHeld(g, id, p.key)})).filter(x => x.n > 0).sort((a, b) => b.n - a.n);
+  if(!hold.length || !price) return {maj, min, pay: out, roles: {}};
+  const roles = {};
+  const top = hold.filter(x => x.n === hold[0].n);
+  if(top.length > 1){ const each = aqUp100((maj + min) / top.length); top.forEach(x => { out[x.pk] = each; roles[x.pk] = 'égalité au 1er rang'; }); }
+  else {
+    out[top[0].pk] = maj; roles[top[0].pk] = 'majoritaire';
+    const rest = hold.filter(x => x.n < hold[0].n);
+    if(!rest.length){ out[top[0].pk] += min; roles[top[0].pk] = 'seul actionnaire : les deux primes'; }
+    else { const sec = rest.filter(x => x.n === rest[0].n), each = aqUp100(min / sec.length);
+      sec.forEach(x => { out[x.pk] = (out[x.pk] || 0) + each; roles[x.pk] = sec.length > 1 ? 'minoritaire (égalité)' : 'minoritaire'; }); }
+  }
+  return {maj, min, pay: out, roles};
+}
+function aqFounder(id){
+  const g = curGame(), c = aqChain(g, id);
+  M = {aqFound: id};
+  openModal(`<div class="mhead"><h2>${esc(c.name)} est fondée</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody"><p class="hint" style="margin:0 0 10px">Qui l’a fondée ? Le fondateur reçoit 1 action gratuite.</p>
+    <div class="aqpick">${g.players.map(p => `<button data-a="aqFound" data-k="${p.key}" style="--cc:${p.color}">${esc(p.name)}</button>`).join('')}<button data-a="aqFound" data-k="">Personne / plus tard</button></div></div>`);
+}
+function aqMoney(v){ return fmt(v) + '\u00a0$'; }
+function aqEndHint(g){
+  const st = aqState(g), act = aqChains(g).filter(c => st.size[c.id] >= 2);
+  if(act.some(c => st.size[c.id] >= 41)) return 'Une chaîne a 41 tuiles ou plus : la partie peut être déclarée terminée.';
+  if(act.length && act.every(c => st.size[c.id] >= 11)) return 'Toutes les chaînes sont sûres (11 tuiles et plus) : la partie peut être déclarée terminée.';
+  return '';
+}
+function aqSharesValue(g, pk){ const st = aqState(g); return aqChains(g).reduce((a, c) => a + aqHeld(g, c.id, pk) * aqPrice(c.tier, st.size[c.id]), 0); }
+function vAcquire(g){
+  const st = aqState(g), chains = aqChains(g), ed = AQ_EDS[g.opts.ed] || AQ_EDS.classic, r = ranking(g);
+  const fin = g.finished || g.rounds.length;
+  const hint = !g.finished && aqEndHint(g);
+  const cards = chains.map(c => { const s = st.size[c.id], act = s >= 2, p = aqPrice(c.tier, s);
+    return `<div class="aqc ${act ? '' : 'off'}" style="--cc:${c.color}"><div class="aqh"><b>${esc(c.name)}</b><span>${AQ_TIERS[c.tier]}</span></div>
+      <div class="aqs"><button data-a="aqSize" data-c="${c.id}" data-d="-1" ${s <= 0 || g.finished ? 'disabled' : ''} aria-label="Moins">−</button>
+        <button class="aqn" data-a="aqSizeSet" data-c="${c.id}" ${g.finished ? 'disabled' : ''}>${act ? `<b class="num-t">${s}</b><small>tuiles</small>` : '<small>Inactive</small>'}</button>
+        <button class="plus" data-a="aqSize" data-c="${c.id}" data-d="1" ${g.finished ? 'disabled' : ''} aria-label="Plus">+</button></div>
+      ${act ? `<div class="aqi"><span>Action <b>${aqMoney(p)}</b></span><span>Primes ${fmt(p * 10)} / ${fmt(p * 5)}</span>
+        <span>${s >= 11 ? '<em class="aqsafe">Sûre</em> · ' : ''}Banque : ${aqBank(g, c.id)} act.</span></div>` : `<div class="aqi"><span>Banque : ${aqBank(g, c.id)} actions</span></div>`}</div>`; }).join('');
+  const cols = chains.filter(c => st.size[c.id] >= 2 || g.players.some(p => aqHeld(g, c.id, p.key)));
+  const table = cols.length ? `<div class="tablewrap"><table class="sheet aqt ${cols.length >= 5 ? 'compact' : ''}"><thead><tr><th class="lbl">Actions</th>${cols.map(c => `<th><span class="aqdot" style="background:${c.color}"></span>${esc(c.name.slice(0, 4))}</th>`).join('')}<th>Valeur</th></tr></thead>
+    <tbody>${g.players.map(p => `<tr><td class="lbl"><button data-a="aqHold" data-k="${p.key}" class="aqpl" ${g.finished ? 'disabled' : ''}><i style="background:${p.color}"></i>${esc(p.name)}</button></td>
+      ${cols.map(c => `<td><button data-a="aqHold" data-k="${p.key}" class="num-t" ${g.finished ? 'disabled' : ''}>${aqHeld(g, c.id, p.key) || '·'}</button></td>`).join('')}
+      <td class="num-t" style="font-size:13px">${fmt(aqSharesValue(g, p.key))}</td></tr>`).join('')}</tbody></table></div>
+    <p class="hint" style="margin:6px 18px 0">Touchez un joueur pour modifier ses actions. « Valeur » : ses actions au prix actuel (sans l’argent papier).</p>`
+    : `<div class="tablewrap"><div class="empty">Aucune chaîne pour l’instant.<br>Quand un joueur fonde une chaîne, touchez + sur sa carte.</div></div>`;
+  const log = st.log.length ? `<h2 class="sec" style="margin:20px 18px 8px">Fusions</h2><div class="card list log">${st.log.slice().reverse().map(x => {
+      const d = aqChain(g, x.def), s = aqChain(g, x.surv);
+      return `<div class="li"><div class="grow"><div class="t">${esc(d ? d.name : x.def)} (${x.defSize}) → ${esc(s ? s.name : x.surv)}</div>
+        <div class="s">${Object.keys(x.pay).map(pk => { const p = g.players.find(y => y.key === pk); return esc(p ? p.name : '?') + ' ' + aqMoney(x.pay[pk]); }).join(' · ') || 'Aucune prime'}</div></div></div>`; }).join('')}</div>` : '';
+  const finalTbl = g.rounds.length ? `<h2 class="sec" style="margin:20px 18px 8px">Pointage final</h2><div class="card list">${r.map(x => { const m = (g.rounds[0].m || {}).aq || {};
+      return `<div class="li"><div class="grow"><div class="t">${x.rank === 1 ? '🏆 ' : ''}${esc(x.p.name)}</div><div class="s">Argent ${fmt((m.cash || {})[x.p.key] || 0)} · primes ${fmt((m.bonus || {})[x.p.key] || 0)} · actions ${fmt((m.sales || {})[x.p.key] || 0)}</div></div><div class="t num-t">${aqMoney(x.total)}</div></div>`; }).join('')}</div>` : '';
+  return `${topbar(gameName(g), `Édition ${ed.name} · le plus riche gagne`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="acquire" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="acquire" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+    ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x => x.rank === 1).map(x => x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
+    ${hint ? `<div class="banner"><div class="grow">🏁 ${esc(hint)}</div><button class="btn sm primary" data-a="aqFinal">Pointage final</button></div>` : ''}
+    <div class="aqgrid">${cards}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 16px 0">${!g.finished ? `<button class="btn" data-a="aqMerge">🔀 Fusion</button>` : ''}<button class="btn" data-a="aqChart">📋 Tableau des prix</button></div>
+    ${table}${finalTbl}${log}<div style="height:100px"></div>
+    ${!g.finished ? `<button class="btn primary fab" data-a="aqFinal">🏁 Pointage final</button>` : ''}`;
+}
+function aqChartHtml(g){
+  const chains = aqChains(g);
+  const names = t => chains.filter(c => c.tier === t).map(c => esc(c.name)).join(', ');
+  return `<div class="mhead"><h2>Tableau des prix</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody"><p class="hint" style="margin:0 0 8px">Édition ${esc((AQ_EDS[g.opts.ed] || AQ_EDS.classic).full)}. Prix d’une action selon la taille de la chaîne ; primes majoritaire / minoritaire.</p>
+    <div class="tablewrap" style="margin:0"><table class="sheet compact"><thead><tr><th class="lbl">Tuiles</th>${[0,1,2].map(t => `<th style="font-size:11px;line-height:1.2">${AQ_TIERS[t]}<br><span style="font-weight:500;color:var(--muted);white-space:normal;display:block">${names(t)}</span></th>`).join('')}</tr></thead>
+    <tbody>${AQ_SIZES.map(([l, s]) => `<tr><td class="lbl">${l}</td>${[0,1,2].map(t => { const p = aqPrice(t, s); return `<td class="num-t" style="line-height:1.15">${fmt(p)}<small style="display:block;font-size:10px;color:var(--muted)">${fmt(p*10)} / ${fmt(p*5)}</small></td>`; }).join('')}</tr>`).join('')}</tbody></table></div>
+    <p class="hint">Une chaîne de 11 tuiles et plus est sûre : elle ne peut plus être absorbée.</p></div>`;
+}
+function aqHoldOpen(pk){
+  const g = curGame(), p = g.players.find(x => x.key === pk);
+  M = {aqHold: pk};
+  openModal(`<div class="mhead"><h2>Actions de ${esc(p.name)}</h2><button class="icon-btn" data-a="close">✕</button></div><div class="mbody" id="aq-body"></div>
+    <div class="mfoot"><button class="btn primary block" data-a="close">Terminé</button></div>`);
+  aqHoldRender();
+}
+function aqHoldRender(){
+  const g = curGame(), pk = M.aqHold, st = aqState(g);
+  $('aq-body').innerHTML = aqChains(g).map(c => { const n = aqHeld(g, c.id, pk), b = aqBank(g, c.id), s = st.size[c.id];
+    return `<div class="crow"><span class="av" style="background:${c.color}">${esc(c.name[0])}</span><div class="l">${esc(c.name)}<small>${s >= 2 ? aqMoney(aqPrice(c.tier, s)) + ' l’action' : 'Inactive'} · banque ${b}</small></div>
+      <div class="stepper"><button data-a="aqHoldStep" data-c="${c.id}" data-d="-1" ${n <= 0 ? 'disabled' : ''}>−</button><b class="num-t">${n}</b><button class="plus" data-a="aqHoldStep" data-c="${c.id}" data-d="1" ${b <= 0 ? 'disabled' : ''}>+</button></div></div>`; }).join('')
+    + `<p class="hint">Achat : au plus 3 actions par tour, au prix affiché. Chaque chaîne a 25 actions.</p>`;
+}
+/* Fusion */
+function aqMergeOpen(){
+  const g = curGame(), st = aqState(g), act = aqChains(g).filter(c => st.size[c.id] >= 2);
+  if(act.length < 2) return toast('Il faut au moins deux chaînes actives pour une fusion');
+  const bySize = act.slice().sort((a, b) => st.size[b.id] - st.size[a.id]);
+  M = {aqm: {surv: bySize[0].id, def: bySize[1].id, deals: {}}};
+  openModal(`<div class="mhead"><h2>🔀 Fusion</h2><button class="icon-btn" data-a="close">✕</button></div><div class="mbody" id="aq-body"></div>
+    <div class="mfoot"><button class="btn" data-a="close">Annuler</button><button class="btn primary" data-a="aqMergeApply">Appliquer la fusion</button></div>`);
+  aqMergeRender();
+}
+function aqMergeRender(){
+  const g = curGame(), st = aqState(g), m = M.aqm, act = aqChains(g).filter(c => st.size[c.id] >= 2);
+  const surv = aqChain(g, m.surv), def = aqChain(g, m.def), dSize = st.size[m.def], sSize = st.size[m.surv];
+  const pick = (f, cur, other) => `<div class="aqpick">${act.map(c => `<button data-a="aqPick" data-f="${f}" data-c="${c.id}" class="${c.id === cur ? 'on' : ''}" ${c.id === other ? 'disabled' : ''} style="--cc:${c.color}">${esc(c.name)} <small>${st.size[c.id]}</small></button>`).join('')}</div>`;
+  const b = aqBonuses(g, m.def, dSize), price = aqPrice(def.tier, dSize), sBank = aqBank(g, m.surv);
+  const holders = g.players.filter(p => aqHeld(g, m.def, p.key) > 0);
+  holders.forEach(p => { if(!m.deals[p.key]) m.deals[p.key] = {sell: 0, trade: 0}; });
+  const tradedOut = pk => holders.filter(p => p.key !== pk).reduce((a, p) => a + m.deals[p.key].trade / 2, 0);
+  let warn = '';
+  if(dSize > sSize) warn = `La plus grosse chaîne doit absorber l’autre : ${esc(def.name)} (${dSize}) est plus grosse que ${esc(surv.name)} (${sSize}).`;
+  else if(dSize >= 11) warn = `${esc(def.name)} est sûre (11 tuiles et plus) : elle ne peut pas être absorbée.`;
+  else if(dSize === sSize) warn = 'Égalité de taille : c’est le joueur qui a posé la tuile qui choisit la chaîne qui survit.';
+  $('aq-body').innerHTML = `<label class="lbl">Chaîne qui disparaît</label>${pick('def', m.def, m.surv)}
+    <label class="lbl">Chaîne qui l’absorbe (survivante)</label>${pick('surv', m.surv, m.def)}
+    ${warn ? `<p class="hint" style="color:${dSize > sSize || dSize >= 11 ? 'var(--danger)' : 'inherit'}">${warn}</p>` : ''}
+    <h3 style="margin:16px 0 6px;font-size:16px">1. Primes de ${esc(def.name)} (${dSize} tuiles, action ${aqMoney(price)})</h3>
+    ${Object.keys(b.pay).length ? `<div class="card list">${Object.keys(b.pay).map(pk => { const p = g.players.find(x => x.key === pk);
+      return `<div class="li"><span class="av" style="background:${p.color};width:30px;height:30px;font-size:13px">${initial(p.name)}</span><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">${b.roles[pk]} · ${aqHeld(g, m.def, pk)} act.</div></div><div class="t num-t">${aqMoney(b.pay[pk])}</div></div>`; }).join('')}</div>
+      <p class="hint">La banque paie ces primes en argent papier.</p>` : '<p class="hint">Personne n’a d’actions de cette chaîne : aucune prime.</p>'}
+    <h3 style="margin:16px 0 6px;font-size:16px">2. Que fait chacun de ses actions ${esc(def.name)} ?</h3>
+    ${holders.length ? holders.map(p => { const n = aqHeld(g, m.def, p.key), d = m.deals[p.key], keep = n - d.sell - d.trade;
+      const maxTrade = Math.min(n - d.sell, 2 * (sBank - tradedOut(p.key)));
+      return `<div class="aqdeal"><div class="aqdh"><span class="av" style="background:${p.color};width:30px;height:30px;font-size:13px">${initial(p.name)}</span><b>${esc(p.name)}</b><span class="hint" style="margin:0">${n} action${n > 1 ? 's' : ''}</span></div>
+        <div class="aqdr"><div><div class="hint">Vendre</div><div class="stepper"><button data-a="aqDeal" data-k="${p.key}" data-f="sell" data-d="-1" ${d.sell <= 0 ? 'disabled' : ''}>−</button><b class="num-t">${d.sell}</b><button class="plus" data-a="aqDeal" data-k="${p.key}" data-f="sell" data-d="1" ${keep <= 0 ? 'disabled' : ''}>+</button></div></div>
+          <div><div class="hint">Échanger 2 → 1</div><div class="stepper"><button data-a="aqDeal" data-k="${p.key}" data-f="trade" data-d="-2" ${d.trade <= 0 ? 'disabled' : ''}>−</button><b class="num-t">${d.trade}</b><button class="plus" data-a="aqDeal" data-k="${p.key}" data-f="trade" data-d="2" ${d.trade + 2 > maxTrade ? 'disabled' : ''}>+</button></div></div>
+          <div><div class="hint">Garder</div><b class="num-t" style="font-size:18px;line-height:40px">${keep}</b></div></div>
+        <p class="hint" style="margin:6px 0 0">${d.sell ? `Reçoit ${aqMoney(d.sell * price)} de la banque` : 'Aucune vente'}${d.trade ? ` · reçoit ${d.trade / 2} action${d.trade > 2 ? 's' : ''} ${esc(surv.name)}` : ''}${(b.pay[p.key] || 0) + d.sell * price ? ` · total à recevoir : <b>${aqMoney((b.pay[p.key] || 0) + d.sell * price)}</b>` : ''}</p></div>`; }).join('')
+      : '<p class="hint">Personne n’a d’actions à vendre ou à échanger.</p>'}
+    <p class="hint">On décide à tour de rôle, en commençant par celui qui a fait la fusion. Après la fusion, ${esc(surv.name)} aura ${sSize + dSize + 1} tuiles (ajustable sur sa carte).</p>`;
+}
+function aqMergeApply(){
+  const g = curGame(), st = aqState(g), m = M.aqm, dSize = st.size[m.def], sSize = st.size[m.surv];
+  if(m.surv === m.def) return toast('Choisissez deux chaînes différentes');
+  if(dSize > sSize) return toast('La plus grosse chaîne doit absorber l’autre');
+  if(dSize >= 11) return toast('Une chaîne sûre ne peut pas être absorbée');
+  const b = aqBonuses(g, m.def, dSize), def = aqChain(g, m.def), surv = aqChain(g, m.surv), price = aqPrice(def.tier, dSize), pay = Object.assign({}, b.pay);
+  Object.keys(m.deals).forEach(pk => { const d = m.deals[pk];
+    st.sh[m.def][pk] = aqHeld(g, m.def, pk) - d.sell - d.trade;
+    st.sh[m.surv][pk] = aqHeld(g, m.surv, pk) + d.trade / 2;
+    if(d.sell) pay[pk] = (pay[pk] || 0) + d.sell * price; });
+  st.size[m.surv] = sSize + dSize + 1; st.size[m.def] = 0;
+  st.log.push({t: Date.now(), def: m.def, surv: m.surv, defSize: dSize, pay});
+  closeModal(); save(); render();
+  toast(`${def.name} absorbée : ${surv.name} a maintenant ${st.size[m.surv]} tuiles`);
+}
+/* Pointage final */
+function aqFinalOpen(){
+  const g = curGame(), prev = (g.rounds[0] && g.rounds[0].m && g.rounds[0].m.aq) || {};
+  M = {aqf: {cash: Object.assign({}, prev.cash || {})}};
+  openModal(`<div class="mhead"><h2>🏁 Pointage final</h2><button class="icon-btn" data-a="close">✕</button></div><div class="mbody" id="aq-body"></div>
+    <div class="mfoot"><button class="btn" data-a="close">Annuler</button><button class="btn primary" data-a="aqFinalSave">Terminer la partie</button></div>`);
+  aqFinalRender();
+}
+function aqFinalCalc(g, cash){
+  const st = aqState(g), bonus = {}, sales = {}, total = {};
+  g.players.forEach(p => { bonus[p.key] = 0; sales[p.key] = 0; });
+  aqChains(g).forEach(c => { const s = st.size[c.id]; if(s < 2) return;
+    const b = aqBonuses(g, c.id, s); Object.keys(b.pay).forEach(pk => bonus[pk] += b.pay[pk]);
+    g.players.forEach(p => sales[p.key] += aqHeld(g, c.id, p.key) * aqPrice(c.tier, s)); });
+  g.players.forEach(p => total[p.key] = (cash[p.key] || 0) + bonus[p.key] + sales[p.key]);
+  return {bonus, sales, total};
+}
+function aqFinalRender(){
+  const g = curGame(), f = M.aqf, c = aqFinalCalc(g, f.cash);
+  const best = Math.max(...g.players.map(p => c.total[p.key]));
+  $('aq-body').innerHTML = `<p class="hint" style="margin:0 0 10px">Comptez l’argent papier de chacun et inscrivez-le. L’app ajoute les primes de toutes les chaînes actives et vend toutes les actions au prix actuel (les actions des chaînes inactives ne valent rien).</p>
+    ${g.players.map(p => `<div class="aqdeal"><div class="aqdh"><span class="av" style="background:${p.color};width:30px;height:30px;font-size:13px">${initial(p.name)}</span><b>${esc(p.name)}</b>${c.total[p.key] === best && best > 0 ? '<span>🏆</span>' : ''}</div>
+      <div class="row" style="align-items:center;gap:8px;margin-top:6px"><label class="hint" style="margin:0;flex:none" for="aqc-${p.key}">Argent comptant</label>
+        <div class="num" style="flex:1"><input id="aqc-${p.key}" data-aqcash="${p.key}" inputmode="numeric" placeholder="0" value="${f.cash[p.key] || ''}"></div></div>
+      <p class="hint" style="margin:6px 0 0">Primes ${aqMoney(c.bonus[p.key])} + actions ${aqMoney(c.sales[p.key])} + argent = <b class="num-t" id="aqt-${p.key}">${aqMoney(c.total[p.key])}</b></p></div>`).join('')}`;
+}
+function aqFinalSave(){
+  const g = curGame(), f = M.aqf, c = aqFinalCalc(g, f.cash);
+  g.rounds = [{s: Object.assign({}, c.total), m: {aq: {cash: Object.assign({}, f.cash), bonus: c.bonus, sales: c.sales}}}];
+  closeModal(); A.finish();
+}
+
 /* ---------- Wizard ---------- */
 function wzScore(bid, tricks){ return bid === tricks ? 20 + 10 * tricks : -10 * Math.abs(bid - tricks); }
 function vWizard(g){
@@ -1852,6 +2106,7 @@ const HELP_FAQ = [
   {q:['demander à gemini','utiliser une vraie IA','demander à chatgpt','intelligence artificielle'], a:'Après une question, le bouton ✨ « Demander à Gemini » (ou à une autre IA installée) envoie la question à l’IA du téléphone, avec le jeu en cours, vos règles maison et le lien du manuel. La réponse s’affiche dans cette app ; revenez ensuite avec le bouton Retour. Sur iPhone, choisissez l’app d’IA dans le menu Partager.'},
   {q:['que veut dire le drapeau','drapeau à damier','drapeau dans le tableau','symbole 🏁'], a:'Dans le tableau des manches, le drapeau 🏁 marque qui a terminé la manche : au Skip-Bo, celui qui a vidé son talon (ou son équipe) ; au Uno (façon officielle), celui qui n’avait plus de cartes et marque les cartes des autres ; au Skyjo, celui qui a retourné toutes ses cartes en premier (×2 si son pointage a été doublé). Une petite légende l’explique sous le tableau.'},
   {q:['partager l’app','code qr','faire installer l’app à un ami','envoyer le lien d’installation'], a:'Réglages → Partager l’app : faites scanner le code QR avec l’appareil photo d’un autre téléphone, ou touchez « Partager le lien » pour envoyer tinyurl.com/pointagef.', go:'settings'},
+  {q:['fusion acquire','prime majoritaire','prime minoritaire','vendre échanger garder','pointage final acquire'], g:'acquire', a:'Au Acquire, touchez « Fusion », choisissez la chaîne qui disparaît et celle qui l’absorbe : l’app calcule les primes et ce que chacun reçoit en vendant ou en échangeant (2 pour 1) ses actions. À la fin, « Pointage final » : inscrivez l’argent papier de chacun, l’app ajoute les primes et la vente des actions.'},
   {q:['changer la voix','voix de l’assistant','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de l’assistant : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
@@ -1870,7 +2125,7 @@ const HELP_GAMES = [
   ['playnine', /\bplay ?nine\b|\bplaynine\b/], ['flip7', /\bflip ?(7|sept)\b|\bflip\b/], ['uno', /\buno\b/],
   ['skipbo', /\bskip ?-?bo\b|\bskipbo\b|\bskip\b/], ['millebornes', /\b(mille|1000|1 000) ?bornes?\b|\bbornes?\b/],
   ['phase10', /\bphase ?(10|dix)?\b/], ['scrabble', /\bscrabble\b/], ['skyjo', /\bsky ?jo\b|\bskyjo\b/],
-  ['wizard', /\bwizard\b|\bsorcier\b|\bmagicien\b/], ['farkle', /\bjeu de des\b|\b10 ?000\b|\bdix mille\b|\bfarkle\b/],
+  ['wizard', /\bwizard\b|\bsorcier\b|\bmagicien\b/], ['acquire', /\bacquire\b|\bacquerir\b/], ['farkle', /\bjeu de des\b|\b10 ?000\b|\bdix mille\b|\bfarkle\b/],
   ['generic', /\bpointage libre\b/]
 ];
 function hNorm(s){ return String(s||'').toLowerCase().replace(/[’']/g, ' ').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/(\d)[\s  ]+(?=\d{3}\b)/g, '$1').replace(/[^a-z0-9]+/g, ' ').trim(); }
@@ -2379,6 +2634,26 @@ const A = {
   rmGuest: (el, e) => { e.stopPropagation(); readSetupFields(); const k = el.dataset.k; S.guests = S.guests.filter(g => g.key !== k); S.sel = S.sel.filter(x => x !== k); render(); },
   addGuest: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const k = 'g' + uid(); S.guests.push({key:k, name:n}); S.sel.push(k); render(); },
   addRoster: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const p = newPlayer(n); if(p){ S.sel.push(p.id); render(); toast(n + ' ajouté à votre liste'); } },
+  setAqEd: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {ed: el.dataset.v}); render(); },
+  aqSize: el => { const g = curGame(), st = aqState(g), id = el.dataset.c, s = st.size[id], d = +el.dataset.d;
+    const n = d > 0 ? (s < 2 ? 2 : s + 1) : (s <= 2 ? 0 : s - 1);
+    st.size[id] = n; save(); render();
+    if(s < 2 && n >= 2) aqFounder(id); },
+  aqSizeSet: el => { const g = curGame(), id = el.dataset.c, c = aqChain(g, id), s = aqState(g).size[id];
+    promptBox(`Nombre de tuiles de ${c.name} (0 = inactive)`, s ? String(s) : '', v => { const n = Math.max(0, Math.min(108, parseInt(v, 10) || 0)); const st = aqState(curGame()); const was = st.size[id];
+      st.size[id] = n === 1 ? 2 : n; save(); render(); if(was < 2 && st.size[id] >= 2) aqFounder(id); }); },
+  aqFound: el => { const g = curGame(), id = M.aqFound; closeModal(); if(el.dataset.k){ if(aqBank(g, id) > 0){ aqState(g).sh[id][el.dataset.k] = aqHeld(g, id, el.dataset.k) + 1; save(); render(); toast('Action gratuite ajoutée'); } } },
+  aqHold: el => aqHoldOpen(el.dataset.k),
+  aqHoldStep: el => { const g = curGame(), id = el.dataset.c, pk = M.aqHold, d = +el.dataset.d, n = aqHeld(g, id, pk);
+    if(d > 0 && aqBank(g, id) <= 0) return toast('La banque n’a plus d’actions de cette chaîne');
+    aqState(g).sh[id][pk] = Math.max(0, n + d); save(); aqHoldRender(); render(); },
+  aqMerge: () => aqMergeOpen(),
+  aqPick: el => { M.aqm[el.dataset.f] = el.dataset.c; M.aqm.deals = {}; aqMergeRender(); },
+  aqDeal: el => { const d = M.aqm.deals[el.dataset.k]; d[el.dataset.f] = Math.max(0, d[el.dataset.f] + (+el.dataset.d)); aqMergeRender(); },
+  aqMergeApply: () => aqMergeApply(),
+  aqChart: () => openModal(aqChartHtml(curGame())),
+  aqFinal: () => aqFinalOpen(),
+  aqFinalSave: () => aqFinalSave(),
   setScrMode: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {simple: el.dataset.v === '1'}); render(); },
   setTeams: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {teams: el.dataset.v === '1'}); render(); },
   setNTeams: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {nteams: Number(el.dataset.v)}); render(); },
@@ -2586,6 +2861,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => {
   const t = e.target;
+  if(t.dataset && t.dataset.aqcash && M && M.aqf){ const g = curGame(); M.aqf.cash[t.dataset.aqcash] = num(t.value); const c = aqFinalCalc(g, M.aqf.cash); g.players.forEach(p => { const el = $('aqt-' + p.key); if(el) el.textContent = aqMoney(c.total[p.key]); }); }
   if(t.id === 'house'){ const v = t.value; if(v.trim()) db.house[t.dataset.hk] = v; else delete db.house[t.dataset.hk]; save(); }
   if(t.dataset && t.dataset.sb) sbUpdate();
   if(t.dataset && t.dataset.uno) unoUpdate();
@@ -2596,6 +2872,7 @@ document.addEventListener('change', e => {
   const t = e.target;
   if(t.name === 'sbw') sbUpdate();
   if(t.name === 'unow') unoUpdate();
+  if(t.dataset && t.dataset.aqcash && M && M.aqf) aqFinalRender();
   if(t.id === 'voiceDev'){ vSet('device', t.value); speak(VOICE_TEST, { device: true }); }
   if(t.id === 'scrBingo') { scrState().bingo = t.checked; render(); }
   if(t.id === 'importFile' && t.files[0]){ const r = new FileReader(); r.onload = () => window.onImportData(r.result); r.readAsText(t.files[0]); }

@@ -69,3 +69,7 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 - Wizard : 3 à 6 joueurs, 60 ÷ joueurs manches (k cartes à la manche k), mises puis plis (g.pend garde
   les mises en cours), réussie = 20 + 10 par pli, ratée = −10 par pli d'écart, le plus haut gagne.
   Règle maison au choix : le total des mises ne doit pas égaler le nombre de cartes.
+- Acquire : calculatrice + pointage (argent papier conservé). g.opts.ed (classic / ah2016 / h2016) donne les
+  chaînes et leur gamme ; g.aq = {size, sh, log}. Prix (taille 2..5, 6-10, 11-20, 21-30, 31-40, 41+) × 100 $ + 100 $ par
+  gamme ; primes 10× et 5× le prix ; égalités partagées, arrondies à la centaine supérieure. Pointage final =
+  argent saisi + primes des chaînes actives + vente des actions ; enregistré comme une seule « manche ».

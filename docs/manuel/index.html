@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 4.5</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 4.6</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -127,6 +127,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><a href="#scrabble">Scrabble</a></li>
         <li><a href="#skyjo">Skyjo</a></li>
         <li><a href="#wizard">Wizard</a></li>
+        <li><a href="#acquire">Acquire</a></li>
         <li><a href="#des">Jeu de dés</a></li>
         <li><a href="#voix">Commande vocale</a></li>
       </ol></li>
@@ -156,7 +157,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <h1>Bienvenue dans Pointage</h1>
     <p>Pointage remplace les feuilles de papier pour les jeux de société de la famille. L’app calcule les totaux, suit qui brasse, connaît les règles de pointage de chaque jeu et garde l’historique de toutes les parties.</p>
     <p>Utilisez la <b>table des matières</b> pour aller à une fonction, ou la <b>recherche</b> en haut pour trouver un mot (par exemple « joker », « brasser » ou « sauvegarde »).</p>
-    <div class="chipsrow"><a href="#libre">Pointage libre</a><a href="#playnine">Play Nine</a><a href="#flip7">Flip 7</a><a href="#uno">Uno</a><a href="#skipbo">Skip-Bo</a><a href="#millebornes">Mille Bornes</a><a href="#phase10">Phase 10</a><a href="#scrabble">Scrabble</a><a href="#skyjo">Skyjo</a><a href="#wizard">Wizard</a><a href="#des">Jeu de dés</a></div>
+    <div class="chipsrow"><a href="#libre">Pointage libre</a><a href="#playnine">Play Nine</a><a href="#flip7">Flip 7</a><a href="#uno">Uno</a><a href="#skipbo">Skip-Bo</a><a href="#millebornes">Mille Bornes</a><a href="#phase10">Phase 10</a><a href="#scrabble">Scrabble</a><a href="#skyjo">Skyjo</a><a href="#wizard">Wizard</a><a href="#acquire">Acquire</a><a href="#des">Jeu de dés</a></div>
   </div>
 
   <section class="s" id="installer" data-kw="installer installation télécharger apk android iphone ipad ordinateur pc lien qr code tinyurl écran d'accueil play protect sources inconnues">
@@ -341,6 +342,16 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
       <p><b>Pointage</b> : mise réussie = 20 points + 10 par pli ; mise ratée = −10 par pli d’écart. Dans le tableau, chaque case montre « mise / plis » et un ✓ quand c’est réussi. Touchez une manche pour la corriger.</p>
     </div><div class="figs"><figure><img src="img/wizard-mises.webp" alt="Mises Wizard" loading="lazy"><figcaption>Les mises de la manche 3 (3 cartes).</figcaption></figure><figure><img src="img/wizard-plis.webp" alt="Plis faits Wizard" loading="lazy"><figcaption>Les plis faits et les points calculés.</figcaption></figure><figure><img src="img/wizard.webp" alt="Feuille Wizard" loading="lazy"><figcaption>Le tableau : « mise / plis » sous chaque pointage.</figcaption></figure></div></div>
 
+    <h3 id="acquire">Acquire</h3>
+    <div class="row2 many"><div class="txt" data-kw="acquire acquérir hôtels chaînes actions prix tuiles fusion prime majoritaire minoritaire vendre échanger garder banque argent papier sûre 41 édition tower luxor sackson worldwide festival imperial american continental">
+      <p>Acquire n’a pas de manches : <b>on garde l’argent papier</b>, et l’app suit les 7 chaînes d’hôtels et les actions de chacun, calcule les fusions et fait le pointage final. À la préparation, choisissez l’<b>édition</b> écrite sur votre boîte (classique, récente 2016 ou Hasbro 2016) : les noms des chaînes et leur gamme de prix en dépendent. De 2 à 6 joueurs.</p>
+      <ul><li><b>Taille des chaînes</b> : chaque carte a − et + (ou touchez le nombre pour l’écrire). Le premier + fonde la chaîne (2 tuiles) et l’app demande qui l’a fondée, pour lui donner son action gratuite. La carte montre le prix de l’action, les primes (majoritaire / minoritaire), les actions qui restent à la banque et « Sûre » à 11 tuiles.</li>
+        <li><b>Actions</b> : touchez un joueur dans le tableau pour ajuster ses actions après un achat. La colonne « Valeur » donne ses actions au prix du moment (sans l’argent papier).</li>
+        <li><span class="ui">🔀 Fusion</span> : choisissez la chaîne qui disparaît et celle qui l’absorbe. L’app affiche les <b>primes</b> à payer (avec les égalités), puis, pour chaque actionnaire, combien il <b>vend</b> ou <b>échange</b> (2 contre 1) ; il garde le reste. Elle indique ce que chacun doit recevoir de la banque. <span class="ui">Appliquer la fusion</span> met les tailles et les actions à jour ; la liste « Fusions » garde l’historique.</li>
+        <li><span class="ui">📋 Tableau des prix</span> : le tableau complet de l’édition choisie.</li>
+        <li><span class="ui">🏁 Pointage final</span> : inscrivez l’argent papier de chacun. L’app ajoute les primes de toutes les chaînes actives et la vente de toutes les actions, puis le plus riche gagne. Un bandeau rappelle quand la fin peut être déclarée (une chaîne de 41 tuiles, ou toutes les chaînes sûres).</li></ul>
+    </div><div class="figs"><figure><img src="img/acquire.webp" alt="Feuille Acquire" loading="lazy"><figcaption>Les chaînes et les actions de chacun.</figcaption></figure><figure><img src="img/acquire-fusion.webp" alt="Fusion Acquire" loading="lazy"><figcaption>Une fusion : primes, ventes et échanges.</figcaption></figure><figure><img src="img/acquire-final.webp" alt="Pointage final Acquire" loading="lazy"><figcaption>Le pointage final avec l’argent papier.</figcaption></figure></div></div>
+
     <h3 id="des">Jeu de dés (10 000)</h3>
     <div class="row2 many"><div class="txt" data-kw="dés jeu de dés 10000 25000 farkle entrer 1000 raté pénalité zone -1000 encaisser objectif exact dépasser six dés identiques victoire suite trois paires valeurs">
       <p>Le joueur dont c’est le tour est mis en évidence. Après chaque lancer :</p>
@@ -493,7 +504,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 4.5 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 4.6 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){

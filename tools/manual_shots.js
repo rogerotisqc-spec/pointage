@@ -170,6 +170,21 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await shot('wizard-plis'); await tap('[data-a=wzSave]');
   await shot('wizard');
 
+  // ---------- Acquire ----------
+  await startGame('acquire', ['Roger', 'Marie', 'Léa']);
+  await p.evaluate(() => { const g = curGame(), st = aqState(g), k = g.players.map(x => x.key);
+    Object.assign(st.size, { luxor: 5, american: 9, continental: 4 });
+    st.sh.luxor = { [k[0]]: 4, [k[1]]: 4, [k[2]]: 1 }; st.sh.american = { [k[0]]: 3, [k[1]]: 2, [k[2]]: 2 }; st.sh.continental = { [k[2]]: 3, [k[0]]: 1 }; save(); render(); });
+  await shot('acquire');
+  const aqk = await p.evaluate(() => curGame().players.map(x => x.key));
+  await tap('[data-a=aqMerge]'); await tap('[data-a=aqPick][data-f=surv][data-c=american]'); await tap('[data-a=aqPick][data-f=def][data-c=luxor]');
+  await tap(`[data-a=aqDeal][data-k="${aqk[0]}"][data-f=sell][data-d="1"]`); await tap(`[data-a=aqDeal][data-k="${aqk[0]}"][data-f=trade][data-d="2"]`);
+  await p.evaluate(() => { const el = document.querySelector('#aq-body h3:nth-of-type(2)'); if (el) el.scrollIntoView(); });
+  await shot('acquire-fusion'); await tap('[data-a=aqMergeApply]');
+  await tap('.fab[data-a=aqFinal]');
+  await p.fill(`[data-aqcash="${aqk[0]}"]`, '5200'); await p.fill(`[data-aqcash="${aqk[1]}"]`, '8700'); await p.fill(`[data-aqcash="${aqk[2]}"]`, '4100');
+  await shot('acquire-final'); await tap('#modal [data-a=close]');
+
   // ---------- Jeu de dés ----------
   await startGame('farkle', ['Roger', 'Marie', 'Léa']);
   await p.fill('#fk-man', '1500'); await tap('[data-a=fkAddMan]'); await tap('[data-a=fkBank]');
