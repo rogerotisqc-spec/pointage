@@ -1,6 +1,6 @@
 {
- "version": "4.2",
- "notes": "Réglages : nouvelle section « Partager l’app » avec le code QR de la page d’installation et un bouton pour envoyer le lien.\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.2.apk",
+ "version": "4.3",
+ "notes": "Voix naturelle : les mots avec apostrophe (l’assistant, c’est…) sont maintenant prononcés d’un seul trait.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.3.apk",
  "size": 136025
 }

@@ -2007,7 +2007,8 @@ async function cloudSpeak(text, voice){
   TTS_CTRL = new AbortController();
   const r = await fetch(AI_URL.replace(/\/$/, '') + '/tts', { method:'POST', signal: TTS_CTRL.signal,
     headers:{ 'Content-Type':'application/json', 'X-App-Token': aiToken() },
-    body: JSON.stringify({ text, voice: voice || vPref('cloudName', 'Aoede'), rate: vRate() }) });
+    // L’apostrophe ordinaire fait épeler « l » (« elle, assistant ») par la voix de Google : on la remplace par l’apostrophe-lettre (U+02BC)
+    body: JSON.stringify({ text: String(text).replace(/[\u2019']/g, '\u02BC'), voice: voice || vPref('cloudName', 'Aoede'), rate: vRate() }) });
   if(!r.ok) throw new Error('voix ' + r.status);
   const blob = await r.blob();
   if(!S.speaking) return;
