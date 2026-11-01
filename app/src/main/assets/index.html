@@ -1980,7 +1980,7 @@ function helpAnswerParas(r, full){
   return u.paras.slice(r.i, r.i + (u.src === 'manual' ? 2 : 1));
 }
 function helpSpeakText(r, full){
-  return (r.u.title.replace(/^.*› /, '') + '. ' + helpAnswerParas(r, full).join(' '))
+  return speechClean(r.u.title.replace(/^.*› /, '') + '. ' + helpAnswerParas(r, full).join(' '))
     .replace(/−/g, ' moins ').replace(/\s\+\s?|\+(?=\d)/g, ' plus ').replace(/=/g, ' égale ').replace(/[·•]/g, ', ').replace(/⋮/g, ' menu ').replace(/↶/g, ' flèche annuler ').replace(/↷/g, ' flèche rétablir ').replace(/→/g, ', puis ')
     .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{2190}-\u{21FF}]/gu, ' ').replace(/\s+/g, ' ').trim();
 }
@@ -2249,8 +2249,14 @@ async function askRun(text, spoken){
     askOffline(text, spoken, msg.replace(/\.$/, '') + '. Voici la réponse de l’assistant hors ligne.');
   }
 }
+// Nettoyage du texte lu à voix haute : sans guillemets, et sans point en trop après « ? » ou « ! »
+// (sinon la voix dit « point » : « … ? ». ») 
+function speechClean(t){
+  return String(t).replace(/[«»"“”„]/g, ' ')
+    .replace(/([?!…])(\s*[.,;:])+/g, '$1').replace(/\.(\s*\.)+/g, '.').replace(/\s+([.,;:?!])/g, '$1').replace(/\s+/g, ' ').trim();
+}
 function aiSpeakText(t){
-  return String(t).replace(/×/g, ' fois ').replace(/−/g, ' moins ').replace(/\s\+\s?|\+(?=\d)/g, ' plus ').replace(/=/g, ' égale ').replace(/[·•]/g, ', ')
+  return speechClean(String(t)).replace(/×/g, ' fois ').replace(/−/g, ' moins ').replace(/\s\+\s?|\+(?=\d)/g, ' plus ').replace(/=/g, ' égale ').replace(/[·•]/g, ', ')
     .replace(/⋮/g, ' menu ').replace(/↶/g, ' flèche annuler ').replace(/↷/g, ' flèche rétablir ').replace(/→/g, ', puis ')
     .replace(/[#*_`>]/g, ' ').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{2190}-\u{21FF}]/gu, ' ').replace(/\s+/g, ' ').trim();
 }

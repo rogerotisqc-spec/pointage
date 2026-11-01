@@ -1,6 +1,6 @@
 {
- "version": "4.4",
- "notes": "Voix naturelle : prononciation corrigée des mots avec apostrophe (l’IA, c’est, l’assistant…).",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.4.apk",
- "size": 136025
+ "version": "4.5",
+ "notes": "Lecture à voix haute : les guillemets sont ignorés et la voix ne dit plus « point » après un « ? » ou un « ! ».",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.5.apk",
+ "size": 140121
 }
