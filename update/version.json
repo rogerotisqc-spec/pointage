@@ -1,6 +1,6 @@
 {
- "version": "3.8",
- "notes": "L’assistant ❓ répond maintenant avec une vraie IA (avec Internet) : calculs, règles officielles, questions de suivi. Sans connexion, l’assistant hors ligne prend le relais.\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.8.apk",
- "size": 131929
+ "version": "3.9",
+ "notes": "Voix de l’assistant : voix naturelle de Google (4 voix au choix) avec Internet, meilleure voix du téléphone sinon, vitesse de lecture réglable.\nManuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-3.9.apk",
+ "size": 136025
 }

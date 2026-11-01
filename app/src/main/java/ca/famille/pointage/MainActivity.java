@@ -16,6 +16,7 @@ import java.util.Locale;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.speech.tts.Voice;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import android.graphics.Color;
@@ -50,6 +51,9 @@ public class MainActivity extends Activity {
     private TextToSpeech tts;
     private boolean ttsReady;
     private String ttsPending;
+    private String ttsVoice;
+    private float ttsRate = 1f;
+    private boolean ttsListWanted;
     private String pendingExport;
     // API GitHub : à jour en moins d'une minute (le site « raw » garde une copie jusqu'à 5 minutes)
     static final String RELEASES_API = "https://api.github.com/repos/rogerotisqc-spec/pointage/contents/update/version.json";
@@ -65,6 +69,7 @@ public class MainActivity extends Activity {
 
         web = new WebView(this);
         WebSettings s = web.getSettings();
+        s.setMediaPlaybackRequiresUserGesture(false);
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setDatabaseEnabled(true);
@@ -284,36 +289,84 @@ public class MainActivity extends Activity {
     }
 
     private void say(String text) {
+        applyVoice();
+        tts.setSpeechRate(ttsRate);
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "pointage");
     }
 
-    private void speakNow(final String text) {
-        if (tts == null) {
-            ttsPending = text;
-            tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int status) {
-                    if (status != TextToSpeech.SUCCESS) {
-                        tts = null;
-                        js("window.onSpeakEnd && window.onSpeakEnd('Voix de lecture non disponible sur ce téléphone')");
-                        return;
-                    }
-                    int r = tts.setLanguage(Locale.CANADA_FRENCH);
-                    if (r < 0) tts.setLanguage(Locale.FRENCH);
-                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                        @Override public void onStart(String id) { }
-                        @Override public void onDone(String id) { js("window.onSpeakEnd && window.onSpeakEnd()"); }
-                        @Override public void onError(String id) { js("window.onSpeakEnd && window.onSpeakEnd()"); }
-                    });
-                    ttsReady = true;
-                    if (ttsPending != null) { say(ttsPending); ttsPending = null; }
+    // Meilleure voix française installée : fr-CA d'abord, puis la qualité, en évitant celles qui exigent Internet
+    private Voice bestVoice() {
+        Voice best = null; int bestScore = -1;
+        try {
+            for (Voice v : tts.getVoices()) {
+                Locale l = v.getLocale();
+                if (l == null || !"fr".equals(l.getLanguage())) continue;
+                if (v.getFeatures() != null && v.getFeatures().contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED)) continue;
+                int sc = ("CA".equals(l.getCountry()) ? 2000 : 1000) + v.getQuality() + (v.isNetworkConnectionRequired() ? -150 : 0);
+                if (sc > bestScore) { bestScore = sc; best = v; }
+            }
+        } catch (Exception ignored) { }
+        return best;
+    }
+
+    private void applyVoice() {
+        try {
+            if (ttsVoice != null) {
+                for (Voice v : tts.getVoices()) if (v.getName().equals(ttsVoice)) { tts.setVoice(v); return; }
+            }
+            Voice b = bestVoice();
+            if (b != null) tts.setVoice(b);
+        } catch (Exception ignored) { }
+    }
+
+    private String voicesJson() {
+        JSONArray out = new JSONArray();
+        try {
+            Voice b = bestVoice();
+            for (Voice v : tts.getVoices()) {
+                Locale l = v.getLocale();
+                if (l == null || !"fr".equals(l.getLanguage())) continue;
+                JSONObject o = new JSONObject();
+                o.put("name", v.getName());
+                o.put("lang", l.toLanguageTag());
+                o.put("quality", v.getQuality());
+                o.put("network", v.isNetworkConnectionRequired());
+                o.put("installed", v.getFeatures() == null || !v.getFeatures().contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED));
+                o.put("best", b != null && b.getName().equals(v.getName()));
+                out.put(o);
+            }
+        } catch (Exception ignored) { }
+        return out.toString();
+    }
+
+    private void ensureTts() {
+        if (tts != null) return;
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.SUCCESS) {
+                    tts = null;
+                    js("window.onSpeakEnd && window.onSpeakEnd('Voix de lecture non disponible sur ce téléphone')");
+                    js("window.onVoices && window.onVoices('[]')");
+                    return;
                 }
-            });
-        } else if (ttsReady) {
-            say(text);
-        } else {
-            ttsPending = text;
-        }
+                int r = tts.setLanguage(Locale.CANADA_FRENCH);
+                if (r < 0) tts.setLanguage(Locale.FRENCH);
+                tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override public void onStart(String id) { }
+                    @Override public void onDone(String id) { js("window.onSpeakEnd && window.onSpeakEnd()"); }
+                    @Override public void onError(String id) { js("window.onSpeakEnd && window.onSpeakEnd()"); }
+                });
+                ttsReady = true;
+                if (ttsListWanted) { ttsListWanted = false; js("window.onVoices && window.onVoices(" + JSONObject.quote(voicesJson()) + ")"); }
+                if (ttsPending != null) { say(ttsPending); ttsPending = null; }
+            }
+        });
+    }
+
+    private void speakNow(final String text) {
+        if (ttsReady) say(text);
+        else { ttsPending = text; ensureTts(); }
     }
 
     @Override
@@ -533,6 +586,25 @@ public class MainActivity extends Activity {
                     }
                     try { startActivity(Intent.createChooser(i, "Demander à une IA")); } catch (Exception ignored) { }
                 }
+            });
+        }
+
+        @JavascriptInterface
+        public void listVoices() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (ttsReady) js("window.onVoices && window.onVoices(" + JSONObject.quote(voicesJson()) + ")");
+                    else { ttsListWanted = true; ensureTts(); }
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void setVoice(final String name, final float rate) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() { ttsVoice = (name == null || name.length() == 0) ? null : name; ttsRate = rate > 0.3f && rate < 3f ? rate : 1f; }
             });
         }
 

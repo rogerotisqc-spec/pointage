@@ -16,7 +16,7 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
     window.AndroidBridge = {
       getVersion: () => VER_, keepScreenOn() {}, checkUpdate() { setTimeout(() => window.onUpdateInfo(JSON.stringify({ version: '2.7', apk: 'x' })), 20); },
       installUpdate() {}, backupInfo: () => JSON.stringify({ folder: 'Documents', last: Date.now() - 120000 }),
-      pickBackupFolder() {}, writeBackup() {}, aiApps: () => JSON.stringify([{ pkg: 'com.google.android.apps.bard', name: 'Gemini' }, { pkg: 'com.openai.chatgpt', name: 'ChatGPT' }]), askAi() {}, listen() { setTimeout(() => window.onSpeech(JSON.stringify(['trois cinq et un un'])), 20); }
+      pickBackupFolder() {}, writeBackup() {}, aiApps: () => JSON.stringify([{ pkg: 'com.google.android.apps.bard', name: 'Gemini' }, { pkg: 'com.openai.chatgpt', name: 'ChatGPT' }]), askAi() {}, listVoices() { setTimeout(() => window.onVoices(JSON.stringify([{ name: 'fr-ca-x-caa-local', lang: 'fr-CA', quality: 400, network: false, installed: true, best: true }, { name: 'fr-ca-x-cab-network', lang: 'fr-CA', quality: 400, network: true, installed: true }, { name: 'fr-fr-x-frd-local', lang: 'fr-FR', quality: 300, network: false, installed: true }])), 10); }, setVoice() {}, speak() {}, stopSpeaking() {}, listen() { setTimeout(() => window.onSpeech(JSON.stringify(['trois cinq et un un'])), 20); }
     };
     try { localStorage.setItem('pointage.autobackup', '1'); localStorage.setItem('pointage.lastCheck', String(Date.now())); localStorage.setItem('pointage.fbname', 'Roger'); } catch (e) {}
   }, VER);
@@ -186,6 +186,7 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await tap('[data-a=rules]'); await shot('regles'); await tap('[data-a=back]');
 
   // ---------- Assistant ----------
+  await p.route('**/pointage-ia.rogerotisqc.workers.dev/', r => r.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }, body: '{"ok":true,"ready":true,"tts":true}' }));
   await p.route('**/pointage-ia.rogerotisqc.workers.dev/**', r => r.request().method() === 'OPTIONS'
     ? r.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' } })
     : r.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },

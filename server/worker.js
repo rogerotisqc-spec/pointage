@@ -7,6 +7,7 @@
 //   DAILY_MAX          (texte, facultatif)  nombre maximal de questions par jour pour tout le monde (défaut 300)
 //   IP_MAX             (texte, facultatif)  nombre maximal de questions par jour par appareil (défaut 60)
 //   WEB_SEARCH         (texte, facultatif)  "off" pour interdire la recherche sur Internet
+//   GOOGLE_TTS_KEY     (secret, facultatif) clé Google Cloud Text-to-Speech : voix naturelle (adresse /tts)
 // Liaison KV facultative (Settings → Bindings) : nom LIMITS, pour compter les questions.
 
 const MODEL = 'claude-haiku-5-5';
@@ -109,19 +110,44 @@ async function askClaude(env, body) {
   const seen = new Set(), sources = [];
   out.forEach(b => (b.citations || []).forEach(c => { if (c.url && !seen.has(c.url)) { seen.add(c.url); sources.push({ url: c.url, title: c.title || c.url }); } }));
   if (!answer) throw new Error('réponse vide (' + (stop || '?') + ')');
-  return { answer, sources: sources.slice(0, 4), searched, stop };
+  return { answer, sources: sources.slice(0, 4), searched, stop, tts: !!env.GOOGLE_TTS_KEY };
+}
+
+
+const VOICES = ['Aoede', 'Kore', 'Leda', 'Charon', 'Puck', 'Orus'];
+async function synth(env, text, voice, rate) {
+  const name = 'fr-CA-Chirp3-HD-' + (VOICES.includes(voice) ? voice : 'Aoede');
+  const body = { input: { text: cut(text, 1500) }, voice: { languageCode: 'fr-CA', name }, audioConfig: { audioEncoding: 'MP3' } };
+  if (rate && Math.abs(rate - 1) > 0.01) body.audioConfig.speakingRate = Math.min(1.5, Math.max(0.7, rate));
+  const call = b => fetch('https://texttospeech.googleapis.com/v1/text:synthesize?key=' + encodeURIComponent(env.GOOGLE_TTS_KEY),
+    { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) });
+  let r = await call(body);
+  if (!r.ok && body.audioConfig.speakingRate) { delete body.audioConfig.speakingRate; r = await call(body); }
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !d.audioContent) throw new Error((d.error && d.error.message) || ('HTTP ' + r.status));
+  const bin = atob(d.audioContent), bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
 }
 
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(request.url);
-    if (request.method === 'GET') return json({ ok: true, service: 'pointage-ia', ready: !!(env.ANTHROPIC_API_KEY && env.APP_TOKEN) });
-    if (request.method !== 'POST' || url.pathname !== '/ask') return json({ error: 'Adresse inconnue' }, 404);
+    if (request.method === 'GET') return json({ ok: true, service: 'pointage-ia', ready: !!(env.ANTHROPIC_API_KEY && env.APP_TOKEN), tts: !!env.GOOGLE_TTS_KEY });
+    if (request.method !== 'POST' || (url.pathname !== '/ask' && url.pathname !== '/tts')) return json({ error: 'Adresse inconnue' }, 404);
     if (!env.ANTHROPIC_API_KEY || !env.APP_TOKEN) return json({ error: 'Relais pas encore configuré' }, 503);
     if (request.headers.get('X-App-Token') !== env.APP_TOKEN) return json({ error: 'Accès refusé' }, 403);
     let body;
     try { body = await request.json(); } catch (e) { return json({ error: 'Requête illisible' }, 400); }
+    if (url.pathname === '/tts') {
+      if (!env.GOOGLE_TTS_KEY) return json({ error: 'Voix naturelle pas configurée' }, 503);
+      if (!body || !String(body.text || '').trim()) return json({ error: 'Texte vide' }, 400);
+      try {
+        const audio = await synth(env, String(body.text), String(body.voice || ''), +body.rate || 1);
+        return new Response(audio, { headers: { ...CORS, 'Content-Type': 'audio/mpeg', 'Cache-Control': 'no-store' } });
+      } catch (e) { return json({ error: 'Voix indisponible : ' + cut(e.message, 200) }, 502); }
+    }
     if (!body || !String(body.q || '').trim()) return json({ error: 'Question vide' }, 400);
     const lim = await overLimit(env, request.headers.get('CF-Connecting-IP') || 'inconnu');
     if (lim) return json({ error: lim, limit: true }, 429);

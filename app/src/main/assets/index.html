@@ -1594,6 +1594,7 @@ function vSettings(){
       <div style="display:grid;gap:10px"><button class="btn primary block" data-a="export">Exporter une sauvegarde</button>
       <button class="btn block" data-a="import">Importer une sauvegarde</button></div>
       ${backupCard()}</div>
+    ${voiceCards()}
     <h2 class="sec">Affichage</h2>
     <div class="card" style="padding:14px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Garder l’écran allumé</b><div class="hint" style="margin:2px 0 0">Tant que l’app est ouverte, l’écran ne se met pas en veille. Il s’éteint normalement quand vous changez d’app.</div></div>
       <button class="switch ${screenOnPref() ? 'on' : ''}" data-a="screenToggle" aria-label="Garder l’écran allumé"></button></div></div>
@@ -1834,6 +1835,7 @@ const HELP_FAQ = [
   {q:['jouer en équipes','partenaires','équipe'], a:'Au Skip-Bo et au Mille Bornes, choisissez « Équipes » au début de la partie, puis répartissez les joueurs. Au Mille Bornes, les partenaires partagent un seul jeu : on inscrit les points par équipe.'},
   {q:['manuel','mode d’emploi','instructions de l’app'], a:'Le bouton 📘 en haut de l’accueil ouvre le manuel complet, avec images et recherche (Internet requis).'},
   {q:['demander à gemini','utiliser une vraie IA','demander à chatgpt','intelligence artificielle'], a:'Après une question, le bouton ✨ « Demander à Gemini » (ou à une autre IA installée) envoie la question à l’IA du téléphone, avec le jeu en cours, vos règles maison et le lien du manuel. La réponse s’affiche dans cette app ; revenez ensuite avec le bouton Retour. Sur iPhone, choisissez l’app d’IA dans le menu Partager.'},
+  {q:['changer la voix','voix de l’assistant','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de l’assistant : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
 const HELP_STOP = new Set(('a au aux avec ca ce cela ces cet cette comment combien dans de des du elle elles en est et etre faire fait faut il ils je j la le les leur leurs l ma me mes moi mon m ne n nous on ou par pas peut peux pour pourquoi quand que quel quelle quelles quels qu qui quoi sa se ses si son sont sur ta te tes toi ton tu un une vos votre vous y d s t c est-ce estce dois doit devons veux voudrais aimerais savoir dire dis explique expliquer svp stp bonjour merci alors donc bien tout tous toute toutes quoi ai as avons avez ont ete etait il-y-a lorsque lorsqu chose choses fois').split(' '));
@@ -1966,20 +1968,104 @@ function helpSpeakText(r, full){
     .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{2190}-\u{21FF}]/gu, ' ').replace(/\s+/g, ' ').trim();
 }
 /* ---------- Voix de lecture ---------- */
-function speakOk(){ return !!((bridge && bridge.speak) || window.speechSynthesis); }
-function speak(text){
-  S.speaking = true;
-  if(bridge && bridge.speak){ try{ bridge.speak(text); }catch(e){ S.speaking = false; } return; }
+// 1) voix naturelle Google (Chirp 3 HD) par le relais, si Internet ; 2) sinon la meilleure voix du téléphone
+const VOICE_CLOUD = [['Aoede','Voix 1 · femme'],['Kore','Voix 2 · femme'],['Charon','Voix 3 · homme'],['Puck','Voix 4 · homme']];
+const VOICE_RATES = [['0.9','Lente'],['1','Normale'],['1.15','Rapide']];
+const SILENT_WAV = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+let AI_TTS = null, AUDIO = null, TTS_CTRL = null, DEV_VOICES = null;
+function vPref(k, d){ try{ const v = localStorage.getItem('pointage.voice.' + k); return v === null ? d : v; }catch(e){ return d; } }
+function vSet(k, v){ try{ localStorage.setItem('pointage.voice.' + k, v); }catch(e){} }
+function vRate(){ const r = parseFloat(vPref('rate', '1')); return r > 0.5 && r < 2 ? r : 1; }
+function speakOk(){ return !!((bridge && bridge.speak) || window.speechSynthesis || cloudVoiceOk()); }
+function cloudVoiceOk(){ return aiReady() && AI_TTS === true && vPref('cloud', '1') === '1'; }
+function audioUnlock(){ // à appeler pendant un toucher : permet de jouer l'audio plus tard (iPhone, navigateurs)
+  try{ if(!AUDIO) AUDIO = new Audio(); if(!AUDIO.src || AUDIO.paused){ AUDIO.src = SILENT_WAV; const p = AUDIO.play(); if(p && p.catch) p.catch(() => {}); } }catch(e){}
+}
+function aiProbe(){
+  if(!aiConfigured() || AI_TTS !== null || navigator.onLine === false) return;
+  AI_TTS = false;
+  fetch(AI_URL.replace(/\/$/, '') + '/').then(r => r.json()).then(d => { AI_TTS = !!d.tts; if(S.view === 'settings') render(); }).catch(() => { AI_TTS = null; });
+}
+async function cloudSpeak(text, voice){
+  TTS_CTRL = new AbortController();
+  const r = await fetch(AI_URL.replace(/\/$/, '') + '/tts', { method:'POST', signal: TTS_CTRL.signal,
+    headers:{ 'Content-Type':'application/json', 'X-App-Token': aiToken() },
+    body: JSON.stringify({ text, voice: voice || vPref('cloudName', 'Aoede'), rate: vRate() }) });
+  if(!r.ok) throw new Error('voix ' + r.status);
+  const blob = await r.blob();
+  if(!S.speaking) return;
+  if(!AUDIO) AUDIO = new Audio();
+  const url = URL.createObjectURL(blob);
+  AUDIO.onended = () => { URL.revokeObjectURL(url); window.onSpeakEnd(); };
+  AUDIO.onerror = () => { URL.revokeObjectURL(url); window.onSpeakEnd(); };
+  AUDIO.src = url;
+  await AUDIO.play();
+}
+function webVoices(){
+  const ss = window.speechSynthesis; if(!ss) return [];
+  return ss.getVoices().filter(v => /^fr/i.test(v.lang));
+}
+function webBest(vs){
+  const sc = v => (/^fr[-_]CA/i.test(v.lang) ? 20 : 10) + (/natural|neural|premium|enhanced|online|google|amélior/i.test(v.name) ? 15 : 0);
+  return vs.slice().sort((a, b) => sc(b) - sc(a))[0];
+}
+function deviceSpeak(text){
+  if(bridge && bridge.speak){
+    if(bridge.setVoice) try{ bridge.setVoice(vPref('device', ''), vRate()); }catch(e){}
+    try{ bridge.speak(text); }catch(e){ S.speaking = false; } return;
+  }
   const ss = window.speechSynthesis; if(!ss){ S.speaking = false; return; }
-  ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'fr-CA';
-  const vs = ss.getVoices(), v = vs.find(x => /^fr[-_]CA/i.test(x.lang)) || vs.find(x => /^fr/i.test(x.lang)); if(v) u.voice = v;
+  ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'fr-CA'; u.rate = vRate();
+  const vs = webVoices(), want = vPref('device', ''), v = (want && vs.find(x => x.name === want)) || webBest(vs);
+  if(v){ u.voice = v; u.lang = v.lang; }
   u.onend = u.onerror = () => window.onSpeakEnd();
   ss.speak(u);
 }
-function speakStop(){
+function speak(text, opts){
+  opts = opts || {};
+  speakStop(true);
+  S.speaking = true;
+  if(!opts.device && (opts.cloud || cloudVoiceOk())){
+    cloudSpeak(text, opts.voice).catch(e => { if(S.speaking && !(e && e.name === 'AbortError')) deviceSpeak(text); });
+    return;
+  }
+  deviceSpeak(text);
+}
+function speakStop(quiet){
+  if(TTS_CTRL){ try{ TTS_CTRL.abort(); }catch(e){} TTS_CTRL = null; }
+  if(AUDIO){ try{ AUDIO.onended = AUDIO.onerror = null; AUDIO.pause(); }catch(e){} }
   if(bridge && bridge.stopSpeaking){ try{ bridge.stopSpeaking(); }catch(e){} }
   else if(window.speechSynthesis) window.speechSynthesis.cancel();
   S.speaking = false;
+}
+if(window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener('voiceschanged', () => { if(S.view === 'settings') render(); });
+window.onVoices = json => { try{ DEV_VOICES = JSON.parse(json) || []; }catch(e){ DEV_VOICES = []; } if(S.view === 'settings') render(); };
+function deviceVoiceList(){
+  if(bridge && bridge.listVoices){
+    if(DEV_VOICES === null){ DEV_VOICES = []; try{ bridge.listVoices(); }catch(e){} }
+    const PAYS = {CA:'Canada', FR:'France', BE:'Belgique', CH:'Suisse'}, n = {};
+    return DEV_VOICES.filter(v => v.installed).map(v => { const c = (String(v.lang).split('-')[1] || '').toUpperCase(); n[c] = (n[c] || 0) + 1;
+      return { name: v.name, label: (PAYS[c] || 'Français') + ' · voix ' + n[c] + (v.network ? ' · Internet' : '') + (v.quality >= 400 ? ' · haute qualité' : ''), best: v.best }; });
+  }
+  const vs = webVoices(), b = webBest(vs);
+  return vs.map(v => ({ name: v.name, label: v.name + ' (' + v.lang + ')' + (v.localService === false ? ' · Internet' : ''), best: b && v.name === b.name }));
+}
+const VOICE_TEST = 'Bonjour ! Je suis l’assistant de Pointage. C’est au tour de Marie de brasser.';
+function voiceCards(){
+  aiProbe();
+  const dev = deviceVoiceList(), cur = vPref('device', ''), rate = vPref('rate', '1');
+  const cloud = aiConfigured() ? `<div class="card" style="padding:14px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Voix naturelle (Internet)</b>
+      <div class="hint" style="margin:2px 0 0">${AI_TTS === false ? 'Pas encore activée sur le relais de l’IA. En attendant, la voix du téléphone est utilisée.' : 'Une voix de Google très naturelle lit les réponses de l’assistant quand il y a Internet.'}</div></div>
+      <button class="switch ${vPref('cloud', '1') === '1' ? 'on' : ''}" data-a="voiceCloud" aria-label="Voix naturelle"></button></div>
+      ${vPref('cloud', '1') === '1' && AI_TTS !== false ? `<div class="seg" style="margin-top:10px;flex-wrap:wrap">${VOICE_CLOUD.map(([v, l]) => `<button data-a="voiceCloudName" data-v="${v}" class="${vPref('cloudName', 'Aoede') === v ? 'on' : ''}" style="flex:1 1 45%">${l}</button>`).join('')}</div>
+      <button class="btn sm" style="margin-top:10px" data-a="voiceTest" data-v="cloud">▶ Écouter</button>` : ''}</div>` : '';
+  return `<h2 class="sec">Voix de l’assistant</h2>${cloud}
+    <div class="card" style="padding:14px;margin-top:10px"><b>Voix du téléphone</b><div class="hint" style="margin:2px 0 8px">Utilisée sans Internet${aiConfigured() ? ' ou si la voix naturelle est désactivée' : ''}. « Automatique » prend la meilleure voix française installée.</div>
+      <select id="voiceDev" class="field" style="width:100%"><option value="">Automatique${(dev.find(v => v.best) || {}).label ? ' (' + esc(dev.find(v => v.best).label) + ')' : ''}</option>${dev.map(v => `<option value="${esc(v.name)}" ${cur === v.name ? 'selected' : ''}>${esc(v.label)}</option>`).join('')}</select>
+      <button class="btn sm" style="margin-top:10px" data-a="voiceTest" data-v="device">▶ Écouter</button>
+      ${bridge ? `<div class="hint" style="margin:8px 0 0">Pour de meilleures voix sur Android : Paramètres du téléphone → Accessibilité → Synthèse vocale → moteur Google → Installer des données vocales → Français (Canada).</div>` : `<div class="hint" style="margin:8px 0 0">Sur iPhone : Réglages → Accessibilité → Contenu énoncé → Voix → Français (Canada), téléchargez une voix « améliorée » ou « premium ».</div>`}</div>
+    <div class="card" style="padding:14px;margin-top:10px"><b>Vitesse de lecture</b>
+      <div class="seg" style="margin-top:8px">${VOICE_RATES.map(([v, l]) => `<button data-a="voiceRate" data-v="${v}" class="${rate === v ? 'on' : ''}">${l}</button>`).join('')}</div></div>`;
 }
 window.onSpeakEnd = msg => { if(!S.speaking) return; S.speaking = false; if(msg) toast(msg); if(S.view === 'ask') render(); };
 /* ---------- Écran ---------- */
@@ -2130,7 +2216,7 @@ async function askRun(text, spoken){
   try{
     const d = await aiAsk(text);
     if(id !== S.askId || S.view !== 'ask') return;
-    S.askBusy = false; S.askAi = { q: text, answer: d.answer, sources: d.sources || [] };
+    S.askBusy = false; S.askAi = { q: text, answer: d.answer, sources: d.sources || [] }; if(typeof d.tts === 'boolean') AI_TTS = d.tts;
     S.askHist = (S.askHist || []).concat([{ q: text, a: d.answer }]).slice(-3);
     render(true);
     if(spoken && speakOk()){ speak(aiSpeakText(d.answer)); render(); }
@@ -2338,17 +2424,21 @@ const A = {
   pickDealer: el => { const g = curGame(); g.dealer0 = Number(el.dataset.i) - g.rounds.length; save(); closeModal(); render(); },
   menu: () => openMenu(),
   ask: el => { closeModal(); const g = S.view === 'sheet' ? curGame() : null; const t = (el && el.dataset && el.dataset.t) || (g ? g.type : (S.view === 'rules' ? S.rulesType : null)); go('ask', {askGame: t || null, askRes: null, askQ: '', askAi: null, askHist: [], askNote: '', askBusy: false}); },
-  askGo: () => { const el = $('askQ'); askRun(el ? el.value : ''); },
-  askEx: el => askRun(el.textContent),
-  askMic: () => voiceStart(),
+  askGo: () => { audioUnlock(); const el = $('askQ'); askRun(el ? el.value : ''); },
+  askEx: el => { audioUnlock(); askRun(el.textContent); },
+  askMic: () => { audioUnlock(); voiceStart(); },
   askNoGame: () => { S.askGame = null; if(S.askQ) askRun(S.askQ); else render(); },
   askPick: el => { speakStop(); S.askSel = +el.dataset.i; S.askFull = false; render(true); },
   askFull: () => { S.askFull = true; render(); },
-  askSpeak: () => { if(S.askAi && !S.askRes){ speak(aiSpeakText(S.askAi.answer)); return render(); } const R = S.askRes; if(R && R.list.length){ speak(helpSpeakText(R.list[S.askSel||0], S.askFull)); render(); } },
+  askSpeak: () => { audioUnlock(); if(S.askAi && !S.askRes){ speak(aiSpeakText(S.askAi.answer)); return render(); } const R = S.askRes; if(R && R.list.length){ speak(helpSpeakText(R.list[S.askSel||0], S.askFull)); render(); } },
   askStop: () => { speakStop(); render(); },
   askOpen: el => { speakStop(); tab(el.dataset.v); },
   askManual: el => openUrl(MANUAL_URL + '#' + el.dataset.v),
   askAi: el => askAiSend(el.dataset.v),
+  voiceCloud: () => { const on = vPref('cloud', '1') !== '1'; vSet('cloud', on ? '1' : '0'); speakStop(); render(); },
+  voiceCloudName: el => { vSet('cloudName', el.dataset.v); audioUnlock(); speak(VOICE_TEST, { cloud: true, voice: el.dataset.v }); render(); },
+  voiceRate: el => { vSet('rate', el.dataset.v); render(); },
+  voiceTest: el => { audioUnlock(); if(el.dataset.v === 'cloud'){ if(!aiReady()) return toast('Pas de connexion Internet'); speak(VOICE_TEST, { cloud: true }); } else speak(VOICE_TEST, { device: true }); },
   askCancel: () => { S.askId = (S.askId || 0) + 1; S.askBusy = false; if(AI_CTRL) AI_CTRL.abort(); askOffline(S.askQ, false, 'Question à l’IA annulée : réponse de l’assistant hors ligne.'); },
   askLocal: () => { speakStop(); askOffline(S.askQ, false, ''); },
   askSrc: el => { const x = S.askAi && S.askAi.sources[+el.dataset.i]; if(x) openUrl(x.url); },
@@ -2469,6 +2559,7 @@ document.addEventListener('change', e => {
   const t = e.target;
   if(t.name === 'sbw') sbUpdate();
   if(t.name === 'unow') unoUpdate();
+  if(t.id === 'voiceDev'){ vSet('device', t.value); speak(VOICE_TEST, { device: true }); }
   if(t.id === 'scrBingo') { scrState().bingo = t.checked; render(); }
   if(t.id === 'importFile' && t.files[0]){ const r = new FileReader(); r.onload = () => window.onImportData(r.result); r.readAsText(t.files[0]); }
 });

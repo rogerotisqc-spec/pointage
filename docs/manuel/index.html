@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 3.8</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 3.9</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -141,6 +141,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><a href="#rapports">Signaler un problème</a></li>
         <li><a href="#sauvegarde">Sauvegarde</a></li>
         <li><a href="#ecran">Écran allumé</a></li>
+        <li><a href="#voixia">Voix de l’assistant</a></li>
         <li><a href="#rotation">Rotation de l’écran</a></li>
       </ol></li>
     <li><a href="#faq">13. Questions fréquentes</a></li>
@@ -377,7 +378,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
       <p>L’assistant répond aux questions sur les règles des jeux et sur l’utilisation de l’app. Pour l’ouvrir : le bouton ❓ en haut de l’accueil ou en haut de chaque partie, le menu ⋮ d’une partie, ou le bouton en haut du résumé des règles. Ouvert depuis une partie, il sait de quel jeu il s’agit (touchez ✕ pour une question générale).</p>
       <ol><li>Touchez <span class="ui">🎤 Poser une question</span> et parlez naturellement : « au Wizard, j’ai misé 2 et fait 4 plis, combien j’ai ? », « comment je corrige une manche ? ». Vous pouvez aussi l’écrire, puis <span class="ui">Demander</span>.</li>
         <li><b>Avec Internet, une IA répond</b> (« L’IA réfléchit… », quelques secondes). Elle connaît le jeu en cours, <b>vos règles maison</b> (elles passent en premier), le résumé des règles de l’app et tout ce manuel ; au besoin, elle vérifie les règles officielles sur Internet et indique ses sources. Elle sait aussi faire les calculs de points.</li>
-        <li>Si vous avez parlé, la réponse est lue à voix haute. <span class="ui">🔊 Lire à voix haute</span> la relit ; <span class="ui">⏹ Arrêter la lecture</span> l’interrompt.</li>
+        <li>Si vous avez parlé, la réponse est lue à voix haute, avec une voix naturelle quand il y a Internet (voir <a href="#voixia">Voix de l’assistant</a>). <span class="ui">🔊 Lire à voix haute</span> la relit ; <span class="ui">⏹ Arrêter la lecture</span> l’interrompt.</li>
         <li>Vous pouvez enchaîner avec une <b>question de suivi</b> (« et si j’avais fait 2 plis ? ») : l’IA se souvient des trois dernières questions tant que l’écran reste ouvert.</li></ol>
       <p><b>Sans connexion</b> (ou si l’IA ne répond pas, est trop lente, ou si vous touchez <span class="ui">Annuler</span>), l’<b>assistant hors ligne</b> prend le relais et un message l’indique. Il cherche le bon passage dans les règles, vos règles maison et ce manuel, mais ne fait pas de calculs. Ses <b>Autres réponses possibles</b> et ses boutons mènent au bon écran ou au manuel. Le bouton <span class="ui">📖 Réponse hors ligne</span> sous une réponse de l’IA montre aussi ce qu’il trouve.</p>
       <p><b>À savoir</b> : l’IA peut se tromper ; en cas de doute, vérifiez dans les règles 📖. Les questions, le jeu en cours et vos règles maison sont envoyés à l’IA (Claude, d’Anthropic) par un relais qui limite le nombre de questions par jour. Pour utiliser seulement l’assistant hors ligne : ⚙︎ Réglages → Aide → « Assistant IA ».</p>
@@ -446,6 +447,14 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <div class="txt" data-kw="écran veille allumé éteint batterie affichage">
       <p>Par défaut, l’écran ne se met pas en veille tant que l’app est ouverte. Il s’éteint normalement quand vous changez d’app. Pour revenir à la veille habituelle : Réglages → <b>Affichage</b> → « Garder l’écran allumé ».</p>
     </div>
+    <h3 id="voixia">Voix de l’assistant</h3>
+    <div class="txt" data-kw="voix lecture lire à voix haute naturelle google parler accent vitesse lente rapide homme femme synthèse vocale robot téléphone assistant">
+      <p>Réglages → <b>Voix de l’assistant</b> choisit la voix qui lit les réponses de l’<a href="#assistant">assistant</a> :</p>
+      <ul><li><b>Voix naturelle (Internet)</b> (activée par défaut) : une voix de Google très naturelle, en français canadien. Choisissez parmi 4 voix (2 femmes, 2 hommes) ; chaque choix fait entendre un exemple. Elle sert quand il y a Internet.</li>
+        <li><b>Voix du téléphone</b> : utilisée sans Internet, ou si la voix naturelle est désactivée. « Automatique » prend la meilleure voix française installée ; vous pouvez en choisir une autre et l’écouter avec <span class="ui">▶ Écouter</span>.</li>
+        <li><b>Vitesse de lecture</b> : lente, normale ou rapide, pour les deux voix.</li></ul>
+      <p>Pour de meilleures voix du téléphone : sur Android, Paramètres → Accessibilité → Synthèse vocale → moteur Google → Installer des données vocales → Français (Canada) ; sur iPhone, Réglages → Accessibilité → Contenu énoncé → Voix → Français (Canada), une voix « améliorée » ou « premium ».</p>
+    </div>
     <h3 id="rotation">Rotation de l’écran</h3>
     <div class="txt" data-kw="rotation pivoter pivote tourner orientation portrait paysage verrouiller bloquer écran tablette">
       <p>Réglages → <b>Affichage</b> → « Rotation de l’écran » :</p>
@@ -477,7 +486,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 3.8 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 3.9 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){
