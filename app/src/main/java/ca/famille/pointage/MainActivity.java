@@ -573,6 +573,19 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public void shareText(final String text) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.putExtra(Intent.EXTRA_TEXT, text);
+                    try { startActivity(Intent.createChooser(i, "Partager Pointage")); } catch (Exception ignored) { }
+                }
+            });
+        }
+
+        @JavascriptInterface
         public void askAi(final String text, final String pkg) {
             runOnUiThread(new Runnable() {
                 @Override

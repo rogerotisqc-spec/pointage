@@ -222,6 +222,7 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await tap('[data-a=statF][data-v=flip7]'); await p.evaluate(() => window.scrollTo(0, 99999)); await shot('records');
   await p.evaluate(() => tab('home')); await tap('[data-a=go][data-v=settings]'); await tap('[data-a=checkUp]'); await p.waitForTimeout(100);
   await shot('reglages', { fullPage: true });
+  await tap('button[data-a=qrBig] >> nth=1'); await shot('partager'); await tap('[data-a=close]');
 
   // ---------- Page d'installation ----------
   const p2 = await (await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 Chrome/126 Mobile Safari/537.36' })).newPage();

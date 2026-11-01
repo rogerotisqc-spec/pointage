@@ -42,6 +42,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .icon-btn:disabled{opacity:.35}
 .top .icon-btn.sm{width:36px}
 .icon-btn.ask{position:relative}
+#modal svg,.card button svg{display:block;width:100%;height:auto}
 .ia-tag{position:absolute;right:-1px;bottom:3px;font:800 9px/1 system-ui,sans-serif;letter-spacing:.02em;padding:2px 3px;border-radius:5px;background:#fff;color:var(--brand);box-shadow:0 1px 2px rgba(0,0,0,.25);pointer-events:none}
 @media (max-width:440px){ .top{gap:2px;padding-left:8px;padding-right:6px} .top>.icon-btn:first-child{width:36px} .top .icon-btn.sm{width:31px;font-size:18px} .top .grow{margin-left:2px} .top .grow h1{font-size:19px} }
 .mic{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:12px;border-radius:12px;border:1.5px dashed var(--brand);color:var(--brand);font-weight:700;background:var(--surface)}
@@ -434,6 +435,8 @@ const $ = id => document.getElementById(id);
 
 /* ====================== Jeux ====================== */
 const MANUAL_URL = 'https://rogerotisqc-spec.github.io/pointage/manuel/';
+const SHARE_URL = 'https://tinyurl.com/pointagef';   // page d'installation (code QR : tools/make_qr.py)
+const QR_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges"><rect width="33" height="33" fill="#fff"/><path d="M2 2h7v1h-7zM11 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM19 2h3v1h-3zM24 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h1v1h-1zM15 3h1v1h-1zM19 3h1v1h-1zM21 3h2v1h-2zM24 3h1v1h-1zM30 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM12 4h2v1h-2zM17 4h1v1h-1zM21 4h1v1h-1zM24 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM14 5h2v1h-2zM18 5h1v1h-1zM20 5h1v1h-1zM24 5h1v1h-1zM26 5h3v1h-3zM30 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h4v1h-4zM18 6h4v1h-4zM24 6h1v1h-1zM26 6h3v1h-3zM30 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM11 7h1v1h-1zM13 7h2v1h-2zM16 7h3v1h-3zM20 7h2v1h-2zM24 7h1v1h-1zM30 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h7v1h-7zM14 9h1v1h-1zM17 9h1v1h-1zM19 9h1v1h-1zM21 9h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM11 10h3v1h-3zM18 10h2v1h-2zM26 10h1v1h-1zM29 10h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM9 11h1v1h-1zM12 11h2v1h-2zM15 11h1v1h-1zM17 11h4v1h-4zM22 11h1v1h-1zM24 11h1v1h-1zM27 11h1v1h-1zM30 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM8 12h1v1h-1zM10 12h3v1h-3zM16 12h3v1h-3zM23 12h4v1h-4zM28 12h3v1h-3zM2 13h1v1h-1zM4 13h2v1h-2zM10 13h1v1h-1zM12 13h2v1h-2zM15 13h2v1h-2zM18 13h2v1h-2zM22 13h1v1h-1zM25 13h2v1h-2zM29 13h1v1h-1zM2 14h2v1h-2zM7 14h3v1h-3zM11 14h1v1h-1zM14 14h1v1h-1zM16 14h2v1h-2zM19 14h1v1h-1zM21 14h5v1h-5zM27 14h1v1h-1zM29 14h2v1h-2zM2 15h1v1h-1zM5 15h1v1h-1zM9 15h1v1h-1zM11 15h2v1h-2zM14 15h1v1h-1zM16 15h2v1h-2zM19 15h1v1h-1zM24 15h1v1h-1zM27 15h1v1h-1zM30 15h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM15 16h1v1h-1zM20 16h1v1h-1zM24 16h1v1h-1zM27 16h1v1h-1zM29 16h2v1h-2zM4 17h1v1h-1zM6 17h1v1h-1zM9 17h2v1h-2zM13 17h2v1h-2zM17 17h1v1h-1zM19 17h6v1h-6zM26 17h2v1h-2zM29 17h1v1h-1zM3 18h3v1h-3zM8 18h1v1h-1zM11 18h2v1h-2zM18 18h2v1h-2zM21 18h4v1h-4zM27 18h1v1h-1zM29 18h2v1h-2zM7 19h1v1h-1zM11 19h1v1h-1zM14 19h2v1h-2zM17 19h3v1h-3zM22 19h3v1h-3zM27 19h2v1h-2zM30 19h1v1h-1zM2 20h1v1h-1zM5 20h2v1h-2zM8 20h1v1h-1zM11 20h2v1h-2zM14 20h1v1h-1zM16 20h4v1h-4zM23 20h1v1h-1zM25 20h2v1h-2zM29 20h2v1h-2zM3 21h1v1h-1zM5 21h1v1h-1zM9 21h1v1h-1zM11 21h3v1h-3zM15 21h2v1h-2zM18 21h3v1h-3zM22 21h2v1h-2zM25 21h3v1h-3zM29 21h1v1h-1zM2 22h1v1h-1zM4 22h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM14 22h1v1h-1zM16 22h2v1h-2zM19 22h1v1h-1zM21 22h6v1h-6zM10 23h3v1h-3zM14 23h1v1h-1zM16 23h2v1h-2zM19 23h1v1h-1zM21 23h2v1h-2zM26 23h1v1h-1zM28 23h3v1h-3zM2 24h7v1h-7zM11 24h2v1h-2zM14 24h2v1h-2zM21 24h2v1h-2zM24 24h1v1h-1zM26 24h2v1h-2zM29 24h2v1h-2zM2 25h1v1h-1zM8 25h1v1h-1zM11 25h1v1h-1zM14 25h1v1h-1zM17 25h1v1h-1zM19 25h2v1h-2zM22 25h1v1h-1zM26 25h2v1h-2zM2 26h1v1h-1zM4 26h3v1h-3zM8 26h1v1h-1zM10 26h1v1h-1zM12 26h1v1h-1zM14 26h1v1h-1zM18 26h2v1h-2zM22 26h5v1h-5zM29 26h1v1h-1zM2 27h1v1h-1zM4 27h3v1h-3zM8 27h1v1h-1zM12 27h2v1h-2zM15 27h1v1h-1zM17 27h3v1h-3zM22 27h2v1h-2zM25 27h2v1h-2zM28 27h1v1h-1zM2 28h1v1h-1zM4 28h3v1h-3zM8 28h1v1h-1zM10 28h3v1h-3zM14 28h1v1h-1zM17 28h3v1h-3zM22 28h1v1h-1zM25 28h3v1h-3zM30 28h1v1h-1zM2 29h1v1h-1zM8 29h1v1h-1zM12 29h3v1h-3zM18 29h2v1h-2zM21 29h2v1h-2zM24 29h2v1h-2zM29 29h1v1h-1zM2 30h7v1h-7zM10 30h1v1h-1zM13 30h1v1h-1zM15 30h1v1h-1zM17 30h2v1h-2zM20 30h3v1h-3zM25 30h3v1h-3zM29 30h2v1h-2z" fill="#000"/></svg>';
 const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','skyjo','wizard'];
 const GAMES = {
   generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
@@ -1588,6 +1591,12 @@ function vSettings(){
       <a class="btn block" style="text-decoration:none" href="${MANUAL_URL}" target="_blank" rel="noopener">📘 Ouvrir le manuel d’utilisation</a></div>
     ${aiConfigured() ? `<div class="card" style="padding:14px;margin-top:10px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Assistant IA</b><div class="hint" style="margin:2px 0 0">Avec Internet, une IA répond aux questions posées à l’assistant ❓. Les questions, le jeu en cours et vos règles maison lui sont envoyés. Désactivé : seulement l’assistant hors ligne.</div></div>
       <button class="switch ${aiPref() ? 'on' : ''}" data-a="iaToggle" aria-label="Assistant IA"></button></div></div>` : ''}
+    <h2 class="sec">Partager l’app</h2>
+    <div class="card" style="padding:14px"><div class="row" style="align-items:center;gap:14px">
+      <button data-a="qrBig" aria-label="Agrandir le code QR" style="width:112px;height:112px;flex:none;padding:6px;background:#fff;border-radius:12px;border:1px solid var(--line)">${QR_SVG}</button>
+      <div style="flex:1;min-width:0"><b>Faire installer Pointage</b><div class="hint" style="margin:2px 0 6px">Faites scanner ce code avec l’appareil photo d’un autre téléphone : il ouvre la page d’installation (Android ou iPhone).</div>
+      <div style="font-weight:700;color:var(--brand);word-break:break-all">tinyurl.com/pointagef</div></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px"><button class="btn primary" data-a="shareApp">📤 Partager le lien</button><button class="btn" data-a="qrBig">🔍 Agrandir le code</button></div></div>
     <h2 class="sec">Commentaires</h2>
     <div class="card" style="padding:14px">
       <p style="margin:0 0 12px">Un problème pendant une partie, ou une idée d’amélioration ? Envoyez-le directement au responsable de l’app.</p>
@@ -1842,6 +1851,7 @@ const HELP_FAQ = [
   {q:['manuel','mode d’emploi','instructions de l’app'], a:'Le bouton 📘 en haut de l’accueil ouvre le manuel complet, avec images et recherche (Internet requis).'},
   {q:['demander à gemini','utiliser une vraie IA','demander à chatgpt','intelligence artificielle'], a:'Après une question, le bouton ✨ « Demander à Gemini » (ou à une autre IA installée) envoie la question à l’IA du téléphone, avec le jeu en cours, vos règles maison et le lien du manuel. La réponse s’affiche dans cette app ; revenez ensuite avec le bouton Retour. Sur iPhone, choisissez l’app d’IA dans le menu Partager.'},
   {q:['que veut dire le drapeau','drapeau à damier','drapeau dans le tableau','symbole 🏁'], a:'Dans le tableau des manches, le drapeau 🏁 marque qui a terminé la manche : au Skip-Bo, celui qui a vidé son talon (ou son équipe) ; au Uno (façon officielle), celui qui n’avait plus de cartes et marque les cartes des autres ; au Skyjo, celui qui a retourné toutes ses cartes en premier (×2 si son pointage a été doublé). Une petite légende l’explique sous le tableau.'},
+  {q:['partager l’app','code qr','faire installer l’app à un ami','envoyer le lien d’installation'], a:'Réglages → Partager l’app : faites scanner le code QR avec l’appareil photo d’un autre téléphone, ou touchez « Partager le lien » pour envoyer tinyurl.com/pointagef.', go:'settings'},
   {q:['changer la voix','voix de l’assistant','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de l’assistant : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
@@ -2444,6 +2454,16 @@ const A = {
   askOpen: el => { speakStop(); tab(el.dataset.v); },
   askManual: el => openUrl(MANUAL_URL + '#' + el.dataset.v),
   askAi: el => askAiSend(el.dataset.v),
+  qrBig: () => openModal(`<div class="mhead"><h2>Installer Pointage</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody" style="text-align:center"><div style="background:#fff;padding:14px;border-radius:16px;max-width:320px;margin:0 auto">${QR_SVG}</div>
+    <p style="margin:14px 0 4px;font-weight:700;font-size:18px;color:var(--brand)">tinyurl.com/pointagef</p>
+    <p class="hint">Scannez avec l’appareil photo de l’autre téléphone, puis suivez la page d’installation.</p></div>`),
+  shareApp: () => { const text = 'Pointage, les feuilles de pointage de nos jeux de famille : ' + SHARE_URL;
+    if(bridge && bridge.shareText){ try{ bridge.shareText(text); return; }catch(e){} }
+    if(bridge && bridge.askAi){ try{ bridge.askAi(text, ''); return; }catch(e){} }
+    if(navigator.share){ navigator.share({ title: 'Pointage', text, url: SHARE_URL }).catch(() => {}); return; }
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SHARE_URL).then(() => toast('Lien copié : ' + SHARE_URL), () => toast(SHARE_URL));
+    else toast(SHARE_URL); },
   voiceCloud: () => { const on = vPref('cloud', '1') !== '1'; vSet('cloud', on ? '1' : '0'); speakStop(); render(); },
   voiceCloudName: el => { vSet('cloudName', el.dataset.v); audioUnlock(); speak(VOICE_TEST, { cloud: true, voice: el.dataset.v }); render(); },
   voiceRate: el => { vSet('rate', el.dataset.v); render(); },
