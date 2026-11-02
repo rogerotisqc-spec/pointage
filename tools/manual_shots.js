@@ -170,6 +170,15 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await shot('wizard-plis'); await tap('[data-a=wzSave]');
   await shot('wizard');
 
+  // ---------- Yahtzee ----------
+  await startGame('yahtzee', ['Roger', 'Marie', 'Léa']);
+  await p.evaluate(() => { const g = curGame(), k = g.players.map(x => x.key);
+    Object.assign(g.yz.sc[k[0]], { u1: 3, u2: 6, u4: 16, chance: 23 }); Object.assign(g.yz.sc[k[1]], { u3: 9, u5: 20, full: 25, gs: 40 }); Object.assign(g.yz.sc[k[2]], { u6: 24, yz: 50, brelan: 21 });
+    g.yz.cur = 0; S.yzView = k[0]; save(); render(); });
+  for (const v of [5, 5, 5, 3, 3]) await tap(`[data-a=yzFace][data-v="${v}"]`);
+  await shot('yahtzee');
+  await tap('[data-a=yzClear]'); await tap('[data-a=yzSheet]'); await p.waitForTimeout(300); await shot('yahtzee-feuille'); await tap('#modal [data-a=close]');
+
   // ---------- Acquire ----------
   await startGame('acquire', ['Roger', 'Marie', 'Léa']);
   await p.evaluate(() => { const g = curGame(), st = aqState(g), k = g.players.map(x => x.key);

@@ -73,3 +73,6 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   chaînes et leur gamme ; g.aq = {size, sh, log}. Prix (taille 2..5, 6-10, 11-20, 21-30, 31-40, 41+) × 100 $ + 100 $ par
   gamme ; primes 10× et 5× le prix ; égalités partagées, arrondies à la centaine supérieure. Pointage final =
   argent saisi + primes des chaînes actives + vente des actions ; enregistré comme une seule « manche ».
+- Yahtzee : règles officielles (13 cases, prime de 35 à 63 en section supérieure, full 25, petite suite 30, grande
+  suite 40, Yahtzee 50, prime de 100 par Yahtzee de plus si la case vaut 50, joker). g.yz = {cur, sc, yb} ; totals()
+  calcule à partir de g.yz. Dés transitoires dans S.yzDice ; S.yzView = joueur affiché.

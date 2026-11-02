@@ -225,6 +225,34 @@ table.sheet tfoot td.lbl{font-size:13px}
 .ptab .n{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}.ptab .n i{width:9px;height:9px;border-radius:50%}
 .ptab .v{font-size:17px;font-weight:800}
 .ptab.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--surface))}
+.yzbar{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 4px;scrollbar-width:none;position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--toph, 64px));z-index:5;background:var(--bg)}
+.yzchip{flex:1 0 96px;max-width:170px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 10px;border-radius:14px;background:var(--surface);border:2px solid var(--line);border-left:6px solid var(--pc);text-align:left}
+.yzchip.on{border-color:var(--pc);background:color-mix(in srgb,var(--pc) 12%,var(--surface));box-shadow:var(--shadow)}
+.yzchip .yzn{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.yzchip b{font-size:22px;line-height:1.1}.yzchip small{font-size:11px;color:var(--muted)}
+.yztray{margin:10px 16px 0;padding:12px}
+.yzdice{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.die.empty{border-style:dashed;color:var(--muted);font-size:22px;font-weight:700;display:grid;place-items:center}
+.yzfaces{display:flex;gap:6px;margin-top:10px;align-items:center}
+.yzfaces>button{flex:1;min-width:0;padding:0;border:none;background:none}.yzfaces>button:disabled{opacity:.35}
+.die.mini{max-width:none;border-width:1.5px;display:block;width:100%}
+.yzfaces .yzclr{flex:1.6;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);font-weight:600;font-size:13px}
+.yzsec{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 16px}.yzsec .hint{margin:0;font-size:12px}
+.yzprog{height:6px;border-radius:3px;background:var(--surface2);margin:4px 16px 8px;overflow:hidden}.yzprog i{display:block;height:100%;background:var(--brand)}
+.yzgrid{display:grid;gap:8px;margin:0 16px}.yzgrid.up{grid-template-columns:repeat(3,minmax(0,1fr))}.yzgrid.low{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:700px){ .yzgrid.up{grid-template-columns:repeat(6,minmax(0,1fr))} .yzgrid.low{grid-template-columns:repeat(4,minmax(0,1fr))} }
+.yzt{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:78px;padding:9px 10px;border-radius:14px;background:var(--surface);border:1.5px dashed var(--line);text-align:left;min-width:0}
+.yzt .yzl{font-weight:700;font-size:14px}.yzt .yzv{font-size:22px;font-weight:800;line-height:1.1;color:var(--muted)}.yzt small{font-size:10.5px;color:var(--muted);line-height:1.2}
+.yzt .yzico{position:absolute;top:8px;right:8px;width:24px}
+.yzt.done{border-style:solid;background:color-mix(in srgb,var(--brand) 10%,var(--surface))}.yzt.done .yzv{color:var(--ink)}
+.yzt.pot{border-style:solid;border-color:var(--brand)}.yzt.pot .yzv{color:var(--brand)}
+.yzt.zero .yzv{color:var(--danger)}
+.yzt:disabled{opacity:1}
+.yzpick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.yzpick button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-weight:600;font-size:13px}
+.yzpick button b{font-size:22px}
+.yztot{margin:14px 16px 0;padding:12px 14px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.yztot span{display:block;font-size:11px;color:var(--muted)}.yztot b{font-size:18px}
+.yztot .all{grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:8px;text-align:left}.yztot .all span{font-size:14px;color:var(--ink);font-weight:700}.yztot .all b{font-size:26px}
 .aqgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 16px 0}
 @media (min-width:700px){ .aqgrid{grid-template-columns:repeat(4,minmax(0,1fr))} }
 @media (min-width:1100px){ .aqgrid{grid-template-columns:repeat(7,minmax(0,1fr))} }
@@ -460,7 +488,7 @@ const $ = id => document.getElementById(id);
 const MANUAL_URL = 'https://rogerotisqc-spec.github.io/pointage/manuel/';
 const SHARE_URL = 'https://tinyurl.com/pointagef';   // page d'installation (code QR : tools/make_qr.py)
 const QR_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges"><rect width="33" height="33" fill="#fff"/><path d="M2 2h7v1h-7zM11 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM19 2h3v1h-3zM24 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h1v1h-1zM15 3h1v1h-1zM19 3h1v1h-1zM21 3h2v1h-2zM24 3h1v1h-1zM30 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM12 4h2v1h-2zM17 4h1v1h-1zM21 4h1v1h-1zM24 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM14 5h2v1h-2zM18 5h1v1h-1zM20 5h1v1h-1zM24 5h1v1h-1zM26 5h3v1h-3zM30 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h4v1h-4zM18 6h4v1h-4zM24 6h1v1h-1zM26 6h3v1h-3zM30 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM11 7h1v1h-1zM13 7h2v1h-2zM16 7h3v1h-3zM20 7h2v1h-2zM24 7h1v1h-1zM30 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h7v1h-7zM14 9h1v1h-1zM17 9h1v1h-1zM19 9h1v1h-1zM21 9h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM11 10h3v1h-3zM18 10h2v1h-2zM26 10h1v1h-1zM29 10h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM9 11h1v1h-1zM12 11h2v1h-2zM15 11h1v1h-1zM17 11h4v1h-4zM22 11h1v1h-1zM24 11h1v1h-1zM27 11h1v1h-1zM30 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM8 12h1v1h-1zM10 12h3v1h-3zM16 12h3v1h-3zM23 12h4v1h-4zM28 12h3v1h-3zM2 13h1v1h-1zM4 13h2v1h-2zM10 13h1v1h-1zM12 13h2v1h-2zM15 13h2v1h-2zM18 13h2v1h-2zM22 13h1v1h-1zM25 13h2v1h-2zM29 13h1v1h-1zM2 14h2v1h-2zM7 14h3v1h-3zM11 14h1v1h-1zM14 14h1v1h-1zM16 14h2v1h-2zM19 14h1v1h-1zM21 14h5v1h-5zM27 14h1v1h-1zM29 14h2v1h-2zM2 15h1v1h-1zM5 15h1v1h-1zM9 15h1v1h-1zM11 15h2v1h-2zM14 15h1v1h-1zM16 15h2v1h-2zM19 15h1v1h-1zM24 15h1v1h-1zM27 15h1v1h-1zM30 15h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM15 16h1v1h-1zM20 16h1v1h-1zM24 16h1v1h-1zM27 16h1v1h-1zM29 16h2v1h-2zM4 17h1v1h-1zM6 17h1v1h-1zM9 17h2v1h-2zM13 17h2v1h-2zM17 17h1v1h-1zM19 17h6v1h-6zM26 17h2v1h-2zM29 17h1v1h-1zM3 18h3v1h-3zM8 18h1v1h-1zM11 18h2v1h-2zM18 18h2v1h-2zM21 18h4v1h-4zM27 18h1v1h-1zM29 18h2v1h-2zM7 19h1v1h-1zM11 19h1v1h-1zM14 19h2v1h-2zM17 19h3v1h-3zM22 19h3v1h-3zM27 19h2v1h-2zM30 19h1v1h-1zM2 20h1v1h-1zM5 20h2v1h-2zM8 20h1v1h-1zM11 20h2v1h-2zM14 20h1v1h-1zM16 20h4v1h-4zM23 20h1v1h-1zM25 20h2v1h-2zM29 20h2v1h-2zM3 21h1v1h-1zM5 21h1v1h-1zM9 21h1v1h-1zM11 21h3v1h-3zM15 21h2v1h-2zM18 21h3v1h-3zM22 21h2v1h-2zM25 21h3v1h-3zM29 21h1v1h-1zM2 22h1v1h-1zM4 22h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM14 22h1v1h-1zM16 22h2v1h-2zM19 22h1v1h-1zM21 22h6v1h-6zM10 23h3v1h-3zM14 23h1v1h-1zM16 23h2v1h-2zM19 23h1v1h-1zM21 23h2v1h-2zM26 23h1v1h-1zM28 23h3v1h-3zM2 24h7v1h-7zM11 24h2v1h-2zM14 24h2v1h-2zM21 24h2v1h-2zM24 24h1v1h-1zM26 24h2v1h-2zM29 24h2v1h-2zM2 25h1v1h-1zM8 25h1v1h-1zM11 25h1v1h-1zM14 25h1v1h-1zM17 25h1v1h-1zM19 25h2v1h-2zM22 25h1v1h-1zM26 25h2v1h-2zM2 26h1v1h-1zM4 26h3v1h-3zM8 26h1v1h-1zM10 26h1v1h-1zM12 26h1v1h-1zM14 26h1v1h-1zM18 26h2v1h-2zM22 26h5v1h-5zM29 26h1v1h-1zM2 27h1v1h-1zM4 27h3v1h-3zM8 27h1v1h-1zM12 27h2v1h-2zM15 27h1v1h-1zM17 27h3v1h-3zM22 27h2v1h-2zM25 27h2v1h-2zM28 27h1v1h-1zM2 28h1v1h-1zM4 28h3v1h-3zM8 28h1v1h-1zM10 28h3v1h-3zM14 28h1v1h-1zM17 28h3v1h-3zM22 28h1v1h-1zM25 28h3v1h-3zM30 28h1v1h-1zM2 29h1v1h-1zM8 29h1v1h-1zM12 29h3v1h-3zM18 29h2v1h-2zM21 29h2v1h-2zM24 29h2v1h-2zM29 29h1v1h-1zM2 30h7v1h-7zM10 30h1v1h-1zM13 30h1v1h-1zM15 30h1v1h-1zM17 30h2v1h-2zM20 30h3v1h-3zM25 30h3v1h-3zM29 30h2v1h-2z" fill="#000"/></svg>';
-const ORDER = ['generic','farkle','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','skyjo','wizard','acquire'];
+const ORDER = ['generic','farkle','yahtzee','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','skyjo','wizard','acquire'];
 const GAMES = {
   generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
   playnine:   {name:'Play Nine',      color:'#2b8a3e', badge:'9',  desc:'9 trous · le plus bas gagne', round:'Trou', low:true, helper:'playnine'},
@@ -469,6 +497,7 @@ const GAMES = {
   skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'Individuel ou en équipes · 500', round:'Manche', target:500},
   millebornes:{name:'Mille Bornes',   color:'#d9a400', badge:'1000', desc:'Individuel ou en équipes · 5 000', round:'Manche', target:5000},
   phase10:    {name:'Phase 10',       color:'#6741d9', badge:'10', desc:'10 phases · le moins de points', round:'Manche', low:true, helper:'phase10'},
+  yahtzee:    {name:'Yahtzee',        color:'#ad1457', badge:'Y',  desc:'Dés tactiles · 13 cases · le plus haut gagne', round:'Tour'},
   acquire:    {name:'Acquire',        color:'#00695c', badge:'A$', desc:'Chaînes d’hôtels · le plus riche gagne', round:'Fusion'},
   wizard:     {name:'Wizard',         color:'#3949ab', badge:'W',  desc:'Mises et plis · le plus haut gagne', round:'Manche'},
   skyjo:      {name:'Skyjo',          color:'#3b8fd9', badge:'SK', desc:'Partie à 100 · le plus bas gagne', round:'Manche', target:100, low:true, helper:'skyjo'},
@@ -590,6 +619,19 @@ function rulesHtml(type, g){
     <h3>Pointage (cartes restées en main)</h3><table>
       <tr><td>1 à 9</td><td>5</td></tr><tr><td>10 à 12</td><td>10</td></tr><tr><td>Passe</td><td>15</td></tr><tr><td>Joker</td><td>25</td></tr></table>
     <p>Gagnant : le premier à réussir la phase 10. En cas d’égalité, le moins de points.</p>`;
+  case 'yahtzee': return `
+    <h3>But</h3><p>Avoir le plus haut total après avoir rempli les 13 cases de sa feuille.</p>
+    <h3>Un tour</h3><ul>
+      <li>On lance les 5 dés jusqu’à 3 fois ; entre les lancers, on garde les dés qu’on veut et on relance les autres.</li>
+      <li>Après le dernier lancer, on doit inscrire le résultat dans une case vide de son choix. Si la combinaison n’y est pas, on raye la case (0 point).</li></ul>
+    <h3>Section supérieure</h3><ul>
+      <li>As, Deux, Trois, Quatre, Cinq, Six : le total des dés de cette valeur (ex. : trois 4 = 12 au Quatre).</li>
+      <li>Prime de 35 points si la section supérieure totalise 63 ou plus (l’équivalent de trois dés de chaque valeur).</li></ul>
+    <h3>Section inférieure</h3><ul>
+      <li>Brelan : 3 dés pareils, on compte le total des 5 dés. Carré : 4 dés pareils, total des 5 dés.</li>
+      <li>Full : 3 pareils + 2 pareils = 25. Petite suite : 4 dés qui se suivent = 30. Grande suite : 5 dés qui se suivent = 40.</li>
+      <li>Yahtzee : 5 dés pareils = 50. Chance : le total des 5 dés, sans condition.</li></ul>
+    <h3>Yahtzee de plus</h3><p>Si on obtient un autre Yahtzee alors que la case Yahtzee contient déjà 50, on gagne une prime de 100 points et on inscrit le résultat dans une autre case ; il compte alors comme joker (full 25, petite suite 30, grande suite 40). Si la case Yahtzee a été rayée, pas de prime, mais le joker s’applique.</p>`;
   case 'acquire': return `
     <h3>But</h3><p>Être le joueur le plus riche à la fin : argent comptant + primes + vente de ses actions.</p>
     <h3>Le jeu</h3><p>De 2 à 6 joueurs. 7 chaînes d’hôtels en 3 gammes de prix ; 25 actions par chaîne. Chacun commence avec 6 000 $ et 6 tuiles.</p>
@@ -675,6 +717,7 @@ function rulesHtml(type, g){
 /* ====================== Calculs ====================== */
 function totals(g){
   const t = {}; g.players.forEach(p => t[p.key] = 0);
+  if(g.type === 'yahtzee'){ g.players.forEach(p => t[p.key] = yzParts(g, p.key).total); return t; }
   if(isTurnGame(g)) g.turns.forEach(x => { if(x.pk in t) t[x.pk] += x.pts; });
   else g.rounds.forEach(r => { for(const k in r.s) if(k in t) t[k] += Number(r.s[k])||0; });
   return t;
@@ -740,7 +783,7 @@ function endInfo(g){
     const w = g.players.filter(p => phaseOf(g,p.key) > 10);
     return w.length ? w.map(p=>p.name).join(', ') + ' a réussi la phase 10' : null;
   }
-  if(g.type === 'acquire') return null;
+  if(g.type === 'acquire' || g.type === 'yahtzee') return null;
   if(g.type === 'wizard') return g.rounds.length >= g.opts.rounds ? 'Les ' + g.opts.rounds + ' manches sont jouées' : null;
   if(g.opts.holes) return g.rounds.length >= g.opts.holes ? 'Les ' + g.opts.holes + ' trous sont joués' : null;
   const tg = g.type === 'farkle' ? g.opts.f.target : g.opts.target;
@@ -858,6 +901,7 @@ function render(top){
   if(v !== 'ask' && S.speaking) speakStop();
   $('app').innerHTML = html;
   if(top) window.scrollTo(0,0);
+  const hd = document.querySelector('#app .top'); if(hd) document.documentElement.style.setProperty('--toph', hd.offsetHeight + 'px');
   const keep = screenOnPref();
   if(bridge && bridge.keepScreenOn) try{ bridge.keepScreenOn(keep); }catch(e){}
   else wakeLock(keep);
@@ -1037,6 +1081,7 @@ function startGame(){
     g.team = true; g.seat = players; g.members = members; g.players = teams;
   }
   if(type === 'acquire') aqState(g);
+  if(type === 'yahtzee'){ yzState(g); g.yz.cur = Math.max(0, Math.min(players.length - 1, g.dealer0 || 0)); }
   db.games.push(g); save();
   S = {view:'sheet', gameId:g.id, stack:[{view:'home'}], turn:0, dice:[]};
   render(true);
@@ -1049,6 +1094,7 @@ function vSheet(){
   if(g.type === 'scrabble') return vScrabble(g);
   if(g.type === 'wizard') return vWizard(g);
   if(g.type === 'acquire') return vAcquire(g);
+  if(g.type === 'yahtzee') return vYahtzee(g);
   const G = GAMES[g.type], r = ranking(g), t = totals(g);
   const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
   const end = !g.finished && endInfo(g);
@@ -1154,6 +1200,130 @@ function vFarkle(g){
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
+/* ---------- Yahtzee ---------- */
+// Feuille tactile : bandeau des totaux (touchez un joueur pour voir sa feuille), dés à toucher, cases qui montrent les points possibles.
+const YZ_UP = [1, 2, 3, 4, 5, 6].map(n => ({id: 'u' + n, face: n, name: ['As', 'Deux', 'Trois', 'Quatre', 'Cinq', 'Six'][n - 1], hint: 'Total des ' + n}));
+const YZ_LOW = [
+  {id: 'brelan', name: 'Brelan', hint: '3 pareils · total des dés'}, {id: 'carre', name: 'Carré', hint: '4 pareils · total des dés'},
+  {id: 'full', name: 'Full', hint: '3 + 2 pareils · 25'}, {id: 'ps', name: 'Petite suite', hint: '4 qui se suivent · 30'},
+  {id: 'gs', name: 'Grande suite', hint: '5 qui se suivent · 40'}, {id: 'yz', name: 'Yahtzee', hint: '5 pareils · 50'},
+  {id: 'chance', name: 'Chance', hint: 'Total des dés'}];
+const YZ_ALL = YZ_UP.concat(YZ_LOW);
+const YZ_FIXED = {full: 25, ps: 30, gs: 40, yz: 50};
+function yzState(g){
+  if(!g.yz) g.yz = {cur: 0, sc: {}, yb: {}};
+  g.players.forEach(p => { if(!g.yz.sc[p.key]) g.yz.sc[p.key] = {}; if(g.yz.yb[p.key] == null) g.yz.yb[p.key] = 0; });
+  return g.yz;
+}
+function yzCounts(d){ const c = [0, 0, 0, 0, 0, 0, 0]; d.forEach(v => c[v]++); return c; }
+function yzIsYahtzee(d){ return d.length === 5 && d.every(v => v === d[0]); }
+// Joker : un Yahtzee de plus, quand la case Yahtzee est déjà remplie, compte comme full ou suite
+function yzJoker(g, pk, d){ return yzIsYahtzee(d) && yzState(g).sc[pk].yz != null; }
+function yzScore(cat, d, joker){
+  if(d.length !== 5) return null;
+  const c = yzCounts(d), sum = d.reduce((a, b) => a + b, 0), mx = Math.max(...c);
+  const has = s => s.every(v => c[v] > 0);
+  if(cat[0] === 'u') return c[+cat[1]] * +cat[1];
+  switch(cat){
+    case 'brelan': return mx >= 3 ? sum : 0;
+    case 'carre': return mx >= 4 ? sum : 0;
+    case 'full': return joker || (c.includes(3) && c.includes(2)) ? 25 : 0;
+    case 'ps': return joker || has([1,2,3,4]) || has([2,3,4,5]) || has([3,4,5,6]) ? 30 : 0;
+    case 'gs': return joker || has([1,2,3,4,5]) || has([2,3,4,5,6]) ? 40 : 0;
+    case 'yz': return mx === 5 ? 50 : 0;
+    case 'chance': return sum;
+  }
+  return 0;
+}
+function yzParts(g, pk){
+  const sc = yzState(g).sc[pk] || {}, up = YZ_UP.reduce((a, c) => a + (sc[c.id] || 0), 0);
+  const low = YZ_LOW.reduce((a, c) => a + (sc[c.id] || 0), 0), bonus = up >= 63 ? 35 : 0, yb = (yzState(g).yb[pk] || 0) * 100;
+  return {up, bonus, low, yb, total: up + bonus + low + yb, filled: YZ_ALL.filter(c => sc[c.id] != null).length};
+}
+function yzDone(g){ return g.players.every(p => yzParts(g, p.key).filled >= 13); }
+function yzDice(){ if(!S.yzDice) S.yzDice = []; return S.yzDice; }
+function vYahtzee(g){
+  const st = yzState(g), r = ranking(g), cur = g.players[st.cur] || g.players[0];
+  const view = g.players.find(p => p.key === S.yzView) || cur, pk = view.key, sc = st.sc[pk], parts = yzParts(g, pk);
+  const d = yzDice(), joker = yzJoker(g, pk, d), byKey = {}; r.forEach(x => byKey[x.p.key] = x);
+  const done = yzDone(g), anyScore = g.players.some(p => yzParts(g, p.key).filled);
+  const chips = `<div class="yzbar">${g.players.map(p => { const x = byKey[p.key], pt = yzParts(g, p.key);
+    return `<button class="yzchip ${p.key === pk ? 'on' : ''}" data-a="yzView" data-k="${p.key}" style="--pc:${p.color}">
+      <span class="yzn">${p.key === cur.key && !done ? '▶ ' : ''}${esc(p.name)}</span><b class="num-t">${fmt(pt.total)}</b>
+      <small>${anyScore && x.rank === 1 ? '★ ' : ''}${pt.filled}/13</small></button>`; }).join('')}</div>`;
+  const tile = c => { const v = sc[c.id], pot = v == null ? yzScore(c.id, d, joker) : null;
+    return `<button class="yzt ${v != null ? 'done' : ''} ${pot != null ? (pot ? 'pot' : 'zero') : ''}" data-a="yzCat" data-c="${c.id}" ${g.finished ? 'disabled' : ''}>
+      ${c.face ? `<span class="yzico">${dieHtml(c.face, 'mini', 'tabindex="-1"').replace('<button', '<span').replace('</button>', '</span>')}</span>` : ''}
+      <span class="yzl">${c.name}</span>
+      <span class="yzv num-t">${v != null ? (v === 0 && c.id !== 'chance' ? '<s>0</s>' : v) : pot != null ? (pot ? '+' + pot : '0') : '–'}</span>
+      <small>${v != null ? (v === 0 ? 'rayé' : 'inscrit') : c.hint}</small></button>`; };
+  const pct = Math.min(100, Math.round(parts.up / 63 * 100));
+  const tray = g.finished ? '' : `<div class="yztray card">
+      <div class="yzdice">${[0,1,2,3,4].map(i => d[i] ? dieHtml(d[i], '', `data-a="yzDie" data-i="${i}"`) : `<button class="die empty" data-a="yzDie" data-i="${i}" aria-label="Dé vide">?</button>`).join('')}</div>
+      <div class="yzfaces">${[1,2,3,4,5,6].map(v => `<button data-a="yzFace" data-v="${v}" ${d.length >= 5 ? 'disabled' : ''}>${dieHtml(v, 'mini', 'tabindex="-1"').replace('<button', '<span').replace('</button>', '</span>')}</button>`).join('')}
+        <button class="yzclr" data-a="yzClear" ${d.length ? '' : 'disabled'}>Effacer</button></div>
+      <p class="hint" style="margin:6px 0 0">${d.length < 5 ? (view.key === cur.key || done ? `Tour de <b>${esc(view.name)}</b> : touchez les 5 dés obtenus${d.length ? ` (${d.length}/5)` : ''}, ou touchez directement une case.` : `Feuille de <b>${esc(view.name)}</b> (pour corriger) · c’est au tour de <b>${esc(cur.name)}</b>, touchez son nom en haut.`) : `Touchez la case à inscrire${joker ? ' · Yahtzee de plus : joker' + (sc.yz === 50 ? ' et prime de 100' : '') : ''}.`}</p></div>`;
+  return `${topbar(gameName(g), 'Le plus haut total gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="yahtzee" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="yahtzee" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+    ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x => x.rank === 1).map(x => x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
+    ${done && !g.finished ? `<div class="banner"><div class="grow">🏁 Toutes les cases sont remplies</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
+    ${chips}${tray}
+    <div class="yzsec"><h2 class="sec">Section supérieure</h2><span class="hint">${parts.up >= 63 ? '✓ Prime de 35 gagnée' : `Prime de 35 à 63 : encore ${63 - parts.up}`}</span></div>
+    <div class="yzprog"><i style="width:${pct}%"></i></div>
+    <div class="yzgrid up">${YZ_UP.map(tile).join('')}</div>
+    <div class="yzsec"><h2 class="sec">Section inférieure</h2>${st.yb[pk] ? `<span class="hint">Primes Yahtzee : ${st.yb[pk]} × 100</span>` : ''}</div>
+    <div class="yzgrid low">${YZ_LOW.map(tile).join('')}</div>
+    <div class="card yztot"><div><span>Supérieure</span><b class="num-t">${parts.up}</b></div><div><span>Prime</span><b class="num-t">${parts.bonus}</b></div>
+      <div><span>Inférieure</span><b class="num-t">${parts.low}</b></div><div><span>Primes Yahtzee</span><b class="num-t">${parts.yb}</b></div>
+      <div class="all"><span>Total de ${esc(view.name)}</span><b class="num-t">${parts.total}</b></div></div>
+    <div style="margin:12px 16px 0"><button class="btn block" data-a="yzSheet">📋 Feuille complète de tous les joueurs</button></div>
+    <div style="height:40px"></div>`;
+}
+function yzRecord(g, pk, cat, v, d){
+  const st = yzState(g), sc = st.sc[pk];
+  if(d && d.length === 5 && yzIsYahtzee(d) && sc.yz === 50 && cat !== 'yz') st.yb[pk] = (st.yb[pk] || 0) + 1;
+  sc[cat] = v;
+  const p = g.players.find(x => x.key === pk), c = YZ_ALL.find(x => x.id === cat);
+  S.yzDice = [];
+  // tour suivant : seulement si on inscrivait pour le joueur dont c’est le tour
+  if(g.players[st.cur] && g.players[st.cur].key === pk){
+    for(let i = 1; i <= g.players.length; i++){ const j = (st.cur + i) % g.players.length; if(yzParts(g, g.players[j].key).filled < 13){ st.cur = j; break; } }
+  }
+  S.yzView = (g.players[st.cur] || p).key;
+  save(); render();
+  const next = g.players[st.cur];
+  toast(`${p.name} : ${v} au ${c.name}` + (yzDone(g) ? ' · partie finie !' : next && next.key !== pk ? ` · à ${next.name}` : ''));
+}
+function yzCatOpen(cat){
+  const g = curGame(), st = yzState(g), cur = g.players[st.cur], pk = (g.players.find(p => p.key === S.yzView) || cur).key, p = g.players.find(x => x.key === pk);
+  const c = YZ_ALL.find(x => x.id === cat), v = st.sc[pk][cat], d = yzDice();
+  if(v == null && d.length === 5){
+    const s = yzScore(cat, d, yzJoker(g, pk, d));
+    if(s === 0) return confirmBox(`Rayer ${c.name} pour ${p.name} (0 point) ?`, 'Rayer', () => yzRecord(g, pk, cat, 0, d), true);
+    return yzRecord(g, pk, cat, s, d);
+  }
+  M = {yzCat: {pk, cat}};
+  let body;
+  if(c.face) body = `<p class="hint" style="margin:0 0 8px">Combien de dés montrent ${c.face} ?</p><div class="yzpick">${[0,1,2,3,4,5].map(n => `<button data-a="yzSet" data-v="${n * c.face}">${n} dé${n > 1 ? 's' : ''}<b>${n * c.face}</b></button>`).join('')}</div>`;
+  else if(YZ_FIXED[cat]) body = `<div class="yzpick"><button data-a="yzSet" data-v="${YZ_FIXED[cat]}">Réussi<b>${YZ_FIXED[cat]}</b></button><button data-a="yzSet" data-v="0">Rayé<b>0</b></button></div>`;
+  else body = `<p class="hint" style="margin:0 0 8px">Total des 5 dés${cat === 'chance' ? '' : ' (0 si la combinaison n’y est pas)'} :</p>
+    <div class="row"><div class="num" style="flex:1"><input id="yzval" inputmode="numeric" placeholder="0" value="${v != null ? v : ''}"></div><button class="btn primary" data-a="yzSetInput">Inscrire</button></div>
+    ${cat !== 'chance' ? `<div class="yzpick" style="margin-top:10px"><button data-a="yzSet" data-v="0">Rayé<b>0</b></button></div>` : ''}`;
+  openModal(`<div class="mhead"><h2>${esc(c.name)} · ${esc(p.name)}</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody"><p class="hint" style="margin:0 0 10px">${esc(c.hint)}.${v != null ? ` Inscrit : <b>${v}</b>.` : ''}</p>${body}
+    ${v != null ? `<button class="btn block danger" style="margin-top:14px" data-a="yzErase">Effacer cette case</button>` : ''}</div>`);
+}
+function yzSheetHtml(g){
+  const st = yzState(g), P = g.players, cell = (pk, id) => { const v = st.sc[pk][id]; return v == null ? '<span style="color:var(--muted)">·</span>' : v; };
+  const row = (label, f, cls) => `<tr class="${cls || ''}"><td class="lbl">${label}</td>${P.map(p => `<td class="num-t">${f(p.key)}</td>`).join('')}</tr>`;
+  return `<div class="mhead"><h2>Feuille complète</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody"><div class="tablewrap" style="margin:0"><table class="sheet ${P.length >= 5 ? 'compact' : ''}"><thead><tr><th class="lbl"></th>${P.map(p => `<th>${esc(p.name)}</th>`).join('')}</tr></thead><tbody>
+    ${YZ_UP.map(c => row(c.name, pk => cell(pk, c.id))).join('')}
+    ${row('<b>Supérieure</b>', pk => '<b>' + yzParts(g, pk).up + '</b>', 'sub')}${row('Prime (63+)', pk => yzParts(g, pk).bonus)}
+    ${YZ_LOW.map(c => row(c.name, pk => cell(pk, c.id))).join('')}
+    ${row('Primes Yahtzee', pk => yzParts(g, pk).yb)}</tbody>
+    <tfoot>${row('Total', pk => yzParts(g, pk).total)}</tfoot></table></div></div>`;
+}
+
 /* ---------- Acquire ---------- */
 // Calculatrice et pointage (on garde l’argent papier). Prix : chart officiel (paliers 2, 3, 4, 5, 6-10, 11-20, 21-30, 31-40, 41+),
 // +100 $ par gamme (économique, standard, luxe). Prime majoritaire = 10 × prix, minoritaire = 5 × prix.
@@ -2107,6 +2277,7 @@ const HELP_FAQ = [
   {q:['que veut dire le drapeau','drapeau à damier','drapeau dans le tableau','symbole 🏁'], a:'Dans le tableau des manches, le drapeau 🏁 marque qui a terminé la manche : au Skip-Bo, celui qui a vidé son talon (ou son équipe) ; au Uno (façon officielle), celui qui n’avait plus de cartes et marque les cartes des autres ; au Skyjo, celui qui a retourné toutes ses cartes en premier (×2 si son pointage a été doublé). Une petite légende l’explique sous le tableau.'},
   {q:['partager l’app','code qr','faire installer l’app à un ami','envoyer le lien d’installation'], a:'Réglages → Partager l’app : faites scanner le code QR avec l’appareil photo d’un autre téléphone, ou touchez « Partager le lien » pour envoyer tinyurl.com/pointagef.', go:'settings'},
   {q:['fusion acquire','prime majoritaire','prime minoritaire','vendre échanger garder','pointage final acquire'], g:'acquire', a:'Au Acquire, touchez « Fusion », choisissez la chaîne qui disparaît et celle qui l’absorbe : l’app calcule les primes et ce que chacun reçoit en vendant ou en échangeant (2 pour 1) ses actions. À la fin, « Pointage final » : inscrivez l’argent papier de chacun, l’app ajoute les primes et la vente des actions.'},
+  {q:['yahtzee','inscrire les dés','rayer une case','prime de 35','prime yahtzee','joker'], g:'yahtzee', a:'Au Yahtzee, touchez les 5 dés obtenus (ou les faces en dessous) : chaque case vide montre alors les points possibles. Touchez la case à inscrire ; si elle vaut 0, l’app demande de confirmer pour la rayer. Sans dés, touchez directement une case pour l’inscrire. Le bandeau du haut donne les totaux ; touchez un joueur pour voir sa feuille. La prime de 35 vient à 63 points en section supérieure ; un Yahtzee de plus donne 100 points et sert de joker.'},
   {q:['changer la voix','voix de l’assistant','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de l’assistant : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
@@ -2125,7 +2296,7 @@ const HELP_GAMES = [
   ['playnine', /\bplay ?nine\b|\bplaynine\b/], ['flip7', /\bflip ?(7|sept)\b|\bflip\b/], ['uno', /\buno\b/],
   ['skipbo', /\bskip ?-?bo\b|\bskipbo\b|\bskip\b/], ['millebornes', /\b(mille|1000|1 000) ?bornes?\b|\bbornes?\b/],
   ['phase10', /\bphase ?(10|dix)?\b/], ['scrabble', /\bscrabble\b/], ['skyjo', /\bsky ?jo\b|\bskyjo\b/],
-  ['wizard', /\bwizard\b|\bsorcier\b|\bmagicien\b/], ['acquire', /\bacquire\b|\bacquerir\b/], ['farkle', /\bjeu de des\b|\b10 ?000\b|\bdix mille\b|\bfarkle\b/],
+  ['wizard', /\bwizard\b|\bsorcier\b|\bmagicien\b/], ['acquire', /\bacquire\b|\bacquerir\b/], ['yahtzee', /\by[ah]+t?z+e+\b|\byahtzee\b|\byams?\b/], ['farkle', /\bjeu de des\b|\b10 ?000\b|\bdix mille\b|\bfarkle\b/],
   ['generic', /\bpointage libre\b/]
 ];
 function hNorm(s){ return String(s||'').toLowerCase().replace(/[’']/g, ' ').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/(\d)[\s  ]+(?=\d{3}\b)/g, '$1').replace(/[^a-z0-9]+/g, ' ').trim(); }
@@ -2634,6 +2805,15 @@ const A = {
   rmGuest: (el, e) => { e.stopPropagation(); readSetupFields(); const k = el.dataset.k; S.guests = S.guests.filter(g => g.key !== k); S.sel = S.sel.filter(x => x !== k); render(); },
   addGuest: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const k = 'g' + uid(); S.guests.push({key:k, name:n}); S.sel.push(k); render(); },
   addRoster: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const p = newPlayer(n); if(p){ S.sel.push(p.id); render(); toast(n + ' ajouté à votre liste'); } },
+  yzView: el => { S.yzView = el.dataset.k; S.yzDice = []; render(); },
+  yzDie: el => { const d = yzDice(), i = +el.dataset.i; if(i >= d.length){ if(d.length < 5) d.push(1); } else d[i] = d[i] % 6 + 1; render(); },
+  yzFace: el => { const d = yzDice(); if(d.length < 5) d.push(+el.dataset.v); render(); },
+  yzClear: () => { S.yzDice = []; render(); },
+  yzCat: el => yzCatOpen(el.dataset.c),
+  yzSet: el => { const g = curGame(), m = M.yzCat; closeModal(); yzRecord(g, m.pk, m.cat, +el.dataset.v, null); },
+  yzSetInput: () => { const g = curGame(), m = M.yzCat, v = Math.max(0, Math.min(30, num($('yzval').value))); closeModal(); yzRecord(g, m.pk, m.cat, v, null); },
+  yzErase: () => { const g = curGame(), m = M.yzCat; closeModal(); delete yzState(g).sc[m.pk][m.cat]; save(); render(); toast('Case effacée'); },
+  yzSheet: () => openModal(yzSheetHtml(curGame())),
   setAqEd: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {ed: el.dataset.v}); render(); },
   aqSize: el => { const g = curGame(), st = aqState(g), id = el.dataset.c, s = st.size[id], d = +el.dataset.d;
     const n = d > 0 ? (s < 2 ? 2 : s + 1) : (s <= 2 ? 0 : s - 1);
@@ -2883,6 +3063,7 @@ document.addEventListener('keydown', e => {
   if(id === 'guestName'){ e.preventDefault(); A.addGuest(); }
   else if(id === 'newPlayer'){ e.preventDefault(); A.addPlayer(); }
   else if(id === 'askQ'){ e.preventDefault(); A.askGo(); }
+  else if(id === 'yzval'){ e.preventDefault(); A.yzSetInput(); }
   else if(id === 'pr'){ e.preventDefault(); A.promptOk(); }
   else if(id === 'fk-man'){ e.preventDefault(); A.fkAddMan(); }
   else if(id === 'scrWord'){ e.preventDefault(); clearTimeout(window.__scrT); render(); }

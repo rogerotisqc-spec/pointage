@@ -1,6 +1,6 @@
 {
- "version": "4.6",
- "notes": "Nouveau jeu : Acquire (chaînes d’hôtels, actions, calcul des fusions et pointage final ; 3 éditions).\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.6.apk",
- "size": 148313
+ "version": "4.7",
+ "notes": "Nouveau jeu : Yahtzee, avec dés à toucher, points possibles affichés sur chaque case et bandeau des totaux.\nManuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.7.apk",
+ "size": 152409
 }
