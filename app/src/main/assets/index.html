@@ -225,6 +225,19 @@ table.sheet tfoot td.lbl{font-size:13px}
 .ptab .n{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}.ptab .n i{width:9px;height:9px;border-radius:50%}
 .ptab .v{font-size:17px;font-weight:800}
 .ptab.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--surface))}
+.trpanel{margin:12px 16px 0;padding:14px}
+.trtop{display:flex;gap:14px;align-items:center}
+.trtri{width:96px;flex:none}.trtri polygon{fill:color-mix(in srgb,#6d4c41 10%,var(--surface));stroke:#6d4c41;stroke-width:4;stroke-linejoin:round}
+.trtri text{font:800 24px system-ui,sans-serif;fill:var(--ink);text-anchor:middle;dominant-baseline:middle}
+.trpts{font-size:34px;font-weight:800;line-height:1.1}
+.trnums{display:grid;grid-template-columns:repeat(6,1fr) 1.6fr;gap:6px;margin-top:12px}
+.trnums button{height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:22px;font-weight:800}
+.trnums button:disabled{opacity:.35}.trnums .trclr{font-size:13px;font-weight:600;background:var(--surface2)}
+.trrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}.trrow>span{font-weight:600;font-size:14px}
+.trseg{flex:1}.trseg button{min-height:44px;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}.trseg small{font-size:10px;color:var(--muted)}
+.trdraw{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.pscore.cur{outline:2px solid var(--brand);outline-offset:-2px}
+.li.trend{background:color-mix(in srgb,var(--brand) 7%,var(--surface))}
 .yzbar{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 4px;scrollbar-width:none;position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--toph, 64px));z-index:5;background:var(--bg)}
 .yzchip{flex:1 0 96px;max-width:170px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 10px;border-radius:14px;background:var(--surface);border:2px solid var(--line);border-left:6px solid var(--pc);text-align:left}
 .yzchip.on{border-color:var(--pc);background:color-mix(in srgb,var(--pc) 12%,var(--surface));box-shadow:var(--shadow)}
@@ -488,7 +501,7 @@ const $ = id => document.getElementById(id);
 const MANUAL_URL = 'https://rogerotisqc-spec.github.io/pointage/manuel/';
 const SHARE_URL = 'https://tinyurl.com/pointagef';   // page d'installation (code QR : tools/make_qr.py)
 const QR_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges"><rect width="33" height="33" fill="#fff"/><path d="M2 2h7v1h-7zM11 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM19 2h3v1h-3zM24 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h1v1h-1zM15 3h1v1h-1zM19 3h1v1h-1zM21 3h2v1h-2zM24 3h1v1h-1zM30 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM12 4h2v1h-2zM17 4h1v1h-1zM21 4h1v1h-1zM24 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM14 5h2v1h-2zM18 5h1v1h-1zM20 5h1v1h-1zM24 5h1v1h-1zM26 5h3v1h-3zM30 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h4v1h-4zM18 6h4v1h-4zM24 6h1v1h-1zM26 6h3v1h-3zM30 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM11 7h1v1h-1zM13 7h2v1h-2zM16 7h3v1h-3zM20 7h2v1h-2zM24 7h1v1h-1zM30 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h7v1h-7zM14 9h1v1h-1zM17 9h1v1h-1zM19 9h1v1h-1zM21 9h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM11 10h3v1h-3zM18 10h2v1h-2zM26 10h1v1h-1zM29 10h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM9 11h1v1h-1zM12 11h2v1h-2zM15 11h1v1h-1zM17 11h4v1h-4zM22 11h1v1h-1zM24 11h1v1h-1zM27 11h1v1h-1zM30 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM8 12h1v1h-1zM10 12h3v1h-3zM16 12h3v1h-3zM23 12h4v1h-4zM28 12h3v1h-3zM2 13h1v1h-1zM4 13h2v1h-2zM10 13h1v1h-1zM12 13h2v1h-2zM15 13h2v1h-2zM18 13h2v1h-2zM22 13h1v1h-1zM25 13h2v1h-2zM29 13h1v1h-1zM2 14h2v1h-2zM7 14h3v1h-3zM11 14h1v1h-1zM14 14h1v1h-1zM16 14h2v1h-2zM19 14h1v1h-1zM21 14h5v1h-5zM27 14h1v1h-1zM29 14h2v1h-2zM2 15h1v1h-1zM5 15h1v1h-1zM9 15h1v1h-1zM11 15h2v1h-2zM14 15h1v1h-1zM16 15h2v1h-2zM19 15h1v1h-1zM24 15h1v1h-1zM27 15h1v1h-1zM30 15h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM15 16h1v1h-1zM20 16h1v1h-1zM24 16h1v1h-1zM27 16h1v1h-1zM29 16h2v1h-2zM4 17h1v1h-1zM6 17h1v1h-1zM9 17h2v1h-2zM13 17h2v1h-2zM17 17h1v1h-1zM19 17h6v1h-6zM26 17h2v1h-2zM29 17h1v1h-1zM3 18h3v1h-3zM8 18h1v1h-1zM11 18h2v1h-2zM18 18h2v1h-2zM21 18h4v1h-4zM27 18h1v1h-1zM29 18h2v1h-2zM7 19h1v1h-1zM11 19h1v1h-1zM14 19h2v1h-2zM17 19h3v1h-3zM22 19h3v1h-3zM27 19h2v1h-2zM30 19h1v1h-1zM2 20h1v1h-1zM5 20h2v1h-2zM8 20h1v1h-1zM11 20h2v1h-2zM14 20h1v1h-1zM16 20h4v1h-4zM23 20h1v1h-1zM25 20h2v1h-2zM29 20h2v1h-2zM3 21h1v1h-1zM5 21h1v1h-1zM9 21h1v1h-1zM11 21h3v1h-3zM15 21h2v1h-2zM18 21h3v1h-3zM22 21h2v1h-2zM25 21h3v1h-3zM29 21h1v1h-1zM2 22h1v1h-1zM4 22h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM14 22h1v1h-1zM16 22h2v1h-2zM19 22h1v1h-1zM21 22h6v1h-6zM10 23h3v1h-3zM14 23h1v1h-1zM16 23h2v1h-2zM19 23h1v1h-1zM21 23h2v1h-2zM26 23h1v1h-1zM28 23h3v1h-3zM2 24h7v1h-7zM11 24h2v1h-2zM14 24h2v1h-2zM21 24h2v1h-2zM24 24h1v1h-1zM26 24h2v1h-2zM29 24h2v1h-2zM2 25h1v1h-1zM8 25h1v1h-1zM11 25h1v1h-1zM14 25h1v1h-1zM17 25h1v1h-1zM19 25h2v1h-2zM22 25h1v1h-1zM26 25h2v1h-2zM2 26h1v1h-1zM4 26h3v1h-3zM8 26h1v1h-1zM10 26h1v1h-1zM12 26h1v1h-1zM14 26h1v1h-1zM18 26h2v1h-2zM22 26h5v1h-5zM29 26h1v1h-1zM2 27h1v1h-1zM4 27h3v1h-3zM8 27h1v1h-1zM12 27h2v1h-2zM15 27h1v1h-1zM17 27h3v1h-3zM22 27h2v1h-2zM25 27h2v1h-2zM28 27h1v1h-1zM2 28h1v1h-1zM4 28h3v1h-3zM8 28h1v1h-1zM10 28h3v1h-3zM14 28h1v1h-1zM17 28h3v1h-3zM22 28h1v1h-1zM25 28h3v1h-3zM30 28h1v1h-1zM2 29h1v1h-1zM8 29h1v1h-1zM12 29h3v1h-3zM18 29h2v1h-2zM21 29h2v1h-2zM24 29h2v1h-2zM29 29h1v1h-1zM2 30h7v1h-7zM10 30h1v1h-1zM13 30h1v1h-1zM15 30h1v1h-1zM17 30h2v1h-2zM20 30h3v1h-3zM25 30h3v1h-3zM29 30h2v1h-2z" fill="#000"/></svg>';
-const ORDER = ['generic','farkle','yahtzee','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','skyjo','wizard','acquire'];
+const ORDER = ['generic','farkle','yahtzee','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','triomino','skyjo','wizard','acquire'];
 const GAMES = {
   generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
   playnine:   {name:'Play Nine',      color:'#2b8a3e', badge:'9',  desc:'9 trous · le plus bas gagne', round:'Trou', low:true, helper:'playnine'},
@@ -497,6 +510,7 @@ const GAMES = {
   skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'Individuel ou en équipes · 500', round:'Manche', target:500},
   millebornes:{name:'Mille Bornes',   color:'#d9a400', badge:'1000', desc:'Individuel ou en équipes · 5 000', round:'Manche', target:5000},
   phase10:    {name:'Phase 10',       color:'#6741d9', badge:'10', desc:'10 phases · le moins de points', round:'Manche', low:true, helper:'phase10'},
+  triomino:   {name:'Triomino',       color:'#6d4c41', badge:'△',  desc:'Pièces triangulaires · partie à 400', round:'Tour', target:400},
   yahtzee:    {name:'Yahtzee',        color:'#ad1457', badge:'Y',  desc:'Dés tactiles · 13 cases · le plus haut gagne', round:'Tour'},
   acquire:    {name:'Acquire',        color:'#00695c', badge:'A$', desc:'Chaînes d’hôtels · le plus riche gagne', round:'Fusion'},
   wizard:     {name:'Wizard',         color:'#3949ab', badge:'W',  desc:'Mises et plis · le plus haut gagne', round:'Manche'},
@@ -526,7 +540,7 @@ const PHASE_EXPL = ['Deux groupes de 3 cartes de même chiffre.','Trois cartes d
 const TEAM_GAMES = ['skipbo', 'millebornes'];
 function realPlayers(g){ return g.team ? g.seat : g.players; }
 function membersOf(g, p){ return g.team ? (g.members[p.key] || []) : [p]; }
-function isTurnGame(g){ return g.type === 'farkle' || g.type === 'scrabble'; }
+function isTurnGame(g){ return g.type === 'farkle' || g.type === 'scrabble' || g.type === 'triomino'; }
 function gameName(g){ return g.type === 'generic' ? (g.title || 'Pointage libre') : GAMES[g.type].name; }
 function houseKey(type, title){ return type === 'generic' ? 'generic:' + (title||'').trim().toLowerCase() : type; }
 
@@ -619,6 +633,19 @@ function rulesHtml(type, g){
     <h3>Pointage (cartes restées en main)</h3><table>
       <tr><td>1 à 9</td><td>5</td></tr><tr><td>10 à 12</td><td>10</td></tr><tr><td>Passe</td><td>15</td></tr><tr><td>Joker</td><td>25</td></tr></table>
     <p>Gagnant : le premier à réussir la phase 10. En cas d’égalité, le moins de points.</p>`;
+  case 'triomino': return `
+    <h3>But</h3><p>Être le premier à dépasser 400 points ; la manche en cours se termine, puis le plus haut total gagne.</p>
+    <h3>Mise en place</h3><p>56 pièces. À 2 joueurs, 9 pièces chacun ; à 3 ou 4 joueurs, 7 pièces chacun. Le reste forme la pioche.</p>
+    <h3>Un tour</h3><ul>
+      <li>On pose une pièce dont deux coins correspondent à une pièce déjà posée. On marque la somme des 3 chiffres de la pièce posée.</li>
+      <li>Si on ne peut pas jouer, on pioche : −5 points par pièce piochée, au plus 3. Si on ne peut toujours pas jouer après 3 pioches : −10 de plus (−25 en tout). Pioche vide : on passe sans pénalité.</li></ul>
+    <h3>Figures (bonus en plus de la pièce)</h3><ul>
+      <li>Pont : +40 (la pièce touche une pièce par un côté et une autre par la pointe opposée).</li>
+      <li>Hexagone fermé : +50 ; double hexagone : +60 ; triple hexagone : +70.</li></ul>
+    <h3>Fin de manche</h3><ul>
+      <li>Celui qui pose sa dernière pièce reçoit 25 points plus la somme des chiffres des pièces restantes chez les autres.</li>
+      <li>Manche bloquée (plus personne ne peut jouer) : chacun retire de son pointage la somme de ses pièces restantes.</li></ul>
+    <h3>Variante courante</h3><p>Bonus du triple de départ : la première pièce d’une manche, si c’est un triple, rapporte 10 points de plus ; le triple 0 vaut 40. À cocher au début de la partie.</p>`;
   case 'yahtzee': return `
     <h3>But</h3><p>Avoir le plus haut total après avoir rempli les 13 cases de sa feuille.</p>
     <h3>Un tour</h3><ul>
@@ -783,7 +810,7 @@ function endInfo(g){
     const w = g.players.filter(p => phaseOf(g,p.key) > 10);
     return w.length ? w.map(p=>p.name).join(', ') + ' a réussi la phase 10' : null;
   }
-  if(g.type === 'acquire' || g.type === 'yahtzee') return null;
+  if(g.type === 'acquire' || g.type === 'yahtzee' || g.type === 'triomino') return null;
   if(g.type === 'wizard') return g.rounds.length >= g.opts.rounds ? 'Les ' + g.opts.rounds + ' manches sont jouées' : null;
   if(g.opts.holes) return g.rounds.length >= g.opts.holes ? 'Les ' + g.opts.holes + ' trous sont joués' : null;
   const tg = g.type === 'farkle' ? g.opts.f.target : g.opts.target;
@@ -991,6 +1018,11 @@ function vSetup(){
       <label class="chk"><input type="checkbox" id="f-usePairs" ${f.usePairs?'checked':''}> Compter les trois paires</label>
       <p class="hint">Ces valeurs sont gardées pour les prochaines parties.</p></details>
       <p class="hint">Partie à ${fmt(f.target)} · ${fmt(f.entry)} pour entrer · −${fmt(f.pen)} à partir de ${fmt(f.penFrom)}</p>`;
+  } else if(type === 'triomino'){
+    const n = S.sel.length;
+    opts = `<label class="lbl" for="o-target">Partie à</label><input id="o-target" class="field" inputmode="numeric" value="${o.target||400}">
+      <label class="chk"><input type="checkbox" id="o-trstart" ${o.startBonus ? 'checked' : ''}> Bonus du triple de départ (+10 ; triple 0 = 40)</label>
+      <p class="hint">${n ? (n === 2 ? '2 joueurs : 9 pièces chacun.' : n <= 4 ? n + ' joueurs : 7 pièces chacun.' : n + ' joueurs : 6 pièces chacun (au-delà de 4, règle maison).') : 'De 2 à 4 joueurs selon les règles (plus en règle maison).'}</p>`;
   } else if(G.target){
     opts = `<label class="lbl" for="o-target">Partie à</label><input id="o-target" class="field" inputmode="numeric" value="${o.target||G.target}">`;
     if(TEAM_GAMES.includes(type)){
@@ -1034,6 +1066,7 @@ function readSetupFields(){
   if($('o-title')) S.setupTitle = $('o-title').value;
   if($('o-target')) o.target = num($('o-target').value);
   if($('o-wznoeven')) o.noEven = $('o-wznoeven').checked;
+  if($('o-trstart')) o.startBonus = $('o-trstart').checked;
   if($('f-target')){
     o.f = {}; ['target','entry','penFrom','pen','straight','pairs'].forEach(k => o.f[k] = num($('f-'+k).value));
     o.f.useStraight = $('f-useStraight').checked; o.f.usePairs = $('f-usePairs').checked;
@@ -1046,6 +1079,7 @@ function startGame(){
   if(type === 'skipbo' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
   if(type === 'wizard' && (S.sel.length < 3 || S.sel.length > 6)) return toast('Wizard se joue de 3 à 6 joueurs');
   if(type === 'acquire' && (S.sel.length < 2 || S.sel.length > 6)) return toast('Acquire se joue de 2 à 6 joueurs');
+  if(type === 'triomino' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
   if(TEAM_GAMES.includes(type) && o.teams && S.sel.length < (o.nteams || 2)) return toast('Il faut au moins un joueur par équipe');
   const players = S.sel.map(k => {
     const p = db.players.find(x => x.id === k);
@@ -1061,6 +1095,7 @@ function startGame(){
   else if(type === 'playnine'){ opts.holes = 9; }
   else if(type === 'scrabble'){ opts.simple = !!o.simple; }
   else if(type === 'wizard'){ opts.rounds = Math.floor(60 / S.sel.length); opts.noEven = !!o.noEven; }
+  else if(type === 'triomino'){ opts.target = o.target || 400; opts.startBonus = !!o.startBonus; }
   else if(type === 'acquire'){ opts.ed = AQ_EDS[o.ed] ? o.ed : (db.aqEd || 'classic'); db.aqEd = opts.ed; }
   else if(type === 'farkle'){ opts.f = Object.assign({}, FD, db.farkle, o.f||{}); db.farkle = Object.assign({}, opts.f); }
   else if(G.target){ opts.target = o.target || G.target; }
@@ -1081,6 +1116,7 @@ function startGame(){
     g.team = true; g.seat = players; g.members = members; g.players = teams;
   }
   if(type === 'acquire') aqState(g);
+  if(type === 'triomino') g.cur = Math.max(0, Math.min(players.length - 1, g.dealer0 || 0));
   if(type === 'yahtzee'){ yzState(g); g.yz.cur = Math.max(0, Math.min(players.length - 1, g.dealer0 || 0)); }
   db.games.push(g); save();
   S = {view:'sheet', gameId:g.id, stack:[{view:'home'}], turn:0, dice:[]};
@@ -1095,6 +1131,7 @@ function vSheet(){
   if(g.type === 'wizard') return vWizard(g);
   if(g.type === 'acquire') return vAcquire(g);
   if(g.type === 'yahtzee') return vYahtzee(g);
+  if(g.type === 'triomino') return vTriomino(g);
   const G = GAMES[g.type], r = ranking(g), t = totals(g);
   const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
   const end = !g.finished && endInfo(g);
@@ -1200,6 +1237,81 @@ function vFarkle(g){
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
+/* ---------- Triomino ---------- */
+// Pointage par tour (règles Goliath) : somme de la pièce, pont +40, hexagone +50 / double +60 / triple +70,
+// pioche −5 par pièce (au plus 3), −25 en tout si on ne peut toujours pas jouer. Fin de manche : +25 + pièces des autres.
+// Manche bloquée : chacun retire ses pièces restantes. Option : bonus du triple de départ (+10 ; triple 0 = 40).
+const TR_HEX = [[0, 'Aucun', 0], [1, 'Hexagone', 50], [2, 'Double', 60], [3, 'Triple', 70]];
+function trState(){ if(!S.tr) S.tr = {c: [], br: false, hex: 0, draws: 0, fail: false}; return S.tr; }
+function trRound(g){ return 1 + g.turns.filter(x => x.end).length; }
+function trFirstOfRound(g){ const last = g.turns[g.turns.length - 1]; return !g.turns.length || !!(last && last.end); }
+function trCalc(g){
+  const t = trState(), out = {pts: 0, parts: []};
+  if(t.fail){ out.pts = -25; out.parts.push('3 pioches sans pouvoir jouer : −25'); return out; }
+  if(t.draws){ out.pts -= 5 * t.draws; out.parts.push(`pioche ${t.draws} : −${5 * t.draws}`); }
+  if(t.c.length === 3){
+    const sum = t.c[0] + t.c[1] + t.c[2]; out.pts += sum; out.parts.push(`pièce ${t.c.join('-')} : ${sum}`);
+    const triple = t.c[0] === t.c[1] && t.c[1] === t.c[2];
+    if(g.opts.startBonus && triple && trFirstOfRound(g)){ const b = t.c[0] === 0 ? 40 : 10; out.pts += b; out.parts.push(`triple de départ : +${b}`); }
+    if(t.br){ out.pts += 40; out.parts.push('pont : +40'); }
+    if(t.hex){ const h = TR_HEX[t.hex]; out.pts += h[2]; out.parts.push(`${h[1].toLowerCase()}${t.hex > 1 ? ' hexagone' : ''} : +${h[2]}`); }
+  }
+  return out;
+}
+function trTriangle(c){
+  const v = i => c[i] == null ? '' : c[i];
+  return `<svg class="trtri" viewBox="0 0 120 106" aria-hidden="true"><polygon points="60,4 116,102 4,102" />
+    <text x="60" y="34">${v(0)}</text><text x="88" y="92">${v(1)}</text><text x="32" y="92">${v(2)}</text></svg>`;
+}
+function vTriomino(g){
+  const t = totals(g), r = ranking(g), cur = g.players[g.cur] || g.players[0], st = trState(), calc = trCalc(g);
+  const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
+  const target = g.opts.target || 400, over = g.players.filter(p => t[p.key] >= target);
+  const lastEnd = g.turns.length && g.turns[g.turns.length - 1].end;
+  const strip = `<div class="scores">${g.players.map(p => { const x = byKey[p.key];
+    return `<div class="pscore ${p.key === cur.key && !g.finished ? 'cur' : ''} ${x.rank === 1 && g.turns.length ? 'lead' : ''}"><span class="rk">${g.turns.length ? (x.rank === 1 ? '★' : '#' + x.rank) : ''}</span>
+      <div class="n"><i style="background:${p.color}"></i>${p.key === cur.key && !g.finished ? '▶ ' : ''}${esc(p.name)}</div><div class="v num-t ${x.total < 0 ? 'neg' : ''}">${fmt(x.total)}</div></div>`; }).join('')}</div>`;
+  const ready = st.fail || st.c.length === 3 || (st.draws && !st.c.length);
+  const panel = g.finished ? '' : `<div class="card trpanel">
+    <div class="trtop">${trTriangle(st.c)}<div class="grow"><div class="hint" style="margin:0">Tour de <b>${esc(cur.name)}</b> · manche ${trRound(g)}${trFirstOfRound(g) ? ' · pièce de départ' : ''}</div>
+      <div class="trpts num-t ${calc.pts < 0 ? 'neg' : ''}">${calc.pts > 0 ? '+' : ''}${calc.pts}</div><div class="hint" style="margin:0">${calc.parts.join(' · ') || 'Touchez les 3 chiffres de la pièce posée'}</div></div></div>
+    <div class="trnums">${[0,1,2,3,4,5].map(n => `<button data-a="trNum" data-v="${n}" ${st.c.length >= 3 || st.fail ? 'disabled' : ''}>${n}</button>`).join('')}<button class="trclr" data-a="trClear">Effacer</button></div>
+    <div class="trrow"><span>Figure</span><div class="seg trseg">${TR_HEX.map(([k, l, b]) => `<button data-a="trHex" data-v="${k}" class="${st.hex === k ? 'on' : ''}" ${st.fail ? 'disabled' : ''}>${l}${b ? `<small>+${b}</small>` : ''}</button>`).join('')}</div></div>
+    <div class="trrow"><label class="chk" style="margin:0"><input type="checkbox" id="trBridge" ${st.br ? 'checked' : ''} ${st.fail ? 'disabled' : ''}> Pont <small class="hint" style="margin:0">(+40)</small></label>
+      <div class="trdraw"><span>Pioche</span><div class="stepper"><button data-a="trDraw" data-d="-1" ${st.draws <= 0 || st.fail ? 'disabled' : ''}>−</button><b class="num-t">${st.draws}</b><button data-a="trDraw" data-d="1" ${st.draws >= 3 || st.fail ? 'disabled' : ''}>+</button></div></div></div>
+    ${st.draws >= 3 ? `<label class="chk" style="margin:8px 0 0"><input type="checkbox" id="trFail" ${st.fail ? 'checked' : ''}> Ne peut toujours pas jouer (−25 en tout)</label>` : ''}
+    <div style="display:flex;gap:8px;margin-top:12px"><button class="btn primary" style="flex:1" data-a="trSave" ${ready ? '' : 'disabled'}>Inscrire ${ready ? `${calc.pts > 0 ? '+' : ''}${calc.pts}` : ''}</button><button class="btn" data-a="trPass">Passer</button></div>
+    <button class="btn block" style="margin-top:8px" data-a="trEnd">🏁 Fin de manche</button></div>`;
+  const log = g.turns.length ? `<h2 class="sec" style="margin:20px 18px 8px">Derniers tours</h2><div class="card list log">${g.turns.slice().reverse().slice(0, 14).map((x, ri) => {
+      const p = g.players.find(p => p.key === x.pk) || {name: '?'}; const idx = g.turns.length - 1 - ri;
+      return `<div class="li ${x.end ? 'trend' : ''}"><div class="grow"><div class="t">${x.end ? '🏁 ' : ''}${esc(p.name)}</div>${x.note ? `<div class="s">${esc(x.note)}</div>` : ''}</div>
+        <div class="t num-t ${x.pts < 0 ? 'neg' : ''}">${x.pts > 0 ? '+' : ''}${fmt(x.pts)}</div>${idx === g.turns.length - 1 && !g.finished ? `<button class="btn sm" data-a="trUndo">Annuler</button>` : ''}</div>`; }).join('')}</div>` : '';
+  return `${topbar(gameName(g), `Partie à ${fmt(target)} · le plus haut gagne`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="triomino" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="triomino" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+    ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x => x.rank === 1).map(x => x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
+    ${!g.finished && over.length ? `<div class="banner"><div class="grow">🏁 ${esc(over.map(p => p.name).join(', '))} ${over.length > 1 ? 'dépassent' : 'dépasse'} ${fmt(target)} : ${lastEnd ? 'la partie est finie' : 'on termine cette manche'}</div>${lastEnd ? '<button class="btn sm primary" data-a="finish">Terminer</button>' : ''}</div>` : ''}
+    ${strip}${panel}${log}<div style="height:40px"></div>`;
+}
+function trNext(g){ g.cur = (g.cur + 1) % g.players.length; }
+function trEndOpen(){
+  const g = curGame();
+  M = {trEnd: {who: g.players[g.cur].key, rack: {}}};
+  openModal(`<div class="mhead"><h2>🏁 Fin de manche ${trRound(g)}</h2><button class="icon-btn" data-a="close">✕</button></div><div class="mbody" id="tr-body"></div>
+    <div class="mfoot"><button class="btn" data-a="close">Annuler</button><button class="btn primary" data-a="trEndSave">Enregistrer</button></div>`);
+  trEndRender();
+}
+function trEndRender(){
+  const g = curGame(), m = M.trEnd, blocked = m.who === '';
+  const others = g.players.filter(p => blocked || p.key !== m.who);
+  const sum = others.reduce((a, p) => a + (m.rack[p.key] || 0), 0);
+  $('tr-body').innerHTML = `<label class="lbl">Qui a posé sa dernière pièce ?</label>
+    <div class="aqpick">${g.players.map(p => `<button data-a="trWho" data-k="${p.key}" class="${m.who === p.key ? 'on' : ''}" style="--cc:${p.color}">${esc(p.name)}</button>`).join('')}<button data-a="trWho" data-k="" class="${blocked ? 'on' : ''}">Personne : manche bloquée</button></div>
+    <p class="hint">${blocked ? 'Manche bloquée : chacun retire de son pointage la somme des chiffres de ses pièces restantes.' : 'Celui qui termine reçoit 25 points plus la somme des chiffres des pièces qui restent chez les autres.'}</p>
+    <label class="lbl">Somme des chiffres des pièces restantes</label>
+    ${others.map(p => `<div class="row" style="align-items:center;gap:10px;margin-bottom:8px"><span class="av" style="background:${p.color};width:30px;height:30px;font-size:13px">${initial(p.name)}</span><span style="flex:1;font-weight:600">${esc(p.name)}</span>
+      <div class="num" style="width:110px"><input data-trrack="${p.key}" inputmode="numeric" placeholder="0" value="${m.rack[p.key] || ''}"></div></div>`).join('')}
+    <div class="mbtot"><span>${blocked ? 'Chacun perd ses propres points' : `${esc((g.players.find(p => p.key === m.who) || {}).name || '')} reçoit`}</span><b class="num-t" id="trEndTot">${blocked ? '' : '+' + (25 + sum)}</b></div>`;
+}
+
 /* ---------- Yahtzee ---------- */
 // Feuille tactile : bandeau des totaux (touchez un joueur pour voir sa feuille), dés à toucher, cases qui montrent les points possibles.
 const YZ_UP = [1, 2, 3, 4, 5, 6].map(n => ({id: 'u' + n, face: n, name: ['As', 'Deux', 'Trois', 'Quatre', 'Cinq', 'Six'][n - 1], hint: 'Total des ' + n}));
@@ -2278,6 +2390,7 @@ const HELP_FAQ = [
   {q:['partager l’app','code qr','faire installer l’app à un ami','envoyer le lien d’installation'], a:'Réglages → Partager l’app : faites scanner le code QR avec l’appareil photo d’un autre téléphone, ou touchez « Partager le lien » pour envoyer tinyurl.com/pointagef.', go:'settings'},
   {q:['fusion acquire','prime majoritaire','prime minoritaire','vendre échanger garder','pointage final acquire'], g:'acquire', a:'Au Acquire, touchez « Fusion », choisissez la chaîne qui disparaît et celle qui l’absorbe : l’app calcule les primes et ce que chacun reçoit en vendant ou en échangeant (2 pour 1) ses actions. À la fin, « Pointage final » : inscrivez l’argent papier de chacun, l’app ajoute les primes et la vente des actions.'},
   {q:['yahtzee','inscrire les dés','rayer une case','prime de 35','prime yahtzee','joker'], g:'yahtzee', a:'Au Yahtzee, touchez les 5 dés obtenus (ou les faces en dessous) : chaque case vide montre alors les points possibles. Touchez la case à inscrire ; si elle vaut 0, l’app demande de confirmer pour la rayer. Sans dés, touchez directement une case pour l’inscrire. Le bandeau du haut donne les totaux ; touchez un joueur pour voir sa feuille. La prime de 35 vient à 63 points en section supérieure ; un Yahtzee de plus donne 100 points et sert de joker.'},
+  {q:['triomino','pont','hexagone','pioche triomino','fin de manche triomino','manche bloquée'], g:'triomino', a:'Au Triomino, touchez les 3 chiffres de la pièce posée : l’app additionne. Ajoutez la figure (hexagone +50, double +60, triple +70) ou le pont (+40), et les pièces piochées (−5 chacune ; −25 en tout si on ne peut toujours pas jouer). « Inscrire » passe au joueur suivant. « Fin de manche » : choisissez qui a terminé (25 + pièces des autres) ou « manche bloquée » (chacun perd ses pièces restantes).'},
   {q:['changer la voix','voix de l’assistant','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de l’assistant : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
@@ -2296,7 +2409,7 @@ const HELP_GAMES = [
   ['playnine', /\bplay ?nine\b|\bplaynine\b/], ['flip7', /\bflip ?(7|sept)\b|\bflip\b/], ['uno', /\buno\b/],
   ['skipbo', /\bskip ?-?bo\b|\bskipbo\b|\bskip\b/], ['millebornes', /\b(mille|1000|1 000) ?bornes?\b|\bbornes?\b/],
   ['phase10', /\bphase ?(10|dix)?\b/], ['scrabble', /\bscrabble\b/], ['skyjo', /\bsky ?jo\b|\bskyjo\b/],
-  ['wizard', /\bwizard\b|\bsorcier\b|\bmagicien\b/], ['acquire', /\bacquire\b|\bacquerir\b/], ['yahtzee', /\by[ah]+t?z+e+\b|\byahtzee\b|\byams?\b/], ['farkle', /\bjeu de des\b|\b10 ?000\b|\bdix mille\b|\bfarkle\b/],
+  ['wizard', /\bwizard\b|\bsorcier\b|\bmagicien\b/], ['acquire', /\bacquire\b|\bacquerir\b/], ['triomino', /\btri ?o?minos?\b|\btri ?dominos?\b/], ['yahtzee', /\by[ah]+t?z+e+\b|\byahtzee\b|\byams?\b/], ['farkle', /\bjeu de des\b|\b10 ?000\b|\bdix mille\b|\bfarkle\b/],
   ['generic', /\bpointage libre\b/]
 ];
 function hNorm(s){ return String(s||'').toLowerCase().replace(/[’']/g, ' ').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/(\d)[\s  ]+(?=\d{3}\b)/g, '$1').replace(/[^a-z0-9]+/g, ' ').trim(); }
@@ -2805,6 +2918,25 @@ const A = {
   rmGuest: (el, e) => { e.stopPropagation(); readSetupFields(); const k = el.dataset.k; S.guests = S.guests.filter(g => g.key !== k); S.sel = S.sel.filter(x => x !== k); render(); },
   addGuest: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const k = 'g' + uid(); S.guests.push({key:k, name:n}); S.sel.push(k); render(); },
   addRoster: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const p = newPlayer(n); if(p){ S.sel.push(p.id); render(); toast(n + ' ajouté à votre liste'); } },
+  trNum: el => { const t = trState(); if(t.c.length < 3) t.c.push(+el.dataset.v); render(); },
+  trClear: () => { S.tr = null; render(); },
+  trHex: el => { trState().hex = +el.dataset.v; render(); },
+  trDraw: el => { const t = trState(); t.draws = Math.max(0, Math.min(3, t.draws + (+el.dataset.d))); if(t.draws < 3) t.fail = false; render(); },
+  trSave: () => { const g = curGame(), t = trState(), c = trCalc(g), p = g.players[g.cur];
+    g.turns.push({pk: p.key, pts: c.pts, note: c.parts.join(' · '), t: Date.now(), tile: t.c.slice()});
+    S.tr = null; trNext(g); save(); render(); toast(`${p.name} : ${c.pts > 0 ? '+' : ''}${c.pts} · à ${g.players[g.cur].name}`); },
+  trPass: () => { const g = curGame(), p = g.players[g.cur]; S.tr = null; trNext(g); save(); render(); toast(`${p.name} passe (pioche vide) · à ${g.players[g.cur].name}`); },
+  trUndo: () => { const g = curGame(), x = g.turns.pop(); if(!x) return; if(x.end) while(g.turns.length && g.turns[g.turns.length - 1].t === x.t) g.turns.pop(); const i = g.players.findIndex(p => p.key === x.pk); if(i >= 0 && !x.end) g.cur = i; S.tr = null; save(); render(); },
+  trEnd: () => trEndOpen(),
+  trWho: el => { M.trEnd.who = el.dataset.k; trEndRender(); },
+  trEndSave: () => { const g = curGame(), m = M.trEnd, blocked = m.who === '', now = Date.now(), rd = trRound(g);
+    if(blocked){ g.players.forEach((p, i) => { const v = m.rack[p.key] || 0; g.turns.push({pk: p.key, pts: -v, note: `Manche ${rd} bloquée : pièces restantes −${v}`, t: now, end: i === g.players.length - 1}); }); }
+    else { const sum = g.players.filter(p => p.key !== m.who).reduce((a, p) => a + (m.rack[p.key] || 0), 0);
+      g.turns.push({pk: m.who, pts: 25 + sum, note: `Fin de manche ${rd} : 25 + ${sum} des autres`, t: now, end: true});
+      const i = g.players.findIndex(p => p.key === m.who); if(i >= 0) g.cur = i; }
+    S.tr = null; closeModal(); save(); render();
+    const tg = g.opts.target || 400, t = totals(g); const over = g.players.filter(p => t[p.key] >= tg);
+    toast(over.length ? `Manche ${rd} terminée · ${over.map(p => p.name).join(', ')} dépasse ${tg} !` : `Manche ${rd} terminée · nouvelle manche`); },
   yzView: el => { S.yzView = el.dataset.k; S.yzDice = []; render(); },
   yzDie: el => { const d = yzDice(), i = +el.dataset.i; if(i >= d.length){ if(d.length < 5) d.push(1); } else d[i] = d[i] % 6 + 1; render(); },
   yzFace: el => { const d = yzDice(); if(d.length < 5) d.push(+el.dataset.v); render(); },
@@ -3041,6 +3173,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => {
   const t = e.target;
+  if(t.dataset && t.dataset.trrack && M && M.trEnd){ const g = curGame(), m = M.trEnd; m.rack[t.dataset.trrack] = Math.max(0, num(t.value)); const el = $('trEndTot'); if(el && m.who !== '') el.textContent = '+' + (25 + g.players.filter(p => p.key !== m.who).reduce((a, p) => a + (m.rack[p.key] || 0), 0)); }
   if(t.dataset && t.dataset.aqcash && M && M.aqf){ const g = curGame(); M.aqf.cash[t.dataset.aqcash] = num(t.value); const c = aqFinalCalc(g, M.aqf.cash); g.players.forEach(p => { const el = $('aqt-' + p.key); if(el) el.textContent = aqMoney(c.total[p.key]); }); }
   if(t.id === 'house'){ const v = t.value; if(v.trim()) db.house[t.dataset.hk] = v; else delete db.house[t.dataset.hk]; save(); }
   if(t.dataset && t.dataset.sb) sbUpdate();
@@ -3053,6 +3186,8 @@ document.addEventListener('change', e => {
   if(t.name === 'sbw') sbUpdate();
   if(t.name === 'unow') unoUpdate();
   if(t.dataset && t.dataset.aqcash && M && M.aqf) aqFinalRender();
+  if(t.id === 'trBridge'){ trState().br = t.checked; render(); }
+  if(t.id === 'trFail'){ trState().fail = t.checked; render(); }
   if(t.id === 'voiceDev'){ vSet('device', t.value); speak(VOICE_TEST, { device: true }); }
   if(t.id === 'scrBingo') { scrState().bingo = t.checked; render(); }
   if(t.id === 'importFile' && t.files[0]){ const r = new FileReader(); r.onload = () => window.onImportData(r.result); r.readAsText(t.files[0]); }

@@ -76,3 +76,7 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 - Yahtzee : règles officielles (13 cases, prime de 35 à 63 en section supérieure, full 25, petite suite 30, grande
   suite 40, Yahtzee 50, prime de 100 par Yahtzee de plus si la case vaut 50, joker). g.yz = {cur, sc, yb} ; totals()
   calcule à partir de g.yz. Dés transitoires dans S.yzDice ; S.yzView = joueur affiché.
+- Triomino : règles Goliath (pièce = somme des 3 chiffres, pont +40, hexagone +50 / double +60 / triple +70,
+  pioche −5 par pièce au plus 3, −25 en tout si on ne peut pas jouer ; fin de manche : 25 + pièces des autres ;
+  manche bloquée : chacun retire ses pièces). Partie à 400 (manche terminée, plus haut total). Variante cochable :
+  bonus du triple de départ (+10, triple 0 = 40). Jeu « par tours » (isTurnGame) : g.turns, x.end marque une fin de manche.

@@ -1,6 +1,6 @@
 {
- "version": "4.7",
- "notes": "Nouveau jeu : Yahtzee, avec dés à toucher, points possibles affichés sur chaque case et bandeau des totaux.\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.7.apk",
- "size": 152409
+ "version": "4.8",
+ "notes": "Nouveau jeu : Triomino, avec calcul automatique (pièce, pont, hexagones, pioche, fin de manche, manche bloquée).\nManuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.8.apk",
+ "size": 156505
 }

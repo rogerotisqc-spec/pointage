@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 4.7</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 4.8</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -127,6 +127,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><a href="#scrabble">Scrabble</a></li>
         <li><a href="#skyjo">Skyjo</a></li>
         <li><a href="#wizard">Wizard</a></li>
+        <li><a href="#triomino">Triomino</a></li>
         <li><a href="#yahtzee">Yahtzee</a></li>
         <li><a href="#acquire">Acquire</a></li>
         <li><a href="#des">Jeu de dés</a></li>
@@ -158,7 +159,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <h1>Bienvenue dans Pointage</h1>
     <p>Pointage remplace les feuilles de papier pour les jeux de société de la famille. L’app calcule les totaux, suit qui brasse, connaît les règles de pointage de chaque jeu et garde l’historique de toutes les parties.</p>
     <p>Utilisez la <b>table des matières</b> pour aller à une fonction, ou la <b>recherche</b> en haut pour trouver un mot (par exemple « joker », « brasser » ou « sauvegarde »).</p>
-    <div class="chipsrow"><a href="#libre">Pointage libre</a><a href="#playnine">Play Nine</a><a href="#flip7">Flip 7</a><a href="#uno">Uno</a><a href="#skipbo">Skip-Bo</a><a href="#millebornes">Mille Bornes</a><a href="#phase10">Phase 10</a><a href="#scrabble">Scrabble</a><a href="#skyjo">Skyjo</a><a href="#wizard">Wizard</a><a href="#yahtzee">Yahtzee</a><a href="#acquire">Acquire</a><a href="#des">Jeu de dés</a></div>
+    <div class="chipsrow"><a href="#libre">Pointage libre</a><a href="#playnine">Play Nine</a><a href="#flip7">Flip 7</a><a href="#uno">Uno</a><a href="#skipbo">Skip-Bo</a><a href="#millebornes">Mille Bornes</a><a href="#phase10">Phase 10</a><a href="#scrabble">Scrabble</a><a href="#skyjo">Skyjo</a><a href="#wizard">Wizard</a><a href="#triomino">Triomino</a><a href="#yahtzee">Yahtzee</a><a href="#acquire">Acquire</a><a href="#des">Jeu de dés</a></div>
   </div>
 
   <section class="s" id="installer" data-kw="installer installation télécharger apk android iphone ipad ordinateur pc lien qr code tinyurl écran d'accueil play protect sources inconnues">
@@ -343,6 +344,16 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
       <p><b>Pointage</b> : mise réussie = 20 points + 10 par pli ; mise ratée = −10 par pli d’écart. Dans le tableau, chaque case montre « mise / plis » et un ✓ quand c’est réussi. Touchez une manche pour la corriger.</p>
     </div><div class="figs"><figure><img src="img/wizard-mises.webp" alt="Mises Wizard" loading="lazy"><figcaption>Les mises de la manche 3 (3 cartes).</figcaption></figure><figure><img src="img/wizard-plis.webp" alt="Plis faits Wizard" loading="lazy"><figcaption>Les plis faits et les points calculés.</figcaption></figure><figure><img src="img/wizard.webp" alt="Feuille Wizard" loading="lazy"><figcaption>Le tableau : « mise / plis » sous chaque pointage.</figcaption></figure></div></div>
 
+    <h3 id="triomino">Triomino</h3>
+    <div class="row2 many"><div class="txt" data-kw="triomino triominos tri-ominos tridomino pièce triangle pont hexagone double triple pioche fin de manche bloquée 400 bonus départ triple">
+      <p>Partie à 400 (modifiable). L’app calcule les points selon les règles officielles. À la préparation, vous pouvez cocher la variante du <b>bonus du triple de départ</b> (+10 ; triple 0 = 40).</p>
+      <ol><li>C’est au joueur marqué ▶ : touchez les <b>3 chiffres</b> de la pièce posée (le triangle les montre) ; l’app fait la somme.</li>
+        <li>Ajoutez au besoin la <b>figure</b> (hexagone +50, double +60, triple +70), le <b>pont</b> (+40) et les pièces <b>piochées</b> (−5 chacune). Après 3 pioches, cochez « Ne peut toujours pas jouer » : −25 en tout, sans pièce.</li>
+        <li><span class="ui">Inscrire</span> ajoute les points et passe au joueur suivant. <span class="ui">Passer</span> sert quand la pioche est vide.</li>
+        <li><span class="ui">🏁 Fin de manche</span> : choisissez qui a posé sa dernière pièce et inscrivez la somme des chiffres des pièces qui restent aux autres : il reçoit 25 + cette somme. Si plus personne ne peut jouer, choisissez « manche bloquée » : chacun perd la somme de ses pièces restantes.</li></ol>
+      <p>Quand quelqu’un dépasse 400, un bandeau le signale : on termine la manche, puis le plus haut total gagne. « Annuler » dans la liste des tours retire le dernier tour (ou toute la fin de manche).</p>
+    </div><div class="figs"><figure><img src="img/triomino.webp" alt="Feuille Triomino" loading="lazy"><figcaption>Une pièce 5-5-5 avec un hexagone.</figcaption></figure><figure><img src="img/triomino-fin.webp" alt="Fin de manche Triomino" loading="lazy"><figcaption>La fin de manche : 25 + les pièces des autres.</figcaption></figure></div></div>
+
     <h3 id="yahtzee">Yahtzee</h3>
     <div class="row2 many"><div class="txt" data-kw="yahtzee yatzee yams dés 13 cases brelan carré full petite suite grande suite chance prime 35 63 section supérieure inférieure rayer joker prime yahtzee 100 bandeau totaux">
       <p>Une feuille très tactile, pour autant de joueurs que vous voulez. Le <b>bandeau du haut</b> montre le total de chacun (▶ : c’est son tour ; ★ : en tête ; « 3/13 » : cases remplies). Il reste visible en défilant ; touchez un joueur pour voir sa feuille.</p>
@@ -514,7 +525,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 4.7 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 4.8 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){

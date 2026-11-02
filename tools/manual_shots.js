@@ -170,6 +170,19 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await shot('wizard-plis'); await tap('[data-a=wzSave]');
   await shot('wizard');
 
+  // ---------- Triomino ----------
+  await startGame('triomino', ['Roger', 'Marie', 'Léa']);
+  await p.evaluate(() => { const g = curGame(), k = g.players.map(x => x.key), now = Date.now();
+    g.turns.push({ pk: k[0], pts: 12, note: 'pièce 3-4-5 : 12', t: now }, { pk: k[1], pts: 59, note: 'pièce 2-3-4 : 9 · hexagone : +50', t: now + 1 }, { pk: k[2], pts: -10, note: 'pioche 2 : −10', t: now + 2 });
+    g.cur = 0; save(); render(); });
+  for (const v of [5, 5, 5]) await tap(`[data-a=trNum][data-v="${v}"]`);
+  await tap('[data-a=trHex][data-v="1"]');
+  await shot('triomino');
+  await tap('[data-a=trClear]'); await tap('[data-a=trEnd]');
+  const trk = await p.evaluate(() => curGame().players.map(x => x.key));
+  await tap(`[data-a=trWho][data-k="${trk[1]}"]`); await p.fill(`[data-trrack="${trk[0]}"]`, '14'); await p.fill(`[data-trrack="${trk[2]}"]`, '9');
+  await shot('triomino-fin'); await tap('#modal [data-a=close]');
+
   // ---------- Yahtzee ----------
   await startGame('yahtzee', ['Roger', 'Marie', 'Léa']);
   await p.evaluate(() => { const g = curGame(), k = g.players.map(x => x.key);
