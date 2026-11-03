@@ -1,6 +1,6 @@
 {
- "version": "5.0",
- "notes": "L’assistant s’appelle maintenant Ludo : bouton rouge « Ludo » avec l’étiquette IA, partout dans l’app.\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.0.apk",
- "size": 160601
+ "version": "5.1",
+ "notes": "Nouveau : Ludo analyse vos parties ! Sur l'écran de résultat (ou dans le menu ⋮), touchez « Analyse de la partie par Ludo » : points tournants, erreurs et un conseil pour chaque joueur.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.1.apk",
+ "size": 164697
 }

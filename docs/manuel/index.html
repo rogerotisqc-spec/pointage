@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 5.0</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 5.1</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -136,7 +136,8 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
       </ol></li>
     <li><a href="#regles">8. Règles et règles maison</a>
       <ol><li><a href="#assistant">Ludo, l’assistant : poser une question</a></li></ol></li>
-    <li><a href="#resultat">9. Résultat et graphique</a></li>
+    <li><a href="#resultat">9. Résultat et graphique</a>
+      <ol><li><a href="#analyse">Analyse de la partie par Ludo</a></li></ol></li>
     <li><a href="#historique">10. Historique</a></li>
     <li><a href="#stats">11. Statistiques</a></li>
     <li><a href="#reglages">12. Réglages</a>
@@ -424,17 +425,28 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><b>Avec Internet, Ludo répond grâce à une IA</b> (« Ludo réfléchit… », quelques secondes). Il connaît le jeu en cours, <b>vos règles maison</b> (elles passent en premier), le résumé des règles de l’app et tout ce manuel ; au besoin, il vérifie les règles officielles sur Internet et indique ses sources. Il sait aussi faire les calculs de points.</li>
         <li>Si vous avez parlé, la réponse est lue à voix haute, avec une voix naturelle quand il y a Internet (voir <a href="#voixia">Voix de Ludo</a>). <span class="ui">🔊 Lire à voix haute</span> la relit ; <span class="ui">⏹ Arrêter la lecture</span> l’interrompt.</li>
         <li>Vous pouvez enchaîner avec une <b>question de suivi</b> (« et si j’avais fait 2 plis ? ») : Ludo se souvient des trois dernières questions tant que l’écran reste ouvert.</li></ol>
+      <p>Ludo sait aussi <b>analyser une partie</b> : points tournants, erreurs et conseils pour la prochaine fois (voir <a href="#analyse">Analyse de la partie par Ludo</a>).</p>
       <p><b>Sans connexion</b> (ou si l’IA ne répond pas, est trop lente, ou si vous touchez <span class="ui">Annuler</span>), Ludo passe en <b>mode hors ligne</b> et un message l’indique. Il cherche alors le bon passage dans les règles, vos règles maison et ce manuel, mais ne fait pas de calculs. Ses <b>Autres réponses possibles</b> et ses boutons mènent au bon écran ou au manuel. Le bouton <span class="ui">📖 Réponse hors ligne</span> sous une réponse de l’IA montre aussi ce qu’il trouve en mode hors ligne.</p>
       <p><b>À savoir</b> : Ludo peut se tromper ; en cas de doute, vérifiez dans les règles 📖. Les questions, le jeu en cours et vos règles maison sont envoyés à l’IA (Claude, d’Anthropic) par un relais qui limite le nombre de questions par jour. Ludo utilise le modèle Claude Haiku. Pour utiliser seulement le mode hors ligne : ⚙︎ Réglages → Aide → « Ludo, l’assistant IA ».</p>
     </div><div class="figs"><figure><img src="img/assistant.webp" alt="Réponse de Ludo" loading="lazy"><figcaption>Une question de calcul pendant une partie de Wizard.</figcaption></figure><figure><img src="img/assistant-horsligne.webp" alt="Assistant hors ligne" loading="lazy"><figcaption>Sans connexion : la réponse de l’assistant hors ligne.</figcaption></figure></div></div>
   </section>
 
-  <section class="s" id="resultat" data-kw="résultat fin podium classement gagnant revanche graphique évolution des scores courbe invité ajouter à ma liste">
+  <section class="s" id="resultat" data-kw="résultat fin podium classement gagnant revanche graphique évolution des scores courbe invité ajouter à ma liste analyse">
     <h2><span class="n">9</span>Résultat et graphique</h2>
     <div class="row2 many"><div class="txt">
       <p>À la fin d’une partie : le gagnant, le classement et le <b>graphique d’évolution des scores</b>. <span class="ui">Revanche</span> relance une partie avec les mêmes joueurs. Les invités peuvent être ajoutés à votre liste.</p>
       <p>Le graphique (aussi dans le menu ⋮ d’une partie en cours) trace une ligne par joueur, dans sa couleur ; l’objectif apparaît en pointillé. <b>Touchez le graphique</b> pour voir le pointage de chacun à une manche précise.</p>
     </div><div class="figs"><figure><img src="img/resultat.webp" alt="Résultat d’une partie" loading="lazy"><figcaption>L’écran de résultat.</figcaption></figure><figure><img src="img/graphique.webp" alt="Graphique des scores" loading="lazy"><figcaption>Le graphique, détail d’une manche.</figcaption></figure></div></div>
+
+    <h3 id="analyse">Analyse de la partie par Ludo</h3>
+    <div class="row2 many"><div class="txt" data-kw="analyse analyser partie points tournants erreurs conseils prochaine fois pourquoi perdu gagné ludo bilan dernière partie revue">
+      <p>Après une partie, Ludo peut vous dire <b>comment elle s’est jouée</b> et vous aider à mieux jouer la prochaine fois. Touchez <span class="ui">🔍 Analyse de la partie par Ludo</span> sur l’écran de résultat, ou dans le menu ⋮ d’une partie (même en cours).</p>
+      <ol><li>L’app prépare un <b>récapitulatif</b> de la partie : chaque manche ou chaque tour, avec les détails inscrits (mises et plis au Wizard, cases rayées au Yahtzee, mots au Scrabble, ratés et pénalités au jeu de dés, cartes ou dominos restants…). Elle calcule aussi elle-même les faits importants : changements de meneur, meilleurs et pires coups, écarts.</li>
+        <li>Ludo répond en trois parties : <b>Points tournants</b> (les moments où la partie a basculé), <b>Erreurs et occasions manquées</b>, puis <b>Pour la prochaine fois</b>, un conseil pour chaque joueur.</li>
+        <li>Posez ensuite des <b>questions de suivi</b> sur cette partie (« qu’est-ce que Marie aurait dû faire ? »). La petite étiquette <span class="ui">🔍 Partie : …</span> indique la partie analysée ; touchez ✕ pour revenir aux questions générales.</li></ol>
+      <p>Vous pouvez aussi simplement demander à Ludo : « Analyse ma dernière partie ».</p>
+      <p><b>À savoir</b> : Ludo ne voit que ce qui a été inscrit. Plus la feuille est détaillée, meilleure est l’analyse : avec seulement des totaux (pointage libre, Flip 7, Play Nine…), il ne peut parler que de l’évolution des scores. <b>Sans Internet</b>, l’app affiche seulement les faits calculés, sans l’analyse de Ludo.</p>
+    </div><div class="figs"><figure><img src="img/analyse-bouton.webp" alt="Bouton Analyse de la partie" loading="lazy"><figcaption>Le bouton, sur l’écran de résultat.</figcaption></figure><figure><img src="img/analyse.webp" alt="Analyse de Ludo" loading="lazy"><figcaption>L’analyse d’une partie de Wizard.</figcaption></figure></div></div>
   </section>
 
   <section class="s" id="historique" data-kw="historique anciennes parties liste date rouvrir">
@@ -536,7 +548,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 5.0 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 5.1 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){

@@ -241,7 +241,9 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await p.route('**/pointage-ia.rogerotisqc.workers.dev/**', r => r.request().method() === 'OPTIONS'
     ? r.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' } })
     : r.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answer: 'Ta mise de 2 est ratée de 2 plis : tu perds 20 points (−10 par pli d’écart).\nSi tu avais misé 4, tu aurais eu 20 + 10 × 4 = 60 points.', sources: [] }) }));
+        body: JSON.stringify(/"recap"/.test(r.request().postData() || '')
+          ? { recap: true, sources: [], answer: 'Points tournants : à la manche 2, Marie prend la tête grâce à sa mise exacte. À la manche 3, Roger réussit sa mise de 2 (+40) et revient à 10 points de Marie et Léa, à égalité à 70.\nErreurs et occasions manquées : Zoé a raté ses 3 mises (−30), deux fois en misant 1 sans faire de pli. Roger a raté sa mise de 1 à la première manche.\nPour la prochaine fois : Zoé, mise 0 quand tu n’as ni atout fort ni Sorcier. Roger, garde ta belle lancée. Marie et Léa, 3 sur 3 : osez miser plus haut avec une bonne main !' }
+          : { answer: 'Ta mise de 2 est ratée de 2 plis : tu perds 20 points (−10 par pli d’écart).\nSi tu avais misé 4, tu aurais eu 20 + 10 × 4 = 60 points.', sources: [] }) }));
   await startGame('wizard', ['Roger', 'Marie', 'Léa']);
   await tap('.top [data-a=ask]');
   await p.fill('#askQ', 'J’ai misé 2 et fait 4 plis, combien j’ai ?'); await p.keyboard.press('Enter');
@@ -263,6 +265,11 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await p.evaluate(() => { const g = db.games.find(x => x.type === 'flip7' && !x.finished); S.gameId = g.id; });
   await p.evaluate(() => { const g = db.games.find(x => x.type === 'flip7' && !x.finished); A.open({ dataset: { id: g.id } }); });
   await tap('[data-a=menu]'); await tap('[data-a=finish]'); await shot('resultat', { fullPage: true });
+  // ---------- Analyse de la partie par Ludo ----------
+  await p.evaluate(() => { const g = db.games.filter(x => x.type === 'wizard' && x.rounds.length >= 3)[0]; S.gameId = g.id; go('results'); render(true); });
+  await p.evaluate(() => { const el = document.querySelector('[data-a=analyse]'); window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 500); }); await shot('analyse-bouton');
+  await tap('[data-a=analyse]'); await p.waitForFunction(() => S.askAi && !S.askBusy); await shot('analyse');
+  await p.evaluate(() => tab('home'));
 
   // ---------- Accueil, historique, stats, réglages ----------
   await p.evaluate(() => tab('home')); await shot('accueil');

@@ -72,22 +72,34 @@ Façon de répondre :
 - Si on te demande qui tu es, réponds que tu es Ludo, l’assistant de jeux de l’app Pointage.
 - Ne dis pas d’où vient l’information (manuel, résumé, Internet, sources) et ne rappelle pas les règles maison si on ne te le demande pas : va droit à la réponse.`;
 
+const ANALYSE = `Analyse d’une partie : on te donne le récapitulatif d’une partie inscrite dans l’app (manches ou tours, détails propres au jeu, et « faits calculés par l’app », qui sont exacts : ne refais pas les additions et ne les contredis pas).
+Quand on te demande d’analyser la partie, réponds en 3 courts paragraphes, chacun commençant par son petit titre suivi de deux-points (pas de markdown, pas d’astérisques) :
+Points tournants : les 2 ou 3 moments où la partie a basculé (nomme la manche ou le tour et les joueurs).
+Erreurs et occasions manquées : ce que les données montrent vraiment (mise ratée, case rayée, prime manquée, raté avec pénalité, gros paquet de cartes ou de dominos en main, pointage doublé…). N’invente aucun coup qui n’est pas dans les données ; si on n’a que des totaux, dis-le en une phrase et reste prudent.
+Pour la prochaine fois : un conseil concret et court pour chaque joueur, adapté au jeu.
+Ton chaleureux et un brin taquin, jamais méchant ; félicite le gagnant. Au plus 260 mots.
+Pour une question de suivi sur la partie, réponds court (2 à 5 phrases) en te servant du récapitulatif.`;
+
 async function askClaude(env, body) {
   const manual = await manualText();
   const ctx = [];
   if (body.gameName) ctx.push(`Jeu en cours : ${cut(body.gameName, 60)}.`);
   if (body.house) ctx.push(`Nos règles maison (prioritaires) :\n${cut(body.house, 3000)}`);
   if (body.rules) ctx.push(`Résumé des règles de ce jeu dans l’app :\n${cut(body.rules, 4000)}`);
+  const recap = body.recap ? cut(body.recap, 16000) : '';
+  if (recap) ctx.push(`Récapitulatif de la partie (données de l’app) :\n${recap}`);
+  const analyse = !!recap && body.mode === 'analyse';
+  if (analyse) ctx.push('Fais l’analyse demandée de cette partie.');
   ctx.push(`Question : ${cut(body.q, 500)}`);
   const messages = [];
   (Array.isArray(body.history) ? body.history.slice(-3) : []).forEach(h => {
     if (h && h.q && h.a) { messages.push({ role: 'user', content: cut(h.q, 500) }, { role: 'assistant', content: cut(h.a, 1500) }); }
   });
   messages.push({ role: 'user', content: ctx.join('\n\n') });
-  const system = [{ type: 'text', text: SYSTEM }];
+  const system = [{ type: 'text', text: SYSTEM + (recap ? '\n\n' + ANALYSE : '') }];
   if (manual) system.push({ type: 'text', text: 'Manuel d’utilisation de l’app :\n\n' + manual, cache_control: { type: 'ephemeral' } });
-  const req = { model: MODEL, max_tokens: 2000, system, messages };
-  if (env.WEB_SEARCH !== 'off') req.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: 2,
+  const req = { model: MODEL, max_tokens: analyse ? 3000 : 2000, system, messages };
+  if (env.WEB_SEARCH !== 'off' && !analyse) req.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: 2,
     user_location: { type: 'approximate', region: 'Quebec', country: 'CA', timezone: 'America/Toronto' } }];
 
   let out = [], searched = 0, stop = '';
@@ -111,7 +123,7 @@ async function askClaude(env, body) {
   const seen = new Set(), sources = [];
   out.forEach(b => (b.citations || []).forEach(c => { if (c.url && !seen.has(c.url)) { seen.add(c.url); sources.push({ url: c.url, title: c.title || c.url }); } }));
   if (!answer) throw new Error('réponse vide (' + (stop || '?') + ')');
-  return { answer, sources: sources.slice(0, 4), searched, stop, tts: !!env.GOOGLE_TTS_KEY };
+  return { answer, sources: sources.slice(0, 4), searched, stop, tts: !!env.GOOGLE_TTS_KEY, recap: !!recap };
 }
 
 
