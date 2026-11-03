@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>body{padding-top:env(safe-area-inset-top)} .top{top:env(safe-area-inset-top,0px)}</style>
-<script>window.WEB_VERSION = "5.2";</script>
+<script>window.WEB_VERSION = "5.3";</script>
 
 <style>
 :root{
@@ -2876,7 +2876,7 @@ async function aiAsk(text, mode){
     history: (S.askHist || []).slice(-3) };
   if(S.askRecap){ body.recap = S.askRecap.text; if(mode) body.mode = mode; }
   AI_CTRL = new AbortController();
-  const timer = setTimeout(() => AI_CTRL && AI_CTRL.abort(), 30000);
+  const timer = setTimeout(() => AI_CTRL && AI_CTRL.abort(), body.recap ? 60000 : 30000);   // l’analyse d’une partie prend plus de temps
   try{
     const r = await fetch(AI_URL.replace(/\/$/, '') + '/ask', { method:'POST', signal: AI_CTRL.signal,
       headers:{ 'Content-Type':'application/json', 'X-App-Token': aiToken() }, body: JSON.stringify(body) });

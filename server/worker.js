@@ -100,7 +100,11 @@ async function askClaude(env, body) {
   messages.push({ role: 'user', content: ctx.join('\n\n') });
   const system = [{ type: 'text', text: SYSTEM + (recap ? '\n\n' + ANALYSE : '') }];
   if (manual) system.push({ type: 'text', text: 'Manuel d’utilisation de l’app :\n\n' + manual, cache_control: { type: 'ephemeral' } });
-  const req = { model: MODEL, max_tokens: analyse ? 3000 : 2000, system, messages };
+  // La réflexion du modèle (activée d’office) compte dans max_tokens : on laisse beaucoup de place.
+  const req = { model: MODEL, max_tokens: analyse ? 10000 : 6000, system, messages };
+  // Pour l’analyse, les faits sont déjà calculés par l’app : peu de réflexion suffit (plus rapide, moins cher)
+  const effort = body._effort || (analyse ? 'low' : '');
+  if (effort) req.output_config = { effort };
   if (env.WEB_SEARCH !== 'off' && !analyse) req.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: 2,
     user_location: { type: 'approximate', region: 'Quebec', country: 'CA', timezone: 'America/Toronto' } }];
 
@@ -124,6 +128,10 @@ async function askClaude(env, body) {
   const answer = out.slice(last + 1).filter(b => b.type === 'text').map(b => b.text).join('').replace(/\*\*/g, '').trim();
   const seen = new Set(), sources = [];
   out.forEach(b => (b.citations || []).forEach(c => { if (c.url && !seen.has(c.url)) { seen.add(c.url); sources.push({ url: c.url, title: c.title || c.url }); } }));
+  if (!answer && stop === 'max_tokens' && !body._retry && !analyse) {
+    // Réflexion trop longue : on réessaie une fois en demandant moins d’effort
+    return askClaude(env, { ...body, _retry: true, _effort: 'low' });
+  }
   if (!answer) throw new Error('réponse vide (' + (stop || '?') + ')');
   return { answer, sources: sources.slice(0, 4), searched, stop, tts: !!env.GOOGLE_TTS_KEY, recap: !!recap };
 }

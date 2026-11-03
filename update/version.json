@@ -1,6 +1,6 @@
 {
- "version": "5.2",
- "notes": "Ludo lit maintenant ses longues réponses en entier à voix haute, et son analyse de partie ajoute des recommandations de stratégie.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.2.apk",
+ "version": "5.3",
+ "notes": "Correction : l'analyse de partie par Ludo a plus de temps pour répondre.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.3.apk",
  "size": 164697
 }
