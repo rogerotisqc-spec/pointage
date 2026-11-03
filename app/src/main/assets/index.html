@@ -2884,11 +2884,12 @@ function askOffline(text, spoken, note){
   const r = S.askRes.list[0];
   if(spoken && r && speakOk()){ speak(helpSpeakText(r, false)); render(); }
 }
-function anLocal(text, note){
+function anLocal(text, note, spoken){
   const g = db.games.find(x => x.id === S.askRecap.id);
   S.askRes = null; S.askBusy = false; S.askNote = '';
   S.askAi = {q: text, answer: g ? anOffline(g) : 'Partie introuvable.', sources: [], local: true, note: note || ''};
   render(true);
+  if(spoken && speakOk()){ speak(aiSpeakText(S.askAi.answer)); render(); }
 }
 async function askRun(text, spoken, mode){
   text = String(text||'').trim(); if(!text) return toast('Posez une question');
@@ -2898,8 +2899,9 @@ async function askRun(text, spoken, mode){
     const g = anPickGame();
     if(g){ S.askRecap = {id: g.id, text: gameRecap(g), title: gameName(g) + ' · ' + new Date(g.created).toLocaleDateString('fr-CA', {day:'numeric', month:'short'})}; S.askGid = g.id; mode = 'analyse'; }
   }
+  if(mode === 'analyse') spoken = true;   // l’analyse est toujours lue à voix haute (⏹ pour couper)
   if(S.askRecap && mode === 'analyse' && !aiReady())
-    return anLocal(text, aiConfigured() && aiPref() ? 'Pas de connexion Internet : voici les faits calculés par l’app, sans l’analyse de Ludo.' : 'L’IA est désactivée : voici les faits calculés par l’app.');
+    return anLocal(text, aiConfigured() && aiPref() ? 'Pas de connexion Internet : voici les faits calculés par l’app, sans l’analyse de Ludo.' : 'L’IA est désactivée : voici les faits calculés par l’app.', spoken);
   if(!aiReady()){
     const why = aiConfigured() && aiPref() ? 'Pas de connexion Internet : Ludo répond en mode hors ligne.' : '';
     return askOffline(text, spoken, why);
@@ -2918,7 +2920,7 @@ async function askRun(text, spoken, mode){
     S.askBusy = false;
     if(S.view !== 'ask') return;
     const msg = e && e.name === 'AbortError' ? 'L’IA a mis trop de temps' : String(e && e.message || 'L’IA ne répond pas');
-    if(S.askRecap && mode === 'analyse') return anLocal(text, msg.replace(/\.$/, '') + '. Voici les faits calculés par l’app.');
+    if(S.askRecap && mode === 'analyse') return anLocal(text, msg.replace(/\.$/, '') + '. Voici les faits calculés par l’app.', spoken);
     askOffline(text, spoken, msg.replace(/\.$/, '') + '. Ludo répond en mode hors ligne.');
   }
 }

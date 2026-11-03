@@ -1,6 +1,6 @@
 {
- "version": "5.3",
- "notes": "Correction : l'analyse de partie par Ludo a plus de temps pour répondre.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.3.apk",
+ "version": "5.4",
+ "notes": "L'analyse de partie par Ludo est maintenant lue automatiquement à voix haute (⏹ pour arrêter).",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.4.apk",
  "size": 164697
 }
