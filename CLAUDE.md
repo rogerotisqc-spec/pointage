@@ -33,6 +33,10 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   dans l'app par `inject_key.py`), compte les questions (KV `LIMITS`), modèle claude-haiku-5-5 + recherche web.
   Pour le modifier : Roger recolle le fichier dans Cloudflare (Edit code → Deploy). L'IA passe avant
   l'assistant hors ligne, qui sert sans connexion ou en cas d'erreur.
+- Analyse de partie par Ludo (index.html : gameRecap, anFacts, anStart) : récapitulatif texte de la partie + faits
+  calculés par l'app, envoyés au relais dans `recap` (`mode: 'analyse'` pour la première demande) ; le relais répond
+  `recap: true` (sinon l'app affiche les faits seuls, comme hors ligne). Nouveau jeu : ajouter ses détails dans anRoundNote
+  et anFacts.
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 
