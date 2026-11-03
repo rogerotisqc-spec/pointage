@@ -2485,7 +2485,7 @@ const HELP_FAQ = [
   {q:['triomino','pont','hexagone','pioche triomino','fin de manche triomino','manche bloquée'], g:'triomino', a:'Au Triomino, touchez les 3 chiffres de la pièce posée : l’app additionne. Ajoutez la figure (hexagone +50, double +60, triple +70) ou le pont (+40), et les pièces piochées (−5 chacune ; −25 en tout si on ne peut toujours pas jouer). « Inscrire » passe au joueur suivant. « Fin de manche » : choisissez qui a terminé (25 + pièces des autres) ou « manche bloquée » (chacun perd ses pièces restantes).'},
   {q:['train mexicain','compter les dominos','double blanc','dominos restants'], g:'train', a:'Au train mexicain, à la fin de chaque manche, touchez « + Manche » : pour chaque joueur, touchez les 2 moitiés de chaque domino qui lui reste (ou tapez le total), et cochez « A tout posé » pour celui qui a fini (0 point). Le titre indique le double de départ de la manche suivante. Le plus bas total gagne après la dernière manche.'},
   {q:['changer la voix','voix de l’assistant','voix de ludo','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de Ludo : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
-  {q:['analyse de la partie','points tournants','erreurs de la partie','analyser ma dernière partie','conseils pour la prochaine fois','pourquoi j’ai perdu'], a:'Ludo peut analyser une partie : sur l’écran de résultat, touchez « Analyse de la partie par Ludo » (aussi dans le menu ⋮ d’une partie). Il repère les points tournants, les erreurs visibles dans ce qui a été inscrit (mise ratée, case rayée, raté avec pénalité…) et donne un conseil à chaque joueur. Vous pouvez aussi demander « Analyse ma dernière partie ». Sans Internet, l’app affiche seulement les faits calculés : meneurs, meilleurs et pires coups, écarts.'},
+  {q:['analyse de la partie','points tournants','erreurs de la partie','analyser ma dernière partie','conseils pour la prochaine fois','pourquoi j’ai perdu','recommandations','stratégie pour gagner'], a:'Ludo peut analyser une partie : sur l’écran de résultat, touchez « Analyse de la partie par Ludo » (aussi dans le menu ⋮ d’une partie). Il repère les points tournants et les erreurs visibles dans ce qui a été inscrit (mise ratée, case rayée, raté avec pénalité…), recommande des stratégies pour ce jeu et donne un conseil à chaque joueur. Vous pouvez aussi demander « Analyse ma dernière partie ». Sans Internet, l’app affiche seulement les faits calculés : meneurs, meilleurs et pires coups, écarts.'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant','qui est ludo','ludo'], a:'Ludo, c’est l’assistant de l’app : le bouton rouge « Ludo » en haut de l’accueil et de chaque partie l’ouvre. Touchez « Poser une question à Ludo » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
 const HELP_STOP = new Set(('ludo a au aux avec ca ce cela ces cet cette comment combien dans de des du elle elles en est et etre faire fait faut il ils je j la le les leur leurs l ma me mes moi mon m ne n nous on ou par pas peut peux pour pourquoi quand que quel quelle quelles quels qu qui quoi sa se ses si son sont sur ta te tes toi ton tu un une vos votre vous y d s t c est-ce estce dois doit devons veux voudrais aimerais savoir dire dis explique expliquer svp stp bonjour merci alors donc bien tout tous toute toutes quoi ai as avons avez ont ete etait il-y-a lorsque lorsqu chose choses fois').split(' '));
@@ -2636,22 +2636,46 @@ function aiProbe(){
   AI_TTS = false;
   fetch(AI_URL.replace(/\/$/, '') + '/').then(r => r.json()).then(d => { AI_TTS = !!d.tts; if(S.view === 'settings') render(); }).catch(() => { AI_TTS = null; });
 }
+// Le relais (et la voix de Google) acceptent un texte limité : on lit les longues réponses par morceaux,
+// coupés entre les phrases ; le morceau suivant se prépare pendant la lecture du précédent.
+function speechChunks(t, max){
+  max = max || 1200; t = String(t).trim();
+  const parts = t.match(/[^.!?…\n]+[.!?…]*["»”)]*\s*|\n+/g) || [t], out = []; let cur = '';
+  parts.forEach(p => {
+    if(cur && (cur + p).length > max){ out.push(cur.trim()); cur = ''; }
+    while(p.length > max){ const k = p.lastIndexOf(' ', max) > max / 2 ? p.lastIndexOf(' ', max) : max; out.push(p.slice(0, k).trim()); p = p.slice(k); }
+    cur += p;
+  });
+  if(cur.trim()) out.push(cur.trim());
+  return out.filter(Boolean);
+}
 async function cloudSpeak(text, voice){
   TTS_CTRL = new AbortController();
-  const r = await fetch(AI_URL.replace(/\/$/, '') + '/tts', { method:'POST', signal: TTS_CTRL.signal,
+  const ctrl = TTS_CTRL, chunks = speechChunks(text), v = voice || vPref('cloudName', 'Aoede'), rate = vRate();
+  const get = c => fetch(AI_URL.replace(/\/$/, '') + '/tts', { method:'POST', signal: ctrl.signal,
     headers:{ 'Content-Type':'application/json', 'X-App-Token': aiToken() },
     // La voix de Google prononce mal les élisions (« l’assistant » → « l, assistant » ou « lu-assistant ») :
     // on colle la lettre au mot (« lassistant »), ce qui donne la bonne prononciation (essais à l’oreille avec Roger)
-    body: JSON.stringify({ text: String(text).replace(/(\p{L})[\u2019'\u02BC](?=\p{L})/gu, '$1'), voice: voice || vPref('cloudName', 'Aoede'), rate: vRate() }) });
-  if(!r.ok) throw new Error('voix ' + r.status);
-  const blob = await r.blob();
-  if(!S.speaking) return;
+    body: JSON.stringify({ text: c.replace(/(\p{L})[\u2019'\u02BC](?=\p{L})/gu, '$1'), voice: v, rate }) })
+    .then(r => { if(!r.ok) throw new Error('voix ' + r.status); return r.blob(); });
   if(!AUDIO) AUDIO = new Audio();
-  const url = URL.createObjectURL(blob);
-  AUDIO.onended = () => { URL.revokeObjectURL(url); window.onSpeakEnd(); };
-  AUDIO.onerror = () => { URL.revokeObjectURL(url); window.onSpeakEnd(); };
-  AUDIO.src = url;
-  await AUDIO.play();
+  let next = get(chunks[0]);
+  for(let i = 0; i < chunks.length; i++){
+    let blob;
+    try{ blob = await next; }
+    catch(e){ if(e && e.name !== 'AbortError') e.rest = chunks.slice(i).join(' '); throw e; }
+    if(!S.speaking || ctrl.signal.aborted) return;
+    if(i + 1 < chunks.length){ next = get(chunks[i + 1]); next.catch(() => {}); }
+    const url = URL.createObjectURL(blob);
+    await new Promise((res, rej) => {
+      AUDIO.onended = () => { URL.revokeObjectURL(url); res(); };
+      AUDIO.onerror = () => { URL.revokeObjectURL(url); res(); };
+      AUDIO.src = url;
+      AUDIO.play().catch(rej);
+    });
+    if(!S.speaking || ctrl.signal.aborted) return;
+  }
+  window.onSpeakEnd();
 }
 function webVoices(){
   const ss = window.speechSynthesis; if(!ss) return [];
@@ -2678,7 +2702,7 @@ function speak(text, opts){
   speakStop(true);
   S.speaking = true;
   if(!opts.device && (opts.cloud || cloudVoiceOk())){
-    cloudSpeak(text, opts.voice).catch(e => { if(S.speaking && !(e && e.name === 'AbortError')) deviceSpeak(text); });
+    cloudSpeak(text, opts.voice).catch(e => { if(S.speaking && !(e && e.name === 'AbortError')) deviceSpeak((e && e.rest) || text); });
     return;
   }
   deviceSpeak(text);
@@ -2922,7 +2946,7 @@ function aiCard(){
         ${a.local || S.askRecap ? '' : `<button class="btn" data-a="askLocal">📖 Réponse hors ligne</button>`}
       </div>
     </div>
-    <p class="hint" style="margin:8px 2px 0">${a.local ? 'Avec Internet, Ludo analyse ces faits : points tournants, erreurs et conseils pour la prochaine fois.' : S.askRecap ? 'Ludo peut se tromper : il ne voit que ce qui a été inscrit dans l’app. Vous pouvez poser une question de suivi sur cette partie.' : 'Ludo peut se tromper : en cas de doute, vérifiez dans les règles 📖. Vous pouvez poser une question de suivi.'}</p>`;
+    <p class="hint" style="margin:8px 2px 0">${a.local ? 'Avec Internet, Ludo analyse ces faits : points tournants, erreurs, recommandations et conseils pour la prochaine fois.' : S.askRecap ? 'Ludo peut se tromper : il ne voit que ce qui a été inscrit dans l’app. Vous pouvez poser une question de suivi sur cette partie.' : 'Ludo peut se tromper : en cas de doute, vérifiez dans les règles 📖. Vous pouvez poser une question de suivi.'}</p>`;
 }
 function askVoice(alts){
   if(aiReady()){ const a = (alts || []).find(x => String(x).trim()); return a ? askRun(a, true) : render(); }

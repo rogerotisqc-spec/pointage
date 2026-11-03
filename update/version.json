@@ -1,6 +1,6 @@
 {
- "version": "5.1",
- "notes": "Nouveau : Ludo analyse vos parties ! Sur l'écran de résultat (ou dans le menu ⋮), touchez « Analyse de la partie par Ludo » : points tournants, erreurs et un conseil pour chaque joueur.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.1.apk",
+ "version": "5.2",
+ "notes": "Ludo lit maintenant ses longues réponses en entier à voix haute, et son analyse de partie ajoute des recommandations de stratégie.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.2.apk",
  "size": 164697
 }
