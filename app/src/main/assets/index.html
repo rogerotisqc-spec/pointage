@@ -41,7 +41,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .top .grow h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .icon-btn:disabled{opacity:.35}
 .top .icon-btn.sm{width:36px}
-.icon-btn.ask{position:relative}
+.icon-btn.ask{position:relative;width:auto;min-width:42px;padding:0 3px}
+.top .icon-btn.sm.ask{width:auto;min-width:36px}
+.ludo{color:#ff4d4d;font:900 18px/1 'Inter Display','Inter',system-ui,sans-serif;letter-spacing:-.02em;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+.top .icon-btn.sm .ludo{font-size:16px}
+.icon-btn.ask .ludo{transform:translateY(-6px)}
+.icon-btn.ask .ia-tag{bottom:2px;right:-3px}
 #modal svg,.card button svg{display:block;width:100%;height:auto}
 .ia-tag{position:absolute;right:-1px;bottom:3px;font:800 9px/1 system-ui,sans-serif;letter-spacing:.02em;padding:2px 3px;border-radius:5px;background:#fff;color:var(--brand);box-shadow:0 1px 2px rgba(0,0,0,.25);pointer-events:none}
 @media (max-width:440px){ .top{gap:2px;padding-left:8px;padding-right:6px} .top>.icon-btn:first-child{width:36px} .top .icon-btn.sm{width:31px;font-size:18px} .top .grow{margin-left:2px} .top .grow h1{font-size:19px} }
@@ -971,7 +976,7 @@ function topbar(title, sub, right){
 function vHome(){
   const open = db.games.filter(g => !g.finished).sort((a,b) => b.updated - a.updated);
   return `<header class="top"><div class="grow"><h1>Pointage</h1><p class="sub">Les jeux de la famille${appVersion() ? ' · v' + esc(appVersion()) : ''}</p></div>
-    <button class="icon-btn ask" data-a="ask" aria-label="Assistant : poser une question">${askIcon()}</button>
+    <button class="icon-btn ask" data-a="ask" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button>
     <a class="icon-btn" href="${MANUAL_URL}" target="_blank" rel="noopener" aria-label="Manuel d’utilisation" style="text-decoration:none;color:inherit">📘</a>
     <button class="icon-btn" data-a="go" data-v="settings" aria-label="Réglages">⚙︎</button></header>
   ${updateBanner()}${abPausedBanner()}
@@ -1071,7 +1076,7 @@ function vSetup(){
   }
   const rosterChips = db.players.map(p => chip(p.id, p.name, p.color, false)).join('');
   const guestChips = S.guests.map(g => chip(g.key, g.name, '#868e96', true)).join('');
-  return `${topbar(G.name, 'Nouvelle partie', type!=='generic'?`<button class="icon-btn" data-a="rules" data-t="${type}" aria-label="Règles">📖</button><button class="icon-btn ask" data-a="ask" data-t="${type}" aria-label="Assistant : poser une question">${askIcon()}</button>`:'')}
+  return `${topbar(G.name, 'Nouvelle partie', type!=='generic'?`<button class="icon-btn" data-a="rules" data-t="${type}" aria-label="Règles">📖</button><button class="icon-btn ask" data-a="ask" data-t="${type}" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button>`:'')}
   <main class="pad">
     <h2 class="sec">Qui joue ? <span style="text-transform:none;letter-spacing:0;font-weight:500">(touchez dans l’ordre du jeu)</span></h2>
     ${db.players.length || S.guests.length ? `<div class="chips">${rosterChips}${guestChips}</div>` : `<p class="hint" style="margin-bottom:8px">Aucun joueur dans votre liste pour l’instant. Ajoutez un nom ci-dessous.</p>`}
@@ -1193,7 +1198,7 @@ function vSheet(){
   const sub = g.type==='train' ? (next <= maxRounds ? `Manche ${next} de ${maxRounds} · double ${mtDouble(g, next - 1)} · le plus bas gagne` : `${maxRounds} manches jouées · le plus bas gagne`)
             : g.type==='playnine' ? `Trou ${Math.min(next, maxRounds)} de ${maxRounds} · le plus bas gagne`
             : (g.opts.target ? `Partie à ${fmt(g.opts.target)} · ${isLow(g)?'le plus bas gagne':'le plus haut gagne'}` : (isLow(g)?'Le plus bas gagne':'Le plus haut gagne'));
-  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="${g.type}" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="${g.type}" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(ranking(g).filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${dealerBanner(g)}${g.type === 'phase10' ? p10Board(g) + (g.rounds.length ? '<h2 class="sec" style="margin:20px 18px 0">Points</h2>' : '') : ''}${strip}${table}
@@ -1265,7 +1270,7 @@ function vFarkle(g){
       const p = g.players.find(p => p.key === x.pk) || {name:'?'}; const idx = g.turns.length-1-ri;
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div>
         <div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div>${idx===g.turns.length-1 && !g.finished?`<button class="btn sm" data-a="fkUndo">Annuler</button>`:''}</div>`; }).join('')}</div>` : '';
-  return `${topbar(gameName(g), `Partie à ${fmt(f.target)}`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="farkle" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="farkle" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), `Partie à ${fmt(f.target)}`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="farkle" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="farkle" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
@@ -1371,7 +1376,7 @@ function vTriomino(g){
       const p = g.players.find(p => p.key === x.pk) || {name: '?'}; const idx = g.turns.length - 1 - ri;
       return `<div class="li ${x.end ? 'trend' : ''}"><div class="grow"><div class="t">${x.end ? '🏁 ' : ''}${esc(p.name)}</div>${x.note ? `<div class="s">${esc(x.note)}</div>` : ''}</div>
         <div class="t num-t ${x.pts < 0 ? 'neg' : ''}">${x.pts > 0 ? '+' : ''}${fmt(x.pts)}</div>${idx === g.turns.length - 1 && !g.finished ? `<button class="btn sm" data-a="trUndo">Annuler</button>` : ''}</div>`; }).join('')}</div>` : '';
-  return `${topbar(gameName(g), `Partie à ${fmt(target)} · le plus haut gagne`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="triomino" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="triomino" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), `Partie à ${fmt(target)} · le plus haut gagne`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="triomino" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="triomino" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x => x.rank === 1).map(x => x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${!g.finished && over.length ? `<div class="banner"><div class="grow">🏁 ${esc(over.map(p => p.name).join(', '))} ${over.length > 1 ? 'dépassent' : 'dépasse'} ${fmt(target)} : ${lastEnd ? 'la partie est finie' : 'on termine cette manche'}</div>${lastEnd ? '<button class="btn sm primary" data-a="finish">Terminer</button>' : ''}</div>` : ''}
     ${strip}${panel}${log}<div style="height:40px"></div>`;
@@ -1460,7 +1465,7 @@ function vYahtzee(g){
       <div class="yzfaces">${[1,2,3,4,5,6].map(v => `<button data-a="yzFace" data-v="${v}" ${d.length >= 5 ? 'disabled' : ''}>${dieHtml(v, 'mini', 'tabindex="-1"').replace('<button', '<span').replace('</button>', '</span>')}</button>`).join('')}
         <button class="yzclr" data-a="yzClear" ${d.length ? '' : 'disabled'}>Effacer</button></div>
       <p class="hint" style="margin:6px 0 0">${d.length < 5 ? (view.key === cur.key || done ? `Tour de <b>${esc(view.name)}</b> : touchez les 5 dés obtenus${d.length ? ` (${d.length}/5)` : ''}, ou touchez directement une case.` : `Feuille de <b>${esc(view.name)}</b> (pour corriger) · c’est au tour de <b>${esc(cur.name)}</b>, touchez son nom en haut.`) : `Touchez la case à inscrire${joker ? ' · Yahtzee de plus : joker' + (sc.yz === 50 ? ' et prime de 100' : '') : ''}.`}</p></div>`;
-  return `${topbar(gameName(g), 'Le plus haut total gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="yahtzee" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="yahtzee" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), 'Le plus haut total gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="yahtzee" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="yahtzee" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x => x.rank === 1).map(x => x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${done && !g.finished ? `<div class="banner"><div class="grow">🏁 Toutes les cases sont remplies</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${chips}${tray}
@@ -1609,7 +1614,7 @@ function vAcquire(g){
         <div class="s">${Object.keys(x.pay).map(pk => { const p = g.players.find(y => y.key === pk); return esc(p ? p.name : '?') + ' ' + aqMoney(x.pay[pk]); }).join(' · ') || 'Aucune prime'}</div></div></div>`; }).join('')}</div>` : '';
   const finalTbl = g.rounds.length ? `<h2 class="sec" style="margin:20px 18px 8px">Pointage final</h2><div class="card list">${r.map(x => { const m = (g.rounds[0].m || {}).aq || {};
       return `<div class="li"><div class="grow"><div class="t">${x.rank === 1 ? '🏆 ' : ''}${esc(x.p.name)}</div><div class="s">Argent ${fmt((m.cash || {})[x.p.key] || 0)} · primes ${fmt((m.bonus || {})[x.p.key] || 0)} · actions ${fmt((m.sales || {})[x.p.key] || 0)}</div></div><div class="t num-t">${aqMoney(x.total)}</div></div>`; }).join('')}</div>` : '';
-  return `${topbar(gameName(g), `Édition ${ed.name} · le plus riche gagne`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="acquire" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="acquire" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), `Édition ${ed.name} · le plus riche gagne`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="acquire" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="acquire" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x => x.rank === 1).map(x => x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${hint ? `<div class="banner"><div class="grow">🏁 ${esc(hint)}</div><button class="btn sm primary" data-a="aqFinal">Pointage final</button></div>` : ''}
     <div class="aqgrid">${cards}</div>
@@ -1747,7 +1752,7 @@ function vWizard(g){
     : `<div class="tablewrap"><div class="empty">Manche 1 : 1 carte chacun.<br>Inscrivez d’abord les mises, puis les plis faits.</div></div>`;
   const canPlay = !g.finished && done < N;
   const sub = done < N ? `Manche ${cards} de ${N} · ${cards} carte${cards>1?'s':''}${cards === N ? ' · sans atout' : ''}` : `${N} manches jouées`;
-  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="wizard" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="wizard" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="wizard" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="wizard" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${dealerBanner(g)}${strip}${table}<div style="height:100px"></div>
@@ -1825,7 +1830,7 @@ function vScrabble(g){
   const log = g.turns.length ? `<h2 class="sec" style="margin:20px 18px 8px">Derniers tours</h2><div class="card list log">${g.turns.slice().reverse().slice(0,12).map(x => {
       const p = g.players.find(p => p.key === x.pk) || {name:'?'};
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div><div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div></div>`; }).join('')}</div>` : '';
-  return `${topbar(gameName(g), g.opts.simple ? 'Saisie simple' : 'Le plus haut gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="scrabble" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="scrabble" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
+  return `${topbar(gameName(g), g.opts.simple ? 'Saisie simple' : 'Le plus haut gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="scrabble" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="scrabble" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
@@ -2014,7 +2019,7 @@ function vRules(){
   const hk = houseKey(type, g ? g.title : ''); const name = type === 'generic' ? (g && g.title ? g.title : 'Pointage libre') : GAMES[type].name;
   return `${topbar('Règles', name)}
   <main style="padding:16px 16px 40px">
-    <button class="mic" style="margin:0 0 14px" data-a="ask">❓ Une question sur ce jeu ? Demandez à l’assistant</button>
+    <button class="mic" style="margin:0 0 14px" data-a="ask">Une question sur ce jeu ? Demandez à <b class="ludo" style="margin-left:4px">Ludo</b></button>
     <div class="card rules">${rulesHtml(type, g)}</div>
     <h2 class="sec">Nos règles maison</h2>
     <textarea id="house" class="field" placeholder="Vos variantes, précisions, décisions de la famille…" data-hk="${esc(hk)}">${esc(db.house[hk]||'')}</textarea>
@@ -2210,8 +2215,8 @@ function vSettings(){
     <h2 class="sec">Aide</h2>
     <div class="card" style="padding:14px"><p style="margin:0 0 12px">Le manuel explique chaque fonction, avec des images et une recherche par mot-clé.</p>
       <a class="btn block" style="text-decoration:none" href="${MANUAL_URL}" target="_blank" rel="noopener">📘 Ouvrir le manuel d’utilisation</a></div>
-    ${aiConfigured() ? `<div class="card" style="padding:14px;margin-top:10px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Assistant IA</b><div class="hint" style="margin:2px 0 0">Avec Internet, une IA répond aux questions posées à l’assistant ❓. Les questions, le jeu en cours et vos règles maison lui sont envoyés. Désactivé : seulement l’assistant hors ligne.</div></div>
-      <button class="switch ${aiPref() ? 'on' : ''}" data-a="iaToggle" aria-label="Assistant IA"></button></div></div>` : ''}
+    ${aiConfigured() ? `<div class="card" style="padding:14px;margin-top:10px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Ludo, l’assistant IA</b><div class="hint" style="margin:2px 0 0">Avec Internet, Ludo répond à vos questions grâce à une IA (bouton <b class="ludo" style="font-size:14px">Ludo</b> en haut de l’écran). Les questions, le jeu en cours et vos règles maison lui sont envoyés. Désactivé : Ludo répond seulement en mode hors ligne.</div></div>
+      <button class="switch ${aiPref() ? 'on' : ''}" data-a="iaToggle" aria-label="Ludo, l’assistant IA"></button></div></div>` : ''}
     <h2 class="sec">Partager l’app</h2>
     <div class="card" style="padding:14px"><div class="row" style="align-items:center;gap:14px">
       <button data-a="qrBig" aria-label="Agrandir le code QR" style="width:112px;height:112px;flex:none;padding:6px;background:#fff;border-radius:12px;border:1px solid var(--line)">${QR_SVG}</button>
@@ -2436,7 +2441,7 @@ function openMenu(){
       ${!g.finished && !g.team ? `<button class="li" data-a="addLate">➕ Ajouter un joueur</button>` : ''}
       <button class="li" data-a="rematch">🔁 Revanche (nouvelle partie)</button>
       <button class="li" data-a="chart">📈 Évolution des scores</button>
-      <button class="li" data-a="ask">❓ Poser une question à l’assistant</button>
+      <button class="li" data-a="ask">💬 Poser une question à Ludo</button>
       <button class="li" data-a="feedback">💬 Signaler un problème / suggérer</button>
       <button class="li" data-a="delGame" style="color:var(--danger)">🗑 Supprimer cette partie</button></div></div>`);
 }
@@ -2477,10 +2482,10 @@ const HELP_FAQ = [
   {q:['yahtzee','inscrire les dés','rayer une case','prime de 35','prime yahtzee','joker'], g:'yahtzee', a:'Au Yahtzee, touchez les 5 dés obtenus (ou les faces en dessous) : chaque case vide montre alors les points possibles. Touchez la case à inscrire ; si elle vaut 0, l’app demande de confirmer pour la rayer. Sans dés, touchez directement une case pour l’inscrire. Le bandeau du haut donne les totaux ; touchez un joueur pour voir sa feuille. La prime de 35 vient à 63 points en section supérieure ; un Yahtzee de plus donne 100 points et sert de joker.'},
   {q:['triomino','pont','hexagone','pioche triomino','fin de manche triomino','manche bloquée'], g:'triomino', a:'Au Triomino, touchez les 3 chiffres de la pièce posée : l’app additionne. Ajoutez la figure (hexagone +50, double +60, triple +70) ou le pont (+40), et les pièces piochées (−5 chacune ; −25 en tout si on ne peut toujours pas jouer). « Inscrire » passe au joueur suivant. « Fin de manche » : choisissez qui a terminé (25 + pièces des autres) ou « manche bloquée » (chacun perd ses pièces restantes).'},
   {q:['train mexicain','compter les dominos','double blanc','dominos restants'], g:'train', a:'Au train mexicain, à la fin de chaque manche, touchez « + Manche » : pour chaque joueur, touchez les 2 moitiés de chaque domino qui lui reste (ou tapez le total), et cochez « A tout posé » pour celui qui a fini (0 point). Le titre indique le double de départ de la manche suivante. Le plus bas total gagne après la dernière manche.'},
-  {q:['changer la voix','voix de l’assistant','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de l’assistant : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
-  {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
+  {q:['changer la voix','voix de l’assistant','voix de ludo','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de Ludo : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
+  {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant','qui est ludo','ludo'], a:'Ludo, c’est l’assistant de l’app : le bouton rouge « Ludo » en haut de l’accueil et de chaque partie l’ouvre. Touchez « Poser une question à Ludo » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
-const HELP_STOP = new Set(('a au aux avec ca ce cela ces cet cette comment combien dans de des du elle elles en est et etre faire fait faut il ils je j la le les leur leurs l ma me mes moi mon m ne n nous on ou par pas peut peux pour pourquoi quand que quel quelle quelles quels qu qui quoi sa se ses si son sont sur ta te tes toi ton tu un une vos votre vous y d s t c est-ce estce dois doit devons veux voudrais aimerais savoir dire dis explique expliquer svp stp bonjour merci alors donc bien tout tous toute toutes quoi ai as avons avez ont ete etait il-y-a lorsque lorsqu chose choses fois').split(' '));
+const HELP_STOP = new Set(('ludo a au aux avec ca ce cela ces cet cette comment combien dans de des du elle elles en est et etre faire fait faut il ils je j la le les leur leurs l ma me mes moi mon m ne n nous on ou par pas peut peux pour pourquoi quand que quel quelle quelles quels qu qui quoi sa se ses si son sont sur ta te tes toi ton tu un une vos votre vous y d s t c est-ce estce dois doit devons veux voudrais aimerais savoir dire dis explique expliquer svp stp bonjour merci alors donc bien tout tous toute toutes quoi ai as avons avez ont ete etait il-y-a lorsque lorsqu chose choses fois').split(' '));
 const HELP_SYN = [
   'supprimer effacer enlever retirer oter detruire jeter', 'corriger modifier changer editer rectifier correction modification erreur trompe tromper',
   'annuler defaire arriere undo', 'retablir refaire', 'brasser distribuer donneur brasseur donner melanger brasse',
@@ -2694,16 +2699,16 @@ function deviceVoiceList(){
   const vs = webVoices(), b = webBest(vs);
   return vs.map(v => ({ name: v.name, label: v.name + ' (' + v.lang + ')' + (v.localService === false ? ' · Internet' : ''), best: b && v.name === b.name }));
 }
-const VOICE_TEST = 'Bonjour ! Je suis l’assistant de Pointage. C’est au tour de Marie de brasser.';
+const VOICE_TEST = 'Bonjour ! Je suis Ludo, l’assistant de Pointage. C’est au tour de Marie de brasser.';
 function voiceCards(){
   aiProbe();
   const dev = deviceVoiceList(), cur = vPref('device', ''), rate = vPref('rate', '1');
   const cloud = aiConfigured() ? `<div class="card" style="padding:14px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Voix naturelle (Internet)</b>
-      <div class="hint" style="margin:2px 0 0">${AI_TTS === false ? 'Pas encore activée sur le relais de l’IA. En attendant, la voix du téléphone est utilisée.' : 'Une voix de Google très naturelle lit les réponses de l’assistant quand il y a Internet.'}</div></div>
+      <div class="hint" style="margin:2px 0 0">${AI_TTS === false ? 'Pas encore activée sur le relais de l’IA. En attendant, la voix du téléphone est utilisée.' : 'Une voix de Google très naturelle lit les réponses de Ludo quand il y a Internet.'}</div></div>
       <button class="switch ${vPref('cloud', '1') === '1' ? 'on' : ''}" data-a="voiceCloud" aria-label="Voix naturelle"></button></div>
       ${vPref('cloud', '1') === '1' && AI_TTS !== false ? `<div class="seg" style="margin-top:10px;flex-wrap:wrap">${VOICE_CLOUD.map(([v, l]) => `<button data-a="voiceCloudName" data-v="${v}" class="${vPref('cloudName', 'Aoede') === v ? 'on' : ''}" style="flex:1 1 45%">${l}</button>`).join('')}</div>
       <button class="btn sm" style="margin-top:10px" data-a="voiceTest" data-v="cloud">▶ Écouter</button>` : ''}</div>` : '';
-  return `<h2 class="sec">Voix de l’assistant</h2>${cloud}
+  return `<h2 class="sec">Voix de Ludo</h2>${cloud}
     <div class="card" style="padding:14px;margin-top:10px"><b>Voix du téléphone</b><div class="hint" style="margin:2px 0 8px">Utilisée sans Internet${aiConfigured() ? ' ou si la voix naturelle est désactivée' : ''}. « Automatique » prend la meilleure voix française installée.</div>
       <select id="voiceDev" class="field" style="width:100%"><option value="">Automatique${(dev.find(v => v.best) || {}).label ? ' (' + esc(dev.find(v => v.best).label) + ')' : ''}</option>${dev.map(v => `<option value="${esc(v.name)}" ${cur === v.name ? 'selected' : ''}>${esc(v.label)}</option>`).join('')}</select>
       <button class="btn sm" style="margin-top:10px" data-a="voiceTest" data-v="device">▶ Écouter</button>
@@ -2725,14 +2730,14 @@ function vAsk(){
   const sel = R && R.list.length ? R.list[S.askSel || 0] : null;
   const src = sel ? ({faq:'Réponse rapide', rule:'Règles du jeu', house:'Nos règles maison', manual:'Manuel'})[sel.u.src] : '';
   const GO = {players:'👥 Ouvrir Joueurs', stats:'🏆 Ouvrir Stats', history:'🕘 Ouvrir Historique', settings:'⚙︎ Ouvrir Réglages'};
-  return `${topbar('Assistant', 'Règles et utilisation de l’app')}
+  return `${topbar('Ludo', 'Votre assistant · règles et utilisation de l’app')}
   <main style="padding:16px 16px 40px">
     <div class="card" style="padding:14px">
-      ${voiceAvailable() ? `<button class="mic ${S.listening?'on':''}" style="margin-top:0;min-height:56px;font-size:17px" data-a="askMic">${S.listening ? '🎤 J’écoute…' : '🎤 Poser une question'}</button>` : ''}
+      ${voiceAvailable() ? `<button class="mic ${S.listening?'on':''}" style="margin-top:0;min-height:56px;font-size:17px" data-a="askMic">${S.listening ? '🎤 J’écoute…' : '🎤 Poser une question à Ludo'}</button>` : ''}
       <div class="row" style="margin-top:10px"><input id="askQ" class="field" placeholder="${voiceAvailable() ? 'ou écrivez-la ici' : 'Écrivez votre question'}" value="${esc(S.askQ||'')}" autocomplete="off" enterkeyhint="search"><button class="btn primary" data-a="askGo">Demander</button></div>
       ${g && GAMES[g] ? `<div style="margin-top:10px"><button class="chip on" data-a="askNoGame" style="min-height:36px;padding:0 12px">${badge(g, 24)} Questions sur ${esc(GAMES[g].name)} <span class="x">✕</span></button></div>` : ''}
     </div>
-    ${S.askBusy ? `<div class="card" style="padding:18px;margin-top:14px;display:flex;align-items:center;gap:12px"><span class="spin"></span><div class="grow"><b>L’IA réfléchit…</b><div class="hint" style="margin:2px 0 0">« ${esc(S.askQ)} »</div></div><button class="btn sm" data-a="askCancel">Annuler</button></div>` : ''}
+    ${S.askBusy ? `<div class="card" style="padding:18px;margin-top:14px;display:flex;align-items:center;gap:12px"><span class="spin"></span><div class="grow"><b>Ludo réfléchit…</b><div class="hint" style="margin:2px 0 0">« ${esc(S.askQ)} »</div></div><button class="btn sm" data-a="askCancel">Annuler</button></div>` : ''}
     ${!S.askBusy && S.askAi ? aiCard() : ''}
     ${S.askNote && R ? `<p class="hint" style="margin:14px 2px 0;color:var(--accent-ink, inherit)">⚠︎ ${esc(S.askNote)}</p>` : ''}
     ${R ? (sel ? `
@@ -2755,7 +2760,7 @@ function vAsk(){
       <h2 class="sec">Exemples</h2>
       <div style="display:flex;flex-wrap:wrap;gap:8px">${askExamples(g).map(x => `<button class="chip" style="padding:0 14px;min-height:40px" data-a="askEx">${esc(x)}</button>`).join('')}</div>`}
     ${R && !aiConfigured() && !(sel && R.list.length > 1) ? aiButtons() : ''}
-    <p class="hint" style="margin-top:20px">${aiConfigured() ? (aiPref() ? 'Avec Internet, une IA répond à vos questions en tenant compte de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche dans les règles et le manuel (sans calculs).' : 'L’IA est désactivée dans les Réglages : l’assistant hors ligne cherche dans les règles et le manuel (sans calculs).') : 'La recherche fonctionne sans Internet : l’assistant cherche dans les règles des jeux, vos règles maison et le manuel. Il retrouve le bon passage, mais ne fait pas de calculs. Le bouton ✨ passe la question à une vraie IA (Internet requis).'}</p>
+    <p class="hint" style="margin-top:20px">${aiConfigured() ? (aiPref() ? 'Avec Internet, Ludo répond grâce à une IA, en tenant compte de vos règles maison et du manuel. Sans connexion, Ludo cherche dans les règles et le manuel (sans calculs).' : 'L’IA est désactivée dans les Réglages : l’assistant hors ligne cherche dans les règles et le manuel (sans calculs).') : 'La recherche fonctionne sans Internet : l’assistant cherche dans les règles des jeux, vos règles maison et le manuel. Il retrouve le bon passage, mais ne fait pas de calculs. Le bouton ✨ passe la question à une vraie IA (Internet requis).'}</p>
   </main>`;
 }
 /* ---------- Passer la question à l'IA du téléphone ---------- */
@@ -2822,7 +2827,7 @@ const AI_URL = 'https://pointage-ia.rogerotisqc.workers.dev';   // relais Cloudf
 const AI_T = '__AI_TOKEN__';
 function aiToken(){ try{ return AI_T.indexOf('__') === 0 ? '' : atob(AI_T.split('.').reverse().join('')); }catch(e){ return ''; } }
 function aiPref(){ try{ return localStorage.getItem('pointage.ia') !== '0'; }catch(e){ return true; } }
-function askIcon(){ return '❓' + (aiReady() ? '<span class="ia-tag">IA</span>' : ''); }
+function askIcon(){ return '<span class="ludo">Ludo</span>' + (aiReady() ? '<span class="ia-tag">IA</span>' : ''); }
 function aiConfigured(){ return !!(AI_URL && aiToken()); }
 function aiReady(){ return aiConfigured() && aiPref() && navigator.onLine !== false; }
 let AI_CTRL = null;
@@ -2854,7 +2859,7 @@ async function askRun(text, spoken){
   speakStop();
   S.askQ = text; S.askRes = null; S.askAi = null; S.askNote = '';
   if(!aiReady()){
-    const why = aiConfigured() && aiPref() ? 'Pas de connexion Internet : réponse de l’assistant hors ligne.' : '';
+    const why = aiConfigured() && aiPref() ? 'Pas de connexion Internet : Ludo répond en mode hors ligne.' : '';
     return askOffline(text, spoken, why);
   }
   const id = (S.askId = (S.askId || 0) + 1);
@@ -2871,7 +2876,7 @@ async function askRun(text, spoken){
     S.askBusy = false;
     if(S.view !== 'ask') return;
     const msg = e && e.name === 'AbortError' ? 'L’IA a mis trop de temps' : String(e && e.message || 'L’IA ne répond pas');
-    askOffline(text, spoken, msg.replace(/\.$/, '') + '. Voici la réponse de l’assistant hors ligne.');
+    askOffline(text, spoken, msg.replace(/\.$/, '') + '. Ludo répond en mode hors ligne.');
   }
 }
 // Nettoyage du texte lu à voix haute : sans guillemets, et sans point en trop après « ? » ou « ! »
@@ -2889,7 +2894,7 @@ function aiCard(){
   const a = S.askAi;
   return `<p class="hint" style="margin:14px 2px 6px">Vous avez demandé : « ${esc(a.q)} »</p>
     <div class="card" style="padding:16px">
-      <div class="hint" style="margin:0 0 6px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:12px">✨ Réponse de l’IA</div>
+      <div class="hint" style="margin:0 0 6px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:12px">✨ Réponse de Ludo (IA)</div>
       ${a.answer.split(/\n+/).filter(x => x.trim()).map(p => `<p style="margin:6px 0;line-height:1.5">${esc(p.replace(/^[-•]\s*/, '• '))}</p>`).join('')}
       ${a.sources.length ? `<div class="hint" style="margin:10px 0 0">Sources : ${a.sources.map((x, i) => `<a href="#" data-a="askSrc" data-i="${i}" style="color:var(--brand)">${esc(x.title)}</a>`).join(' · ')}</div>` : ''}
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
@@ -2897,7 +2902,7 @@ function aiCard(){
         <button class="btn" data-a="askLocal">📖 Réponse hors ligne</button>
       </div>
     </div>
-    <p class="hint" style="margin:8px 2px 0">L’IA peut se tromper : en cas de doute, vérifiez dans les règles 📖. Vous pouvez poser une question de suivi.</p>`;
+    <p class="hint" style="margin:8px 2px 0">Ludo peut se tromper : en cas de doute, vérifiez dans les règles 📖. Vous pouvez poser une question de suivi.</p>`;
 }
 function askVoice(alts){
   if(aiReady()){ const a = (alts || []).find(x => String(x).trim()); return a ? askRun(a, true) : render(); }
@@ -3155,7 +3160,7 @@ const A = {
   voiceCloudName: el => { vSet('cloudName', el.dataset.v); audioUnlock(); speak(VOICE_TEST, { cloud: true, voice: el.dataset.v }); render(); },
   voiceRate: el => { vSet('rate', el.dataset.v); render(); },
   voiceTest: el => { audioUnlock(); if(el.dataset.v === 'cloud'){ if(!aiReady()) return toast('Pas de connexion Internet'); speak(VOICE_TEST, { cloud: true }); } else speak(VOICE_TEST, { device: true }); },
-  askCancel: () => { S.askId = (S.askId || 0) + 1; S.askBusy = false; if(AI_CTRL) AI_CTRL.abort(); askOffline(S.askQ, false, 'Question à l’IA annulée : réponse de l’assistant hors ligne.'); },
+  askCancel: () => { S.askId = (S.askId || 0) + 1; S.askBusy = false; if(AI_CTRL) AI_CTRL.abort(); askOffline(S.askQ, false, 'Question à l’IA annulée : Ludo répond en mode hors ligne.'); },
   askLocal: () => { speakStop(); askOffline(S.askQ, false, ''); },
   askSrc: el => { const x = S.askAi && S.askAi.sources[+el.dataset.i]; if(x) openUrl(x.url); },
   iaToggle: () => { const on = !aiPref(); try{ localStorage.setItem('pointage.ia', on ? '1' : '0'); }catch(e){} toast(on ? 'IA activée' : 'IA désactivée : assistant hors ligne seulement'); render(); },

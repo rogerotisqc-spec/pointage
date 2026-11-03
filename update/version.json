@@ -1,6 +1,6 @@
 {
- "version": "4.9",
- "notes": "Nouveau jeu : le Train mexicain (dominos double-9, 12 ou 15), avec comptage des dominos restants moitié par moitié.\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.9.apk",
+ "version": "5.0",
+ "notes": "L’assistant s’appelle maintenant Ludo : bouton rouge « Ludo » avec l’étiquette IA, partout dans l’app.\nManuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.0.apk",
  "size": 160601
 }
