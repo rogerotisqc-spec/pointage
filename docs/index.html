@@ -4,81 +4,201 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1f5c45">
+<meta name="description" content="Pointage : l’app familiale qui tient le pointage de vos jeux de société et répond à vos questions sur les règles avec Ludo, son assistant IA. Gratuite, sans publicité.">
 <title>Pointage · installer</title>
 <link rel="icon" href="favicon.png">
 <style>
 :root{
   --bg:#f3f0e8; --surface:#fffdf8; --ink:#1c2420; --muted:#5f6964; --line:#e2dccd;
-  --brand:#1f5c45; --on-brand:#fff; --accent:#d98e04; --soft:#e7efe9;
+  --brand:#1f5c45; --brand2:#2f8a66; --on-brand:#fff; --accent:#d98e04; --gold:#ffd166; --soft:#e7efe9; --ludo:#e53935;
 }
 @media (prefers-color-scheme: dark){
-  :root{ --bg:#101412; --surface:#191f1c; --ink:#ecf0ed; --muted:#9aa49e; --line:#2b3430; --brand:#2f8a66; --accent:#f0a91c; --soft:#1d2a24; color-scheme:dark; }
+  :root{ --bg:#101412; --surface:#191f1c; --ink:#ecf0ed; --muted:#9aa49e; --line:#2b3430; --brand:#2f8a66; --brand2:#3fa67c; --accent:#f0a91c; --soft:#1d2a24; --ludo:#ff6b6b; color-scheme:dark; }
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.hero{background:var(--brand);color:var(--on-brand);padding:calc(28px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 30px max(20px, env(safe-area-inset-left))}
-.hero .in,.main{max-width:560px;margin:0 auto}
-.hero img{width:72px;height:72px;border-radius:18px;display:block;margin-bottom:14px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
-.hero h1{margin:0;font-size:30px;letter-spacing:-.01em}
-.hero p{margin:4px 0 0;opacity:.85}
-.games{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
-.games span{font-size:13px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.14)}
-.main{padding:22px max(16px, env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left))}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left))}
+
+/* En-tête */
+.hero{background:radial-gradient(900px 600px at 85% 0%, #2f8a66 0%, #1f5c45 50%, #143f30 100%);color:var(--on-brand);padding:calc(28px + env(safe-area-inset-top)) 0 0;overflow:hidden}
+.hero .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:end}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700;font-size:19px}
+.brand img{width:46px;height:46px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.hero h1{margin:22px 0 0;font-size:clamp(34px,6vw,54px);line-height:1.04;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero .lead{margin:16px 0 0;font-size:clamp(17px,2.2vw,20px);opacity:.92;max-width:520px}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 8px}
+.cta a{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 22px;border-radius:12px;font-weight:700;text-decoration:none;font-size:17px}
+.cta .main{background:var(--gold);color:#1c2420}
+.cta .alt{border:2px solid rgba(255,255,255,.6);color:#fff}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 30px;font-size:14px}
+.badges span{padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.18)}
+.shots{position:relative;height:420px}
+.shots img{position:absolute;bottom:-40px;width:200px;border-radius:26px;border:6px solid #0e1311;box-shadow:0 24px 50px rgba(0,0,0,.45);background:#0e1311}
+.shots img:nth-child(1){left:10px;transform:rotate(-7deg);bottom:-70px}
+.shots img:nth-child(2){left:150px;z-index:2;width:220px}
+.shots img:nth-child(3){left:310px;transform:rotate(7deg);bottom:-70px}
+
+/* Sections */
+section.blk{padding:46px 0 10px}
+h2{font-size:clamp(25px,3.6vw,32px);line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 22px;max-width:640px}
+.feats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.feat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.feat .ic{font-size:26px;line-height:1}
+.feat h3{margin:10px 0 4px;font-size:18px}
+.feat p{margin:0;color:var(--muted);font-size:15px}
+
+.ludo{display:grid;grid-template-columns:1fr 280px;gap:28px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px;margin-top:6px}
+.ludo h2 b{color:var(--ludo)}
+.ludo .tag{display:inline-block;font-weight:800;font-size:13px;letter-spacing:.04em;color:var(--ludo);background:color-mix(in srgb,var(--ludo) 12%,transparent);padding:3px 10px;border-radius:999px;margin-bottom:10px}
+.ludo ul{margin:12px 0 0;padding:0;list-style:none}
+.ludo li{display:flex;gap:10px;margin:10px 0}
+.ludo li span{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--soft);font-size:15px}
+.ludo .q{margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--soft);font-size:15px}
+.ludo .q b{color:var(--brand)}
+.ludo img{width:100%;border-radius:22px;border:6px solid #0e1311;box-shadow:0 18px 40px rgba(0,0,0,.25)}
+
+.games{display:flex;flex-wrap:wrap;gap:8px}
+.games span{padding:7px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-weight:600;font-size:15px}
+.why{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 26px;margin:0;padding:0;list-style:none}
+.why li{display:flex;gap:10px;align-items:flex-start}
+.why li::before{content:'✓';flex:none;width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center;margin-top:2px}
+
+/* Installation */
+.install{padding:46px 0 10px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
 .card.pick{border:2px solid var(--brand);box-shadow:0 4px 18px rgba(0,0,0,.07)}
-.tag{display:inline-block;font-size:12px;font-weight:700;color:var(--brand);background:var(--soft);padding:2px 9px;border-radius:999px;margin-bottom:8px}
-.card h2{margin:0 0 4px;font-size:20px}
+.tagp{display:inline-block;font-size:12px;font-weight:700;color:var(--brand);background:var(--soft);padding:2px 9px;border-radius:999px;margin-bottom:8px}
+.card h3{margin:0 0 4px;font-size:20px}
 .card p{margin:6px 0;color:var(--muted)}
 .btn{display:flex;align-items:center;justify-content:center;min-height:52px;margin:14px 0 4px;border-radius:12px;background:var(--brand);color:#fff;font-weight:700;font-size:17px;text-decoration:none}
 .btn.alt{background:transparent;color:var(--brand);border:2px solid var(--brand)}
 ol{margin:10px 0 0;padding-left:22px}
 li{margin:6px 0}
 .small{font-size:13.5px;color:var(--muted)}
-.ver{text-align:center;font-size:13px;color:var(--muted);margin-top:20px}
-.order{display:flex;flex-direction:column}
+footer{text-align:center;font-size:14px;color:var(--muted);padding:34px 16px calc(40px + env(safe-area-inset-bottom))}
+footer a{color:inherit;font-weight:700}
+
+@media (max-width:820px){
+  .hero .grid{grid-template-columns:1fr}
+  .shots{height:300px;margin:0 auto;width:330px}
+  .shots img{width:150px;border-width:5px;border-radius:20px}
+  .shots img:nth-child(2){left:95px;width:160px}.shots img:nth-child(3){left:180px}
+  .feats{grid-template-columns:1fr 1fr}
+  .ludo{grid-template-columns:1fr;padding:20px}.ludo img{max-width:260px;margin:0 auto;display:block}
+  .cards{grid-template-columns:1fr}
+}
+@media (max-width:520px){ .feats{grid-template-columns:1fr} .why{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
-<header class="hero"><div class="in">
-  <img src="app/apple-touch-icon.png" alt="">
-  <h1>Pointage</h1>
-  <p>Les feuilles de pointage des jeux de la famille.</p>
-  <div class="games"><span>Play Nine</span><span>Flip 7</span><span>Uno</span><span>Skip-Bo</span><span>Mille Bornes</span><span>Phase 10</span><span>Scrabble</span><span>Skyjo</span><span>Wizard</span><span>Acquire</span><span>Yahtzee</span><span>Triomino</span><span>Train mexicain</span><span>Jeu de dés</span><span>Pointage libre</span></div>
+<header class="hero"><div class="wrap grid">
+  <div>
+    <div class="brand"><img src="app/apple-touch-icon.png" alt="">Pointage</div>
+    <h1>Vos soirées de jeux, <em>sans papier ni crayon.</em></h1>
+    <p class="lead">L’app familiale qui tient le pointage de vos jeux de société, calcule les points à votre place et répond à vos questions sur les règles grâce à <b>Ludo</b>, son assistant intelligent.</p>
+    <div class="cta"><a class="main" href="#installer">Installer gratuitement</a><a class="alt" href="manuel/">Voir le manuel</a></div>
+    <div class="badges"><span>Gratuite</span><span>Sans publicité</span><span>Android · iPhone · ordinateur</span><span>Fonctionne sans Internet</span></div>
+  </div>
+  <div class="shots" aria-hidden="true">
+    <img src="manuel/img/scrabble-calculateur.webp" alt="">
+    <img src="manuel/img/assistant.webp" alt="">
+    <img src="manuel/img/yahtzee.webp" alt="">
+  </div>
 </div></header>
-<main class="main"><div class="order" id="order">
-  <section class="card" id="android">
-    <span class="tag" hidden>Pour votre téléphone</span>
-    <h2>Android</h2>
-    <p>L’application à installer, avec les mises à jour intégrées.</p>
-    <a class="btn" href="Pointage.apk">Télécharger l’app (157 Ko)</a>
-    <ol class="small">
-      <li>Si Chrome avertit que le fichier peut être dangereux, choisissez <b>Télécharger quand même</b>.</li>
-      <li>Ouvrez le fichier téléchargé, puis autorisez l’installation d’applications si Android le demande.</li>
-      <li>Si Play Protect affiche un avertissement : <b>Plus de détails</b>, puis <b>Installer quand même</b>.</li>
-    </ol>
-    <p class="small">Ensuite, les nouvelles versions s’installent depuis l’app : ⚙︎ Réglages → Vérifier les mises à jour.</p>
-  </section>
-  <section class="card" id="iphone">
-    <span class="tag" hidden>Pour votre téléphone</span>
-    <h2>iPhone et iPad</h2>
-    <p>La même app, en version web. Elle se met à jour toute seule.</p>
-    <a class="btn alt" href="app/">Ouvrir l’app</a>
-    <ol class="small">
-      <li>Ouvrez cette page dans <b>Safari</b>, puis touchez <b>Ouvrir l’app</b>.</li>
-      <li>Touchez le bouton <b>Partager</b> (le carré avec une flèche vers le haut).</li>
-      <li>Choisissez <b>Sur l’écran d’accueil</b>, puis <b>Ajouter</b>.</li>
-    </ol>
-    <p class="small">Lancez ensuite Pointage depuis son icône : l’app s’ouvre en plein écran et vos parties restent dans le téléphone.</p>
-  </section>
-  <section class="card" id="other">
-    <h2>Ordinateur ou tablette</h2>
-    <p>L’app fonctionne aussi dans n’importe quel navigateur.</p>
-    <a class="btn alt" href="app/">Ouvrir l’app</a>
-  </section>
-</div>
-<p class="ver"><a href="manuel/" style="color:inherit;font-weight:700">📘 Manuel d’utilisation</a><br>Adresse à partager : <b>tinyurl.com/pointagef</b><br>Version 5.0</p>
+
+<main>
+  <section class="blk"><div class="wrap">
+    <h2>Tout ce qu’il faut pour jouer en paix</h2>
+    <p class="sub">Fini les feuilles froissées, les additions à refaire et les disputes sur les règles : Pointage s’en occupe, sur un seul téléphone posé au milieu de la table.</p>
+    <div class="feats">
+      <div class="feat"><div class="ic">🧮</div><h3>Les points calculés pour vous</h3><p>Tapez le mot au Scrabble, touchez vos dés au Yahtzee, comptez vos dominos ou vos cartes : l’app fait les additions, les bonus et les pénalités selon les règles.</p></div>
+      <div class="feat"><div class="ic">🎯</div><h3>Une feuille faite pour chaque jeu</h3><p>Chaque jeu a sa propre feuille : fusions d’Acquire, mises et plis du Wizard, phases du Phase 10, ponts et hexagones du Triomino…</p></div>
+      <div class="feat"><div class="ic">🗣️</div><h3>Commande vocale</h3><p>Au jeu de dés, dites « trois cinq et un un » : l’app comprend vos dés et calcule le tour.</p></div>
+      <div class="feat"><div class="ic">🏆</div><h3>Statistiques et records</h3><p>Qui gagne le plus souvent ? Séries en feu, records, bête noire, jeu fétiche : toutes vos parties sont gardées.</p></div>
+      <div class="feat"><div class="ic">🃏</div><h3>Le brasseur, les règles maison</h3><p>L’app indique à qui c’est de brasser, garde vos variantes de famille et résume les règles de chaque jeu.</p></div>
+      <div class="feat"><div class="ic">💾</div><h3>Sûr et toujours à jour</h3><p>Vos parties restent dans votre téléphone, avec sauvegarde automatique. Les nouvelles versions s’installent d’un toucher.</p></div>
+    </div>
+  </div></section>
+
+  <section class="blk" id="ludo"><div class="wrap">
+    <div class="ludo">
+      <div>
+        <span class="tag">NOUVEAU · ASSISTANT IA</span>
+        <h2>Une question ? Demandez à <b>Ludo</b>.</h2>
+        <p class="sub" style="margin-bottom:0">Ludo, c’est l’assistant de l’app. Posez-lui votre question à voix haute ou par écrit, pendant la partie : il vous répond… à voix haute.</p>
+        <ul>
+          <li><span>📖</span><div><b>Il connaît les règles.</b> Celles de chaque jeu, mais surtout <b>vos règles maison</b>, qui passent en premier. Au besoin, il vérifie les règles officielles sur Internet.</div></li>
+          <li><span>🧮</span><div><b>Il fait les calculs.</b> « J’ai misé 2 et fait 4 plis, combien j’ai ? » Il vous donne le résultat et le détail.</div></li>
+          <li><span>📱</span><div><b>Il connaît l’app.</b> Corriger une manche, ajouter un invité, faire une sauvegarde : il vous explique comment.</div></li>
+          <li><span>🔊</span><div><b>Une voix naturelle.</b> Ses réponses sont lues par une voix très naturelle en français canadien.</div></li>
+          <li><span>📶</span><div><b>Même sans Internet.</b> Hors connexion, Ludo cherche la réponse dans les règles et le manuel de l’app.</div></li>
+        </ul>
+        <div class="q">Touchez simplement le bouton <b style="color:var(--ludo)">Ludo</b> en haut de l’écran, puis « Poser une question à Ludo ».</div>
+      </div>
+      <img src="manuel/img/assistant.webp" alt="Ludo répond à une question de calcul pendant une partie de Wizard">
+    </div>
+  </div></section>
+
+  <section class="blk"><div class="wrap">
+    <h2>Vos jeux préférés</h2>
+    <p class="sub">Et une feuille libre pour tous les autres jeux, avec vos propres règles.</p>
+    <div class="games"><span>Scrabble</span><span>Yahtzee</span><span>Uno</span><span>Skip-Bo</span><span>Mille Bornes</span><span>Phase 10</span><span>Wizard</span><span>Skyjo</span><span>Flip 7</span><span>Play Nine</span><span>Triomino</span><span>Train mexicain</span><span>Acquire</span><span>Jeu de dés</span><span>Pointage libre</span></div>
+  </div></section>
+
+  <section class="blk"><div class="wrap">
+    <h2>Pourquoi Pointage ?</h2>
+    <ul class="why" style="margin-top:16px">
+      <li><div><b>Gratuite et sans publicité</b>, faite pour la famille et les amis.</div></li>
+      <li><div><b>Simple</b> : de gros boutons, des mots clairs, un manuel illustré.</div></li>
+      <li><div><b>Équipes et invités</b> : jouez en équipes au Skip-Bo et au Mille Bornes, ajoutez un ami de passage.</div></li>
+      <li><div><b>Hors ligne</b> : tout fonctionne sans Internet, sauf l’IA de Ludo.</div></li>
+      <li><div><b>Vos données restent chez vous</b> : rien n’est envoyé, sauf les questions posées à Ludo.</div></li>
+      <li><div><b>Elle évolue</b> : un bouton dans l’app permet de suggérer un jeu ou une amélioration.</div></li>
+    </ul>
+  </div></section>
+
+  <section class="install" id="installer"><div class="wrap">
+    <h2>Installer l’app</h2>
+    <p class="sub">Choisissez votre appareil. La page met en premier celui que vous utilisez.</p>
+    <div class="cards" id="order">
+      <section class="card" id="android">
+        <span class="tagp" hidden>Pour votre téléphone</span>
+        <h3>Android</h3>
+        <p>L’application à installer, avec les mises à jour intégrées.</p>
+        <a class="btn" href="Pointage.apk">Télécharger l’app (APK)</a>
+        <ol class="small">
+          <li>Si Chrome avertit que le fichier peut être dangereux, choisissez <b>Télécharger quand même</b>.</li>
+          <li>Ouvrez le fichier téléchargé, puis autorisez l’installation d’applications si Android le demande.</li>
+          <li>Si Play Protect affiche un avertissement : <b>Plus de détails</b>, puis <b>Installer quand même</b>.</li>
+        </ol>
+        <p class="small">Ensuite, les nouvelles versions s’installent depuis l’app : ⚙︎ Réglages → Vérifier les mises à jour.</p>
+      </section>
+      <section class="card" id="iphone">
+        <span class="tagp" hidden>Pour votre téléphone</span>
+        <h3>iPhone et iPad</h3>
+        <p>La même app, en version web. Elle se met à jour toute seule.</p>
+        <a class="btn alt" href="app/">Ouvrir l’app</a>
+        <ol class="small">
+          <li>Ouvrez cette page dans <b>Safari</b>, puis touchez <b>Ouvrir l’app</b>.</li>
+          <li>Touchez le bouton <b>Partager</b> (le carré avec une flèche vers le haut).</li>
+          <li>Choisissez <b>Sur l’écran d’accueil</b>, puis <b>Ajouter</b>.</li>
+        </ol>
+        <p class="small">Lancez ensuite Pointage depuis son icône : l’app s’ouvre en plein écran et vos parties restent dans le téléphone.</p>
+      </section>
+      <section class="card" id="other">
+        <h3>Ordinateur ou tablette</h3>
+        <p>L’app fonctionne aussi dans n’importe quel navigateur, idéale sur une tablette posée sur la table.</p>
+        <a class="btn alt" href="app/">Ouvrir l’app</a>
+      </section>
+    </div>
+  </div></section>
 </main>
+<footer><a href="manuel/">📘 Manuel d’utilisation</a><br>Adresse à partager : <b>tinyurl.com/pointagef</b><br>Version 5.0</footer>
 <script>
 (function(){
   var ua = navigator.userAgent || '';
@@ -87,7 +207,7 @@ li{margin:6px 0}
   var pick = isAndroid ? 'android' : (isIOS ? 'iphone' : null);
   if(!pick) return;
   var el = document.getElementById(pick), order = document.getElementById('order');
-  el.classList.add('pick'); el.querySelector('.tag').hidden = false;
+  el.classList.add('pick'); el.querySelector('.tagp').hidden = false;
   var b = el.querySelector('.btn.alt'); if(b) b.classList.remove('alt');
   order.insertBefore(el, order.firstChild);
 })();
