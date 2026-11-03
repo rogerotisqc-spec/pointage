@@ -225,6 +225,18 @@ table.sheet tfoot td.lbl{font-size:13px}
 .ptab .n{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}.ptab .n i{width:9px;height:9px;border-radius:50%}
 .ptab .v{font-size:17px;font-weight:800}
 .ptab.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--surface))}
+.mtrows{display:flex;flex-direction:column;gap:6px}
+.mtrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);text-align:left;width:100%}
+.mtrow.on{border-color:var(--pc);background:color-mix(in srgb,var(--pc) 10%,var(--surface))}
+.mtrow .grow{flex:1;min-width:0}.mtrow .av{width:32px;height:32px;font-size:14px}.mtrow small{display:block;font-size:12px;color:var(--muted)}.mtrow .mttot{font-size:22px;min-width:40px;text-align:right}
+.mtpad{margin-top:10px;padding:12px}
+.mtchips{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;margin:10px 0;align-items:center}
+.mtd{display:inline-flex;align-items:center;height:34px;border-radius:7px;background:#fffdf8;border:2px solid #2b2b2b;color:#1c2420;font-weight:800;font-size:15px;cursor:pointer}
+.mtd .mth{min-width:24px;text-align:center}.mtd i{width:2px;height:22px;background:#2b2b2b}
+.mtd.pending{border-style:dashed;opacity:.75}
+.mtnums{display:grid;gap:6px}
+.mtnums button{height:42px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-size:18px;font-weight:800}
+.mtnums button.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 14%,var(--surface))}.mtnums button:disabled{opacity:.35}
 .trpanel{margin:12px 16px 0;padding:14px}
 .trtop{display:flex;gap:14px;align-items:center}
 .trtri{width:96px;flex:none}.trtri polygon{fill:color-mix(in srgb,#6d4c41 10%,var(--surface));stroke:#6d4c41;stroke-width:4;stroke-linejoin:round}
@@ -501,7 +513,7 @@ const $ = id => document.getElementById(id);
 const MANUAL_URL = 'https://rogerotisqc-spec.github.io/pointage/manuel/';
 const SHARE_URL = 'https://tinyurl.com/pointagef';   // page d'installation (code QR : tools/make_qr.py)
 const QR_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges"><rect width="33" height="33" fill="#fff"/><path d="M2 2h7v1h-7zM11 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM19 2h3v1h-3zM24 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h1v1h-1zM15 3h1v1h-1zM19 3h1v1h-1zM21 3h2v1h-2zM24 3h1v1h-1zM30 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM12 4h2v1h-2zM17 4h1v1h-1zM21 4h1v1h-1zM24 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM14 5h2v1h-2zM18 5h1v1h-1zM20 5h1v1h-1zM24 5h1v1h-1zM26 5h3v1h-3zM30 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h4v1h-4zM18 6h4v1h-4zM24 6h1v1h-1zM26 6h3v1h-3zM30 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM11 7h1v1h-1zM13 7h2v1h-2zM16 7h3v1h-3zM20 7h2v1h-2zM24 7h1v1h-1zM30 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h7v1h-7zM14 9h1v1h-1zM17 9h1v1h-1zM19 9h1v1h-1zM21 9h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM11 10h3v1h-3zM18 10h2v1h-2zM26 10h1v1h-1zM29 10h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM9 11h1v1h-1zM12 11h2v1h-2zM15 11h1v1h-1zM17 11h4v1h-4zM22 11h1v1h-1zM24 11h1v1h-1zM27 11h1v1h-1zM30 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM8 12h1v1h-1zM10 12h3v1h-3zM16 12h3v1h-3zM23 12h4v1h-4zM28 12h3v1h-3zM2 13h1v1h-1zM4 13h2v1h-2zM10 13h1v1h-1zM12 13h2v1h-2zM15 13h2v1h-2zM18 13h2v1h-2zM22 13h1v1h-1zM25 13h2v1h-2zM29 13h1v1h-1zM2 14h2v1h-2zM7 14h3v1h-3zM11 14h1v1h-1zM14 14h1v1h-1zM16 14h2v1h-2zM19 14h1v1h-1zM21 14h5v1h-5zM27 14h1v1h-1zM29 14h2v1h-2zM2 15h1v1h-1zM5 15h1v1h-1zM9 15h1v1h-1zM11 15h2v1h-2zM14 15h1v1h-1zM16 15h2v1h-2zM19 15h1v1h-1zM24 15h1v1h-1zM27 15h1v1h-1zM30 15h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM15 16h1v1h-1zM20 16h1v1h-1zM24 16h1v1h-1zM27 16h1v1h-1zM29 16h2v1h-2zM4 17h1v1h-1zM6 17h1v1h-1zM9 17h2v1h-2zM13 17h2v1h-2zM17 17h1v1h-1zM19 17h6v1h-6zM26 17h2v1h-2zM29 17h1v1h-1zM3 18h3v1h-3zM8 18h1v1h-1zM11 18h2v1h-2zM18 18h2v1h-2zM21 18h4v1h-4zM27 18h1v1h-1zM29 18h2v1h-2zM7 19h1v1h-1zM11 19h1v1h-1zM14 19h2v1h-2zM17 19h3v1h-3zM22 19h3v1h-3zM27 19h2v1h-2zM30 19h1v1h-1zM2 20h1v1h-1zM5 20h2v1h-2zM8 20h1v1h-1zM11 20h2v1h-2zM14 20h1v1h-1zM16 20h4v1h-4zM23 20h1v1h-1zM25 20h2v1h-2zM29 20h2v1h-2zM3 21h1v1h-1zM5 21h1v1h-1zM9 21h1v1h-1zM11 21h3v1h-3zM15 21h2v1h-2zM18 21h3v1h-3zM22 21h2v1h-2zM25 21h3v1h-3zM29 21h1v1h-1zM2 22h1v1h-1zM4 22h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM14 22h1v1h-1zM16 22h2v1h-2zM19 22h1v1h-1zM21 22h6v1h-6zM10 23h3v1h-3zM14 23h1v1h-1zM16 23h2v1h-2zM19 23h1v1h-1zM21 23h2v1h-2zM26 23h1v1h-1zM28 23h3v1h-3zM2 24h7v1h-7zM11 24h2v1h-2zM14 24h2v1h-2zM21 24h2v1h-2zM24 24h1v1h-1zM26 24h2v1h-2zM29 24h2v1h-2zM2 25h1v1h-1zM8 25h1v1h-1zM11 25h1v1h-1zM14 25h1v1h-1zM17 25h1v1h-1zM19 25h2v1h-2zM22 25h1v1h-1zM26 25h2v1h-2zM2 26h1v1h-1zM4 26h3v1h-3zM8 26h1v1h-1zM10 26h1v1h-1zM12 26h1v1h-1zM14 26h1v1h-1zM18 26h2v1h-2zM22 26h5v1h-5zM29 26h1v1h-1zM2 27h1v1h-1zM4 27h3v1h-3zM8 27h1v1h-1zM12 27h2v1h-2zM15 27h1v1h-1zM17 27h3v1h-3zM22 27h2v1h-2zM25 27h2v1h-2zM28 27h1v1h-1zM2 28h1v1h-1zM4 28h3v1h-3zM8 28h1v1h-1zM10 28h3v1h-3zM14 28h1v1h-1zM17 28h3v1h-3zM22 28h1v1h-1zM25 28h3v1h-3zM30 28h1v1h-1zM2 29h1v1h-1zM8 29h1v1h-1zM12 29h3v1h-3zM18 29h2v1h-2zM21 29h2v1h-2zM24 29h2v1h-2zM29 29h1v1h-1zM2 30h7v1h-7zM10 30h1v1h-1zM13 30h1v1h-1zM15 30h1v1h-1zM17 30h2v1h-2zM20 30h3v1h-3zM25 30h3v1h-3zM29 30h2v1h-2z" fill="#000"/></svg>';
-const ORDER = ['generic','farkle','yahtzee','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','triomino','skyjo','wizard','acquire'];
+const ORDER = ['generic','farkle','yahtzee','playnine','flip7','uno','skipbo','millebornes','phase10','scrabble','triomino','train','skyjo','wizard','acquire'];
 const GAMES = {
   generic:    {name:'Pointage libre', color:'#4f5b57', badge:'✎',  desc:'N’importe quel jeu, vos règles', round:'Manche'},
   playnine:   {name:'Play Nine',      color:'#2b8a3e', badge:'9',  desc:'9 trous · le plus bas gagne', round:'Trou', low:true, helper:'playnine'},
@@ -510,6 +522,7 @@ const GAMES = {
   skipbo:     {name:'Skip-Bo',        color:'#1864ab', badge:'SB', desc:'Individuel ou en équipes · 500', round:'Manche', target:500},
   millebornes:{name:'Mille Bornes',   color:'#d9a400', badge:'1000', desc:'Individuel ou en équipes · 5 000', round:'Manche', target:5000},
   phase10:    {name:'Phase 10',       color:'#6741d9', badge:'10', desc:'10 phases · le moins de points', round:'Manche', low:true, helper:'phase10'},
+  train:      {name:'Train mexicain', color:'#bf360c', badge:'🚂', desc:'Dominos · 13 manches · le plus bas gagne', round:'Manche', low:true},
   triomino:   {name:'Triomino',       color:'#6d4c41', badge:'△',  desc:'Pièces triangulaires · partie à 400', round:'Tour', target:400},
   yahtzee:    {name:'Yahtzee',        color:'#ad1457', badge:'Y',  desc:'Dés tactiles · 13 cases · le plus haut gagne', round:'Tour'},
   acquire:    {name:'Acquire',        color:'#00695c', badge:'A$', desc:'Chaînes d’hôtels · le plus riche gagne', round:'Fusion'},
@@ -633,6 +646,15 @@ function rulesHtml(type, g){
     <h3>Pointage (cartes restées en main)</h3><table>
       <tr><td>1 à 9</td><td>5</td></tr><tr><td>10 à 12</td><td>10</td></tr><tr><td>Passe</td><td>15</td></tr><tr><td>Joker</td><td>25</td></tr></table>
     <p>Gagnant : le premier à réussir la phase 10. En cas d’égalité, le moins de points.</p>`;
+  case 'train': return `
+    <h3>But</h3><p>Avoir le moins de points après toutes les manches : on veut se débarrasser de ses dominos.</p>
+    <h3>Les manches</h3><p>Avec un jeu double-12 : 13 manches. La première commence avec le double 12 au centre, la suivante avec le double 11, et ainsi de suite jusqu’au double blanc (double-9 : 10 manches ; double-15 : 16 manches).</p>
+    <h3>Distribution (double-12)</h3><p>Jusqu’à 4 joueurs : 15 dominos chacun ; 5 ou 6 : 12 ; 7 ou 8 : 10 ; 9 ou 10 : 8. Le reste forme la pioche.</p>
+    <h3>Un tour</h3><ul>
+      <li>On pose un domino sur son propre train, sur le train mexicain, ou sur le train d’un joueur qui a un marqueur.</li>
+      <li>Si on ne peut pas jouer, on pioche un domino ; s’il ne se joue pas, on met un marqueur sur son train (les autres peuvent alors y jouer).</li>
+      <li>Un double doit être couvert avant de continuer.</li></ul>
+    <h3>Fin de manche</h3><p>Dès qu’un joueur a posé tous ses dominos (ou si plus personne ne peut jouer), chacun compte les points des dominos qui lui restent ; celui qui a tout posé marque 0. Variante courante : le double blanc vaut 50 points (à cocher au début de la partie).</p>`;
   case 'triomino': return `
     <h3>But</h3><p>Être le premier à dépasser 400 points ; la manche en cours se termine, puis le plus haut total gagne.</p>
     <h3>Mise en place</h3><p>56 pièces. À 2 joueurs, 9 pièces chacun ; à 3 ou 4 joueurs, 7 pièces chacun. Le reste forme la pioche.</p>
@@ -811,7 +833,7 @@ function endInfo(g){
     return w.length ? w.map(p=>p.name).join(', ') + ' a réussi la phase 10' : null;
   }
   if(g.type === 'acquire' || g.type === 'yahtzee' || g.type === 'triomino') return null;
-  if(g.type === 'wizard') return g.rounds.length >= g.opts.rounds ? 'Les ' + g.opts.rounds + ' manches sont jouées' : null;
+  if(g.type === 'wizard' || g.type === 'train') return g.rounds.length >= g.opts.rounds ? 'Les ' + g.opts.rounds + ' manches sont jouées' : null;
   if(g.opts.holes) return g.rounds.length >= g.opts.holes ? 'Les ' + g.opts.holes + ' trous sont joués' : null;
   const tg = g.type === 'farkle' ? g.opts.f.target : g.opts.target;
   if(g.type === 'farkle'){
@@ -894,7 +916,7 @@ function f7Pts(h){
 function dealerIdx(g){ const n = realPlayers(g).length; return (((g.dealer0||0) + g.rounds.length) % n + n) % n; }
 function dealerName(g){ return (realPlayers(g)[dealerIdx(g)] || {}).name || '?'; }
 function dealerBanner(g){
-  if(isTurnGame(g) || g.finished || (g.opts.holes && g.rounds.length >= g.opts.holes) || (g.type === 'wizard' && g.rounds.length >= g.opts.rounds)) return '';
+  if(isTurnGame(g) || g.finished || (g.opts.holes && g.rounds.length >= g.opts.holes) || ((g.type === 'wizard' || g.type === 'train') && g.rounds.length >= g.opts.rounds)) return '';
   const G = GAMES[g.type];
   return `<button class="dealer" data-a="dealer"><span class="ic">🃏</span><div class="grow">À <b>${esc(dealerName(g))}</b> de brasser<small>${G.round} ${g.rounds.length + 1}</small></div><span class="chg">Changer</span></button>`;
 }
@@ -1018,6 +1040,12 @@ function vSetup(){
       <label class="chk"><input type="checkbox" id="f-usePairs" ${f.usePairs?'checked':''}> Compter les trois paires</label>
       <p class="hint">Ces valeurs sont gardées pour les prochaines parties.</p></details>
       <p class="hint">Partie à ${fmt(f.target)} · ${fmt(f.entry)} pour entrer · −${fmt(f.pen)} à partir de ${fmt(f.penFrom)}</p>`;
+  } else if(type === 'train'){
+    const set = o.set || 12;
+    opts = `<label class="lbl">Jeu de dominos</label>
+      <div class="seg">${[[9,'Double-9'],[12,'Double-12'],[15,'Double-15']].map(([v,l]) => `<button data-a="setMtSet" data-v="${v}" class="${set === v ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <p class="hint">${set + 1} manches, du double ${set} au double blanc.</p>
+      <label class="chk"><input type="checkbox" id="o-mtblank" ${o.blank50 ? 'checked' : ''}> Le double blanc vaut 50 points (variante courante)</label>`;
   } else if(type === 'triomino'){
     const n = S.sel.length;
     opts = `<label class="lbl" for="o-target">Partie à</label><input id="o-target" class="field" inputmode="numeric" value="${o.target||400}">
@@ -1067,6 +1095,7 @@ function readSetupFields(){
   if($('o-target')) o.target = num($('o-target').value);
   if($('o-wznoeven')) o.noEven = $('o-wznoeven').checked;
   if($('o-trstart')) o.startBonus = $('o-trstart').checked;
+  if($('o-mtblank')) o.blank50 = $('o-mtblank').checked;
   if($('f-target')){
     o.f = {}; ['target','entry','penFrom','pen','straight','pairs'].forEach(k => o.f[k] = num($('f-'+k).value));
     o.f.useStraight = $('f-useStraight').checked; o.f.usePairs = $('f-usePairs').checked;
@@ -1080,6 +1109,7 @@ function startGame(){
   if(type === 'wizard' && (S.sel.length < 3 || S.sel.length > 6)) return toast('Wizard se joue de 3 à 6 joueurs');
   if(type === 'acquire' && (S.sel.length < 2 || S.sel.length > 6)) return toast('Acquire se joue de 2 à 6 joueurs');
   if(type === 'triomino' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
+  if(type === 'train' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
   if(TEAM_GAMES.includes(type) && o.teams && S.sel.length < (o.nteams || 2)) return toast('Il faut au moins un joueur par équipe');
   const players = S.sel.map(k => {
     const p = db.players.find(x => x.id === k);
@@ -1095,6 +1125,7 @@ function startGame(){
   else if(type === 'playnine'){ opts.holes = 9; }
   else if(type === 'scrabble'){ opts.simple = !!o.simple; }
   else if(type === 'wizard'){ opts.rounds = Math.floor(60 / S.sel.length); opts.noEven = !!o.noEven; }
+  else if(type === 'train'){ opts.set = [9,12,15].includes(o.set) ? o.set : 12; opts.rounds = opts.set + 1; opts.blank50 = !!o.blank50; }
   else if(type === 'triomino'){ opts.target = o.target || 400; opts.startBonus = !!o.startBonus; }
   else if(type === 'acquire'){ opts.ed = AQ_EDS[o.ed] ? o.ed : (db.aqEd || 'classic'); db.aqEd = opts.ed; }
   else if(type === 'farkle'){ opts.f = Object.assign({}, FD, db.farkle, o.f||{}); db.farkle = Object.assign({}, opts.f); }
@@ -1135,7 +1166,7 @@ function vSheet(){
   const G = GAMES[g.type], r = ranking(g), t = totals(g);
   const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
   const end = !g.finished && endInfo(g);
-  const maxRounds = g.opts.holes || 0;
+  const maxRounds = g.opts.holes || (g.type === 'train' ? g.opts.rounds : 0);
   const strip = `<div class="scores">${g.players.map(p => { const x = byKey[p.key];
     return `<div class="pscore ${x.rank===1 && (g.rounds.length) ?'lead':''}"><span class="rk">${g.rounds.length?(x.rank===1?'★':'#'+x.rank):''}</span>
       <div class="n"><i style="background:${p.color}"></i>${esc(p.name)}</div><div class="v num-t">${fmt(x.total)}</div>
@@ -1146,19 +1177,21 @@ function vSheet(){
   else if(g.type === 'phase10' && !g.rounds.length) table = '';
   else if(!g.rounds.length) table = `<div class="tablewrap"><div class="empty">Aucune ${G.round.toLowerCase()} pour l’instant.<br>Touchez le bouton en bas pour inscrire les points.</div></div>`;
   else table = `<div class="tablewrap"><table class="sheet"><thead><tr><th class="lbl"></th>${g.players.map(p=>`<th>${esc(p.name)}</th>`).join('')}</tr></thead>
-    <tbody>${g.rounds.map((rd,i) => `<tr><td class="lbl">${G.round} ${i+1}</td>${g.players.map(p => {
+    <tbody>${g.rounds.map((rd,i) => `<tr><td class="lbl">${g.type === 'train' ? `${i+1} <small>(double ${mtDouble(g, i)})</small>` : G.round + ' ' + (i+1)}</td>${g.players.map(p => {
         const v = rd.s[p.key]; const has = v !== undefined && v !== null;
         const tick = '';
-        const extra = (g.type==='skipbo' || g.type==='uno') && rd.m && rd.m.w === p.key ? ' 🏁' : (g.type==='skyjo' && rd.m && rd.m.fin === p.key ? (rd.m.doubled ? ' <small class="neg">×2</small>' : ' 🏁') : '');
+        const extra = (g.type==='skipbo' || g.type==='uno' || g.type==='train') && rd.m && rd.m.w === p.key ? ' 🏁' : (g.type==='skyjo' && rd.m && rd.m.fin === p.key ? (rd.m.doubled ? ' <small class="neg">×2</small>' : ' 🏁') : '');
         return `<td><button data-a="editRound" data-i="${i}" class="num-t ${v<0?'neg':''}">${has?fmt(v):'–'}${tick}${extra}</button></td>`; }).join('')}</tr>`).join('')}</tbody>
     <tfoot><tr><td class="lbl">Total</td>${g.players.map(p=>`<td class="num-t ${t[p.key]<0?'neg':''}">${fmt(t[p.key])}</td>`).join('')}</tr></tfoot></table></div>`;
   const legend = !g.rounds.length ? '' : g.type === 'skipbo' ? (g.team ? '🏁 : l’équipe qui a gagné la manche (un partenaire a vidé son talon).' : '🏁 : le joueur qui a vidé son talon et gagné la manche.')
     : g.type === 'uno' && g.rounds.some(rd => rd.m && rd.m.w) ? '🏁 : le joueur qui n’avait plus de cartes ; il marque les cartes des autres.'
-    : g.type === 'skyjo' ? '🏁 : le joueur qui a terminé la manche · ×2 : son pointage a été doublé.' : '';
+    : g.type === 'skyjo' ? '🏁 : le joueur qui a terminé la manche · ×2 : son pointage a été doublé.'
+    : g.type === 'train' ? '🏁 : le joueur qui a posé tous ses dominos (0 point). Touchez une manche pour la corriger.' : '';
   if(legend) table += `<p class="hint" style="margin:8px 18px 0">${legend}</p>`;
   const next = g.rounds.length + 1;
   const canAdd = !g.finished && !(maxRounds && g.rounds.length >= maxRounds);
-  const sub = g.type==='playnine' ? `Trou ${Math.min(next, maxRounds)} de ${maxRounds} · le plus bas gagne`
+  const sub = g.type==='train' ? (next <= maxRounds ? `Manche ${next} de ${maxRounds} · double ${mtDouble(g, next - 1)} · le plus bas gagne` : `${maxRounds} manches jouées · le plus bas gagne`)
+            : g.type==='playnine' ? `Trou ${Math.min(next, maxRounds)} de ${maxRounds} · le plus bas gagne`
             : (g.opts.target ? `Partie à ${fmt(g.opts.target)} · ${isLow(g)?'le plus bas gagne':'le plus haut gagne'}` : (isLow(g)?'Le plus bas gagne':'Le plus haut gagne'));
   return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="${g.type}" aria-label="Assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(ranking(g).filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
@@ -1237,6 +1270,58 @@ function vFarkle(g){
     ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
+/* ---------- Petit train mexicain ---------- */
+// Dominos double-12 (ou double-9 / double-15) : une manche par double, du plus haut au double blanc.
+// Chacun compte les points des dominos qui lui restent ; celui qui a tout posé marque 0. Le plus bas total gagne.
+function mtTop(g){ return g.opts.set || 12; }
+function mtDouble(g, i){ return mtTop(g) - i; }            // i = numéro de manche à partir de 0
+function mtTile(g, t){ return t[0] === 0 && t[1] === 0 && g.opts.blank50 ? 50 : t[0] + t[1]; }
+function mtDomino(a, b, cls, attrs){
+  const half = v => `<span class="mth">${v}</span>`;
+  return `<span class="mtd ${cls || ''}" ${attrs || ''}>${half(a)}<i></i>${half(b)}</span>`;
+}
+function mtOpen(idx){
+  const g = curGame(), editing = idx != null, rd = editing ? g.rounds[idx] : null, k = editing ? idx : g.rounds.length;
+  const v = {};
+  g.players.forEach(p => { const m = rd && rd.m && rd.m.tiles ? rd.m.tiles[p.key] : null;
+    v[p.key] = {tiles: m ? m.map(t => t.slice()) : [], manual: rd && !(m && m.length) && rd.s[p.key] ? rd.s[p.key] : null, out: !!(rd && rd.m && rd.m.w === p.key)}; });
+  const first = g.players.find(p => !v[p.key].out) || g.players[0];
+  M = {mt: {idx: editing ? idx : null, k, v, sel: first.key, half: null}};
+  openModal(`<div class="mhead"><h2>${editing ? 'Manche ' + (k + 1) : 'Fin de la manche ' + (k + 1)} · double ${mtDouble(g, k)}</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody" id="mt-body"></div>
+    <div class="mfoot">${editing ? `<button class="btn danger" data-a="mtDel">Supprimer</button>` : `<button class="btn" data-a="close">Annuler</button>`}<button class="btn primary" data-a="mtSave">Enregistrer</button></div>`);
+  mtRender();
+}
+function mtTotal(g, x){ return x.out ? 0 : x.manual != null ? x.manual : x.tiles.reduce((a, t) => a + mtTile(g, t), 0); }
+function mtRender(){
+  const g = curGame(), m = M.mt, top = mtTop(g), sel = m.v[m.sel], p = g.players.find(x => x.key === m.sel);
+  const rows = g.players.map(q => { const x = m.v[q.key], tot = mtTotal(g, x);
+    return `<button class="mtrow ${q.key === m.sel ? 'on' : ''}" data-a="mtSel" data-k="${q.key}" style="--pc:${q.color}"><span class="av" style="background:${q.color}">${initial(q.name)}</span>
+      <span class="grow"><b>${esc(q.name)}</b><small>${x.out ? '🏁 a posé tous ses dominos' : x.manual != null ? 'total saisi' : x.tiles.length ? x.tiles.length + ' domino' + (x.tiles.length > 1 ? 's' : '') : 'touchez pour compter ses dominos'}</small></span>
+      <b class="num-t mttot">${tot}</b></button>`; }).join('');
+  const nums = Array.from({length: top + 1}, (_, n) => `<button data-a="mtHalf" data-v="${n}" class="${m.half === n ? 'on' : ''}" ${sel.out ? 'disabled' : ''}>${n}</button>`).join('');
+  $('mt-body').innerHTML = `<div class="mtrows">${rows}</div>
+    <div class="mtpad card">
+      <div class="row" style="align-items:center;justify-content:space-between;gap:8px"><b>Dominos de ${esc(p.name)}</b>
+        <label class="chk" style="margin:0"><input type="checkbox" id="mtOut" ${sel.out ? 'checked' : ''}> A tout posé (0)</label></div>
+      ${sel.out ? '' : `<div class="mtchips">${sel.tiles.length ? sel.tiles.map((t, i) => mtDomino(t[0], t[1], '', `data-a="mtRm" data-i="${i}" role="button" aria-label="Retirer ${t[0]}-${t[1]}"`)).join('') : '<span class="hint" style="margin:0">Touchez les 2 moitiés de chaque domino qui lui reste.</span>'}
+        ${m.half != null ? mtDomino(m.half, '?', 'pending') : ''}</div>
+        <div class="mtnums" style="grid-template-columns:repeat(${top + 1 > 13 ? 8 : 7},1fr)">${nums}</div>
+        <p class="hint" style="margin:6px 0 0">${m.half == null ? 'Première moitié' : 'Deuxième moitié du domino ' + m.half + '-?'} · touchez un domino ajouté pour le retirer${g.opts.blank50 ? ' · double blanc = 50' : ''}.</p>
+        <div class="row" style="margin-top:10px;align-items:center;gap:8px"><span class="hint" style="margin:0;flex:none">Ou le total :</span>
+          <div class="num" style="flex:1"><input id="mtManual" inputmode="numeric" placeholder="${sel.tiles.length ? mtTotal(g, {tiles: sel.tiles}) : '0'}" value="${sel.manual != null ? sel.manual : ''}"></div></div>`}
+    </div>`;
+}
+function mtSave(){
+  const g = curGame(), m = M.mt, s = {}, tiles = {};
+  const outs = g.players.filter(p => m.v[p.key].out);
+  g.players.forEach(p => { const x = m.v[p.key]; s[p.key] = mtTotal(g, x); if(x.tiles.length && !x.out && x.manual == null) tiles[p.key] = x.tiles; });
+  const rd = {s, m: {w: outs.length ? outs[0].key : null, tiles}};
+  if(m.idx != null) g.rounds[m.idx] = rd; else g.rounds.push(rd);
+  closeModal(); save(); render();
+  const e = endInfo(g); toast(e ? '🏁 ' + e : `Prochaine manche : double ${mtDouble(g, g.rounds.length)}`);
+}
+
 /* ---------- Triomino ---------- */
 // Pointage par tour (règles Goliath) : somme de la pièce, pont +40, hexagone +50 / double +60 / triple +70,
 // pioche −5 par pièce (au plus 3), −25 en tout si on ne peut toujours pas jouer. Fin de manche : +25 + pièces des autres.
@@ -2391,6 +2476,7 @@ const HELP_FAQ = [
   {q:['fusion acquire','prime majoritaire','prime minoritaire','vendre échanger garder','pointage final acquire'], g:'acquire', a:'Au Acquire, touchez « Fusion », choisissez la chaîne qui disparaît et celle qui l’absorbe : l’app calcule les primes et ce que chacun reçoit en vendant ou en échangeant (2 pour 1) ses actions. À la fin, « Pointage final » : inscrivez l’argent papier de chacun, l’app ajoute les primes et la vente des actions.'},
   {q:['yahtzee','inscrire les dés','rayer une case','prime de 35','prime yahtzee','joker'], g:'yahtzee', a:'Au Yahtzee, touchez les 5 dés obtenus (ou les faces en dessous) : chaque case vide montre alors les points possibles. Touchez la case à inscrire ; si elle vaut 0, l’app demande de confirmer pour la rayer. Sans dés, touchez directement une case pour l’inscrire. Le bandeau du haut donne les totaux ; touchez un joueur pour voir sa feuille. La prime de 35 vient à 63 points en section supérieure ; un Yahtzee de plus donne 100 points et sert de joker.'},
   {q:['triomino','pont','hexagone','pioche triomino','fin de manche triomino','manche bloquée'], g:'triomino', a:'Au Triomino, touchez les 3 chiffres de la pièce posée : l’app additionne. Ajoutez la figure (hexagone +50, double +60, triple +70) ou le pont (+40), et les pièces piochées (−5 chacune ; −25 en tout si on ne peut toujours pas jouer). « Inscrire » passe au joueur suivant. « Fin de manche » : choisissez qui a terminé (25 + pièces des autres) ou « manche bloquée » (chacun perd ses pièces restantes).'},
+  {q:['train mexicain','compter les dominos','double blanc','dominos restants'], g:'train', a:'Au train mexicain, à la fin de chaque manche, touchez « + Manche » : pour chaque joueur, touchez les 2 moitiés de chaque domino qui lui reste (ou tapez le total), et cochez « A tout posé » pour celui qui a fini (0 point). Le titre indique le double de départ de la manche suivante. Le plus bas total gagne après la dernière manche.'},
   {q:['changer la voix','voix de l’assistant','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de l’assistant : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant'], a:'Le bouton ❓ en haut de l’accueil et de chaque partie ouvre l’assistant. Touchez « Poser une question » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
@@ -2409,7 +2495,7 @@ const HELP_GAMES = [
   ['playnine', /\bplay ?nine\b|\bplaynine\b/], ['flip7', /\bflip ?(7|sept)\b|\bflip\b/], ['uno', /\buno\b/],
   ['skipbo', /\bskip ?-?bo\b|\bskipbo\b|\bskip\b/], ['millebornes', /\b(mille|1000|1 000) ?bornes?\b|\bbornes?\b/],
   ['phase10', /\bphase ?(10|dix)?\b/], ['scrabble', /\bscrabble\b/], ['skyjo', /\bsky ?jo\b|\bskyjo\b/],
-  ['wizard', /\bwizard\b|\bsorcier\b|\bmagicien\b/], ['acquire', /\bacquire\b|\bacquerir\b/], ['triomino', /\btri ?o?minos?\b|\btri ?dominos?\b/], ['yahtzee', /\by[ah]+t?z+e+\b|\byahtzee\b|\byams?\b/], ['farkle', /\bjeu de des\b|\b10 ?000\b|\bdix mille\b|\bfarkle\b/],
+  ['wizard', /\bwizard\b|\bsorcier\b|\bmagicien\b/], ['acquire', /\bacquire\b|\bacquerir\b/], ['triomino', /\btri ?o?minos?\b|\btri ?dominos?\b/], ['train', /\btrain mexicain\b|\bpetit train\b|\bmexican train\b|\bdominos?\b/],  ['yahtzee', /\by[ah]+t?z+e+\b|\byahtzee\b|\byams?\b/], ['farkle', /\bjeu de des\b|\b10 ?000\b|\bdix mille\b|\bfarkle\b/],
   ['generic', /\bpointage libre\b/]
 ];
 function hNorm(s){ return String(s||'').toLowerCase().replace(/[’']/g, ' ').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/(\d)[\s  ]+(?=\d{3}\b)/g, '$1').replace(/[^a-z0-9]+/g, ' ').trim(); }
@@ -2918,6 +3004,12 @@ const A = {
   rmGuest: (el, e) => { e.stopPropagation(); readSetupFields(); const k = el.dataset.k; S.guests = S.guests.filter(g => g.key !== k); S.sel = S.sel.filter(x => x !== k); render(); },
   addGuest: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const k = 'g' + uid(); S.guests.push({key:k, name:n}); S.sel.push(k); render(); },
   addRoster: () => { readSetupFields(); const n = $('guestName').value.trim(); if(!n) return toast('Tapez un nom'); const p = newPlayer(n); if(p){ S.sel.push(p.id); render(); toast(n + ' ajouté à votre liste'); } },
+  setMtSet: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {set: +el.dataset.v}); render(); },
+  mtSel: el => { M.mt.sel = el.dataset.k; M.mt.half = null; mtRender(); },
+  mtHalf: el => { const m = M.mt, x = m.v[m.sel], n = +el.dataset.v; if(m.half == null){ m.half = n; } else { x.tiles.push([m.half, n]); x.manual = null; m.half = null; } mtRender(); },
+  mtRm: el => { const x = M.mt.v[M.mt.sel]; x.tiles.splice(+el.dataset.i, 1); mtRender(); },
+  mtSave: () => mtSave(),
+  mtDel: () => { const g = curGame(), i = M.mt.idx; closeModal(); confirmBox('Supprimer la manche ' + (i + 1) + ' ?', 'Supprimer', () => { g.rounds.splice(i, 1); save(); render(); }, true); },
   trNum: el => { const t = trState(); if(t.c.length < 3) t.c.push(+el.dataset.v); render(); },
   trClear: () => { S.tr = null; render(); },
   trHex: el => { trState().hex = +el.dataset.v; render(); },
@@ -2974,8 +3066,8 @@ const A = {
   setLow: el => { readSetupFields(); S.setupLow = el.dataset.v === '1'; render(); },
   setHoles: el => { readSetupFields(); S.setupOpts = Object.assign(S.setupOpts||{}, {holes: Number(el.dataset.v)}); render(); },
   start: () => startGame(),
-  addRound: () => openRound(null),
-  editRound: el => { if(curGame().finished) return toast('Partie terminée : rouvrez-la pour modifier'); if(curGame().type === 'wizard') return wzOpen('edit', Number(el.dataset.i)); openRound(Number(el.dataset.i)); },
+  addRound: () => curGame().type === 'train' ? mtOpen(null) : openRound(null),
+  editRound: el => { if(curGame().finished) return toast('Partie terminée : rouvrez-la pour modifier'); if(curGame().type === 'wizard') return wzOpen('edit', Number(el.dataset.i)); if(curGame().type === 'train') return mtOpen(Number(el.dataset.i)); openRound(Number(el.dataset.i)); },
   wzOpen: () => { const g = curGame(); wzOpen(g.pend ? 'tricks' : 'bid', null); },
   wzStep: el => { const w = M.wz, f = el.dataset.f; w[f][el.dataset.k] = Math.max(0, Math.min(w.cards, w[f][el.dataset.k] + Number(el.dataset.d))); wzRender(); },
   wzSave: () => { const g = curGame(), w = M.wz, cards = w.cards;
@@ -3173,6 +3265,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => {
   const t = e.target;
+  if(t.id === 'mtManual' && M && M.mt){ const x = M.mt.v[M.mt.sel]; x.manual = t.value.trim() === '' ? null : Math.max(0, num(t.value)); const b = document.querySelector('.mtrow.on .mttot'); if(b) b.textContent = mtTotal(curGame(), x); }
   if(t.dataset && t.dataset.trrack && M && M.trEnd){ const g = curGame(), m = M.trEnd; m.rack[t.dataset.trrack] = Math.max(0, num(t.value)); const el = $('trEndTot'); if(el && m.who !== '') el.textContent = '+' + (25 + g.players.filter(p => p.key !== m.who).reduce((a, p) => a + (m.rack[p.key] || 0), 0)); }
   if(t.dataset && t.dataset.aqcash && M && M.aqf){ const g = curGame(); M.aqf.cash[t.dataset.aqcash] = num(t.value); const c = aqFinalCalc(g, M.aqf.cash); g.players.forEach(p => { const el = $('aqt-' + p.key); if(el) el.textContent = aqMoney(c.total[p.key]); }); }
   if(t.id === 'house'){ const v = t.value; if(v.trim()) db.house[t.dataset.hk] = v; else delete db.house[t.dataset.hk]; save(); }
@@ -3186,6 +3279,7 @@ document.addEventListener('change', e => {
   if(t.name === 'sbw') sbUpdate();
   if(t.name === 'unow') unoUpdate();
   if(t.dataset && t.dataset.aqcash && M && M.aqf) aqFinalRender();
+  if(t.id === 'mtOut' && M && M.mt){ const x = M.mt.v[M.mt.sel]; x.out = t.checked; if(t.checked){ M.mt.half = null; const nx = curGame().players.find(p => !M.mt.v[p.key].out && !M.mt.v[p.key].tiles.length && M.mt.v[p.key].manual == null); if(nx) M.mt.sel = nx.key; } mtRender(); }
   if(t.id === 'trBridge'){ trState().br = t.checked; render(); }
   if(t.id === 'trFail'){ trState().fail = t.checked; render(); }
   if(t.id === 'voiceDev'){ vSet('device', t.value); speak(VOICE_TEST, { device: true }); }

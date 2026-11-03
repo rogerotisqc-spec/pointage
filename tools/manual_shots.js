@@ -170,6 +170,20 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await shot('wizard-plis'); await tap('[data-a=wzSave]');
   await shot('wizard');
 
+  // ---------- Train mexicain ----------
+  await startGame('train', ['Roger', 'Marie', 'Léa']);
+  await p.evaluate(() => { const g = curGame(), k = g.players.map(x => x.key);
+    g.rounds.push({ s: { [k[0]]: 0, [k[1]]: 34, [k[2]]: 12 }, m: { w: k[0], tiles: {} } }, { s: { [k[0]]: 19, [k[1]]: 0, [k[2]]: 41 }, m: { w: k[1], tiles: {} } }); save(); render(); });
+  await tap('.fab');
+  const mtk = await p.evaluate(() => curGame().players.map(x => x.key));
+  await tap(`[data-a=mtSel][data-k="${mtk[2]}"]`); await tap('#mtOut');
+  await tap(`[data-a=mtSel][data-k="${mtk[1]}"]`);
+  for (const [a, c] of [[12, 11], [5, 0]]) { await tap(`[data-a=mtHalf][data-v="${a}"]`); await tap(`[data-a=mtHalf][data-v="${c}"]`); }
+  await tap(`[data-a=mtSel][data-k="${mtk[0]}"]`); for (const [a, c] of [[6, 3]]) { await tap(`[data-a=mtHalf][data-v="${a}"]`); await tap(`[data-a=mtHalf][data-v="${c}"]`); }
+  await tap(`[data-a=mtSel][data-k="${mtk[1]}"]`);
+  await shot('train'); await tap('[data-a=mtSave]');
+  await shot('train-feuille');
+
   // ---------- Triomino ----------
   await startGame('triomino', ['Roger', 'Marie', 'Léa']);
   await p.evaluate(() => { const g = curGame(), k = g.players.map(x => x.key), now = Date.now();

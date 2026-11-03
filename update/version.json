@@ -1,6 +1,6 @@
 {
- "version": "4.8",
- "notes": "Nouveau jeu : Triomino, avec calcul automatique (pièce, pont, hexagones, pioche, fin de manche, manche bloquée).\nManuel mis à jour.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.8.apk",
- "size": 156505
+ "version": "4.9",
+ "notes": "Nouveau jeu : le Train mexicain (dominos double-9, 12 ou 15), avec comptage des dominos restants moitié par moitié.\nManuel mis à jour.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-4.9.apk",
+ "size": 160601
 }

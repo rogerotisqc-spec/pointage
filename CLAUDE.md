@@ -80,3 +80,6 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   pioche −5 par pièce au plus 3, −25 en tout si on ne peut pas jouer ; fin de manche : 25 + pièces des autres ;
   manche bloquée : chacun retire ses pièces). Partie à 400 (manche terminée, plus haut total). Variante cochable :
   bonus du triple de départ (+10, triple 0 = 40). Jeu « par tours » (isTurnGame) : g.turns, x.end marque une fin de manche.
+- Train mexicain : g.opts.set (9 / 12 / 15) → set + 1 manches, du double le plus haut au double blanc ; chacun compte
+  les points de ses dominos restants, celui qui a tout posé marque 0 (rd.m.w) ; le plus bas gagne. Variante cochable :
+  double blanc = 50. Saisie par moitiés de dominos (mtOpen) ou total tapé.
