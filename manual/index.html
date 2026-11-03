@@ -82,7 +82,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 1p
 footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 40px}
 @media (max-width:900px){
   .wrap{grid-template-columns:minmax(0,1fr)}
-  nav.toc{position:fixed;inset:0 auto 0 0;top:0;width:min(86vw,330px);max-height:none;background:var(--surface);z-index:30;padding:calc(18px + env(safe-area-inset-top)) 14px 30px;box-shadow:6px 0 30px rgba(0,0,0,.25);transform:translateX(-105%);transition:transform .2s}
+  nav.toc{position:fixed;left:0;top:0;bottom:auto;width:min(86vw,330px);height:100vh;height:100dvh;max-height:none;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-sizing:border-box;background:var(--surface);z-index:30;padding:calc(18px + env(safe-area-inset-top)) 14px calc(40px + env(safe-area-inset-bottom));box-shadow:6px 0 30px rgba(0,0,0,.25);transform:translateX(-105%);transition:transform .2s}
   nav.toc.open{transform:none}
   .tocbtn{display:inline-flex;align-items:center}
   .row2{grid-template-columns:minmax(0,1fr)}
