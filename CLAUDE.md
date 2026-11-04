@@ -45,6 +45,10 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   chiffrés (/live/send, table livemsg) ; l'hôte les lit (/live/inbox, toutes les 3 s), les garde dans g.inbox (clé
   liveRoundKey) et préremplit sa fenêtre de saisie ; l'hôte enregistre toujours. Yahtzee : case inscrite à l'arrivée.
   Phase 10 : « phase réussie » appliquée quand la manche est enregistrée (liveInboxCheck). Jeux : LIVE_ENTRY.
+  Jeux par tours (Scrabble, dés, Triomino) : le joueur dont c'est le tour utilise l'outil de la feuille (LIVE_PANEL, posé
+  par vFarkle/vScrabble/vTriomino) sur sa copie ; render() → liveTurnCheck envoie le changement {t:'turn', base, cur0, add, cur}
+  puis remet la copie ; l'hôte n'accepte que si g.turns.length === base et g.cur === cur0 (liveTurnApply). Mille Bornes :
+  une saisie par équipe avec le calculateur (liveMbOpen, M.liveMb : mbOthers → null), primes croisées calculées par l'hôte.
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 

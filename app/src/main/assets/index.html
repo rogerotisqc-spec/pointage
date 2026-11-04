@@ -412,6 +412,8 @@ table.p10 tr.fin td{border-top:2px solid var(--line)}
 .livebar.err{background:color-mix(in srgb,var(--accent) 14%,var(--surface));border-color:var(--accent)}
 .livebar.err .dot{background:var(--accent);animation:none}
 .livebar.inbox{background:color-mix(in srgb,var(--brand) 10%,var(--surface));border-color:color-mix(in srgb,var(--brand) 40%,transparent);font-weight:500}
+.livepanel [data-a=scrEnd], .livepanel [data-a=trEnd]{display:none}
+.livepanel .card{margin-left:0;margin-right:0}
 .livebar.inbox small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
 @keyframes livep{0%,100%{opacity:1}50%{opacity:.35}}
 @media (prefers-reduced-motion: reduce){ .livebar .dot{animation:none} }
@@ -896,7 +898,7 @@ function mbPts(m, others){
   return mbKm(m) + 100*b + (b===4?300:0) + 300*(m.cf||0) + (mbFlag(m,'va',others)?400:0) + (m.al?200:0) + (m.ret?300:0)
        + (mbFlag(m,'s200',others)?300:0) + (mbFlag(m,'cap',others)?500:0);
 }
-function mbOthers(pk){ return Object.keys(M.mb).filter(k => k !== pk).map(k => M.mb[k]); }
+function mbOthers(pk){ if(M && M.liveMb) return null; return Object.keys(M.mb).filter(k => k !== pk).map(k => M.mb[k]); }
 function mbRender(){
   const g = curGame(); const pk = M.mbSel; const p = g.players.find(x => x.key === pk); const m = M.mb[pk]; const oth = mbOthers(pk);
   $('mb-tabs').innerHTML = g.players.map(x => `<button class="ptab ${x.key===pk?'on':''}" data-a="mbTab" data-k="${x.key}"><div class="n"><i style="background:${x.color}"></i>${esc(x.name)}</div><div class="v num-t">${fmt(mbPts(M.mb[x.key], mbOthers(x.key)))}</div></button>`).join('');
@@ -961,6 +963,7 @@ window.handleBack = () => back();
 
 /* ====================== Rendu ====================== */
 function render(top){
+  if(S.live) liveTurnCheck();
   const v = S.view;
   let html = ({home:vHome, setup:vSetup, sheet:vSheet, rules:vRules, players:vPlayers, history:vHistory, stats:vStats, settings:vSettings, results:vResults, ask:vAsk, live:vLive})[v]();
   if((v === 'sheet' || v === 'results') && !S.live){ const g = curGame(); if(g && g.share) html = html.replace('</header>', '</header>' + liveBarHtml(g) + (v === 'sheet' ? liveInboxHtml(g) : '')); }
@@ -1278,6 +1281,7 @@ function vFarkle(g){
       <button class="btn primary" style="flex:1.4" data-a="fkBank" ${turn>0?'':'disabled'}>Encaisser ${turn?fmt(turn):''}</button></div>
     <button class="btn sm block" style="margin-top:10px" data-a="fkSixBtn">🎲 Six dés identiques : victoire</button>
   </div>`;
+  LIVE_PANEL = panel;
   const log = g.turns.length ? `<h2 class="sec" style="margin:20px 18px 8px">Derniers tours</h2><div class="card list log">${g.turns.slice().reverse().slice(0,12).map((x,ri) => {
       const p = g.players.find(p => p.key === x.pk) || {name:'?'}; const idx = g.turns.length-1-ri;
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div>
@@ -1387,6 +1391,7 @@ function vTriomino(g){
     ${st.draws >= 3 ? `<label class="chk" style="margin:8px 0 0"><input type="checkbox" id="trFail" ${st.fail ? 'checked' : ''}> Ne peut toujours pas jouer (−25 en tout)</label>` : ''}
     <div style="display:flex;gap:8px;margin-top:12px"><button class="btn primary" style="flex:1" data-a="trSave" ${ready ? '' : 'disabled'}>Inscrire ${ready ? `${calc.pts > 0 ? '+' : ''}${calc.pts}` : ''}</button><button class="btn" data-a="trPass">Passer</button></div>
     <button class="btn block" style="margin-top:8px" data-a="trEnd">🏁 Fin de manche</button></div>`;
+  LIVE_PANEL = panel;
   const log = g.turns.length ? `<h2 class="sec" style="margin:20px 18px 8px">Derniers tours</h2><div class="card list log">${g.turns.slice().reverse().slice(0, 14).map((x, ri) => {
       const p = g.players.find(p => p.key === x.pk) || {name: '?'}; const idx = g.turns.length - 1 - ri;
       return `<div class="li ${x.end ? 'trend' : ''}"><div class="grow"><div class="t">${x.end ? '🏁 ' : ''}${esc(p.name)}</div>${x.note ? `<div class="s">${esc(x.note)}</div>` : ''}</div>
@@ -1842,6 +1847,7 @@ function vScrabble(g){
       <button class="btn primary" style="flex:1.4" data-a="scrDone" ${tt>0?'':'disabled'}>Valider ${tt?fmt(tt):''}</button></div>
     <button class="btn sm block" style="margin-top:10px" data-a="scrEnd">🏁 Fin de partie : lettres restantes</button>
   </div>`;
+  LIVE_PANEL = panel;
   const log = g.turns.length ? `<h2 class="sec" style="margin:20px 18px 8px">Derniers tours</h2><div class="card list log">${g.turns.slice().reverse().slice(0,12).map(x => {
       const p = g.players.find(p => p.key === x.pk) || {name:'?'};
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note?`<div class="s">${esc(x.note)}</div>`:''}</div><div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div></div>`; }).join('')}</div>` : '';
@@ -2417,8 +2423,9 @@ function f7Update(pk){
 }
 function saveRound(){
   const g = curGame(); const rd = {s:{}, m:{}};
-  if(M.round === null && liveWarn(liveMissing(g, pk => { const i = $('in-' + pk); return !!i && i.value.trim() === ''; }))) return;
-  const liveMiss = g.share && M.round === null ? g.players.filter(p => { const i = $('in-' + p.key); return i && i.value.trim() === ''; }).map(p => p.key) : [];
+  const isEmpty = g.type === 'millebornes' ? (pk => liveMbEmpty(M.mb[pk])) : (pk => { const i = $('in-' + pk); return !!i && i.value.trim() === ''; });
+  if(M.round === null && liveWarn(liveMissing(g, isEmpty))) return;
+  const liveMiss = g.share && M.round === null ? g.players.filter(p => isEmpty(p.key)).map(p => p.key) : [];
   if(g.type === 'millebornes'){
     g.players.forEach(p => { const m = Object.assign({}, M.mb[p.key]); m.km = mbKm(m); rd.m[p.key] = m; rd.s[p.key] = mbPts(m, mbOthers(p.key)); });
   } else if(g.type === 'uno' && g.opts.mode === 'official'){
@@ -2505,7 +2512,7 @@ const HELP_FAQ = [
   {q:['train mexicain','compter les dominos','double blanc','dominos restants'], g:'train', a:'Au train mexicain, à la fin de chaque manche, touchez « + Manche » : pour chaque joueur, touchez les 2 moitiés de chaque domino qui lui reste (ou tapez le total), et cochez « A tout posé » pour celui qui a fini (0 point). Le titre indique le double de départ de la manche suivante. Le plus bas total gagne après la dernière manche.'},
   {q:['changer la voix','voix de l’assistant','voix de ludo','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de Ludo : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
   {q:['partie en direct','partager la partie','suivre la partie sur mon téléphone','chacun son téléphone','code qr de la partie','voir les pointages sur un autre téléphone'], a:'Menu ⋮ d’une partie → « Partager la partie en direct » : un code QR apparaît. Les autres joueurs le scannent avec l’appareil photo de leur téléphone et suivent les pointages en direct, sans pouvoir les modifier (pas besoin d’avoir l’app). Seule cette partie est partagée, chiffrée de bout en bout. « Arrêter le partage » coupe l’accès.'},
-  {q:['inscrire mes points sur mon téléphone','chacun entre ses points','envoyer mes points','qui êtes-vous','points reçus'], a:'Pendant une partie en direct, sur la page de suivi : touchez votre nom, inscrivez vos points à la fin de la manche et touchez « Envoyer ». Le téléphone qui tient la feuille les reçoit (bande 📥) ; quand tout le monde a envoyé, sa fenêtre de saisie s’ouvre déjà remplie : il vérifie et enregistre. Offert au Pointage libre, Flip 7, Play Nine, Skyjo, Phase 10, Train mexicain, Wizard, Yahtzee et Uno (règle maison).'},
+  {q:['inscrire mes points sur mon téléphone','chacun entre ses points','envoyer mes points','qui êtes-vous','points reçus'], a:'Pendant une partie en direct, sur la page de suivi : touchez votre nom, inscrivez vos points à la fin de la manche et touchez « Envoyer ». Le téléphone qui tient la feuille les reçoit (bande 📥) ; quand tout le monde a envoyé, sa fenêtre de saisie s’ouvre déjà remplie : il vérifie et enregistre. Offert au Pointage libre, Flip 7, Play Nine, Skyjo, Phase 10, Train mexicain, Wizard, Yahtzee, Uno (règle maison) et Mille Bornes (un téléphone par équipe). Au Scrabble, aux dés et au Triomino, chacun joue son tour sur son téléphone avec le même outil que la feuille.'},
   {q:['analyse de la partie','points tournants','erreurs de la partie','analyser ma dernière partie','conseils pour la prochaine fois','pourquoi j’ai perdu','recommandations','stratégie pour gagner'], a:'Ludo peut analyser une partie : sur l’écran de résultat, touchez « Analyse de la partie par Ludo » (aussi dans le menu ⋮ d’une partie). Il repère les points tournants et les erreurs visibles dans ce qui a été inscrit (mise ratée, case rayée, raté avec pénalité…), recommande des stratégies pour ce jeu et donne un conseil à chaque joueur. Vous pouvez aussi demander « Analyse ma dernière partie ». Sans Internet, l’app affiche seulement les faits calculés : meneurs, meilleurs et pires coups, écarts.'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant','qui est ludo','ludo'], a:'Ludo, c’est l’assistant de l’app : le bouton rouge « Ludo » en haut de l’accueil et de chaque partie l’ouvre. Touchez « Poser une question à Ludo » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
@@ -3234,8 +3241,10 @@ async function livePoll(){
     if(!d.same){
       let snap; try{ snap = await liveDec(L.k, d.iv, d.data); }catch(e){ L.err = 'Ce lien n’est pas valide (code QR incomplet ?)'; L.gone = true; return render(); }
       L.g = snap.g; L.g.id = 'live:' + L.id; L.ver = d.ver; S.gameId = L.g.id; L.host = snap.host || null;
+      liveBase(L); liveTurnSeen(L);
       L.t = Date.now(); L.err = '';
-      if(M || (document.activeElement && document.activeElement.id === 'liveVal')) L.later = true; else render();
+      const ae = document.activeElement, typing = ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && $('app').contains(ae) && ae.type !== 'checkbox';
+      if(M || typing || (isTurnGame(L.g) && (S.turn || (S.dice || []).length || (S.scr && (S.scr.word || S.scr.words.length)) || (S.tr && S.tr.c.length)))) L.later = true; else render();
       return again();
     }
     L.t = Date.now(); if(L.err){ L.err = ''; render(); } else liveAge();
@@ -3248,7 +3257,7 @@ async function livePoll(){
   again();
 }
 document.addEventListener('visibilitychange', () => { if(!document.hidden && S.live && S.view === 'live') livePoll(); });
-document.addEventListener('focusout', e => { if(e.target && e.target.id === 'liveVal' && S.live && S.live.later){ setTimeout(() => { if(S.live && S.live.later && !M && !(document.activeElement && document.activeElement.id === 'liveVal')){ S.live.later = false; render(); } }, 150); } });
+document.addEventListener('focusout', e => { if(e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName) && S.live && S.live.later){ setTimeout(() => { const ae = document.activeElement; if(S.live && S.live.later && !M && !(ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && ae.type !== 'checkbox')){ S.live.later = false; render(); } }, 150); } });
 function liveAge(){ const el = $('liveAge'); if(el && S.live) el.textContent = liveAgeTxt(S.live); }
 function liveAgeTxt(L){ if(!L.t) return 'connexion…'; const s = Math.round((Date.now() - L.t) / 1000); return s < 5 ? 'à jour' : 'mis à jour il y a ' + s + ' s'; }
 function liveTable(g){
@@ -3293,10 +3302,10 @@ function vLive(){
 /* --- Étape B : chacun inscrit ses points sur son téléphone --- */
 // Le joueur envoie ses points (chiffrés) dans la boîte de réception du relais ; le téléphone qui tient la feuille les lit,
 // les garde dans g.inbox (visible de tous) et les place dans la fenêtre de saisie : l’hôte vérifie et enregistre.
-const LIVE_ENTRY = ['generic', 'flip7', 'playnine', 'skyjo', 'phase10', 'train', 'wizard', 'yahtzee', 'uno'];
+const LIVE_ENTRY = ['generic', 'flip7', 'playnine', 'skyjo', 'phase10', 'train', 'wizard', 'yahtzee', 'uno', 'millebornes', 'farkle', 'scrabble', 'triomino'];
 function liveRoundKey(g){ return g.type === 'wizard' ? g.rounds.length + ':' + (g.pend ? 't' : 'b') : String(g.rounds.length); }
 function liveEntryOk(g){
-  if(!g || g.finished || g.team || !LIVE_ENTRY.includes(g.type)) return false;
+  if(!g || g.finished || !LIVE_ENTRY.includes(g.type) || (g.team && g.type !== 'millebornes')) return false;
   if(g.type === 'uno' && g.opts.mode === 'official') return false;
   if(g.type === 'yahtzee') return !yzDone(g);
   if(g.opts.holes && g.rounds.length >= g.opts.holes) return false;
@@ -3345,10 +3354,12 @@ function liveApply(g, m){
       for(let i = 1; i <= g.players.length; i++){ const j = (st.cur + i) % g.players.length; if(yzParts(g, g.players[j].key).filled < 13){ st.cur = j; break; } }
     g.updated = Date.now(); toast(`📥 ${p.name} : ${v} au ${c.name}`); return;
   }
+  if(m.t === 'turn') return liveTurnApply(g, m, p);
   const key = liveRoundKey(g); if(m.key !== key) return liveLate(g, m, p);
   if(!g.inbox || g.inbox.key !== key) g.inbox = {key, e: {}};
   const e = {v: num(m.v), t: Date.now()};
   if(m.ph){ e.ph = true; e.p10 = m.p10; } if(m.fin) e.fin = true; if(m.out){ e.out = true; e.v = 0; }
+  if(g.type === 'millebornes'){ e.mb = liveMbClean(m.mb); e.v = mbPts(e.mb, null); }
   if(m.fin) Object.values(g.inbox.e).forEach(o => { delete o.fin; });
   g.inbox.e[m.pk] = e; g.updated = Date.now();
   const unit = g.type === 'wizard' ? (key.endsWith('b') ? ' (mise)' : ' pli' + (e.v > 1 ? 's' : '')) : ' point' + (Math.abs(e.v) > 1 ? 's' : '');
@@ -3370,6 +3381,8 @@ function liveOpenInbox(focus){
     Object.keys(ib.e).forEach(pk => { const e = ib.e[pk], x = M.mt.v[pk]; if(!x) return; if(e.out){ x.out = true; x.manual = null; } else { x.out = false; x.manual = Math.max(0, e.v); } });
     if(me && M.mt.v[me] && !ib.e[me]) M.mt.sel = me; mtRender(); return; }
   openRound(null);
+  if(g.type === 'millebornes'){ Object.keys(ib.e).forEach(pk => { if(M.mb[pk] && ib.e[pk].mb) M.mb[pk] = JSON.parse(JSON.stringify(ib.e[pk].mb)); });
+    const nx = g.players.find(p => !ib.e[p.key]); M.mbSel = nx ? nx.key : g.players[0].key; mbRender(); return; }
   Object.keys(ib.e).forEach(pk => { const e = ib.e[pk], i = $('in-' + pk); if(i) i.value = e.v;
     if(e.fin){ const r = document.querySelector(`input[name=skfin][value="${pk}"]`); if(r) r.checked = true; } });
   const mine = me && !ib.e[me] && $('in-' + me); if(focus && mine) setTimeout(() => { try{ mine.focus(); mine.scrollIntoView({block: 'center'}); }catch(e){} }, 250);
@@ -3398,8 +3411,10 @@ function liveLate(g, m, p){
   if(g.type === 'wizard' || !g.rounds.length || String(g.rounds.length - 1) !== m.key) return;
   const k = g.rounds.length - 1, rd = g.rounds[k], R = GAMES[g.type].round.toLowerCase(), miss = (rd.m && rd.m.miss) || [];
   if(!miss.includes(m.pk)){ toast(`📥 ${p.name} a envoyé ses points après l’enregistrement de la ${R} ${k + 1} : touchez-la pour corriger au besoin`); return; }
-  const v = m.out ? 0 : num(m.v);
-  rd.s[m.pk] = v; if(rd.m.raw) rd.m.raw[m.pk] = v;
+  let v = m.out ? 0 : num(m.v);
+  if(g.type === 'millebornes'){ rd.m[m.pk] = Object.assign(liveMbClean(m.mb), {km: mbKm(m.mb)});
+    g.players.forEach(q => { const others = g.players.filter(o => o.key !== q.key).map(o => rd.m[o.key] || {}); rd.s[q.key] = mbPts(rd.m[q.key], others); }); v = rd.s[m.pk]; }
+  else { rd.s[m.pk] = v; if(rd.m.raw) rd.m.raw[m.pk] = v; }
   if(g.type === 'train' && m.out && !rd.m.w) rd.m.w = m.pk;
   if(g.type === 'skyjo' && m.fin && !rd.m.fin) rd.m.fin = m.pk;
   if(g.type === 'phase10' && m.ph && phaseOf(g, m.pk) === m.p10) g.ph[m.pk] = Math.min(11, m.p10 + 1);
@@ -3419,6 +3434,7 @@ function liveDraft(L, key){ if(!L.draft || L.draft.key !== key) L.draft = {key, 
 async function liveSendScore(){
   const L = S.live, g = L && L.g; if(!g || !L.me) return;
   const key = liveRoundKey(g), d = liveDraft(L, key);
+  if(g.type === 'millebornes'){ if(!d.mb) return liveMbOpen(); M = {liveMb: true, mb: {[L.me]: d.mb}}; return liveMbSend(); }
   let v = String(d.v).trim();
   if(g.type === 'wizard'){ v = d.n == null ? null : d.n; if(v == null) return toast('Choisissez un nombre'); }
   else if(d.x.out) v = 0;
@@ -3432,11 +3448,12 @@ async function liveSendScore(){
 }
 function liveEntryHtml(g){
   const L = S.live; if(!liveEntryOk(g) || L.gone) return '';
-  if(!L.me) return `<div class="card" style="padding:14px;margin-bottom:14px"><b>Qui êtes-vous ?</b><p class="hint" style="margin:2px 0 10px">Touchez votre nom pour inscrire vos propres points.${L.host && g.players.find(p => p.key === L.host) ? ' ' + esc(g.players.find(p => p.key === L.host).name) + ' tient la feuille.' : ''}</p>
+  if(!L.me) return `<div class="card" style="padding:14px;margin-bottom:14px"><b>${g.team ? 'Qui saisit pour votre équipe ?' : 'Qui êtes-vous ?'}</b><p class="hint" style="margin:2px 0 10px">${g.team ? 'Un seul téléphone par équipe : touchez votre équipe. L’autre membre touche « Je regarde seulement ».' : isTurnGame(g) ? 'Touchez votre nom : à votre tour, vous inscrirez vos points sur ce téléphone.' : 'Touchez votre nom pour inscrire vos propres points.'}${L.host && g.players.find(p => p.key === L.host) ? ' ' + esc(g.players.find(p => p.key === L.host).name) + ' tient la feuille.' : ''}</p>
     <div class="chips">${g.players.filter(p => p.key !== L.host).map(p => `<button class="chip" style="min-height:42px;padding:0 14px" data-a="liveMe" data-k="${p.key}"><span class="av" style="background:${p.color};width:24px;height:24px;font-size:12px">${initial(p.name)}</span> ${esc(p.name)}</button>`).join('')}
     <button class="chip" style="min-height:42px;padding:0 14px" data-a="liveMe" data-k="-">Je regarde seulement</button></div></div>`;
   if(L.me === '-') return `<p class="hint" style="margin:0 2px 12px"><a href="#" data-a="liveMe" data-k="" style="color:var(--brand)">Inscrire mes propres points</a></p>`;
   const p = g.players.find(x => x.key === L.me); if(!p) return '';
+  if(isTurnGame(g)) return liveTurnHtml(g);
   const change = `<a href="#" data-a="liveMe" data-k="" style="color:var(--brand);font-size:13px;font-weight:600">Changer</a>`;
   if(g.type === 'yahtzee'){
     const sc = yzState(g).sc[p.key] || {}, free = YZ_ALL.filter(c => sc[c.id] == null), cur = g.players[g.yz ? g.yz.cur : 0];
@@ -3447,7 +3464,11 @@ function liveEntryHtml(g){
   const key = liveRoundKey(g), d = liveDraft(L, key), ib = liveInboxNow(g), mine = ib && ib.e[p.key];
   const R = GAMES[g.type].round, n = g.rounds.length + 1;
   let field, title, extra = '';
-  if(g.type === 'wizard'){
+  if(g.type === 'millebornes'){
+    const pts = d.mb ? mbPts(d.mb, null) : null;
+    title = `${g.team ? 'Notre équipe' : 'Mes points'} · manche ${n}`;
+    field = `<button class="btn block" data-a="liveMbOpen">🧮 ${d.mb ? 'Modifier' : 'Ouvrir'} le calculateur</button>${d.mb ? `<p style="margin:8px 0 0">${fmt(mbKm(d.mb))} km · <b>${fmt(pts)} points</b> (avant les primes qui dépendent des autres)</p>` : ''}`;
+  } else if(g.type === 'wizard'){
     const bid = key.endsWith('b'), max = g.rounds.length + 1, cur = d.n == null ? (bid ? 0 : (g.pend && g.pend.bid[p.key] != null ? g.pend.bid[p.key] : 0)) : d.n; d.n = cur;
     title = bid ? `Ma mise · manche ${n} (${max} carte${max > 1 ? 's' : ''})` : `Mes plis · manche ${n}` + (g.pend && g.pend.bid[p.key] != null ? ` · mise : ${g.pend.bid[p.key]}` : '');
     field = `<div class="stepper" style="justify-content:center"><button data-a="liveWz" data-d="-1" ${cur <= 0 ? 'disabled' : ''}>−</button><b class="num-t" style="font-size:26px;min-width:48px;text-align:center">${cur}</b><button class="plus" data-a="liveWz" data-d="1" ${cur >= max ? 'disabled' : ''}>+</button></div>`;
@@ -3500,6 +3521,84 @@ function liveExtraHtml(g){
   if(g.type === 'acquire' && g.aq){ const ch = aqChains(g).filter(c => (g.aq.size[c.id] || 0) >= 2);
     return ch.length ? `<h2 class="sec">Chaînes sur le plateau</h2><div class="card list">${ch.map(c => `<div class="li"><span style="width:14px;height:14px;border-radius:4px;background:${c.color};flex:none"></span><div class="grow"><div class="t">${esc(c.name)}</div><div class="s">${g.aq.size[c.id]} hôtels${g.aq.size[c.id] >= 11 ? ' · sûre' : ''}</div></div><div class="t num-t">${aqMoney(aqPrice(c.tier, g.aq.size[c.id]))}</div></div>`).join('')}</div><p class="hint" style="margin:6px 2px 0">Prix d’une action. Les actions de chacun restent secrètes.</p>` : ''; }
   return '';
+}
+/* --- Jeux par tours (Scrabble, dés, Triomino) : le joueur dont c’est le tour joue sur son téléphone --- */
+// Son téléphone affiche l’outil de la feuille et l’applique à sa copie de la partie ; dès qu’un tour est inscrit,
+// l’app l’envoie (« ce qui a changé ») au téléphone qui tient la feuille, puis remet sa copie comme avant (liveTurnCheck).
+let LIVE_PANEL = '';
+function liveTurnPanel(g){ LIVE_PANEL = ''; const f = {farkle: vFarkle, scrabble: vScrabble, triomino: vTriomino}[g.type]; if(f) f(g); return LIVE_PANEL; }
+function liveBase(L){ const g = L.g; L.base = {json: JSON.stringify(g), len: g.turns.length, cur: g.cur, winner: g.winner || null, fin: !!g.finished}; }
+function liveTurnCheck(){
+  const L = S.live; if(!L || !L.g || !L.base || !isTurnGame(L.g)) return;
+  const g = L.g, b = L.base;
+  if(g.turns.length === b.len && g.cur === b.cur && (g.winner || null) === b.winner && !!g.finished === b.fin) return;
+  const p = JSON.parse(b.json).players[b.cur];
+  const add = g.turns.slice(b.len).filter(x => p && x.pk === p.key);
+  const msg = {t: 'turn', pk: p && p.key, base: b.len, cur0: b.cur, add, cur: g.cur, winner: g.winner || null};
+  // remettre la copie comme avant : la feuille décide
+  const id = g.id; L.g = JSON.parse(b.json); L.g.id = id; S.gameId = id;
+  S.turn = 0; S.dice = []; S.heard = null; S.scr = null; S.tr = null;
+  if(S.view !== 'live'){ S.view = 'live'; if(S.stack.length && S.stack[S.stack.length - 1].view === 'live') S.stack.pop(); }
+  if(!p || (!add.length && g.cur === b.cur)) return;
+  L.pend = {base: b.len, cur0: b.cur, t: add.length ? add[0].t : null, at: Date.now()};
+  liveSendMsg(msg).then(() => toast('Envoyé ✓ : la feuille va inscrire votre tour'), e => { L.pend = null; toast(e.status === 404 ? 'Le partage est terminé' : 'Envoi impossible : vérifiez Internet, puis rejouez le tour'); render(); });
+}
+// À chaque nouvelle copie reçue : le tour envoyé a-t-il été inscrit ?
+function liveTurnSeen(L){
+  const P = L.pend, g = L.g; if(!P || !g) return;
+  if(g.turns.length > P.base){ toast(P.t && g.turns[P.base] && g.turns[P.base].t === P.t ? '✓ Votre tour est inscrit' : '⚠︎ Votre tour n’a pas été inscrit : la feuille a changé entre-temps'); L.pend = null; }
+  else if(g.cur !== P.cur0){ L.pend = null; }
+}
+function liveTurnHtml(g){
+  const L = S.live, cur = g.players[g.cur], me = g.players.find(x => x.key === L.me);
+  if(!cur || !me) return '';
+  const change = `<a href="#" data-a="liveMe" data-k="" style="color:var(--brand);font-size:13px;font-weight:600">Changer</a>`;
+  if(L.pend) return `<div class="card" style="padding:14px;margin-bottom:14px"><b>Votre tour est envoyé</b><p class="hint" style="margin:4px 0 0">En attente de la feuille… Il apparaîtra dans quelques secondes.</p></div>`;
+  if(cur.key !== me.key) return `<div class="card" style="padding:14px;margin-bottom:14px"><div class="row" style="justify-content:space-between;align-items:center"><b>${esc(me.name)}</b>${change}</div>
+    <p class="hint" style="margin:4px 0 0">🎲 Au tour de <b>${esc(cur.name)}</b>. À votre tour, l’outil pour inscrire vos points s’affichera ici.</p></div>`;
+  return `<div class="livepanel"><div class="row" style="justify-content:space-between;align-items:center;margin:0 2px 6px"><b>🎯 C’est votre tour, ${esc(me.name)} !</b>${change}</div>${liveTurnPanel(g)}
+    <p class="hint" style="margin:8px 2px 14px">Quand vous validez, le tour est envoyé au téléphone qui tient la feuille.</p></div>`;
+}
+function liveTurnApply(g, m, p){
+  if(!isTurnGame(g)) return;
+  if(g.turns.length !== m.base || g.cur !== m.cur0 || !g.players[m.cur0] || g.players[m.cur0].key !== m.pk)
+    return toast(`📥 Le tour de ${p.name} n’a pas été inscrit : la feuille a changé entre-temps`);
+  const add = (Array.isArray(m.add) ? m.add : []).filter(x => x && x.pk === m.pk).slice(0, 4).map(x => {
+    const o = {pk: x.pk, pts: num(x.pts), note: String(x.note || '').slice(0, 300), t: Number(x.t) || Date.now()};
+    if(x.raw != null) o.raw = num(x.raw); if(Array.isArray(x.tile)) o.tile = x.tile.slice(0, 3).map(Number);
+    if(x.win) o.win = true; if(x.end) o.end = true; return o; });
+  add.forEach(x => g.turns.push(x));
+  const n = g.players.length; g.cur = Math.max(0, Math.min(n - 1, Number(m.cur) || 0));
+  if(g.type === 'farkle' && m.winner === m.pk && add.some(x => x.win)){ g.winner = m.pk; g.finished = true; }
+  if(curGame() === g){ S.turn = 0; S.dice = []; S.heard = null; S.scr = null; S.tr = null; }
+  g.updated = Date.now();
+  const sum = add.reduce((a, x) => a + x.pts, 0), note = add.map(x => x.note).filter(Boolean).join(' · ');
+  toast(`📥 ${p.name} : ${add.length ? (sum > 0 ? '+' : '') + fmt(sum) + (note ? ' · ' + note : '') : 'passe son tour'}`);
+}
+/* --- Mille Bornes : une saisie par équipe (ou par joueur), avec le calculateur de la feuille --- */
+function liveMbOpen(){
+  const L = S.live, g = L.g, p = g.players.find(x => x.key === L.me); if(!p) return;
+  const key = liveRoundKey(g), d = liveDraft(L, key);
+  M = {liveMb: true, round: null, mb: {[p.key]: d.mb ? JSON.parse(JSON.stringify(d.mb)) : {v2: true, c25: 0, c50: 0, c75: 0, c100: 0, c200: 0, b: 0, cf: 0}}, mbSel: p.key, type: 'millebornes'};
+  openModal(`<div class="mhead"><h2>${esc(p.name)} · manche ${g.rounds.length + 1}</h2><button class="icon-btn" data-a="close" aria-label="Fermer">✕</button></div>
+    <div class="ptabs" id="mb-tabs" style="display:none"></div><div class="mbody" id="mb-body"></div>
+    <div class="mfoot"><button class="btn" data-a="close">Annuler</button><button class="btn primary" data-a="liveMbSend">Envoyer</button></div>`);
+  mbRender();
+  const b = $('mb-body'); if(b) b.insertAdjacentHTML('beforeend', '<p class="hint">Le capot et les primes qui dépendent des autres équipes sont calculés par la feuille, quand tout le monde a envoyé.</p>');
+}
+async function liveMbSend(){
+  const L = S.live, g = L.g, mb = M.mb[L.me], key = liveRoundKey(g), d = liveDraft(L, key);
+  d.mb = JSON.parse(JSON.stringify(mb)); closeModal();
+  L.sending = true; render();
+  try{ await liveSendMsg({t: 'r', key, pk: L.me, v: mbPts(mb, null), mb: d.mb}); L.sent = {key, v: mbPts(mb, null), t: Date.now()}; toast('Envoyé ✓'); }
+  catch(e){ toast(e.status === 404 ? 'Le partage est terminé' : 'Envoi impossible : vérifiez Internet'); }
+  L.sending = false; render();
+}
+function liveMbEmpty(m){ return !m || (!mbKm(m) && !m.b && !m.cf && !m.va && !m.al && !m.ret); }
+function liveMbClean(x){
+  const o = {v2: true}; ['c25', 'c50', 'c75', 'c100', 'c200', 'b', 'cf'].forEach(k => o[k] = Math.max(0, Math.min(40, Number(x && x[k]) || 0)));
+  ['va', 'al', 's200', 'cap', 'ret'].forEach(k => { if(x && (x[k] === true || x[k] === false)) o[k] = x[k]; });
+  o.c200 = Math.min(2, o.c200); o.b = Math.min(4, o.b); o.cf = Math.min(o.b, o.cf); return o;
 }
 /* ====================== Rapports (GitHub Issues) ====================== */
 const FB_REPO = 'rogerotisqc-spec/pointage';
@@ -3733,6 +3832,8 @@ const A = {
   liveSign: () => { const L = S.live, d = liveDraft(L, liveRoundKey(L.g)); d.sign = d.sign < 0 ? 1 : -1; render(); },
   liveWz: el => { const L = S.live, d = liveDraft(L, liveRoundKey(L.g)); d.n = Math.max(0, Math.min(L.g.rounds.length + 1, (d.n || 0) + Number(el.dataset.d))); render(); },
   liveSendScore: () => liveSendScore(),
+  liveMbOpen: () => liveMbOpen(),
+  liveMbSend: () => liveMbSend(),
   liveYzCat: el => liveYzOpen(el.dataset.c),
   liveYzSet: el => liveYzSend(Number(el.dataset.v)),
   liveYzInput: () => liveYzSend(Math.max(0, Math.min(30, num($('liveYzVal').value)))),
