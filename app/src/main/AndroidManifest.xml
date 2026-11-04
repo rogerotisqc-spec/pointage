@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.famille.pointage"
-    android:versionCode="50"
-    android:versionName="5.9">
+    android:versionCode="51"
+    android:versionName="6.0">
 
     <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -32,6 +32,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Lien d'une partie en direct : pointage://suivre/ID.CLÉ (bouton « Ouvrir dans l'app » de la page de suivi) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="pointage" android:host="suivre" />
             </intent-filter>
         </activity>
     </application>

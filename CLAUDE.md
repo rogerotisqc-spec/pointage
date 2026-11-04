@@ -49,6 +49,9 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   par vFarkle/vScrabble/vTriomino) sur sa copie ; render() → liveTurnCheck envoie le changement {t:'turn', base, cur0, add, cur}
   puis remet la copie ; l'hôte n'accepte que si g.turns.length === base et g.cur === cur0 (liveTurnApply). Mille Bornes :
   une saisie par équipe avec le calculateur (liveMbOpen, M.liveMb : mbOthers → null), primes croisées calculées par l'hôte.
+  Reprise : l'hôte repousse la partie à la réouverture (LIVE_OPENED) ; les joueurs retrouvent les parties suivies sur l'accueil
+  (localStorage pointage.suivies, 4 jours) ; « Garder cette partie » copie la partie dans db.games (fromLive). Android : lien
+  pointage://suivre/ID.CLÉ (intent-filter, MainActivity.liveLink/openLive), bouton intent:// sur la page de suivi.
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 

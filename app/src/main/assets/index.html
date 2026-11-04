@@ -966,6 +966,7 @@ function render(top){
   if(S.live) liveTurnCheck();
   const v = S.view;
   let html = ({home:vHome, setup:vSetup, sheet:vSheet, rules:vRules, players:vPlayers, history:vHistory, stats:vStats, settings:vSettings, results:vResults, ask:vAsk, live:vLive})[v]();
+  if(v === 'sheet' && !S.live){ const g = curGame(); if(g && g.share && !g.finished && !LIVE_OPENED.has(g.id)){ LIVE_OPENED.add(g.id); liveSoon(); } }
   if((v === 'sheet' || v === 'results') && !S.live){ const g = curGame(); if(g && g.share) html = html.replace('</header>', '</header>' + liveBarHtml(g) + (v === 'sheet' ? liveInboxHtml(g) : '')); }
   if(v !== 'ask' && S.speaking) speakStop();
   $('app').innerHTML = html;
@@ -996,6 +997,7 @@ function vHome(){
     <button class="icon-btn" data-a="go" data-v="settings" aria-label="Réglages">⚙︎</button></header>
   ${updateBanner()}${abPausedBanner()}
   <main class="pad">
+    ${liveFollowHtml()}
     ${open.length ? `<h2 class="sec">Parties en cours</h2>${open.map(g => {
       const r = ranking(g);
       return `<button class="card resume" data-a="open" data-id="${g.id}">${badge(g.type)}<div class="grow"><div class="t">${esc(gameName(g))}</div>
@@ -2512,6 +2514,8 @@ const HELP_FAQ = [
   {q:['train mexicain','compter les dominos','double blanc','dominos restants'], g:'train', a:'Au train mexicain, à la fin de chaque manche, touchez « + Manche » : pour chaque joueur, touchez les 2 moitiés de chaque domino qui lui reste (ou tapez le total), et cochez « A tout posé » pour celui qui a fini (0 point). Le titre indique le double de départ de la manche suivante. Le plus bas total gagne après la dernière manche.'},
   {q:['changer la voix','voix de l’assistant','voix de ludo','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de Ludo : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
   {q:['partie en direct','partager la partie','suivre la partie sur mon téléphone','chacun son téléphone','code qr de la partie','voir les pointages sur un autre téléphone'], a:'Menu ⋮ d’une partie → « Partager la partie en direct » : un code QR apparaît. Les autres joueurs le scannent avec l’appareil photo de leur téléphone et suivent les pointages en direct, sans pouvoir les modifier (pas besoin d’avoir l’app). Seule cette partie est partagée, chiffrée de bout en bout. « Arrêter le partage » coupe l’accès.'},
+  {q:['revenir à une partie en direct','reprendre la partie plus tard','j’ai fermé le navigateur','parties suivies','retrouver la partie'], a:'Sur l’accueil de l’app (ou de l’app web), la section « Parties en direct suivies » rouvre d’un toucher une partie que vous suiviez, sans rescanner le code. Le téléphone qui tient la feuille n’a qu’à rouvrir la partie : le partage repart avec le même code QR.'},
+  {q:['garder une copie de la partie','ajouter la partie à mon historique','partie en direct dans mes statistiques'], a:'À la fin d’une partie suivie en direct, touchez « 💾 Garder cette partie dans mon historique » sur la page de suivi : elle est ajoutée à votre historique et à vos statistiques.'},
   {q:['inscrire mes points sur mon téléphone','chacun entre ses points','envoyer mes points','qui êtes-vous','points reçus'], a:'Pendant une partie en direct, sur la page de suivi : touchez votre nom, inscrivez vos points à la fin de la manche et touchez « Envoyer ». Le téléphone qui tient la feuille les reçoit (bande 📥) ; quand tout le monde a envoyé, sa fenêtre de saisie s’ouvre déjà remplie : il vérifie et enregistre. Offert au Pointage libre, Flip 7, Play Nine, Skyjo, Phase 10, Train mexicain, Wizard, Yahtzee, Uno (règle maison) et Mille Bornes (un téléphone par équipe). Au Scrabble, aux dés et au Triomino, chacun joue son tour sur son téléphone avec le même outil que la feuille.'},
   {q:['analyse de la partie','points tournants','erreurs de la partie','analyser ma dernière partie','conseils pour la prochaine fois','pourquoi j’ai perdu','recommandations','stratégie pour gagner'], a:'Ludo peut analyser une partie : sur l’écran de résultat, touchez « Analyse de la partie par Ludo » (aussi dans le menu ⋮ d’une partie). Il repère les points tournants et les erreurs visibles dans ce qui a été inscrit (mise ratée, case rayée, raté avec pénalité…), recommande des stratégies pour ce jeu et donne un conseil à chaque joueur. Vous pouvez aussi demander « Analyse ma dernière partie ». Sans Internet, l’app affiche seulement les faits calculés : meneurs, meilleurs et pires coups, écarts.'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant','qui est ludo','ludo'], a:'Ludo, c’est l’assistant de l’app : le bouton rouge « Ludo » en haut de l’accueil et de chaque partie l’ouvre. Touchez « Poser une question à Ludo » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
@@ -3241,7 +3245,7 @@ async function livePoll(){
     if(!d.same){
       let snap; try{ snap = await liveDec(L.k, d.iv, d.data); }catch(e){ L.err = 'Ce lien n’est pas valide (code QR incomplet ?)'; L.gone = true; return render(); }
       L.g = snap.g; L.g.id = 'live:' + L.id; L.ver = d.ver; S.gameId = L.g.id; L.host = snap.host || null;
-      liveBase(L); liveTurnSeen(L);
+      liveBase(L); liveTurnSeen(L); liveFollowSave(L);
       L.t = Date.now(); L.err = '';
       const ae = document.activeElement, typing = ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && $('app').contains(ae) && ae.type !== 'checkbox';
       if(M || typing || (isTurnGame(L.g) && (S.turn || (S.dice || []).length || (S.scr && (S.scr.word || S.scr.words.length)) || (S.tr && S.tr.c.length)))) L.later = true; else render();
@@ -3279,7 +3283,7 @@ function liveTable(g){
 function vLive(){
   const L = S.live, g = L && L.g;
   const head = topbar('Partie en direct', g ? gameName(g) + (liveEntryOk(g) ? ' · en direct' : ' · lecture seule') : 'Ouverture…');
-  if(L && L.gone && !g) return `${head}<main class="pad"><div class="card empty">${esc(L.err || 'Cette partie n’est plus partagée. Le partage a été arrêté, ou il date de plus de 3 jours.')}</div>
+  if(L && L.gone && !g) return `${head}<main class="pad"><div class="card empty">${esc(L.err || 'Cette partie n’est pas partagée en ce moment. Le partage a été arrêté, ou la partie n’a pas bougé depuis plus de 3 jours : elle revient dès que le téléphone qui tient la feuille la rouvre.')}</div>
     <button class="btn block" style="margin-top:16px" data-a="liveQuit">Accueil</button></main>`;
   if(!g) return `${head}<main class="pad"><div class="card" style="padding:18px;display:flex;align-items:center;gap:12px"><span class="spin"></span><b>Ouverture de la partie…</b></div>${L && L.err ? `<p class="hint">⚠︎ ${esc(L.err)}</p>` : ''}</main>`;
   const r = ranking(g), med = ['🥇','🥈','🥉'], turn = isTurnGame(g) || g.type === 'yahtzee';
@@ -3296,6 +3300,7 @@ function vLive(){
     <div style="margin-top:14px">${liveTable(g)}</div>
     ${(isTurnGame(g) ? g.turns.length : g.rounds.length) && g.type !== 'acquire' ? `<h2 class="sec">Évolution des scores</h2><div class="card" style="padding:12px 12px 10px">${chartHtml(g, 'chr')}</div>` : ''}
     <p class="hint" style="margin-top:16px">Cette page se met à jour toute seule. ${liveEntryOk(g) ? 'Vos points sont envoyés au téléphone qui tient la feuille : c’est lui qui les enregistre.' : 'Seul le téléphone qui tient la feuille peut la modifier.'}</p>
+    ${liveKeepHtml(g)}${liveAppBtn()}
     <button class="btn block" style="margin-top:10px" data-a="liveQuit">Quitter la partie</button>
   </main>`;
 }
@@ -3600,6 +3605,46 @@ function liveMbClean(x){
   ['va', 'al', 's200', 'cap', 'ret'].forEach(k => { if(x && (x[k] === true || x[k] === false)) o[k] = x[k]; });
   o.c200 = Math.min(2, o.c200); o.b = Math.min(4, o.b); o.cf = Math.min(o.b, o.cf); return o;
 }
+/* --- Parties suivies, copie dans l'historique, ouverture dans l'app Android --- */
+const LIVE_FOLLOW = 'pointage.suivies', LIVE_OPENED = new Set();
+function liveFollows(){ try{ const a = JSON.parse(localStorage.getItem(LIVE_FOLLOW) || '[]'); return Array.isArray(a) ? a.filter(x => x && x.id && x.k && Date.now() - x.t < 4 * 864e5) : []; }catch(e){ return []; } }
+function liveFollowSet(a){ try{ localStorage.setItem(LIVE_FOLLOW, JSON.stringify(a.slice(0, 5))); }catch(e){} }
+function liveFollowSave(L){
+  const g = L.g; if(!g) return;
+  const a = liveFollows().filter(x => x.id !== L.id);
+  a.unshift({id: L.id, k: L.k, t: Date.now(), name: gameName(g), who: g.players.map(p => p.name).join(', '), fin: !!g.finished});
+  liveFollowSet(a);
+}
+function liveFollowDrop(id){ liveFollowSet(liveFollows().filter(x => x.id !== id)); }
+function liveFollowHtml(){
+  const a = liveFollows(); if(!a.length) return '';
+  return `<h2 class="sec">Parties en direct suivies</h2>${a.map(x => `<div class="card resume" style="display:flex;align-items:center;gap:10px;padding-right:8px">
+    <button data-a="liveRejoin" data-id="${esc(x.id)}" style="all:unset;flex:1;display:flex;align-items:center;gap:12px;cursor:pointer"><span style="font-size:26px">📡</span><div class="grow"><div class="t">${esc(x.name)}${x.fin ? ' <span class="tag">terminée</span>' : ''}</div><div class="s">${esc(x.who)}</div></div></button>
+    <button class="icon-btn sm" data-a="liveForget" data-id="${esc(x.id)}" aria-label="Retirer de la liste">✕</button></div>`).join('')}`;
+}
+// Garder une copie de la partie suivie dans son propre historique (statistiques comprises)
+function liveKeepHtml(g){
+  const L = S.live; if(!g || !(g.finished || L.gone)) return '';
+  const kept = db.games.find(x => x.fromLive === L.id);
+  return `<button class="btn block" style="margin-top:10px" data-a="liveKeep">${kept ? '💾 Mettre à jour ma copie' : '💾 Garder cette partie dans mon historique'}</button>`;
+}
+function liveKeep(){
+  const L = S.live, src = L && L.g; if(!src) return;
+  const c = JSON.parse(JSON.stringify(src)); delete c.inbox; delete c.share;
+  const link = p => { const q = db.players.find(x => pkey(x.name) === pkey(p.name)); if(q){ p.rid = q.id; p.guest = false; } else { delete p.rid; p.guest = true; } };
+  c.players.forEach(link); if(c.members) Object.values(c.members).forEach(ms => ms.forEach(link));
+  const old = db.games.find(x => x.fromLive === L.id);
+  c.id = old ? old.id : uid(); c.fromLive = L.id; c.updated = Date.now();
+  if(old) db.games[db.games.indexOf(old)] = c; else db.games.push(c);
+  const sid = S.gameId; save(); S.gameId = sid; render();
+  toast(old ? 'Copie mise à jour' : '💾 Partie ajoutée à votre historique' + (c.finished ? ' et à vos statistiques' : ''));
+}
+// Sur Android, dans le navigateur : proposer d'ouvrir la partie dans l'app Pointage (si elle est installée)
+function liveAppBtn(){
+  const L = S.live; if(!L || bridge || !/Android/i.test(navigator.userAgent)) return '';
+  const back = encodeURIComponent(location.href);
+  return `<a class="btn block" style="margin-top:10px;text-decoration:none" href="intent://suivre/${L.id}.${L.k}#Intent;scheme=pointage;package=ca.famille.pointage;S.browser_fallback_url=${back};end">📱 Ouvrir dans l’app Pointage</a>`;
+}
 /* ====================== Rapports (GitHub Issues) ====================== */
 const FB_REPO = 'rogerotisqc-spec/pointage';
 // Clé limitée aux « issues » de ce dépôt, découpée pour ne pas être prise pour une fuite par les outils de détection.
@@ -3833,6 +3878,9 @@ const A = {
   liveWz: el => { const L = S.live, d = liveDraft(L, liveRoundKey(L.g)); d.n = Math.max(0, Math.min(L.g.rounds.length + 1, (d.n || 0) + Number(el.dataset.d))); render(); },
   liveSendScore: () => liveSendScore(),
   liveMbOpen: () => liveMbOpen(),
+  liveRejoin: el => { const x = liveFollows().find(f => f.id === el.dataset.id); if(x) liveJoin({id: x.id, k: x.k}); },
+  liveForget: el => { liveFollowDrop(el.dataset.id); render(); },
+  liveKeep: () => liveKeep(),
   liveMbSend: () => liveMbSend(),
   liveYzCat: el => liveYzOpen(el.dataset.c),
   liveYzSet: el => liveYzSend(Number(el.dataset.v)),

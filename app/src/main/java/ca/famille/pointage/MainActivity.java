@@ -93,15 +93,32 @@ public class MainActivity extends Activity {
         if (savedInstanceState != null) {
             web.restoreState(savedInstanceState);
         } else {
-            web.loadUrl("file:///android_asset/index.html");
+            String live = liveLink(getIntent());
+            web.loadUrl("file:///android_asset/index.html" + (live != null ? "#suivre=" + live : ""));
         }
+        if (savedInstanceState != null) openLive(getIntent());
         handleInstallIntent(getIntent());
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        setIntent(intent);
+        openLive(intent);
         handleInstallIntent(intent);
+    }
+
+    /** Lien d'une partie en direct (pointage://suivre/ID.CLÉ) : renvoie « ID.CLÉ », ou null. */
+    private String liveLink(Intent intent) {
+        if (intent == null || intent.getData() == null || !"pointage".equals(intent.getData().getScheme())) return null;
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("([A-Za-z0-9_-]{12}\\.[A-Za-z0-9_-]{22})").matcher(intent.getData().toString());
+        return m.find() ? m.group(1) : null;
+    }
+
+    private void openLive(Intent intent) {
+        final String live = liveLink(intent);
+        if (live == null || web == null) return;
+        web.post(new Runnable() { public void run() { web.evaluateJavascript("location.hash='#suivre=" + live + "'", null); } });
     }
 
     /** Résultat de l'installation (PackageInstaller) : on affiche la confirmation d'Android. */
