@@ -113,6 +113,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><a href="#manche">Inscrire une manche</a></li>
         <li><a href="#brasseur">Le brasseur</a></li>
         <li><a href="#menu">Le menu ⋮ d’une partie</a></li>
+        <li><a href="#direct">Partie en direct (code QR)</a></li>
       </ol></li>
     <li><a href="#annuler">6. Annuler / rétablir</a></li>
     <li><a href="#jeux">7. Les jeux</a>
@@ -250,9 +251,21 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><b>Ajouter un joueur</b> en cours de partie.</li>
         <li><b>Revanche</b> : nouvelle partie avec les mêmes joueurs.</li>
         <li><b>Évolution des scores</b> : le <a href="#resultat">graphique</a>.</li>
+        <li><b>Partager la partie en direct</b> : les autres joueurs suivent les pointages sur leur téléphone (voir <a href="#direct">Partie en direct</a>).</li>
+        <li><b>Poser une question à Ludo</b> et <b>Analyse de la partie par Ludo</b> (voir <a href="#assistant">Ludo</a>).</li>
         <li><b>Signaler un problème / suggérer</b> (voir <a href="#rapports">Rapports</a>).</li>
         <li><b>Supprimer cette partie</b>, définitivement.</li></ul>
     </div><figure><img src="img/menu-partie.webp" alt="Menu d’une partie" loading="lazy"><figcaption>Le menu ⋮.</figcaption></figure></div>
+
+    <h3 id="direct">Partie en direct (code QR)</h3>
+    <div class="row2 many"><div class="txt" data-kw="direct en direct partager partie suivre pointages téléphone code qr scanner autres joueurs lecture seule temps réel chacun son téléphone lien">
+      <p>Pendant une partie, les autres joueurs peuvent <b>suivre les pointages sur leur propre téléphone</b>, en direct : classement, feuille, graphique et brasseur.</p>
+      <ol><li>Sur le téléphone qui tient la feuille : menu ⋮ → <span class="ui">📡 Partager la partie en direct</span>. Un code QR apparaît.</li>
+        <li>Les autres joueurs <b>scannent le code</b> avec l’appareil photo de leur téléphone et touchent le lien. La partie s’ouvre dans le navigateur : pas besoin d’avoir l’app. Vous pouvez aussi toucher <span class="ui">Envoyer le lien</span> (texto, Messenger…).</li>
+        <li>Leur page se met à jour toute seule, quelques secondes après chaque changement. Ils voient la partie <b>en lecture seule</b> : seul le téléphone qui tient la feuille peut la modifier.</li></ol>
+      <p>Pendant le partage, une bande verte <b>Partie en direct</b> s’affiche sous le titre de la partie ; son bouton <span class="ui">Code QR</span> réaffiche le code pour un joueur qui arrive. <span class="ui">Arrêter le partage</span> coupe l’accès.</p>
+      <p><b>Vie privée</b> : seule cette partie est partagée, jamais vos autres parties, vos joueurs, vos statistiques ou vos règles maison. Elle est <b>chiffrée de bout en bout</b> : la clé est dans le code QR et ne passe jamais par le serveur, qui ne voit qu’un texte illisible et l’efface 3 jours plus tard. Le partage demande Internet ; sans connexion, la partie continue normalement et les autres reçoivent les changements au retour d’Internet.</p>
+    </div><div class="figs"><figure><img src="img/direct-qr.webp" alt="Code QR de la partie en direct" loading="lazy"><figcaption>Le code QR à faire scanner.</figcaption></figure><figure><img src="img/direct-suivi.webp" alt="Partie suivie en direct" loading="lazy"><figcaption>Ce que voient les autres joueurs.</figcaption></figure></div></div>
   </section>
 
   <section class="s" id="annuler" data-kw="annuler rétablir défaire refaire erreur retour arrière flèche historique d'actions undo redo">

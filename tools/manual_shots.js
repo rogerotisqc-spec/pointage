@@ -238,9 +238,15 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
 
   // ---------- Assistant ----------
   await p.route('**/pointage-ia.rogerotisqc.workers.dev/', r => r.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }, body: '{"ok":true,"ready":true,"tts":true}' }));
+  const LIVE = {};
+  const liveRoute = r => { const act = r.request().url().split('/live/')[1], j = JSON.parse(r.request().postData() || '{}'), row = LIVE[j.id];
+    const send = (status, o) => r.fulfill({ status, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }, body: JSON.stringify(o) });
+    if (act === 'get') return !row ? send(404, { gone: true }) : j.ver === row.ver ? send(200, { ver: row.ver, same: true }) : send(200, row);
+    if (act === 'del') { delete LIVE[j.id]; return send(200, { ok: true }); }
+    LIVE[j.id] = { ver: (row ? row.ver : 0) + 1, iv: j.iv, data: j.data }; return send(200, { ok: true, ver: LIVE[j.id].ver }); };
   await p.route('**/pointage-ia.rogerotisqc.workers.dev/**', r => r.request().method() === 'OPTIONS'
     ? r.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' } })
-    : r.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+    : /\/live\//.test(r.request().url()) ? liveRoute(r) : r.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
         body: JSON.stringify(/"recap"/.test(r.request().postData() || '')
           ? { recap: true, sources: [], answer: 'Points tournants : à la manche 2, Marie prend la tête grâce à sa mise exacte. À la manche 3, Roger réussit sa mise de 2 (+40) et revient à 10 points de Marie et Léa, à égalité à 70.\nErreurs et occasions manquées : Zoé a raté ses 3 mises (−30), deux fois en misant 1 sans faire de pli. Roger a raté sa mise de 1 à la première manche.\nRecommandations : avec peu d’atouts, misez 0 ou 1 ; un Sorcier vaut presque toujours un pli.\nPour la prochaine fois : Zoé, mise 0 quand tu n’as ni atout fort ni Sorcier. Roger, garde ta belle lancée. Marie et Léa, 3 sur 3 : osez miser plus haut avec une bonne main !' }
           : { answer: 'Ta mise de 2 est ratée de 2 plis : tu perds 20 points (−10 par pli d’écart).\nSi tu avais misé 4, tu aurais eu 20 + 10 × 4 = 60 points.', sources: [] }) }));
@@ -253,6 +259,17 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await p.fill('#askQ', 'Qui doit brasser ?'); await p.keyboard.press('Enter');
   await shot('assistant-horsligne');
   await ctx.setOffline(false);
+  await p.evaluate(() => { const g = db.games.filter(x => x.type === 'farkle' && !x.finished).pop(); tab('home'); go('sheet', { gameId: g.id }); });
+
+  // ---------- Partie en direct ----------
+  await p.evaluate(() => { const g = db.games.filter(x => x.type === 'wizard' && x.rounds.length >= 3)[0]; tab('home'); go('sheet', { gameId: g.id }); });
+  await tap('[data-a=menu]'); await tap('#modal [data-a=liveStart]'); await p.waitForSelector('#modal svg'); await p.waitForTimeout(400);
+  await p.evaluate(() => { const t = document.getElementById('toast'); if (t) t.classList.remove('on'); }); await shot('direct-qr');
+  { const link = await p.evaluate(() => liveLink(curGame().share)); const v = await ctx.newPage(); v.on('pageerror', e => errs.push(e.message));
+    await v.route('**/pointage-ia.rogerotisqc.workers.dev/**', r => r.request().method() === 'OPTIONS' ? r.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' } }) : /\/live\//.test(r.request().url()) ? liveRoute(r) : r.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }, body: '{"ok":true,"ready":true,"tts":true}' }));
+    await v.goto(APP + link.slice(link.indexOf('#'))); await v.waitForFunction(() => S.live && S.live.g); await v.waitForTimeout(300);
+    await v.screenshot({ path: path.join(OUT, 'direct-suivi.png') }); await v.close(); }
+  await tap('#modal [data-a=close]'); await p.evaluate(() => { delete curGame().share; save(); render(); });
   await p.evaluate(() => { const g = db.games.filter(x => x.type === 'farkle' && !x.finished).pop(); tab('home'); go('sheet', { gameId: g.id }); });
 
   // ---------- Rapport ----------

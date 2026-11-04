@@ -37,6 +37,11 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   calculés par l'app, envoyés au relais dans `recap` (`mode: 'analyse'` pour la première demande) ; le relais répond
   `recap: true` (sinon l'app affiche les faits seuls, comme hors ligne). Nouveau jeu : ajouter ses détails dans anRoundNote
   et anFacts.
+- Partie en direct (index.html : liveStart, livePush, vLive ; relais : /live/get|put|del) : l'hôte envoie la partie
+  chiffrée AES-GCM (clé dans le lien du code QR, après #suivre=ID.CLÉ, jamais envoyée au serveur) ; base D1 liée au
+  relais sous le nom DB (table live, effacée après 3 jours) ; les autres suivent en lecture seule (web app, sondage 3 s).
+  g.share = {id, tok, k} reste sur le téléphone de l'hôte (jamais dans liveSnap). Générateur QR : qrcode-generator (MIT).
+  Étape B prévue : chacun saisit son propre pointage.
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 

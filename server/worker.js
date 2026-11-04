@@ -9,6 +9,8 @@
 //   WEB_SEARCH         (texte, facultatif)  "off" pour interdire la recherche sur Internet
 //   GOOGLE_TTS_KEY     (secret, facultatif) clé Google Cloud Text-to-Speech : voix naturelle (adresse /tts)
 // Liaison KV facultative (Settings → Bindings) : nom LIMITS, pour compter les questions.
+// Liaison D1 facultative (Settings → Bindings) : nom DB, pour les parties en direct (adresses /live/…).
+//   Le relais ne garde que des données chiffrées par les téléphones (la clé reste dans le code QR) ; effacées après 3 jours.
 
 const MODEL = 'claude-haiku-5-5';
 const MANUAL_URL = 'https://rogerotisqc-spec.github.io/pointage/manuel/';
@@ -137,6 +139,49 @@ async function askClaude(env, body) {
 }
 
 
+/* ---------- Parties en direct ---------- */
+// Le téléphone qui tient la feuille envoie la partie chiffrée (put) ; les autres la relisent (get) toutes les quelques secondes.
+const LIVE_TTL = 3 * 24 * 3600e3, LIVE_MAX = 400000;
+let LIVE_READY = false;
+async function liveInit(db) {
+  if (LIVE_READY) return;
+  await db.batch([
+    db.prepare('CREATE TABLE IF NOT EXISTS live (id TEXT PRIMARY KEY, tokh TEXT NOT NULL, ver INTEGER NOT NULL, iv TEXT NOT NULL, data TEXT NOT NULL, upd INTEGER NOT NULL)'),
+    db.prepare('CREATE INDEX IF NOT EXISTS live_upd ON live (upd)')
+  ]);
+  LIVE_READY = true;
+}
+async function sha(t) {
+  const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
+  return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function live(env, action, b) {
+  if (!env.DB) return json({ error: 'Partage en direct pas encore configuré' }, 503);
+  const id = String(b.id || ''), tok = String(b.tok || '');
+  if (!/^[A-Za-z0-9_-]{12}$/.test(id)) return json({ error: 'Partie inconnue' }, 400);
+  await liveInit(env.DB);
+  if (action === 'get') {
+    const row = await env.DB.prepare('SELECT ver, iv, data FROM live WHERE id = ?').bind(id).first();
+    if (!row) return json({ gone: true }, 404);
+    if (+b.ver === row.ver) return json({ ver: row.ver, same: true });
+    return json({ ver: row.ver, iv: row.iv, data: row.data });
+  }
+  if (!/^[A-Za-z0-9_-]{22}$/.test(tok)) return json({ error: 'Accès refusé' }, 403);
+  const h = await sha(tok);
+  const row = await env.DB.prepare('SELECT tokh, ver FROM live WHERE id = ?').bind(id).first();
+  if (row && row.tokh !== h) return json({ error: 'Accès refusé' }, 403);
+  if (action === 'del') {
+    if (row) await env.DB.prepare('DELETE FROM live WHERE id = ?').bind(id).run();
+    return json({ ok: true });
+  }
+  const iv = String(b.iv || ''), data = String(b.data || '');
+  if (!iv || !data || data.length > LIVE_MAX) return json({ error: 'Partie trop grosse ou vide' }, 400);
+  const ver = (row ? row.ver : 0) + 1, now = Date.now();
+  await env.DB.prepare('INSERT OR REPLACE INTO live (id, tokh, ver, iv, data, upd) VALUES (?, ?, ?, ?, ?, ?)').bind(id, h, ver, iv, data, now).run();
+  if (Math.random() < 0.05) await env.DB.prepare('DELETE FROM live WHERE upd < ?').bind(now - LIVE_TTL).run();
+  return json({ ok: true, ver });
+}
+
 const VOICES = ['Aoede', 'Kore', 'Leda', 'Charon', 'Puck', 'Orus'];
 async function synth(env, text, voice, rate) {
   const name = 'fr-CA-Chirp3-HD-' + (VOICES.includes(voice) ? voice : 'Aoede');
@@ -157,12 +202,17 @@ export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(request.url);
-    if (request.method === 'GET') return json({ ok: true, service: 'pointage-ia', ready: !!(env.ANTHROPIC_API_KEY && env.APP_TOKEN), tts: !!env.GOOGLE_TTS_KEY });
-    if (request.method !== 'POST' || (url.pathname !== '/ask' && url.pathname !== '/tts')) return json({ error: 'Adresse inconnue' }, 404);
-    if (!env.ANTHROPIC_API_KEY || !env.APP_TOKEN) return json({ error: 'Relais pas encore configuré' }, 503);
+    if (request.method === 'GET') return json({ ok: true, service: 'pointage-ia', ready: !!(env.ANTHROPIC_API_KEY && env.APP_TOKEN), tts: !!env.GOOGLE_TTS_KEY, live: !!env.DB });
+    const lv = url.pathname.match(/^\/live\/(get|put|del)$/);
+    if (request.method !== 'POST' || (!lv && url.pathname !== '/ask' && url.pathname !== '/tts')) return json({ error: 'Adresse inconnue' }, 404);
+    if (!env.APP_TOKEN || (!lv && !env.ANTHROPIC_API_KEY)) return json({ error: 'Relais pas encore configuré' }, 503);
     if (request.headers.get('X-App-Token') !== env.APP_TOKEN) return json({ error: 'Accès refusé' }, 403);
     let body;
     try { body = await request.json(); } catch (e) { return json({ error: 'Requête illisible' }, 400); }
+    if (lv) {
+      try { return await live(env, lv[1], body || {}); }
+      catch (e) { return json({ error: 'Partage indisponible : ' + cut(e.message, 200) }, 502); }
+    }
     if (url.pathname === '/tts') {
       if (!env.GOOGLE_TTS_KEY) return json({ error: 'Voix naturelle pas configurée' }, 503);
       if (!body || !String(body.text || '').trim()) return json({ error: 'Texte vide' }, 400);

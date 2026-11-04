@@ -1,6 +1,6 @@
 {
- "version": "5.4",
- "notes": "L'analyse de partie par Ludo est maintenant lue automatiquement à voix haute (⏹ pour arrêter).",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.4.apk",
- "size": 164697
+ "version": "5.5",
+ "notes": "Nouveau : Partie en direct ! Menu ⋮ → Partager la partie en direct : les autres joueurs scannent le code QR et suivent les pointages sur leur téléphone.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.5.apk",
+ "size": 181081
 }
