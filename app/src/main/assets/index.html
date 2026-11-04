@@ -411,6 +411,8 @@ table.p10 tr.fin td{border-top:2px solid var(--line)}
 .livebar .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);flex:none;animation:livep 1.6s ease-in-out infinite}
 .livebar.err{background:color-mix(in srgb,var(--accent) 14%,var(--surface));border-color:var(--accent)}
 .livebar.err .dot{background:var(--accent);animation:none}
+.livebar.inbox{background:color-mix(in srgb,var(--brand) 10%,var(--surface));border-color:color-mix(in srgb,var(--brand) 40%,transparent);font-weight:500}
+.livebar.inbox small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
 @keyframes livep{0%,100%{opacity:1}50%{opacity:.35}}
 @media (prefers-reduced-motion: reduce){ .livebar .dot{animation:none} }
 </style>
@@ -434,7 +436,7 @@ function load(){
   return defaultDb();
 }
 let db = load();
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ toast('Impossible d’enregistrer'); } recordHist(); autoBackupSoon(); liveSoon(); }
+function save(){ { const cg = !S.live && curGame(); if(cg && cg.inbox) liveInboxCheck(cg); } try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ toast('Impossible d’enregistrer'); } recordHist(); autoBackupSoon(); liveSoon(); }
 /* Sauvegarde automatique : app Android (dossier choisi) ou navigateur d'ordinateur Chrome/Edge (dossier choisi) */
 const abWeb = () => !bridge && !!window.showDirectoryPicker && !window.claude;
 const canAutoBackup = () => !!(bridge && bridge.writeBackup && bridge.pickBackupFolder) || abWeb();
@@ -961,7 +963,7 @@ window.handleBack = () => back();
 function render(top){
   const v = S.view;
   let html = ({home:vHome, setup:vSetup, sheet:vSheet, rules:vRules, players:vPlayers, history:vHistory, stats:vStats, settings:vSettings, results:vResults, ask:vAsk, live:vLive})[v]();
-  if((v === 'sheet' || v === 'results') && !S.live){ const g = curGame(); if(g && g.share) html = html.replace('</header>', '</header>' + liveBarHtml(g)); }
+  if((v === 'sheet' || v === 'results') && !S.live){ const g = curGame(); if(g && g.share) html = html.replace('</header>', '</header>' + liveBarHtml(g) + (v === 'sheet' ? liveInboxHtml(g) : '')); }
   if(v !== 'ask' && S.speaking) speakStop();
   $('app').innerHTML = html;
   if(top) window.scrollTo(0,0);
@@ -2497,6 +2499,7 @@ const HELP_FAQ = [
   {q:['train mexicain','compter les dominos','double blanc','dominos restants'], g:'train', a:'Au train mexicain, à la fin de chaque manche, touchez « + Manche » : pour chaque joueur, touchez les 2 moitiés de chaque domino qui lui reste (ou tapez le total), et cochez « A tout posé » pour celui qui a fini (0 point). Le titre indique le double de départ de la manche suivante. Le plus bas total gagne après la dernière manche.'},
   {q:['changer la voix','voix de l’assistant','voix de ludo','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de Ludo : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
   {q:['partie en direct','partager la partie','suivre la partie sur mon téléphone','chacun son téléphone','code qr de la partie','voir les pointages sur un autre téléphone'], a:'Menu ⋮ d’une partie → « Partager la partie en direct » : un code QR apparaît. Les autres joueurs le scannent avec l’appareil photo de leur téléphone et suivent les pointages en direct, sans pouvoir les modifier (pas besoin d’avoir l’app). Seule cette partie est partagée, chiffrée de bout en bout. « Arrêter le partage » coupe l’accès.'},
+  {q:['inscrire mes points sur mon téléphone','chacun entre ses points','envoyer mes points','qui êtes-vous','points reçus'], a:'Pendant une partie en direct, sur la page de suivi : touchez votre nom, inscrivez vos points à la fin de la manche et touchez « Envoyer ». Le téléphone qui tient la feuille les reçoit (bande 📥) ; quand tout le monde a envoyé, sa fenêtre de saisie s’ouvre déjà remplie : il vérifie et enregistre. Offert au Pointage libre, Flip 7, Play Nine, Skyjo, Phase 10, Train mexicain, Wizard, Yahtzee et Uno (règle maison).'},
   {q:['analyse de la partie','points tournants','erreurs de la partie','analyser ma dernière partie','conseils pour la prochaine fois','pourquoi j’ai perdu','recommandations','stratégie pour gagner'], a:'Ludo peut analyser une partie : sur l’écran de résultat, touchez « Analyse de la partie par Ludo » (aussi dans le menu ⋮ d’une partie). Il repère les points tournants et les erreurs visibles dans ce qui a été inscrit (mise ratée, case rayée, raté avec pénalité…), recommande des stratégies pour ce jeu et donne un conseil à chaque joueur. Vous pouvez aussi demander « Analyse ma dernière partie ». Sans Internet, l’app affiche seulement les faits calculés : meneurs, meilleurs et pires coups, écarts.'},
   {q:['comment utiliser l’assistant','poser une question','ouvrir l’assistant','qui est ludo','ludo'], a:'Ludo, c’est l’assistant de l’app : le bouton rouge « Ludo » en haut de l’accueil et de chaque partie l’ouvre. Touchez « Poser une question à Ludo » et parlez, ou écrivez votre question. Avec Internet, une IA répond en tenant compte du jeu, de vos règles maison et du manuel. Sans connexion, l’assistant hors ligne cherche le bon passage dans les règles et le manuel.'}
 ];
@@ -3138,6 +3141,7 @@ function liveSnap(g){
   const c = JSON.parse(JSON.stringify(g)); delete c.share;
   const clean = p => { delete p.rid; };
   c.players.forEach(clean); if(c.members) Object.values(c.members).forEach(ms => ms.forEach(clean));
+  if(c.aq) delete c.aq.sh;   // Acquire : les actions de chacun restent secrètes
   return {v: 1, g: c, t: Date.now()};
 }
 /* --- Côté hôte (le téléphone qui tient la feuille) --- */
@@ -3206,6 +3210,7 @@ function liveJoin(p){
   if(!liveCrypto()) return toast('Ce navigateur ne peut pas ouvrir une partie en direct');
   S = {view: 'home', stack: []};
   go('live', {live: {id: p.id, k: p.k, ver: 0, g: null, t: 0, err: '', gone: false, run: (LIVE_RUN = (LIVE_RUN || 0) + 1)}, gameId: null});
+  liveMeLoad(S.live);
   render(true); livePoll();
 }
 let LIVE_RUN = 0, LIVE_PT = null;
@@ -3220,7 +3225,9 @@ async function livePoll(){
     if(!d.same){
       let snap; try{ snap = await liveDec(L.k, d.iv, d.data); }catch(e){ L.err = 'Ce lien n’est pas valide (code QR incomplet ?)'; L.gone = true; return render(); }
       L.g = snap.g; L.g.id = 'live:' + L.id; L.ver = d.ver; S.gameId = L.g.id;
-      L.t = Date.now(); L.err = ''; render(); return again();
+      L.t = Date.now(); L.err = '';
+      if(M || (document.activeElement && document.activeElement.id === 'liveVal')) L.later = true; else render();
+      return again();
     }
     L.t = Date.now(); if(L.err){ L.err = ''; render(); } else liveAge();
   }catch(e){
@@ -3232,6 +3239,7 @@ async function livePoll(){
   again();
 }
 document.addEventListener('visibilitychange', () => { if(!document.hidden && S.live && S.view === 'live') livePoll(); });
+document.addEventListener('focusout', e => { if(e.target && e.target.id === 'liveVal' && S.live && S.live.later){ setTimeout(() => { if(S.live && S.live.later && !M && !(document.activeElement && document.activeElement.id === 'liveVal')){ S.live.later = false; render(); } }, 150); } });
 function liveAge(){ const el = $('liveAge'); if(el && S.live) el.textContent = liveAgeTxt(S.live); }
 function liveAgeTxt(L){ if(!L.t) return 'connexion…'; const s = Math.round((Date.now() - L.t) / 1000); return s < 5 ? 'à jour' : 'mis à jour il y a ' + s + ' s'; }
 function liveTable(g){
@@ -3242,14 +3250,17 @@ function liveTable(g){
     return `<h2 class="sec">Derniers tours</h2><div class="card list log" style="margin:0">${g.turns.slice().reverse().slice(0, 15).map(x => { const p = P.find(q => q.key === x.pk) || {name: '?'};
       return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div>${x.note ? `<div class="s">${esc(x.note)}</div>` : ''}</div><div class="t num-t ${x.pts < 0 ? 'neg' : ''}">${x.pts > 0 ? '+' : ''}${fmt(x.pts)}</div></div>`; }).join('')}</div>`;
   }
-  if(!g.rounds.length) return '';
-  return `<h2 class="sec">Feuille de pointage</h2><div class="tablewrap" style="margin:0"><table class="sheet ${P.length >= 5 ? 'compact' : ''}"><thead><tr><th class="lbl"></th>${P.map(p => `<th>${esc(p.name)}</th>`).join('')}</tr></thead>
-    <tbody>${g.rounds.map((r, i) => `<tr><td class="lbl">${R} ${i + 1}</td>${P.map(p => { const w = r.m && (r.m.w === p.key || r.m.fin === p.key) ? ' 🏁' : ''; return `<td class="num-t">${r.s[p.key] == null ? '·' : fmt(r.s[p.key])}${w}</td>`; }).join('')}</tr>`).join('')}</tbody>
+  if(!g.rounds.length && !(g.type === 'wizard' && g.pend)) return '';
+  return `<h2 class="sec">Feuille de pointage</h2>${g.type === 'wizard' ? '<p class="hint" style="margin:-4px 2px 8px">Sous chaque pointage : mise / plis faits.</p>' : ''}<div class="tablewrap" style="margin:0"><table class="sheet ${P.length >= 5 ? 'compact' : ''}"><thead><tr><th class="lbl"></th>${P.map(p => `<th>${esc(p.name)}</th>`).join('')}</tr></thead>
+    <tbody>${g.rounds.map((r, i) => `<tr><td class="lbl">${R} ${i + 1}</td>${P.map(p => { const w = r.m && (r.m.w === p.key || r.m.fin === p.key) ? ' 🏁' : '';
+      const wz = g.type === 'wizard' && r.m && r.m.bid ? `<small style="display:block;font-size:11px;color:var(--muted);font-weight:500">${r.m.bid[p.key]}/${r.m.tricks[p.key]}</small>` : '';
+      return `<td class="num-t">${r.s[p.key] == null ? '·' : fmt(r.s[p.key])}${w}${wz}</td>`; }).join('')}</tr>`).join('')}
+    ${g.type === 'wizard' && g.pend ? `<tr class="next"><td class="lbl">${g.rounds.length + 1} <small>mises</small></td>${P.map(p => `<td class="num-t">${g.pend.bid[p.key] ?? '–'}</td>`).join('')}</tr>` : ''}</tbody>
     <tfoot><tr><td class="lbl">Total</td>${P.map(p => `<td class="num-t">${fmt(t[p.key])}</td>`).join('')}</tr></tfoot></table></div>`;
 }
 function vLive(){
   const L = S.live, g = L && L.g;
-  const head = topbar('Partie en direct', g ? gameName(g) + ' · lecture seule' : 'Lecture seule');
+  const head = topbar('Partie en direct', g ? gameName(g) + (liveEntryOk(g) ? ' · en direct' : ' · lecture seule') : 'Ouverture…');
   if(L && L.gone && !g) return `${head}<main class="pad"><div class="card empty">${esc(L.err || 'Cette partie n’est plus partagée. Le partage a été arrêté, ou il date de plus de 3 jours.')}</div>
     <button class="btn block" style="margin-top:16px" data-a="liveQuit">Accueil</button></main>`;
   if(!g) return `${head}<main class="pad"><div class="card" style="padding:18px;display:flex;align-items:center;gap:12px"><span class="spin"></span><b>Ouverture de la partie…</b></div>${L && L.err ? `<p class="hint">⚠︎ ${esc(L.err)}</p>` : ''}</main>`;
@@ -3258,15 +3269,193 @@ function vLive(){
     : (g.type !== 'acquire' ? '🃏 À <b>' + esc(dealerName(g)) + '</b> de brasser' : '');
   return `${head}<main class="pad">
     <div class="livebar ${L.err ? 'err' : ''}" style="margin:0 0 12px"><span class="dot"></span><span class="grow">${L.gone ? 'Le partage est terminé : voici les derniers pointages reçus.' : L.err ? esc(L.err) : '<span id="liveAge">' + liveAgeTxt(L) + '</span>'}</span></div>
+    ${liveEntryHtml(g)}
     ${g.finished ? `<div class="banner done" style="margin:0 0 12px"><div class="grow">🏆 Partie terminée · ${esc(r.filter(x => x.rank === 1).map(x => x.p.name).join(' et '))} ${r.filter(x => x.rank === 1).length > 1 ? 'gagnent' : 'gagne'}</div></div>` : who ? `<p style="margin:0 2px 12px">${who}</p>` : ''}
     <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank - 1] || x.rank}</span><span class="av" style="background:${x.p.color}">${g.team ? esc(x.p.team) : initial(x.p.name)}</span>
       <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type === 'phase10' ? `<div class="s">Phase ${Math.min(x.phase, 10)}${x.phase > 10 ? ' réussie' : ''}</div>` : ''}</div><div class="t num-t" style="font-size:20px">${fmt(x.total)}</div></div>`).join('')}</div>
-    <p class="hint" style="margin:6px 2px 0">${isLow(g) ? 'Le plus bas total gagne.' : 'Le plus haut total gagne.'}</p>
+    <p class="hint" style="margin:6px 2px 0">${g.type === 'phase10' ? 'La phase compte d’abord, puis le moins de points.' : isLow(g) ? 'Le plus bas total gagne.' : 'Le plus haut total gagne.'}</p>
+    ${liveExtraHtml(g)}
     <div style="margin-top:14px">${liveTable(g)}</div>
     ${(isTurnGame(g) ? g.turns.length : g.rounds.length) && g.type !== 'acquire' ? `<h2 class="sec">Évolution des scores</h2><div class="card" style="padding:12px 12px 10px">${chartHtml(g, 'chr')}</div>` : ''}
-    <p class="hint" style="margin-top:16px">Cette page se met à jour toute seule. Seul le téléphone qui tient la feuille peut la modifier.</p>
+    <p class="hint" style="margin-top:16px">Cette page se met à jour toute seule. ${liveEntryOk(g) ? 'Vos points sont envoyés au téléphone qui tient la feuille : c’est lui qui les enregistre.' : 'Seul le téléphone qui tient la feuille peut la modifier.'}</p>
     <button class="btn block" style="margin-top:10px" data-a="liveQuit">Quitter la partie</button>
   </main>`;
+}
+/* --- Étape B : chacun inscrit ses points sur son téléphone --- */
+// Le joueur envoie ses points (chiffrés) dans la boîte de réception du relais ; le téléphone qui tient la feuille les lit,
+// les garde dans g.inbox (visible de tous) et les place dans la fenêtre de saisie : l’hôte vérifie et enregistre.
+const LIVE_ENTRY = ['generic', 'flip7', 'playnine', 'skyjo', 'phase10', 'train', 'wizard', 'yahtzee', 'uno'];
+function liveRoundKey(g){ return g.type === 'wizard' ? g.rounds.length + ':' + (g.pend ? 't' : 'b') : String(g.rounds.length); }
+function liveEntryOk(g){
+  if(!g || g.finished || g.team || !LIVE_ENTRY.includes(g.type)) return false;
+  if(g.type === 'uno' && g.opts.mode === 'official') return false;
+  if(g.type === 'yahtzee') return !yzDone(g);
+  if(g.opts.holes && g.rounds.length >= g.opts.holes) return false;
+  if((g.type === 'wizard' || g.type === 'train') && g.rounds.length >= g.opts.rounds) return false;
+  return true;
+}
+function liveInboxNow(g){ return g && g.inbox && g.inbox.key === liveRoundKey(g) ? g.inbox : null; }
+// Après l’enregistrement de la manche : la boîte devient périmée ; au Phase 10, on avance les joueurs qui ont dit avoir réussi
+function liveInboxCheck(g){
+  if(!g || !g.inbox || g.inbox.key === liveRoundKey(g)) return;
+  if(g.type === 'phase10' && g.inbox.key === String(g.rounds.length - 1))
+    Object.keys(g.inbox.e).forEach(pk => { const e = g.inbox.e[pk]; if(e.ph && phaseOf(g, pk) === e.p10) g.ph[pk] = Math.min(11, e.p10 + 1); });
+  delete g.inbox;
+}
+/* Hôte : lecture de la boîte de réception toutes les 3 secondes */
+let LIVE_IT = null; const LIVE_IN_BUSY = new Set();
+function liveInboxLoop(){
+  clearTimeout(LIVE_IT); LIVE_IT = setTimeout(liveInboxLoop, 3000);
+  if(document.hidden || S.live || !aiConfigured()) return;
+  db.games.filter(g => g.share && !g.finished).forEach(g => liveInboxFetch(g));
+}
+async function liveInboxFetch(g){
+  if(LIVE_IN_BUSY.has(g.id)) return; LIVE_IN_BUSY.add(g.id);
+  try{
+    const d = await liveCall('inbox', {id: g.share.id, tok: g.share.tok, after: g.share.seq || 0});
+    const ms = d.msgs || []; if(!ms.length || !g.share) return;
+    for(const m of ms){
+      g.share.seq = Math.max(g.share.seq || 0, m.seq);
+      let x; try{ x = await liveDec(g.share.k, m.iv, m.data); }catch(e){ continue; }
+      liveApply(g, x);
+    }
+    save(); if((S.view === 'sheet' || S.view === 'results') && curGame() === g && !M) render();
+    liveInboxAuto(g);
+  }catch(e){ /* nouvel essai au prochain tour */ }
+  finally{ LIVE_IN_BUSY.delete(g.id); }
+}
+function liveApply(g, m){
+  const p = m && g.players.find(x => x.key === m.pk); if(!p || g.finished) return;
+  if(m.t === 'yz'){
+    if(g.type !== 'yahtzee') return; const st = yzState(g), c = YZ_ALL.find(x => x.id === m.cat);
+    if(!c || st.sc[m.pk][m.cat] != null) return;
+    const v = Math.max(0, Math.min(50, num(m.v)));
+    if(m.yb && st.sc[m.pk].yz === 50 && m.cat !== 'yz') st.yb[m.pk] = (st.yb[m.pk] || 0) + 1;
+    st.sc[m.pk][m.cat] = v;
+    if(g.players[st.cur] && g.players[st.cur].key === m.pk)
+      for(let i = 1; i <= g.players.length; i++){ const j = (st.cur + i) % g.players.length; if(yzParts(g, g.players[j].key).filled < 13){ st.cur = j; break; } }
+    g.updated = Date.now(); toast(`📥 ${p.name} : ${v} au ${c.name}`); return;
+  }
+  const key = liveRoundKey(g); if(m.key !== key) return;
+  if(!g.inbox || g.inbox.key !== key) g.inbox = {key, e: {}};
+  const e = {v: num(m.v), t: Date.now()};
+  if(m.ph){ e.ph = true; e.p10 = m.p10; } if(m.fin) e.fin = true; if(m.out){ e.out = true; e.v = 0; }
+  if(m.fin) Object.values(g.inbox.e).forEach(o => { delete o.fin; });
+  g.inbox.e[m.pk] = e; g.updated = Date.now();
+  const unit = g.type === 'wizard' ? (key.endsWith('b') ? ' (mise)' : ' pli' + (e.v > 1 ? 's' : '')) : ' point' + (Math.abs(e.v) > 1 ? 's' : '');
+  toast(`📥 ${p.name} : ${e.out ? 'a posé tous ses dominos' : fmt(e.v) + unit}`);
+}
+// Quand tous les joueurs ont envoyé : la fenêtre de saisie s’ouvre, déjà remplie, sur le téléphone qui tient la feuille
+function liveInboxAuto(g){
+  const ib = liveInboxNow(g); if(!ib || M || S.view !== 'sheet' || curGame() !== g) return;
+  if(g.players.every(p => ib.e[p.key]) && ib.auto !== ib.key){ ib.auto = ib.key; liveOpenInbox(); toast('📥 Tous les joueurs ont envoyé : vérifiez puis enregistrez'); }
+}
+function liveOpenInbox(){
+  const g = curGame(), ib = liveInboxNow(g); if(!ib) return;
+  if(g.type === 'wizard'){ const ph = g.pend ? 'tricks' : 'bid'; wzOpen(ph, null);
+    Object.keys(ib.e).forEach(pk => { M.wz[ph][pk] = Math.max(0, Math.min(M.wz.cards, ib.e[pk].v)); }); wzRender(); return; }
+  if(g.type === 'train'){ mtOpen(null);
+    Object.keys(ib.e).forEach(pk => { const e = ib.e[pk], x = M.mt.v[pk]; if(!x) return; if(e.out){ x.out = true; x.manual = null; } else { x.out = false; x.manual = Math.max(0, e.v); } }); mtRender(); return; }
+  openRound(null);
+  Object.keys(ib.e).forEach(pk => { const e = ib.e[pk], i = $('in-' + pk); if(i) i.value = e.v;
+    if(e.fin){ const r = document.querySelector(`input[name=skfin][value="${pk}"]`); if(r) r.checked = true; } });
+}
+function liveInboxHtml(g){
+  const ib = liveInboxNow(g); if(!ib || g.type === 'yahtzee') return '';
+  const got = g.players.filter(p => ib.e[p.key]), wait = g.players.filter(p => !ib.e[p.key]);
+  const what = g.type === 'wizard' ? (ib.key.endsWith('b') ? 'mises reçues' : 'plis reçus') : 'points reçus';
+  return `<div class="livebar inbox" id="liveinbox"><span>📥</span><span class="grow">${GAMES[g.type].round} ${g.rounds.length + 1} · ${what} : ${got.map(p => esc(p.name) + ' ' + (ib.e[p.key].out ? '🏁' : fmt(ib.e[p.key].v)) + (ib.e[p.key].ph ? ' ✓' : '')).join(', ')}${wait.length ? `<small>En attente : ${wait.map(p => esc(p.name)).join(', ')}</small>` : ''}</span><button class="btn sm primary" data-a="liveOpenInbox">Inscrire</button></div>`;
+}
+/* Joueur : choix de son nom, puis envoi de ses points */
+function liveMeKey(L){ return 'pointage.liveme.' + L.id; }
+function liveMeLoad(L){ try{ const v = localStorage.getItem(liveMeKey(L)); if(v) L.me = v; }catch(e){} }
+function liveMeSet(v){ const L = S.live; L.me = v; try{ localStorage.setItem(liveMeKey(L), v); }catch(e){} render(); }
+async function liveSendMsg(msg){
+  const L = S.live; if(!L || L.gone) return toast('Le partage est terminé');
+  const e = await liveEnc(L.k, msg);
+  await liveCall('send', {id: L.id, iv: e.iv, data: e.data});
+}
+function liveDraft(L, key){ if(!L.draft || L.draft.key !== key) L.draft = {key, v: '', x: {}, sign: 1}; return L.draft; }
+async function liveSendScore(){
+  const L = S.live, g = L && L.g; if(!g || !L.me) return;
+  const key = liveRoundKey(g), d = liveDraft(L, key);
+  let v = String(d.v).trim();
+  if(g.type === 'wizard'){ v = d.n == null ? null : d.n; if(v == null) return toast('Choisissez un nombre'); }
+  else if(d.x.out) v = 0;
+  else { if(v === '') return toast('Inscrivez vos points'); v = num(v) * (d.sign < 0 ? -1 : 1); }
+  const msg = {t: 'r', key, pk: L.me, v};
+  if(d.x.ph){ msg.ph = true; msg.p10 = phaseOf(g, L.me); } if(d.x.fin) msg.fin = true; if(d.x.out) msg.out = true;
+  L.sending = true; render();
+  try{ await liveSendMsg(msg); L.sent = {key, v, t: Date.now()}; toast('Envoyé ✓'); }
+  catch(e){ toast(e.status === 404 ? 'Le partage est terminé' : 'Envoi impossible : vérifiez Internet'); }
+  L.sending = false; render();
+}
+function liveEntryHtml(g){
+  const L = S.live; if(!liveEntryOk(g) || L.gone) return '';
+  if(!L.me) return `<div class="card" style="padding:14px;margin-bottom:14px"><b>Qui êtes-vous ?</b><p class="hint" style="margin:2px 0 10px">Touchez votre nom pour inscrire vos propres points.</p>
+    <div class="chips">${g.players.map(p => `<button class="chip" style="min-height:42px;padding:0 14px" data-a="liveMe" data-k="${p.key}"><span class="av" style="background:${p.color};width:24px;height:24px;font-size:12px">${initial(p.name)}</span> ${esc(p.name)}</button>`).join('')}
+    <button class="chip" style="min-height:42px;padding:0 14px" data-a="liveMe" data-k="-">Je regarde seulement</button></div></div>`;
+  if(L.me === '-') return `<p class="hint" style="margin:0 2px 12px"><a href="#" data-a="liveMe" data-k="" style="color:var(--brand)">Inscrire mes propres points</a></p>`;
+  const p = g.players.find(x => x.key === L.me); if(!p) return '';
+  const change = `<a href="#" data-a="liveMe" data-k="" style="color:var(--brand);font-size:13px;font-weight:600">Changer</a>`;
+  if(g.type === 'yahtzee'){
+    const sc = yzState(g).sc[p.key] || {}, free = YZ_ALL.filter(c => sc[c.id] == null), cur = g.players[g.yz ? g.yz.cur : 0];
+    return `<div class="card" style="padding:14px;margin-bottom:14px"><div class="row" style="justify-content:space-between;align-items:center"><b>Ma feuille · ${esc(p.name)}</b>${change}</div>
+      <p class="hint" style="margin:2px 0 10px">${cur && cur.key === p.key ? '🎲 <b>C’est votre tour.</b> ' : ''}Touchez la case où inscrire votre lancer.</p>
+      <div class="chips">${free.map(c => `<button class="chip" style="min-height:40px;padding:0 12px" data-a="liveYzCat" data-c="${c.id}">${esc(c.name)}</button>`).join('')}</div></div>`;
+  }
+  const key = liveRoundKey(g), d = liveDraft(L, key), ib = liveInboxNow(g), mine = ib && ib.e[p.key];
+  const R = GAMES[g.type].round, n = g.rounds.length + 1;
+  let field, title, extra = '';
+  if(g.type === 'wizard'){
+    const bid = key.endsWith('b'), max = g.rounds.length + 1, cur = d.n == null ? (bid ? 0 : (g.pend && g.pend.bid[p.key] != null ? g.pend.bid[p.key] : 0)) : d.n; d.n = cur;
+    title = bid ? `Ma mise · manche ${n} (${max} carte${max > 1 ? 's' : ''})` : `Mes plis · manche ${n}` + (g.pend && g.pend.bid[p.key] != null ? ` · mise : ${g.pend.bid[p.key]}` : '');
+    field = `<div class="stepper" style="justify-content:center"><button data-a="liveWz" data-d="-1" ${cur <= 0 ? 'disabled' : ''}>−</button><b class="num-t" style="font-size:26px;min-width:48px;text-align:center">${cur}</b><button class="plus" data-a="liveWz" data-d="1" ${cur >= max ? 'disabled' : ''}>+</button></div>`;
+  } else {
+    title = `Mes points · ${R.toLowerCase()} ${n}`;
+    const neg = ['generic', 'skyjo', 'playnine'].includes(g.type);
+    field = d.x.out ? `<p style="margin:4px 0">0 point : tous vos dominos sont posés.</p>` : `<div class="row" style="align-items:center;gap:8px">${neg ? `<button class="btn" style="min-width:52px" data-a="liveSign">${d.sign < 0 ? '−' : '+'}</button>` : ''}
+      <div class="num" style="flex:1"><input id="liveVal" inputmode="numeric" placeholder="0" value="${esc(d.v)}" autocomplete="off" enterkeyhint="send"></div></div>`;
+    if(g.type === 'phase10'){ const ph = Math.min(phaseOf(g, p.key), 10); extra = `<label class="chk" style="margin-top:10px"><input type="checkbox" id="liveX-ph" ${d.x.ph ? 'checked' : ''}> <span>J’ai réussi ma phase ${ph}<small class="hint" style="display:block;margin:2px 0 0">${esc(PHASES[ph - 1])}</small></span></label>`; }
+    if(g.type === 'skyjo') extra = `<label class="chk" style="margin-top:10px"><input type="checkbox" id="liveX-fin" ${d.x.fin ? 'checked' : ''}> J’ai retourné toutes mes cartes en premier</label><p class="hint" style="margin:4px 0 0">Inscrivez le total de vos cartes, sans doubler : la feuille s’en occupe.</p>`;
+    if(g.type === 'train') extra = `<label class="chk" style="margin-top:10px"><input type="checkbox" id="liveX-out" ${d.x.out ? 'checked' : ''}> J’ai posé tous mes dominos</label><p class="hint" style="margin:4px 0 0">Sinon, inscrivez le total des points de vos dominos (double ${mtDouble(g, g.rounds.length)} pour cette manche).</p>`;
+  }
+  const status = mine ? `<p class="hint" style="margin:10px 0 0;color:var(--ok)">✓ Reçu par la feuille : <b>${mine.out ? 'tous vos dominos posés' : fmt(mine.v)}</b>. Vous pouvez corriger et renvoyer.</p>`
+    : L.sent && L.sent.key === key ? `<p class="hint" style="margin:10px 0 0">Envoyé : en attente de la feuille…</p>` : '';
+  return `<div class="card" style="padding:14px;margin-bottom:14px"><div class="row" style="justify-content:space-between;align-items:center"><b>${title}</b>${change}</div>
+    <p class="hint" style="margin:2px 0 10px">${esc(p.name)}</p>${field}${extra}
+    <button class="btn primary block" style="margin-top:12px" data-a="liveSendScore" ${L.sending ? 'disabled' : ''}>${L.sending ? 'Envoi…' : mine ? 'Renvoyer' : 'Envoyer'}</button>${status}</div>`;
+}
+function liveYzOpen(cat){
+  const L = S.live, g = L.g, c = YZ_ALL.find(x => x.id === cat), sc = yzState(g).sc[L.me] || {};
+  M = {liveYz: {cat, yb: false}};
+  let body;
+  if(c.face) body = `<p class="hint" style="margin:0 0 8px">Combien de dés montrent ${c.face} ?</p><div class="yzpick">${[0,1,2,3,4,5].map(n => `<button data-a="liveYzSet" data-v="${n * c.face}">${n} dé${n > 1 ? 's' : ''}<b>${n * c.face}</b></button>`).join('')}</div>`;
+  else if(YZ_FIXED[cat]) body = `<div class="yzpick"><button data-a="liveYzSet" data-v="${YZ_FIXED[cat]}">Réussi<b>${YZ_FIXED[cat]}</b></button><button data-a="liveYzSet" data-v="0">Rayé<b>0</b></button></div>`;
+  else body = `<p class="hint" style="margin:0 0 8px">Total des dés</p><div class="row"><div class="num" style="flex:1"><input id="liveYzVal" inputmode="numeric" placeholder="0"></div><button class="btn primary" data-a="liveYzInput">Inscrire</button></div>
+    ${cat !== 'chance' ? `<div class="yzpick" style="margin-top:10px"><button data-a="liveYzSet" data-v="0">Rayé<b>0</b></button></div>` : ''}`;
+  if(sc.yz === 50 && cat !== 'yz') body += `<label class="chk" style="margin-top:12px"><input type="checkbox" id="liveYb"> C’est un Yahtzee de plus (+100)</label>`;
+  openModal(`<div class="mhead"><h2>${esc(c.name)}</h2><button class="icon-btn" data-a="close">✕</button></div><div class="mbody">${body}</div>`);
+}
+async function liveYzSend(v){
+  const L = S.live, cat = M.liveYz.cat, yb = !!($('liveYb') && $('liveYb').checked); closeModal();
+  try{ await liveSendMsg({t: 'yz', pk: L.me, cat, v, yb}); toast('Envoyé ✓ : la feuille va l’inscrire'); }
+  catch(e){ toast(e.status === 404 ? 'Le partage est terminé' : 'Envoi impossible : vérifiez Internet'); }
+}
+/* Suivi : renseignements propres à certains jeux */
+function liveExtraHtml(g){
+  if(g.type === 'phase10') return `<h2 class="sec">Progression des phases</h2><div class="card list">${g.players.map(p => { const ph = phaseOf(g, p.key), done = Math.min(ph - 1, 10);
+    return `<div class="li" style="display:block"><div class="row" style="justify-content:space-between"><b>${esc(p.name)}</b><span class="hint" style="margin:0">${ph > 10 ? '🏆 Les 10 phases réussies' : 'Phase ' + ph + ' sur 10'}</span></div>
+      <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin:6px 0 4px">${Array.from({length: 10}, (_, i) => `<span style="height:9px;border-radius:3px;background:${i < done ? p.color : i === done ? 'color-mix(in srgb,' + p.color + ' 35%,transparent)' : 'var(--line)'}"></span>`).join('')}</div>
+      ${ph <= 10 ? `<div class="hint" style="margin:0">${esc(PHASES[ph - 1])}</div>` : ''}</div>`; }).join('')}</div>
+    <p class="hint" style="margin:6px 2px 0">Au Phase 10, la phase compte avant les points : le plus avancé gagne, les points départagent.</p>`;
+  if(g.type === 'farkle'){ const f = g.opts.f || FD, t = totals(g);
+    return `<h2 class="sec">Où en sont les joueurs</h2><div class="card list">${g.players.map(p => { const v = t[p.key], inn = g.turns.some(x => x.pk === p.key && x.pts > 0);
+      return `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">${!inn ? `⏳ Pas encore entré : il faut ${fmt(f.entry)} en un tour` : v >= f.penFrom ? `⚠︎ Zone de pénalité (${fmt(f.penFrom)} et plus) · reste ${fmt(f.target - v)} exactement` : `✓ Entré · reste ${fmt(f.target - v)}`}</div></div><div class="t num-t">${fmt(v)}</div></div>`; }).join('')}</div>`; }
+  if(g.type === 'train' && !g.finished && g.rounds.length < g.opts.rounds) return `<p style="margin:12px 2px 0">🚂 Manche ${g.rounds.length + 1} sur ${g.opts.rounds} · on commence avec le <b>double ${mtDouble(g, g.rounds.length)}</b>.</p>`;
+  if(g.type === 'acquire' && g.aq){ const ch = aqChains(g).filter(c => (g.aq.size[c.id] || 0) >= 2);
+    return ch.length ? `<h2 class="sec">Chaînes sur le plateau</h2><div class="card list">${ch.map(c => `<div class="li"><span style="width:14px;height:14px;border-radius:4px;background:${c.color};flex:none"></span><div class="grow"><div class="t">${esc(c.name)}</div><div class="s">${g.aq.size[c.id]} hôtels${g.aq.size[c.id] >= 11 ? ' · sûre' : ''}</div></div><div class="t num-t">${aqMoney(aqPrice(c.tier, g.aq.size[c.id]))}</div></div>`).join('')}</div><p class="hint" style="margin:6px 2px 0">Prix d’une action. Les actions de chacun restent secrètes.</p>` : ''; }
+  return '';
 }
 /* ====================== Rapports (GitHub Issues) ====================== */
 const FB_REPO = 'rogerotisqc-spec/pointage';
@@ -3493,6 +3682,14 @@ const A = {
   liveStart: () => liveStart(),
   liveShow: () => { closeModal(); liveShow(); },
   liveSend: () => liveSend(),
+  liveOpenInbox: () => liveOpenInbox(),
+  liveMe: (el, e) => { if(e) e.preventDefault(); liveMeSet(el.dataset.k); },
+  liveSign: () => { const L = S.live, d = liveDraft(L, liveRoundKey(L.g)); d.sign = d.sign < 0 ? 1 : -1; render(); },
+  liveWz: el => { const L = S.live, d = liveDraft(L, liveRoundKey(L.g)); d.n = Math.max(0, Math.min(L.g.rounds.length + 1, (d.n || 0) + Number(el.dataset.d))); render(); },
+  liveSendScore: () => liveSendScore(),
+  liveYzCat: el => liveYzOpen(el.dataset.c),
+  liveYzSet: el => liveYzSend(Number(el.dataset.v)),
+  liveYzInput: () => liveYzSend(Math.max(0, Math.min(30, num($('liveYzVal').value)))),
   liveStop: () => liveStop(),
   liveQuit: () => { clearTimeout(LIVE_PT); S = {view: 'home', stack: []}; try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){} render(true); },
   ask: el => { closeModal(); const g = S.view === 'sheet' ? curGame() : null; const t = (el && el.dataset && el.dataset.t) || (g ? g.type : (S.view === 'rules' ? S.rulesType : null)); go('ask', {askGame: t || null, askGid: g ? g.id : null, askRecap: null, askRes: null, askQ: '', askAi: null, askHist: [], askNote: '', askBusy: false}); },
@@ -3633,6 +3830,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => {
   const t = e.target;
+  if(t.id === 'liveVal' && S.live && S.live.g){ liveDraft(S.live, liveRoundKey(S.live.g)).v = t.value; }
   if(t.id === 'mtManual' && M && M.mt){ const x = M.mt.v[M.mt.sel]; x.manual = t.value.trim() === '' ? null : Math.max(0, num(t.value)); const b = document.querySelector('.mtrow.on .mttot'); if(b) b.textContent = mtTotal(curGame(), x); }
   if(t.dataset && t.dataset.trrack && M && M.trEnd){ const g = curGame(), m = M.trEnd; m.rack[t.dataset.trrack] = Math.max(0, num(t.value)); const el = $('trEndTot'); if(el && m.who !== '') el.textContent = '+' + (25 + g.players.filter(p => p.key !== m.who).reduce((a, p) => a + (m.rack[p.key] || 0), 0)); }
   if(t.dataset && t.dataset.aqcash && M && M.aqf){ const g = curGame(); M.aqf.cash[t.dataset.aqcash] = num(t.value); const c = aqFinalCalc(g, M.aqf.cash); g.players.forEach(p => { const el = $('aqt-' + p.key); if(el) el.textContent = aqMoney(c.total[p.key]); }); }
@@ -3644,6 +3842,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const t = e.target;
+  if(t.id && t.id.startsWith('liveX-') && S.live && S.live.g){ liveDraft(S.live, liveRoundKey(S.live.g)).x[t.id.slice(6)] = t.checked; render(); }
   if(t.name === 'sbw') sbUpdate();
   if(t.name === 'unow') unoUpdate();
   if(t.dataset && t.dataset.aqcash && M && M.aqf) aqFinalRender();
@@ -3661,6 +3860,8 @@ document.addEventListener('keydown', e => {
   else if(id === 'newPlayer'){ e.preventDefault(); A.addPlayer(); }
   else if(id === 'askQ'){ e.preventDefault(); A.askGo(); }
   else if(id === 'yzval'){ e.preventDefault(); A.yzSetInput(); }
+  else if(id === 'liveVal'){ e.preventDefault(); e.target.blur(); liveSendScore(); }
+  else if(id === 'liveYzVal'){ e.preventDefault(); A.liveYzInput(); }
   else if(id === 'pr'){ e.preventDefault(); A.promptOk(); }
   else if(id === 'fk-man'){ e.preventDefault(); A.fkAddMan(); }
   else if(id === 'scrWord'){ e.preventDefault(); clearTimeout(window.__scrT); render(); }
@@ -3723,6 +3924,7 @@ let tt; function toast(msg){ const t = $('toast'); t.textContent = msg; t.classL
 render(true);
 applyOrient();
 { const lp = liveParse(location.hash); if(lp) liveJoin(lp); }
+setTimeout(liveInboxLoop, 2000);
 window.addEventListener('hashchange', () => { const lp = liveParse(location.hash); if(lp && !(S.live && S.live.id === lp.id)) liveJoin(lp); });
 setTimeout(() => fbFlush(true), 2500);
 // vérification discrète, au plus une fois par jour

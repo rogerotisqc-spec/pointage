@@ -243,6 +243,8 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
     const send = (status, o) => r.fulfill({ status, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }, body: JSON.stringify(o) });
     if (act === 'get') return !row ? send(404, { gone: true }) : j.ver === row.ver ? send(200, { ver: row.ver, same: true }) : send(200, row);
     if (act === 'del') { delete LIVE[j.id]; return send(200, { ok: true }); }
+    if (act === 'send') { (LIVE.msgs = LIVE.msgs || []).push({ gid: j.id, seq: LIVE.msgs.length + 1, iv: j.iv, data: j.data }); return send(200, { ok: true }); }
+    if (act === 'inbox') return send(200, { msgs: (LIVE.msgs || []).filter(m => m.gid === j.id && m.seq > (j.after || 0)).map(m => ({ seq: m.seq, iv: m.iv, data: m.data })) });
     LIVE[j.id] = { ver: (row ? row.ver : 0) + 1, iv: j.iv, data: j.data }; return send(200, { ok: true, ver: LIVE[j.id].ver }); };
   await p.route('**/pointage-ia.rogerotisqc.workers.dev/**', r => r.request().method() === 'OPTIONS'
     ? r.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' } })
@@ -268,7 +270,18 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   { const link = await p.evaluate(() => liveLink(curGame().share)); const v = await ctx.newPage(); v.on('pageerror', e => errs.push(e.message));
     await v.route('**/pointage-ia.rogerotisqc.workers.dev/**', r => r.request().method() === 'OPTIONS' ? r.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' } }) : /\/live\//.test(r.request().url()) ? liveRoute(r) : r.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }, body: '{"ok":true,"ready":true,"tts":true}' }));
     await v.goto(APP + link.slice(link.indexOf('#'))); await v.waitForFunction(() => S.live && S.live.g); await v.waitForTimeout(300);
-    await v.screenshot({ path: path.join(OUT, 'direct-suivi.png') }); await v.close(); }
+    await v.screenshot({ path: path.join(OUT, 'direct-suivi.png') });
+    // Marie inscrit sa mise sur son téléphone, puis Léa
+    await v.click('[data-a=liveMe] >> text=Marie'); await v.click('[data-a=liveWz][data-d="1"]'); await v.waitForTimeout(200);
+    await v.screenshot({ path: path.join(OUT, 'direct-saisie.png') }); await v.click('[data-a=liveSendScore]'); await v.waitForTimeout(300);
+    await v.evaluate(() => { try { localStorage.removeItem('pointage.liveme.' + S.live.id); } catch (e) {} S.live.me = null; render(); });
+    await v.click('[data-a=liveMe] >> text=Léa'); await v.click('[data-a=liveSendScore]'); await v.waitForTimeout(300);
+    await v.close(); }
+  await tap('#modal [data-a=close]');
+  await p.waitForFunction(() => { const g = curGame(); return g.inbox && Object.keys(g.inbox.e).length === 2; }, null, { timeout: 15000 });
+  await p.evaluate(() => render(true)); await shot('direct-recus');
+  await p.evaluate(() => { delete curGame().inbox; save(); render(); });
+  await tap('#livebar [data-a=liveShow]');
   await tap('#modal [data-a=close]'); await p.evaluate(() => { delete curGame().share; save(); render(); });
   await p.evaluate(() => { const g = db.games.filter(x => x.type === 'farkle' && !x.finished).pop(); tab('home'); go('sheet', { gameId: g.id }); });
 

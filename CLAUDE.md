@@ -41,7 +41,10 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   chiffrée AES-GCM (clé dans le lien du code QR, après #suivre=ID.CLÉ, jamais envoyée au serveur) ; base D1 liée au
   relais sous le nom DB (table live, effacée après 3 jours) ; les autres suivent en lecture seule (web app, sondage 3 s).
   g.share = {id, tok, k} reste sur le téléphone de l'hôte (jamais dans liveSnap). Générateur QR : qrcode-generator (MIT).
-  Étape B prévue : chacun saisit son propre pointage.
+  Étape B (liveEntryHtml, liveSendScore, liveInboxLoop, liveApply, liveOpenInbox) : chaque joueur envoie ses points
+  chiffrés (/live/send, table livemsg) ; l'hôte les lit (/live/inbox, toutes les 3 s), les garde dans g.inbox (clé
+  liveRoundKey) et préremplit sa fenêtre de saisie ; l'hôte enregistre toujours. Yahtzee : case inscrite à l'arrivée.
+  Phase 10 : « phase réussie » appliquée quand la manche est enregistrée (liveInboxCheck). Jeux : LIVE_ENTRY.
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 

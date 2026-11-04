@@ -1,6 +1,6 @@
 {
- "version": "5.5",
- "notes": "Nouveau : Partie en direct ! Menu ⋮ → Partager la partie en direct : les autres joueurs scannent le code QR et suivent les pointages sur leur téléphone.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.5.apk",
- "size": 181081
+ "version": "5.6",
+ "notes": "Partie en direct : chacun peut maintenant inscrire ses propres points sur son téléphone. Le suivi montre aussi les phases (Phase 10), qui est entré (jeu de dés), les mises (Wizard).",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.6.apk",
+ "size": 185177
 }

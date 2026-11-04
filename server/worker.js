@@ -147,7 +147,10 @@ async function liveInit(db) {
   if (LIVE_READY) return;
   await db.batch([
     db.prepare('CREATE TABLE IF NOT EXISTS live (id TEXT PRIMARY KEY, tokh TEXT NOT NULL, ver INTEGER NOT NULL, iv TEXT NOT NULL, data TEXT NOT NULL, upd INTEGER NOT NULL)'),
-    db.prepare('CREATE INDEX IF NOT EXISTS live_upd ON live (upd)')
+    db.prepare('CREATE INDEX IF NOT EXISTS live_upd ON live (upd)'),
+    // Boîte de réception : les points envoyés par les autres téléphones (chiffrés), lus par le téléphone qui tient la feuille
+    db.prepare('CREATE TABLE IF NOT EXISTS livemsg (seq INTEGER PRIMARY KEY AUTOINCREMENT, gid TEXT NOT NULL, iv TEXT NOT NULL, data TEXT NOT NULL, upd INTEGER NOT NULL)'),
+    db.prepare('CREATE INDEX IF NOT EXISTS livemsg_gid ON livemsg (gid, seq)')
   ]);
   LIVE_READY = true;
 }
@@ -166,19 +169,32 @@ async function live(env, action, b) {
     if (+b.ver === row.ver) return json({ ver: row.ver, same: true });
     return json({ ver: row.ver, iv: row.iv, data: row.data });
   }
+  if (action === 'send') {
+    const iv = String(b.iv || ''), data = String(b.data || '');
+    if (!iv || !data || data.length > 4000) return json({ error: 'Message trop gros ou vide' }, 400);
+    const ok = await env.DB.prepare('SELECT ver FROM live WHERE id = ?').bind(id).first();
+    if (!ok) return json({ gone: true }, 404);
+    await env.DB.prepare('INSERT INTO livemsg (gid, iv, data, upd) VALUES (?, ?, ?, ?)').bind(id, iv, data, Date.now()).run();
+    return json({ ok: true });
+  }
   if (!/^[A-Za-z0-9_-]{22}$/.test(tok)) return json({ error: 'Accès refusé' }, 403);
   const h = await sha(tok);
   const row = await env.DB.prepare('SELECT tokh, ver FROM live WHERE id = ?').bind(id).first();
   if (row && row.tokh !== h) return json({ error: 'Accès refusé' }, 403);
   if (action === 'del') {
-    if (row) await env.DB.prepare('DELETE FROM live WHERE id = ?').bind(id).run();
+    if (row) await env.DB.batch([env.DB.prepare('DELETE FROM live WHERE id = ?').bind(id), env.DB.prepare('DELETE FROM livemsg WHERE gid = ?').bind(id)]);
     return json({ ok: true });
+  }
+  if (action === 'inbox') {
+    if (!row) return json({ gone: true }, 404);
+    const r = await env.DB.prepare('SELECT seq, iv, data FROM livemsg WHERE gid = ? AND seq > ? ORDER BY seq LIMIT 50').bind(id, +b.after || 0).all();
+    return json({ msgs: r.results || [] });
   }
   const iv = String(b.iv || ''), data = String(b.data || '');
   if (!iv || !data || data.length > LIVE_MAX) return json({ error: 'Partie trop grosse ou vide' }, 400);
   const ver = (row ? row.ver : 0) + 1, now = Date.now();
   await env.DB.prepare('INSERT OR REPLACE INTO live (id, tokh, ver, iv, data, upd) VALUES (?, ?, ?, ?, ?, ?)').bind(id, h, ver, iv, data, now).run();
-  if (Math.random() < 0.05) await env.DB.prepare('DELETE FROM live WHERE upd < ?').bind(now - LIVE_TTL).run();
+  if (Math.random() < 0.05) await env.DB.batch([env.DB.prepare('DELETE FROM live WHERE upd < ?').bind(now - LIVE_TTL), env.DB.prepare('DELETE FROM livemsg WHERE upd < ?').bind(now - LIVE_TTL)]);
   return json({ ok: true, ver });
 }
 
@@ -203,7 +219,7 @@ export default {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(request.url);
     if (request.method === 'GET') return json({ ok: true, service: 'pointage-ia', ready: !!(env.ANTHROPIC_API_KEY && env.APP_TOKEN), tts: !!env.GOOGLE_TTS_KEY, live: !!env.DB });
-    const lv = url.pathname.match(/^\/live\/(get|put|del)$/);
+    const lv = url.pathname.match(/^\/live\/(get|put|del|send|inbox)$/);
     if (request.method !== 'POST' || (!lv && url.pathname !== '/ask' && url.pathname !== '/tts')) return json({ error: 'Adresse inconnue' }, 404);
     if (!env.APP_TOKEN || (!lv && !env.ANTHROPIC_API_KEY)) return json({ error: 'Relais pas encore configuré' }, 503);
     if (request.headers.get('X-App-Token') !== env.APP_TOKEN) return json({ error: 'Accès refusé' }, 403);
