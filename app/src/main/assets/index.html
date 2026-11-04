@@ -1331,9 +1331,12 @@ function mtRender(){
 }
 function mtSave(){
   const g = curGame(), m = M.mt, s = {}, tiles = {};
+  const empty = pk => { const x = m.v[pk]; return !x.out && x.manual == null && !x.tiles.length; };
+  if(m.idx == null && liveWarn(liveMissing(g, empty))) return;
   const outs = g.players.filter(p => m.v[p.key].out);
   g.players.forEach(p => { const x = m.v[p.key]; s[p.key] = mtTotal(g, x); if(x.tiles.length && !x.out && x.manual == null) tiles[p.key] = x.tiles; });
   const rd = {s, m: {w: outs.length ? outs[0].key : null, tiles}};
+  if(g.share && m.idx == null){ const miss = g.players.filter(p => empty(p.key)).map(p => p.key); if(miss.length) rd.m.miss = miss; }
   if(m.idx != null) g.rounds[m.idx] = rd; else g.rounds.push(rd);
   closeModal(); save(); render();
   const e = endInfo(g); toast(e ? '🏁 ' + e : `Prochaine manche : double ${mtDouble(g, g.rounds.length)}`);
@@ -2414,6 +2417,8 @@ function f7Update(pk){
 }
 function saveRound(){
   const g = curGame(); const rd = {s:{}, m:{}};
+  if(M.round === null && liveWarn(liveMissing(g, pk => { const i = $('in-' + pk); return !!i && i.value.trim() === ''; }))) return;
+  const liveMiss = g.share && M.round === null ? g.players.filter(p => { const i = $('in-' + p.key); return i && i.value.trim() === ''; }).map(p => p.key) : [];
   if(g.type === 'millebornes'){
     g.players.forEach(p => { const m = Object.assign({}, M.mb[p.key]); m.km = mbKm(m); rd.m[p.key] = m; rd.s[p.key] = mbPts(m, mbOthers(p.key)); });
   } else if(g.type === 'uno' && g.opts.mode === 'official'){
@@ -2438,6 +2443,7 @@ function saveRound(){
         if(v > 0 && !lowestStrict){ rd.s[fin] = v * 2; rd.m.doubled = true; toast('Pointage doublé pour ' + g.players.find(p => p.key === fin).name + ' : ' + v + ' × 2 = ' + (v * 2)); } }
     }
   }
+  if(liveMiss.length){ rd.m = rd.m || {}; rd.m.miss = liveMiss; }
   if(M.round !== null) g.rounds[M.round] = rd; else g.rounds.push(rd);
   const isNew = M.round === null;
   g.updated = Date.now(); save(); closeModal(); render();
@@ -3142,7 +3148,7 @@ function liveSnap(g){
   const clean = p => { delete p.rid; };
   c.players.forEach(clean); if(c.members) Object.values(c.members).forEach(ms => ms.forEach(clean));
   if(c.aq) delete c.aq.sh;   // Acquire : les actions de chacun restent secrètes
-  return {v: 1, g: c, t: Date.now()};
+  return {v: 1, g: c, t: Date.now(), host: g.share && g.share.me && g.share.me !== '-' ? g.share.me : null};
 }
 /* --- Côté hôte (le téléphone qui tient la feuille) --- */
 let LIVE_T = null, LIVE_BUSY = false, LIVE_AGAIN = null;
@@ -3186,8 +3192,11 @@ function liveShow(){
   openModal(`<div class="mhead"><h2>📡 Partie en direct</h2><button class="icon-btn" data-a="close">✕</button></div>
     <div class="mbody" style="text-align:center">
       <div style="background:#fff;padding:12px;border-radius:16px;max-width:300px;margin:0 auto">${qrSvg(url)}</div>
-      <p style="margin:14px 4px 6px;line-height:1.45">Les autres joueurs <b>scannent ce code</b> avec l’appareil photo de leur téléphone : ils suivent les pointages en direct, sans pouvoir les modifier.</p>
+      <p style="margin:14px 4px 6px;line-height:1.45">Les autres joueurs <b>scannent ce code</b> avec l’appareil photo de leur téléphone : ils suivent les pointages en direct${liveEntryOk(g) ? ' et peuvent envoyer leurs propres points. Ce téléphone garde le dernier mot.' : ', sans pouvoir les modifier.'}</p>
       <p class="hint" style="margin:0 4px">Pas besoin d’avoir l’app : la partie s’ouvre dans le navigateur. Seule cette partie est partagée, chiffrée de bout en bout.</p>
+      ${liveEntryOk(g) ? `<div style="text-align:left;margin-top:14px"><b>Qui tient ce téléphone ?</b><p class="hint" style="margin:2px 0 8px">Les autres inscrivent leurs points sur leur téléphone ; vous inscrivez les vôtres ici, quand les leurs sont arrivés.</p>
+        <div class="chips">${g.players.map(p => `<button class="chip ${g.share.me === p.key ? 'on' : ''}" style="min-height:40px;padding:0 12px" data-a="liveHostMe" data-k="${p.key}">${esc(p.name)}</button>`).join('')}
+        <button class="chip ${g.share.me === '-' ? 'on' : ''}" style="min-height:40px;padding:0 12px" data-a="liveHostMe" data-k="-">Je ne joue pas</button></div></div>` : ''}
     </div>
     <div class="mfoot" style="flex-wrap:wrap"><button class="btn danger" data-a="liveStop">Arrêter le partage</button><button class="btn" data-a="liveSend">Envoyer le lien</button><button class="btn primary" data-a="close">OK</button></div>`);
 }
@@ -3224,7 +3233,7 @@ async function livePoll(){
     if(S.live !== L) return;
     if(!d.same){
       let snap; try{ snap = await liveDec(L.k, d.iv, d.data); }catch(e){ L.err = 'Ce lien n’est pas valide (code QR incomplet ?)'; L.gone = true; return render(); }
-      L.g = snap.g; L.g.id = 'live:' + L.id; L.ver = d.ver; S.gameId = L.g.id;
+      L.g = snap.g; L.g.id = 'live:' + L.id; L.ver = d.ver; S.gameId = L.g.id; L.host = snap.host || null;
       L.t = Date.now(); L.err = '';
       if(M || (document.activeElement && document.activeElement.id === 'liveVal')) L.later = true; else render();
       return again();
@@ -3336,7 +3345,7 @@ function liveApply(g, m){
       for(let i = 1; i <= g.players.length; i++){ const j = (st.cur + i) % g.players.length; if(yzParts(g, g.players[j].key).filled < 13){ st.cur = j; break; } }
     g.updated = Date.now(); toast(`📥 ${p.name} : ${v} au ${c.name}`); return;
   }
-  const key = liveRoundKey(g); if(m.key !== key) return;
+  const key = liveRoundKey(g); if(m.key !== key) return liveLate(g, m, p);
   if(!g.inbox || g.inbox.key !== key) g.inbox = {key, e: {}};
   const e = {v: num(m.v), t: Date.now()};
   if(m.ph){ e.ph = true; e.p10 = m.p10; } if(m.fin) e.fin = true; if(m.out){ e.out = true; e.v = 0; }
@@ -3348,23 +3357,54 @@ function liveApply(g, m){
 // Quand tous les joueurs ont envoyé : la fenêtre de saisie s’ouvre, déjà remplie, sur le téléphone qui tient la feuille
 function liveInboxAuto(g){
   const ib = liveInboxNow(g); if(!ib || M || S.view !== 'sheet' || curGame() !== g) return;
-  if(g.players.every(p => ib.e[p.key]) && ib.auto !== ib.key){ ib.auto = ib.key; liveOpenInbox(); toast('📥 Tous les joueurs ont envoyé : vérifiez puis enregistrez'); }
+  const others = g.players.filter(p => p.key !== g.share.me);
+  if(others.length && others.every(p => ib.e[p.key]) && ib.auto !== ib.key){ ib.auto = ib.key; liveOpenInbox(true);
+    toast(g.share.me && g.players.some(p => p.key === g.share.me) && !ib.e[g.share.me] ? '📥 Tous les autres ont envoyé : inscrivez vos points, puis Enregistrer' : '📥 Tous les joueurs ont envoyé : vérifiez puis enregistrez'); }
 }
-function liveOpenInbox(){
+function liveOpenInbox(focus){
   const g = curGame(), ib = liveInboxNow(g); if(!ib) return;
+  const me = g.share && g.share.me;
   if(g.type === 'wizard'){ const ph = g.pend ? 'tricks' : 'bid'; wzOpen(ph, null);
     Object.keys(ib.e).forEach(pk => { M.wz[ph][pk] = Math.max(0, Math.min(M.wz.cards, ib.e[pk].v)); }); wzRender(); return; }
   if(g.type === 'train'){ mtOpen(null);
-    Object.keys(ib.e).forEach(pk => { const e = ib.e[pk], x = M.mt.v[pk]; if(!x) return; if(e.out){ x.out = true; x.manual = null; } else { x.out = false; x.manual = Math.max(0, e.v); } }); mtRender(); return; }
+    Object.keys(ib.e).forEach(pk => { const e = ib.e[pk], x = M.mt.v[pk]; if(!x) return; if(e.out){ x.out = true; x.manual = null; } else { x.out = false; x.manual = Math.max(0, e.v); } });
+    if(me && M.mt.v[me] && !ib.e[me]) M.mt.sel = me; mtRender(); return; }
   openRound(null);
   Object.keys(ib.e).forEach(pk => { const e = ib.e[pk], i = $('in-' + pk); if(i) i.value = e.v;
     if(e.fin){ const r = document.querySelector(`input[name=skfin][value="${pk}"]`); if(r) r.checked = true; } });
+  const mine = me && !ib.e[me] && $('in-' + me); if(focus && mine) setTimeout(() => { try{ mine.focus(); mine.scrollIntoView({block: 'center'}); }catch(e){} }, 250);
 }
 function liveInboxHtml(g){
   const ib = liveInboxNow(g); if(!ib || g.type === 'yahtzee') return '';
-  const got = g.players.filter(p => ib.e[p.key]), wait = g.players.filter(p => !ib.e[p.key]);
+  const me = g.share && g.share.me, got = g.players.filter(p => ib.e[p.key]), wait = g.players.filter(p => !ib.e[p.key] && p.key !== me);
   const what = g.type === 'wizard' ? (ib.key.endsWith('b') ? 'mises reçues' : 'plis reçus') : 'points reçus';
-  return `<div class="livebar inbox" id="liveinbox"><span>📥</span><span class="grow">${GAMES[g.type].round} ${g.rounds.length + 1} · ${what} : ${got.map(p => esc(p.name) + ' ' + (ib.e[p.key].out ? '🏁' : fmt(ib.e[p.key].v)) + (ib.e[p.key].ph ? ' ✓' : '')).join(', ')}${wait.length ? `<small>En attente : ${wait.map(p => esc(p.name)).join(', ')}</small>` : ''}</span><button class="btn sm primary" data-a="liveOpenInbox">Inscrire</button></div>`;
+  return `<div class="livebar inbox" id="liveinbox"><span>📥</span><span class="grow">${GAMES[g.type].round} ${g.rounds.length + 1} · ${what} : ${got.map(p => esc(p.name) + ' ' + (ib.e[p.key].out ? '🏁' : fmt(ib.e[p.key].v)) + (ib.e[p.key].ph ? ' ✓' : '')).join(', ')}${wait.length ? `<small>En attente : ${wait.map(p => esc(p.name)).join(', ')}</small>` : `<small>${me && g.players.some(p => p.key === me) && !ib.e[me] ? 'Tous les autres ont envoyé : à vous d’inscrire vos points.' : 'Tout le monde a envoyé.'}</small>`}</span><button class="btn sm primary" data-a="liveOpenInbox">Inscrire</button></div>`;
+}
+// Avant d’enregistrer : prévenir s’il manque des points (une fois ; on touche Enregistrer encore pour passer outre)
+function liveMissing(g, isEmpty){
+  const ib = g && g.share ? liveInboxNow(g) : null; if(!ib) return [];
+  return g.players.filter(p => p.key !== g.share.me && !ib.e[p.key] && isEmpty(p.key)).map(p => p.name);
+}
+function liveWarn(names){
+  if(!names.length || !M || M.liveWarned) return false;
+  M.liveWarned = true;
+  const f = document.querySelector('#modal .mfoot');
+  if(f){ f.style.flexWrap = 'wrap'; const el = document.createElement('p'); el.className = 'hint neg'; el.style.cssText = 'flex-basis:100%;margin:0 0 8px;text-align:left';
+    el.textContent = `⚠︎ ${names.join(', ')} ${names.length > 1 ? 'n’ont' : 'n’a'} pas encore envoyé ${names.length > 1 ? 'leurs' : 'ses'} points. Touchez Enregistrer encore pour enregistrer quand même.`; f.prepend(el); }
+  return true;
+}
+// Points arrivés après l’enregistrement de la manche : ajoutés si la case était restée vide
+function liveLate(g, m, p){
+  if(g.type === 'wizard' || !g.rounds.length || String(g.rounds.length - 1) !== m.key) return;
+  const k = g.rounds.length - 1, rd = g.rounds[k], R = GAMES[g.type].round.toLowerCase(), miss = (rd.m && rd.m.miss) || [];
+  if(!miss.includes(m.pk)){ toast(`📥 ${p.name} a envoyé ses points après l’enregistrement de la ${R} ${k + 1} : touchez-la pour corriger au besoin`); return; }
+  const v = m.out ? 0 : num(m.v);
+  rd.s[m.pk] = v; if(rd.m.raw) rd.m.raw[m.pk] = v;
+  if(g.type === 'train' && m.out && !rd.m.w) rd.m.w = m.pk;
+  if(g.type === 'skyjo' && m.fin && !rd.m.fin) rd.m.fin = m.pk;
+  if(g.type === 'phase10' && m.ph && phaseOf(g, m.pk) === m.p10) g.ph[m.pk] = Math.min(11, m.p10 + 1);
+  rd.m.miss = miss.filter(x => x !== m.pk); if(!rd.m.miss.length) delete rd.m.miss;
+  g.updated = Date.now(); toast(`📥 ${p.name} : ${fmt(v)} point${Math.abs(v) > 1 ? 's' : ''}, ajouté${Math.abs(v) > 1 ? 's' : ''} à la ${R} ${k + 1}`);
 }
 /* Joueur : choix de son nom, puis envoi de ses points */
 function liveMeKey(L){ return 'pointage.liveme.' + L.id; }
@@ -3392,8 +3432,8 @@ async function liveSendScore(){
 }
 function liveEntryHtml(g){
   const L = S.live; if(!liveEntryOk(g) || L.gone) return '';
-  if(!L.me) return `<div class="card" style="padding:14px;margin-bottom:14px"><b>Qui êtes-vous ?</b><p class="hint" style="margin:2px 0 10px">Touchez votre nom pour inscrire vos propres points.</p>
-    <div class="chips">${g.players.map(p => `<button class="chip" style="min-height:42px;padding:0 14px" data-a="liveMe" data-k="${p.key}"><span class="av" style="background:${p.color};width:24px;height:24px;font-size:12px">${initial(p.name)}</span> ${esc(p.name)}</button>`).join('')}
+  if(!L.me) return `<div class="card" style="padding:14px;margin-bottom:14px"><b>Qui êtes-vous ?</b><p class="hint" style="margin:2px 0 10px">Touchez votre nom pour inscrire vos propres points.${L.host && g.players.find(p => p.key === L.host) ? ' ' + esc(g.players.find(p => p.key === L.host).name) + ' tient la feuille.' : ''}</p>
+    <div class="chips">${g.players.filter(p => p.key !== L.host).map(p => `<button class="chip" style="min-height:42px;padding:0 14px" data-a="liveMe" data-k="${p.key}"><span class="av" style="background:${p.color};width:24px;height:24px;font-size:12px">${initial(p.name)}</span> ${esc(p.name)}</button>`).join('')}
     <button class="chip" style="min-height:42px;padding:0 14px" data-a="liveMe" data-k="-">Je regarde seulement</button></div></div>`;
   if(L.me === '-') return `<p class="hint" style="margin:0 2px 12px"><a href="#" data-a="liveMe" data-k="" style="color:var(--brand)">Inscrire mes propres points</a></p>`;
   const p = g.players.find(x => x.key === L.me); if(!p) return '';
@@ -3625,6 +3665,7 @@ const A = {
   wzOpen: () => { const g = curGame(); wzOpen(g.pend ? 'tricks' : 'bid', null); },
   wzStep: el => { const w = M.wz, f = el.dataset.f; w[f][el.dataset.k] = Math.max(0, Math.min(w.cards, w[f][el.dataset.k] + Number(el.dataset.d))); wzRender(); },
   wzSave: () => { const g = curGame(), w = M.wz, cards = w.cards;
+    if(w.phase !== 'edit' && liveWarn(liveMissing(g, () => true))) return;
     const sb = Object.values(w.bid).reduce((a,b) => a + b, 0), st = Object.values(w.tricks).reduce((a,b) => a + b, 0);
     if(w.phase !== 'tricks' && g.opts.noEven && sb === cards) return toast('Règle maison : le total des mises ne peut pas égaler ' + cards);
     if(w.phase === 'bid'){ g.pend = {bid: Object.assign({}, w.bid)}; g.updated = Date.now(); save(); closeModal(); render(); toast('Mises enregistrées : à vous de jouer !'); return; }
@@ -3686,7 +3727,8 @@ const A = {
   liveStart: () => liveStart(),
   liveShow: () => { closeModal(); liveShow(); },
   liveSend: () => liveSend(),
-  liveOpenInbox: () => liveOpenInbox(),
+  liveOpenInbox: () => liveOpenInbox(true),
+  liveHostMe: el => { const g = curGame(); if(!g || !g.share) return; g.share.me = el.dataset.k; save(); liveShow(); },
   liveMe: (el, e) => { if(e) e.preventDefault(); liveMeSet(el.dataset.k); },
   liveSign: () => { const L = S.live, d = liveDraft(L, liveRoundKey(L.g)); d.sign = d.sign < 0 ? 1 : -1; render(); },
   liveWz: el => { const L = S.live, d = liveDraft(L, liveRoundKey(L.g)); d.n = Math.max(0, Math.min(L.g.rounds.length + 1, (d.n || 0) + Number(el.dataset.d))); render(); },

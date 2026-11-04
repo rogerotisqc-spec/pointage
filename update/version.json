@@ -1,6 +1,6 @@
 {
- "version": "5.7",
- "notes": "Partie en direct : au Phase 10 et au Uno, celui qui termine la manche coche « J'ai terminé la manche » (0 point), sans rien taper.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.7.apk",
- "size": 185177
+ "version": "5.8",
+ "notes": "Partie en direct : dites qui tient la feuille (fenêtre du code QR), avertissement s'il manque des points, et les points en retard s'ajoutent à la manche.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.8.apk",
+ "size": 189273
 }

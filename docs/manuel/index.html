@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 5.7</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 5.8</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -267,8 +267,9 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
       <p><b>Chacun inscrit ses points sur son téléphone</b> : au Pointage libre, Flip 7, Play Nine, Skyjo, Phase 10, Train mexicain, Wizard, Yahtzee et Uno (règle maison).</p>
       <ol><li>Sur la page de suivi, touchez <b>votre nom</b> (« Qui êtes-vous ? »). Le téléphone s’en souvient ; <span class="ui">Changer</span> permet d’en choisir un autre.</li>
         <li>À la fin de la manche, inscrivez vos points et touchez <span class="ui">Envoyer</span>. Selon le jeu, cochez aussi « J’ai réussi ma phase » (Phase 10), « J’ai retourné toutes mes cartes en premier » (Skyjo) ou « J’ai posé tous mes dominos » (Train). Celui qui termine la manche au Phase 10 ou au Uno coche simplement « J’ai terminé la manche » : 0 point, sans rien taper (au Phase 10, sa phase est aussi réussie). Au Wizard, choisissez votre mise, puis vos plis ; au Yahtzee, touchez la case où inscrire votre lancer.</li>
-        <li>Sur le téléphone qui tient la feuille, une bande <b>📥</b> montre les points reçus et ceux qu’on attend. Quand tout le monde a envoyé, la fenêtre de saisie s’ouvre toute seule, déjà remplie : on vérifie, on complète au besoin, puis <span class="ui">Enregistrer</span>. Le bouton <span class="ui">Inscrire</span> l’ouvre plus tôt, par exemple si l’hôte inscrit les points d’un joueur sans téléphone.</li></ol>
-      <p>C’est toujours le téléphone qui tient la feuille qui enregistre : il garde le dernier mot. Un joueur peut corriger et renvoyer ses points tant que la manche n’est pas enregistrée. Au Yahtzee, la case est inscrite dès qu’elle arrive.</p>
+        <li>Sur le téléphone qui tient la feuille, une bande <b>📥</b> montre les points reçus et ceux qu’on attend. Quand tous les autres ont envoyé, la fenêtre de saisie s’ouvre toute seule, déjà remplie, le curseur dans votre case : inscrivez vos points, vérifiez, puis <span class="ui">Enregistrer</span>. Le bouton <span class="ui">Inscrire</span> l’ouvre plus tôt, par exemple pour inscrire les points d’un joueur sans téléphone.</li></ol>
+      <p><b>Qui tient la feuille ?</b> Dans la fenêtre du code QR, touchez votre nom (ou « Je ne joue pas »). Votre téléphone sait alors qu’il n’a pas à attendre vos points, et votre nom n’est pas offert aux autres joueurs.</p>
+      <p>C’est toujours le téléphone qui tient la feuille qui enregistre : il garde le dernier mot. Un joueur peut corriger et renvoyer ses points tant que la manche n’est pas enregistrée. S’il manque des points au moment d’enregistrer, un avertissement le dit ; touchez <span class="ui">Enregistrer</span> encore pour enregistrer quand même. Les points qui arrivent ensuite sont <b>ajoutés à la manche</b> si la case du joueur était restée vide (un message le confirme) ; sinon, touchez la manche pour corriger. Au Yahtzee, la case est inscrite dès qu’elle arrive.</p>
       <p>Pendant le partage, une bande verte <b>Partie en direct</b> s’affiche sous le titre de la partie ; son bouton <span class="ui">Code QR</span> réaffiche le code pour un joueur qui arrive. <span class="ui">Arrêter le partage</span> coupe l’accès.</p>
       <p><b>Vie privée</b> : seule cette partie est partagée, jamais vos autres parties, vos joueurs, vos statistiques ou vos règles maison. Elle est <b>chiffrée de bout en bout</b> : la clé est dans le code QR et ne passe jamais par le serveur, qui ne voit qu’un texte illisible et l’efface 3 jours plus tard. Le partage demande Internet ; sans connexion, la partie continue normalement et les autres reçoivent les changements au retour d’Internet.</p>
     </div><div class="figs"><figure><img src="img/direct-qr.webp" alt="Code QR de la partie en direct" loading="lazy"><figcaption>Le code QR à faire scanner.</figcaption></figure><figure><img src="img/direct-suivi.webp" alt="Partie suivie en direct" loading="lazy"><figcaption>Ce que voient les autres joueurs.</figcaption></figure><figure><img src="img/direct-saisie.webp" alt="Inscrire ses points" loading="lazy"><figcaption>Un joueur inscrit ses points.</figcaption></figure><figure><img src="img/direct-recus.webp" alt="Points reçus" loading="lazy"><figcaption>Les points reçus, sur la feuille.</figcaption></figure></div></div>
@@ -567,7 +568,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 5.7 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 5.8 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){
