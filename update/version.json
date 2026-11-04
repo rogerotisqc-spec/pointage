@@ -1,6 +1,6 @@
 {
- "version": "5.6",
- "notes": "Partie en direct : chacun peut maintenant inscrire ses propres points sur son téléphone. Le suivi montre aussi les phases (Phase 10), qui est entré (jeu de dés), les mises (Wizard).",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.6.apk",
+ "version": "5.7",
+ "notes": "Partie en direct : au Phase 10 et au Uno, celui qui termine la manche coche « J'ai terminé la manche » (0 point), sans rien taper.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-5.7.apk",
  "size": 185177
 }
