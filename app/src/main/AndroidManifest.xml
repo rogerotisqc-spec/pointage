@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.famille.pointage"
-    android:versionCode="51"
-    android:versionName="6.0">
+    android:versionCode="52"
+    android:versionName="6.1">
 
     <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -39,6 +39,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="pointage" android:host="suivre" />
+                <data android:scheme="pointage" android:host="relier" />
             </intent-filter>
         </activity>
     </application>

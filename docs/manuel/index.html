@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 6.0</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 6.1</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -143,6 +143,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <li><a href="#stats">11. Statistiques</a></li>
     <li><a href="#reglages">12. Réglages</a>
       <ol>
+        <li><a href="#appareils">Mes appareils (synchroniser)</a></li>
         <li><a href="#maj">Mises à jour</a></li>
         <li><a href="#partager">Partager l’app</a></li>
         <li><a href="#rapports">Signaler un problème</a></li>
@@ -260,7 +261,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <h3 id="direct">Partie en direct : suivre et inscrire ses points</h3>
     <div class="row2 many"><div class="txt" data-kw="direct en direct partager partie suivre pointages téléphone code qr scanner autres joueurs lecture seule temps réel chacun son téléphone lien inscrire mes points envoyer qui êtes-vous boîte de réception scrabble dés triomino mon tour mille bornes équipe calculateur reprendre plus tard parties suivies revenir garder copie historique ouvrir dans l’app navigateur">
       <p>Pendant une partie, les autres joueurs peuvent <b>suivre les pointages sur leur propre téléphone</b>, en direct : classement, feuille, graphique et brasseur.</p>
-      <ol><li>Sur le téléphone qui tient la feuille : menu ⋮ → <span class="ui">📡 Partager la partie en direct</span>. Un code QR apparaît.</li>
+      <ol><li>Sur le téléphone qui tient la feuille, touchez <b>l’icône réseau</b> (trois petites boîtes reliées) en haut de la partie, ou menu ⋮ → <span class="ui">📡 Partager la partie en direct</span>. Un code QR apparaît. Pendant le partage, l’icône devient verte, avec un point.</li>
         <li>Les autres joueurs <b>scannent le code</b> avec l’appareil photo de leur téléphone et touchent le lien. La partie s’ouvre dans le navigateur : pas besoin d’avoir l’app. Vous pouvez aussi toucher <span class="ui">Envoyer le lien</span> (texto, Messenger…).</li>
         <li>Leur page se met à jour toute seule, quelques secondes après chaque changement. Ils voient la partie <b>en lecture seule</b> : seul le téléphone qui tient la feuille peut la modifier.</li></ol>
       <p>La page de suivi donne aussi ce qui compte dans chaque jeu : au <b>Phase 10</b>, la phase où chacun est rendu (elle compte avant les points) ; au <b>jeu de dés</b>, qui est entré et qui ne l’est pas encore, et qui est dans la zone de pénalité ; au <b>Wizard</b>, les mises et les plis ; au <b>Train mexicain</b>, le double de départ ; à l’<b>Acquire</b>, les chaînes sur le plateau (les actions restent secrètes).</p>
@@ -493,11 +494,21 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     </div><div class="figs"><figure><img src="img/statistiques.webp" alt="Statistiques" loading="lazy"><figcaption>Les statistiques, tous jeux.</figcaption></figure><figure><img src="img/fiche-joueur.webp" alt="Fiche joueur" loading="lazy"><figcaption>La fiche d’un joueur.</figcaption></figure><figure><img src="img/records.webp" alt="Records" loading="lazy"><figcaption>Les records d’un jeu.</figcaption></figure></div></div>
   </section>
 
-  <section class="s" id="reglages" data-kw="réglages paramètres options engrenage">
+  <section class="s" id="reglages" data-kw="réglages paramètres options engrenage appareils synchroniser">
     <h2><span class="n">12</span>Réglages</h2>
     <div class="row2"><div class="txt">
       <p>Touchez ⚙︎ sur l’accueil. On y trouve les mises à jour, l’aide, les rapports, la sauvegarde et l’affichage.</p>
     </div><figure><img src="img/reglages.webp" alt="Réglages" loading="lazy"><figcaption>Les réglages (app Android).</figcaption></figure></div>
+
+    <h3 id="appareils">Mes appareils : synchroniser téléphone, tablette et ordinateur</h3>
+    <div class="row2"><div class="txt" data-kw="synchroniser synchronisation appareils tablette téléphone ordinateur relier délier mêmes données plusieurs appareils transférer nouveau téléphone">
+      <p>Vos parties, joueurs et règles maison peuvent être <b>tenus à jour sur tous vos appareils</b> : vous commencez une partie sur le téléphone, vous la continuez sur la tablette.</p>
+      <ol><li>Sur un appareil : ⚙︎ Réglages → <b>Mes appareils</b> → <span class="ui">🔗 Relier un autre appareil</span>. Un code QR apparaît.</li>
+        <li>Scannez-le avec <b>votre autre appareil</b> (ou envoyez-vous le lien), puis touchez <span class="ui">Relier</span>. Sur Android, si l’app est installée, <span class="ui">📱 Relier plutôt l’app Pointage</span> relie l’app au lieu du navigateur.</li>
+        <li>C’est tout : les données des deux appareils sont combinées, puis tenues à jour toutes seules, après chaque changement et à l’ouverture de l’app. Recommencez pour relier un troisième appareil.</li></ol>
+      <p>Si vous avez changé des choses sur les deux appareils, l’app les combine : chaque nouvelle partie est gardée, une même partie modifiée des deux côtés garde la version la plus récente, et un joueur créé sur les deux appareils (même nom) n’apparaît qu’une fois. Une partie supprimée l’est partout. Ne sont pas synchronisés, car propres à chaque appareil : la voix, la rotation de l’écran, l’écran allumé et la sauvegarde automatique.</p>
+      <p>Chaque personne relie <b>ses propres appareils</b> : les données de chacun restent séparées. Tout est chiffré de bout en bout (la clé est dans le code QR, ne le montrez qu’à vos appareils) ; il n’y a ni compte ni mot de passe. <span class="ui">🔄 Synchroniser</span> force une synchronisation ; <span class="ui">Délier</span> arrête la synchronisation sur cet appareil, qui garde ses données.</p>
+    </div><figure><img src="img/appareils.webp" alt="Relier un autre appareil" loading="lazy"><figcaption>Le code QR pour relier votre autre appareil.</figcaption></figure></div>
 
     <h3 id="maj">Mises à jour</h3>
     <div class="txt" data-kw="mise à jour nouvelle version vérifier télécharger installer autoriser cette source">
@@ -573,7 +584,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 6.0 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 6.1 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){

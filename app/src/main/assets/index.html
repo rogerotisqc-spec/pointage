@@ -413,6 +413,10 @@ table.p10 tr.fin td{border-top:2px solid var(--line)}
 .livebar.err .dot{background:var(--accent);animation:none}
 .livebar.inbox{background:color-mix(in srgb,var(--brand) 10%,var(--surface));border-color:color-mix(in srgb,var(--brand) 40%,transparent);font-weight:500}
 .livepanel [data-a=scrEnd], .livepanel [data-a=trEnd]{display:none}
+.top .sub{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.netbtn{position:relative}
+.netbtn.on{color:#7ee2a8}
+.netbtn.on::after{content:'';position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#2fd27a;box-shadow:0 0 0 2px var(--brand)}
 .livepanel .card{margin-left:0;margin-right:0}
 .livebar.inbox small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
 @keyframes livep{0%,100%{opacity:1}50%{opacity:.35}}
@@ -438,7 +442,7 @@ function load(){
   return defaultDb();
 }
 let db = load();
-function save(){ { const cg = !S.live && curGame(); if(cg && cg.inbox) liveInboxCheck(cg); } try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ toast('Impossible d’enregistrer'); } recordHist(); autoBackupSoon(); liveSoon(); }
+function save(){ { const cg = !S.live && curGame(); if(cg && cg.inbox) liveInboxCheck(cg); } try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ toast('Impossible d’enregistrer'); } recordHist(); autoBackupSoon(); liveSoon(); if(!SYNC_SILENT) syncSoon(); }
 /* Sauvegarde automatique : app Android (dossier choisi) ou navigateur d'ordinateur Chrome/Edge (dossier choisi) */
 const abWeb = () => !bridge && !!window.showDirectoryPicker && !window.claude;
 const canAutoBackup = () => !!(bridge && bridge.writeBackup && bridge.pickBackupFolder) || abWeb();
@@ -516,7 +520,13 @@ function histApply(state){
 function histUndo(){ const g = curGame(), h = histFor(g); if(!h || !h.u.length) return; h.r.push(h.last); histApply(h.u.pop()); toast('↶ Action annulée'); }
 function histRedo(){ const g = curGame(), h = histFor(g); if(!h || !h.r.length) return; h.u.push(h.last); histApply(h.r.pop()); toast('↷ Action rétablie'); }
 function histBtns(g){ const h = histFor(g);
-  return `<button class="icon-btn sm" data-a="undo" ${h.u.length?'':'disabled'} aria-label="Annuler">↶</button><button class="icon-btn sm" data-a="redo" ${h.r.length?'':'disabled'} aria-label="Rétablir">↷</button>`; }
+  return `<button class="icon-btn sm" data-a="undo" ${h.u.length?'':'disabled'} aria-label="Annuler">↶</button><button class="icon-btn sm" data-a="redo" ${h.r.length?'':'disabled'} aria-label="Rétablir">↷</button>${liveTopBtn(g)}`; }
+// Bouton « partie en direct » en haut de chaque partie (icône réseau dessinée ici)
+const NET_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="8.5" y="2.5" width="7" height="6" rx="1.2"/><rect x="2.5" y="15.5" width="7" height="6" rx="1.2"/><rect x="14.5" y="15.5" width="7" height="6" rx="1.2"/><path d="M12 8.5v3.5M6 15.5V12h12v3.5"/></svg>';
+function liveTopBtn(g){
+  if(!g || S.live || !liveOk()) return '';
+  return `<button class="icon-btn sm netbtn ${g.share ? 'on' : ''}" data-a="${g.share ? 'liveShow' : 'liveStart'}" aria-label="${g.share ? 'Partie en direct : code QR' : 'Partager la partie en direct'}">${NET_SVG}</button>`;
+}
 
 const uid = () => Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-5);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2241,6 +2251,7 @@ function vSettings(){
       <a class="btn block" style="text-decoration:none" href="${MANUAL_URL}" target="_blank" rel="noopener">📘 Ouvrir le manuel d’utilisation</a></div>
     ${aiConfigured() ? `<div class="card" style="padding:14px;margin-top:10px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Ludo, l’assistant IA</b><div class="hint" style="margin:2px 0 0">Avec Internet, Ludo répond à vos questions grâce à une IA (bouton <b class="ludo" style="font-size:14px">Ludo</b> en haut de l’écran). Les questions, le jeu en cours et vos règles maison lui sont envoyés. Désactivé : Ludo répond seulement en mode hors ligne.</div></div>
       <button class="switch ${aiPref() ? 'on' : ''}" data-a="iaToggle" aria-label="Ludo, l’assistant IA"></button></div></div>` : ''}
+    ${syncCard()}
     <h2 class="sec">Partager l’app</h2>
     <div class="card" style="padding:14px"><div class="row" style="align-items:center;gap:14px">
       <button data-a="qrBig" aria-label="Agrandir le code QR" style="width:112px;height:112px;flex:none;padding:6px;background:#fff;border-radius:12px;border:1px solid var(--line)">${QR_SVG}</button>
@@ -2513,7 +2524,8 @@ const HELP_FAQ = [
   {q:['triomino','pont','hexagone','pioche triomino','fin de manche triomino','manche bloquée'], g:'triomino', a:'Au Triomino, touchez les 3 chiffres de la pièce posée : l’app additionne. Ajoutez la figure (hexagone +50, double +60, triple +70) ou le pont (+40), et les pièces piochées (−5 chacune ; −25 en tout si on ne peut toujours pas jouer). « Inscrire » passe au joueur suivant. « Fin de manche » : choisissez qui a terminé (25 + pièces des autres) ou « manche bloquée » (chacun perd ses pièces restantes).'},
   {q:['train mexicain','compter les dominos','double blanc','dominos restants'], g:'train', a:'Au train mexicain, à la fin de chaque manche, touchez « + Manche » : pour chaque joueur, touchez les 2 moitiés de chaque domino qui lui reste (ou tapez le total), et cochez « A tout posé » pour celui qui a fini (0 point). Le titre indique le double de départ de la manche suivante. Le plus bas total gagne après la dernière manche.'},
   {q:['changer la voix','voix de l’assistant','voix de ludo','voix plus naturelle','lire plus lentement','voix robot','vitesse de lecture'], a:'Réglages → Voix de Ludo : « Voix naturelle (Internet) » avec 4 voix au choix, la voix du téléphone utilisée sans Internet, et la vitesse de lecture. ▶ Écouter fait entendre un exemple.', go:'settings'},
-  {q:['partie en direct','partager la partie','suivre la partie sur mon téléphone','chacun son téléphone','code qr de la partie','voir les pointages sur un autre téléphone'], a:'Menu ⋮ d’une partie → « Partager la partie en direct » : un code QR apparaît. Les autres joueurs le scannent avec l’appareil photo de leur téléphone et suivent les pointages en direct, sans pouvoir les modifier (pas besoin d’avoir l’app). Seule cette partie est partagée, chiffrée de bout en bout. « Arrêter le partage » coupe l’accès.'},
+  {q:['partie en direct','partager la partie','suivre la partie sur mon téléphone','chacun son téléphone','code qr de la partie','voir les pointages sur un autre téléphone'], a:'Touchez l’icône réseau en haut de la partie (ou menu ⋮ → « Partager la partie en direct ») : un code QR apparaît. Les autres joueurs le scannent avec l’appareil photo de leur téléphone et suivent les pointages en direct, sans pouvoir les modifier (pas besoin d’avoir l’app). Seule cette partie est partagée, chiffrée de bout en bout. « Arrêter le partage » coupe l’accès.'},
+  {q:['synchroniser mes appareils','tablette et téléphone','passer de mon téléphone à ma tablette','relier un autre appareil','mêmes données sur deux appareils','délier'], a:'Réglages → Mes appareils → « Relier un autre appareil » : scannez le code QR avec votre autre appareil (tablette, téléphone, ordinateur). Vos parties, joueurs et règles maison sont ensuite tenus à jour sur les deux, tout seuls. Chiffré de bout en bout, sans compte. « Délier » arrête la synchronisation sur cet appareil.', go:'settings'},
   {q:['revenir à une partie en direct','reprendre la partie plus tard','j’ai fermé le navigateur','parties suivies','retrouver la partie'], a:'Sur l’accueil de l’app (ou de l’app web), la section « Parties en direct suivies » rouvre d’un toucher une partie que vous suiviez, sans rescanner le code. Le téléphone qui tient la feuille n’a qu’à rouvrir la partie : le partage repart avec le même code QR.'},
   {q:['garder une copie de la partie','ajouter la partie à mon historique','partie en direct dans mes statistiques'], a:'À la fin d’une partie suivie en direct, touchez « 💾 Garder cette partie dans mon historique » sur la page de suivi : elle est ajoutée à votre historique et à vos statistiques.'},
   {q:['inscrire mes points sur mon téléphone','chacun entre ses points','envoyer mes points','qui êtes-vous','points reçus'], a:'Pendant une partie en direct, sur la page de suivi : touchez votre nom, inscrivez vos points à la fin de la manche et touchez « Envoyer ». Le téléphone qui tient la feuille les reçoit (bande 📥) ; quand tout le monde a envoyé, sa fenêtre de saisie s’ouvre déjà remplie : il vérifie et enregistre. Offert au Pointage libre, Flip 7, Play Nine, Skyjo, Phase 10, Train mexicain, Wizard, Yahtzee, Uno (règle maison) et Mille Bornes (un téléphone par équipe). Au Scrabble, aux dés et au Triomino, chacun joue son tour sur son téléphone avec le même outil que la feuille.'},
@@ -3645,6 +3657,184 @@ function liveAppBtn(){
   const back = encodeURIComponent(location.href);
   return `<a class="btn block" style="margin-top:10px;text-decoration:none" href="intent://suivre/${L.id}.${L.k}#Intent;scheme=pointage;package=ca.famille.pointage;S.browser_fallback_url=${back};end">📱 Ouvrir dans l’app Pointage</a>`;
 }
+/* ====================== Synchronisation de mes appareils ====================== */
+// Les appareils d’une même personne se relient avec un code QR (#relier=ID.CLÉ). Chacun garde ses données ; le relais
+// garde une copie chiffrée (la clé ne quitte jamais les appareils). Pour combiner, on compare trois états de chaque élément
+// (partie, joueur, règle maison, préférence) : ce que cet appareil a, ce que le relais a, et ce qu’ils avaient en commun à la
+// dernière synchro (empreintes dans pointage.syncb). Ce qui n’a changé que d’un côté est gardé ; si une même partie a
+// changé des deux côtés, la plus récente l’emporte. Une partie supprimée d’un côté (et pas modifiée de l’autre) disparaît partout.
+const SYNC_KEY = 'pointage.sync', SYNC_BASE = 'pointage.syncb', SYNC_SKIP = ['v', 'games', 'players', 'house'];
+let SYNC_BUSY = false, SYNC_T = null, SYNC_SILENT = false, SYNC_ST = {last: 0, err: ''};
+function syncCfg(){ try{ const c = JSON.parse(localStorage.getItem(SYNC_KEY) || 'null'); return c && c.id && c.k ? c : null; }catch(e){ return null; } }
+function syncCfgSet(c){ try{ if(c) localStorage.setItem(SYNC_KEY, JSON.stringify(c)); else localStorage.removeItem(SYNC_KEY); }catch(e){} }
+function syncBase(){ try{ const b = JSON.parse(localStorage.getItem(SYNC_BASE) || 'null'); return b && b.h ? b : {ver: 0, h: {}}; }catch(e){ return {ver: 0, h: {}}; } }
+function syncBaseSet(b){ try{ if(b) localStorage.setItem(SYNC_BASE, JSON.stringify(b)); else localStorage.removeItem(SYNC_BASE); }catch(e){} }
+function hash53(str){ let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for(let i = 0; i < str.length; i++){ const c = str.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36); }
+// Empreinte stable (clés triées) : deux appareils qui ont la même chose donnent la même empreinte
+function stable(v){ return Array.isArray(v) ? '[' + v.map(stable).join(',') + ']' : v && typeof v === 'object' ? '{' + Object.keys(v).sort().filter(k => v[k] !== undefined).map(k => JSON.stringify(k) + ':' + stable(v[k])).join(',') + '}' : JSON.stringify(v === undefined ? null : v); }
+const syncHash = v => hash53(stable(v));
+function syncItems(d){
+  const m = {};
+  d.games.forEach(g => { const c = Object.assign({}, g); delete c.share; delete c.inbox; m['g:' + g.id] = c; });
+  d.players.forEach(p => { m['p:' + p.id] = p; });
+  m.porder = d.players.map(p => p.id);
+  Object.keys(d.house || {}).forEach(k => { m['h:' + k] = d.house[k]; });
+  Object.keys(d).forEach(k => { if(!SYNC_SKIP.includes(k) && d[k] !== undefined) m['f:' + k] = d[k]; });
+  return m;
+}
+function syncHashes(m){ const h = {}; Object.keys(m).forEach(k => { h[k] = syncHash(m[k]); }); return h; }
+function syncSame(a, b){ const ka = Object.keys(a), kb = Object.keys(b); return ka.length === kb.length && ka.every(k => a[k] === b[k]); }
+function syncMerge(L, R, B){
+  const M = {}, keys = new Set([...Object.keys(L), ...Object.keys(R), ...Object.keys(B)]);
+  const lh = syncHashes(L), rh = syncHashes(R);
+  keys.forEach(k => {
+    if(k === 'porder') return;
+    const l = k in L ? lh[k] : null, r = k in R ? rh[k] : null, b = k in B ? B[k] : null;
+    let pick;
+    if(l === r || r === b) pick = 'l';
+    else if(l === b) pick = 'r';
+    else if(l === null) pick = 'r';            // supprimé ici, modifié là-bas : on garde la version modifiée
+    else if(r === null) pick = 'l';
+    else if(k.startsWith('g:')) pick = (L[k].updated || 0) >= (R[k].updated || 0) ? 'l' : 'r';
+    else pick = 'l';
+    const src = pick === 'l' ? L : R; if(k in src) M[k] = JSON.parse(JSON.stringify(src[k]));
+  });
+  // ordre des joueurs : celui qui a changé, puis les nouveaux à la fin
+  const lo = L.porder || [], ro = R.porder || [], bo = B.porder;
+  const base = (bo && syncHash(lo) === bo) ? ro : lo;
+  const order = [...new Set([...base, ...lo, ...ro])].filter(id => ('p:' + id) in M);
+  // un même joueur créé sur deux appareils (même nom) : on n’en garde qu’un, et les parties pointent vers lui
+  const seen = {}, remap = {};
+  M.porder = order.filter(id => { const n = pkey(M['p:' + id].name); if(seen[n]){ remap[id] = seen[n]; delete M['p:' + id]; return false; } seen[n] = id; return true; });
+  if(Object.keys(remap).length){
+    Object.keys(M).filter(k => k.startsWith('g:')).forEach(k => { const g = M[k]; (g.players || []).forEach(p => { if(p.rid && remap[p.rid]) p.rid = remap[p.rid]; }); if(g.members) Object.values(g.members).forEach(ms => ms.forEach(p => { if(p.rid && remap[p.rid]) p.rid = remap[p.rid]; })); });
+    if(M['f:lastSel']) Object.keys(M['f:lastSel']).forEach(t => { M['f:lastSel'][t] = [...new Set((M['f:lastSel'][t] || []).map(id => remap[id] || id))]; });
+  }
+  return M;
+}
+function syncApply(M){
+  const old = db, nd = {v: old.v || 1, house: {}};
+  nd.games = Object.keys(M).filter(k => k.startsWith('g:')).map(k => { const g = M[k], o = old.games.find(x => x.id === g.id); if(o){ if(o.share) g.share = o.share; if(o.inbox) g.inbox = o.inbox; } return g; });
+  nd.players = (M.porder || []).map(id => M['p:' + id]).filter(Boolean);
+  Object.keys(M).forEach(k => { if(k.startsWith('h:')) nd.house[k.slice(2)] = M[k]; else if(k.startsWith('f:')) nd[k.slice(2)] = M[k]; });
+  db = Object.assign(defaultDb(), nd);
+}
+/* chiffrement (et compression quand le navigateur le permet) */
+async function syncTok(k){ const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(k + ':ecrire')); return b64u(new Uint8Array(h)).slice(0, 22); }
+async function zipBytes(u8, inflate){
+  const cs = inflate ? new DecompressionStream('gzip') : new CompressionStream('gzip');
+  const out = new Response(new Blob([u8]).stream().pipeThrough(cs)); return new Uint8Array(await out.arrayBuffer());
+}
+async function syncEnc(k, obj){
+  let bytes = new TextEncoder().encode(JSON.stringify(obj)), z = '';
+  if(window.CompressionStream){ try{ bytes = await zipBytes(bytes, false); z = 'z'; }catch(e){} }
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name: 'AES-GCM', iv}, await liveKey(k), bytes);
+  return {iv: z + b64u(iv), data: b64u(new Uint8Array(ct))};
+}
+async function syncDec(k, iv, data){
+  const z = iv[0] === 'z'; if(z) iv = iv.slice(1);
+  let bytes = new Uint8Array(await crypto.subtle.decrypt({name: 'AES-GCM', iv: ub64u(iv)}, await liveKey(k), ub64u(data)));
+  if(z){ if(!window.DecompressionStream) throw new Error('Ce navigateur est trop ancien pour la synchronisation'); bytes = await zipBytes(bytes, true); }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+async function syncCall(path, body){
+  const r = await fetch(AI_URL.replace(/\/$/, '') + '/sync/' + path, { method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-App-Token': aiToken() }, body: JSON.stringify(body) });
+  const d = await r.json().catch(() => ({}));
+  if(!r.ok){ const e = new Error(d.error || ('Erreur ' + r.status)); e.status = r.status; e.d = d; throw e; }
+  return d;
+}
+function syncSoon(ms){ if(!syncCfg()) return; clearTimeout(SYNC_T); SYNC_T = setTimeout(() => syncNow(false), ms == null ? 4000 : ms); }
+async function syncNow(manual){
+  const c = syncCfg(); if(!c || !liveCrypto() || !aiConfigured()) return false;
+  if(SYNC_BUSY){ syncSoon(3000); return false; }
+  const ae = document.activeElement;
+  if(!manual && (M || (ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && ae.type !== 'checkbox') || S.turn || (S.dice || []).length)){ syncSoon(5000); return false; }
+  if(navigator.onLine === false){ SYNC_ST.err = 'Pas de connexion Internet'; return false; }
+  SYNC_BUSY = true; let ok = false, pulled = false;
+  try{
+    for(let attempt = 0; attempt < 4 && !ok; attempt++){
+      const base = syncBase(), L = syncItems(db), lh = syncHashes(L);
+      let d; try{ d = await syncCall('get', {id: c.id, ver: base.ver || 0}); }catch(e){ if(e.status === 404) d = {none: true}; else throw e; }
+      let Mm, rh, rver;
+      if(d.same){ Mm = L; rh = base.h; rver = d.ver; }
+      else { const R = d.none ? {} : await syncDec(c.k, d.iv, d.data); rver = d.none ? 0 : d.ver; Mm = syncMerge(L, R, base.h || {}); rh = syncHashes(R); }
+      const mh = syncHashes(Mm);
+      if(!syncSame(lh, mh)){ syncApply(Mm); SYNC_SILENT = true; try{ save(); }finally{ SYNC_SILENT = false; } pulled = true; }
+      if(syncSame(mh, rh)){ syncBaseSet({ver: rver, h: mh}); ok = true; break; }
+      const e = await syncEnc(c.k, Mm);
+      try{ const r = await syncCall('put', {id: c.id, tok: await syncTok(c.k), ver: rver, iv: e.iv, data: e.data}); syncBaseSet({ver: r.ver, h: mh}); ok = true; }
+      catch(err){ if(err.status !== 409) throw err; }      // un autre appareil a écrit entre-temps : on recombine
+    }
+    SYNC_ST = {last: Date.now(), err: ok ? '' : 'Trop de changements en même temps : nouvel essai bientôt'};
+    if(!ok) syncSoon(8000);
+  }catch(e){ SYNC_ST.err = e.status === 503 ? String(e.message) : e.status === 403 ? 'Accès refusé par le relais' : 'Synchronisation impossible pour le moment'; syncSoon(30000); }
+  finally{
+    SYNC_BUSY = false;
+    if(pulled && !M) render(); else if(S.view === 'settings' && !M) render();
+  }
+  return ok;
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden) syncSoon(800); });
+setInterval(() => { if(!document.hidden) syncNow(false); }, 60000);
+/* relier / délier */
+function syncLink(c){ return LIVE_APP + '#relier=' + c.id + '.' + c.k; }
+function syncParse(h){ const m = String(h || '').match(/relier=([A-Za-z0-9_-]{12})\.([A-Za-z0-9_-]{22})/); return m ? {id: m[1], k: m[2]} : null; }
+async function syncShowQr(){
+  if(!liveOk()) return toast('La synchronisation n’est pas offerte sur cet appareil');
+  let c = syncCfg();
+  if(!c){ c = {id: liveRand(9), k: liveRand(16)}; syncCfgSet(c); syncBaseSet({ver: 0, h: {}}); toast('Préparation…'); await syncNow(true); }
+  openModal(`<div class="mhead"><h2>🔗 Relier un autre appareil</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody" style="text-align:center">
+      <div style="background:#fff;padding:12px;border-radius:16px;max-width:280px;margin:0 auto">${qrSvg(syncLink(c))}</div>
+      <p style="margin:14px 4px 6px;line-height:1.45">Scannez ce code avec <b>votre autre appareil</b> (tablette, téléphone, ordinateur) : vos parties, joueurs et règles maison seront tenus à jour sur les deux.</p>
+      <p class="hint" style="margin:0 4px">Ne le montrez qu’à vos propres appareils : quiconque le scanne voit vos données. Tout est chiffré de bout en bout.</p></div>
+    <div class="mfoot"><button class="btn" data-a="syncSend">Envoyer le lien</button><button class="btn primary" data-a="close">OK</button></div>`);
+}
+function syncSend(){ const c = syncCfg(); if(!c) return; const url = syncLink(c), text = 'Lien pour relier mon autre appareil à Pointage : ' + url;
+  if(bridge && bridge.shareText){ try{ bridge.shareText(text); return; }catch(e){} }
+  if(navigator.share) return navigator.share({text}).catch(() => {});
+  if(navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('Lien copié'), () => toast(url)); }
+function syncJoinAsk(p){
+  try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
+  if(!liveOk()) return toast('Ce navigateur ne peut pas se synchroniser');
+  const cur = syncCfg();
+  if(cur && cur.id === p.id){ toast('✓ Cet appareil est déjà relié'); return syncSoon(200); }
+  SYNC_JOIN = p;
+  const app = !bridge && /Android/i.test(navigator.userAgent) ? `<a class="btn block" style="margin-top:12px;text-decoration:none" href="intent://relier/${p.id}.${p.k}#Intent;scheme=pointage;package=ca.famille.pointage;end">📱 Relier plutôt l’app Pointage</a>` : '';
+  openModal(`<div class="mhead"><h2>🔗 Relier cet appareil ?</h2><button class="icon-btn" data-a="close">✕</button></div>
+    <div class="mbody"><p style="margin-top:0;line-height:1.45">Les parties, joueurs et règles maison de cet appareil seront <b>combinés</b> avec ceux de votre autre appareil, puis tenus à jour automatiquement sur les deux.</p>
+      ${cur ? '<p class="hint neg">Cet appareil est déjà relié à un autre groupe d’appareils : il le quittera.</p>' : ''}
+      <p class="hint">Rien n’est effacé. Vous pourrez délier cet appareil dans les Réglages.</p>${app}</div>
+    <div class="mfoot"><button class="btn" data-a="close">Annuler</button><button class="btn primary" data-a="syncJoin">Relier</button></div>`);
+}
+let SYNC_JOIN = null;
+async function syncJoin(){
+  const p = SYNC_JOIN; closeModal(); if(!p) return;
+  syncCfgSet({id: p.id, k: p.k}); syncBaseSet({ver: 0, h: {}});
+  toast('Synchronisation…');
+  const ok = await syncNow(true);
+  toast(ok ? '✓ Appareils reliés et synchronisés' : (SYNC_ST.err || 'Synchronisation impossible pour le moment : nouvel essai bientôt'));
+  render();
+}
+function syncUnlink(){
+  confirmBox('Délier cet appareil ? Il garde ses données, mais ne sera plus tenu à jour avec vos autres appareils.', 'Délier', () => {
+    syncCfgSet(null); syncBaseSet(null); SYNC_ST = {last: 0, err: ''}; closeModal(); render(); toast('Appareil délié'); }, true);
+}
+function syncCard(){
+  if(!liveOk()) return '';
+  const c = syncCfg(), t = SYNC_ST.last ? new Date(SYNC_ST.last).toLocaleTimeString('fr-CA', {hour: '2-digit', minute: '2-digit'}) : '';
+  return `<h2 class="sec">Mes appareils</h2><div class="card" style="padding:14px">
+    ${c ? `<b>✓ Cet appareil est relié</b><div class="hint" style="margin:2px 0 10px">${SYNC_ST.err ? '⚠︎ ' + esc(SYNC_ST.err) : t ? 'Dernière synchronisation à ' + t + '.' : 'Synchronisation au prochain changement.'} Vos parties, joueurs et règles maison sont tenus à jour sur vos appareils reliés.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn primary" data-a="syncQr">🔗 Relier un autre appareil</button><button class="btn" data-a="syncGo">🔄 Synchroniser</button><button class="btn danger" data-a="syncOff">Délier</button></div>`
+    : `<b>Synchroniser mes appareils</b><div class="hint" style="margin:2px 0 10px">Passez de votre téléphone à votre tablette sans rien perdre : vos parties, joueurs et règles maison sont tenus à jour sur tous vos appareils. Chiffré de bout en bout, sans compte ni mot de passe.</div>
+      <button class="btn primary block" data-a="syncQr">🔗 Relier un autre appareil</button>`}</div>`;
+}
 /* ====================== Rapports (GitHub Issues) ====================== */
 const FB_REPO = 'rogerotisqc-spec/pointage';
 // Clé limitée aux « issues » de ce dépôt, découpée pour ne pas être prise pour une fuite par les outils de détection.
@@ -3881,6 +4071,11 @@ const A = {
   liveRejoin: el => { const x = liveFollows().find(f => f.id === el.dataset.id); if(x) liveJoin({id: x.id, k: x.k}); },
   liveForget: el => { liveFollowDrop(el.dataset.id); render(); },
   liveKeep: () => liveKeep(),
+  syncQr: () => syncShowQr(),
+  syncSend: () => syncSend(),
+  syncJoin: () => syncJoin(),
+  syncGo: async () => { toast('Synchronisation…'); const ok = await syncNow(true); toast(ok ? '✓ Synchronisé' : (SYNC_ST.err || 'Synchronisation impossible')); },
+  syncOff: () => syncUnlink(),
   liveMbSend: () => liveMbSend(),
   liveYzCat: el => liveYzOpen(el.dataset.c),
   liveYzSet: el => liveYzSend(Number(el.dataset.v)),
@@ -4118,9 +4313,10 @@ let tt; function toast(msg){ const t = $('toast'); t.textContent = msg; t.classL
 
 render(true);
 applyOrient();
-{ const lp = liveParse(location.hash); if(lp) liveJoin(lp); }
+{ const lp = liveParse(location.hash); if(lp) liveJoin(lp); const sp = syncParse(location.hash); if(sp) setTimeout(() => syncJoinAsk(sp), 300); }
+syncSoon(1500);
 setTimeout(liveInboxLoop, 2000);
-window.addEventListener('hashchange', () => { const lp = liveParse(location.hash); if(lp && !(S.live && S.live.id === lp.id)) liveJoin(lp); });
+window.addEventListener('hashchange', () => { const lp = liveParse(location.hash); if(lp && !(S.live && S.live.id === lp.id)) liveJoin(lp); const sp = syncParse(location.hash); if(sp) syncJoinAsk(sp); });
 setTimeout(() => fbFlush(true), 2500);
 // vérification discrète, au plus une fois par jour
 try{ const last = Number(localStorage.getItem('pointage.lastCheck')||0); if(canUpdate() && Date.now() - last > 20*3600*1000) setTimeout(() => checkUpdates(true), 1500); }catch(e){}

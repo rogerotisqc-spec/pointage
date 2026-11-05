@@ -1,6 +1,6 @@
 {
- "version": "6.0",
- "notes": "Partie en direct : reprise plus tard (le partage repart à la réouverture, « Parties en direct suivies » sur l'accueil), copie dans son historique, ouverture dans l'app Android.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.0.apk",
- "size": 193369
+ "version": "6.1",
+ "notes": "Nouveau : synchronisez vos appareils (Réglages → Mes appareils). Et un bouton réseau en haut de chaque partie pour la partager en direct.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.1.apk",
+ "size": 201561
 }

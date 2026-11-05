@@ -198,6 +198,34 @@ async function live(env, action, b) {
   return json({ ok: true, ver });
 }
 
+/* ---------- Synchronisation des appareils d’une même personne ---------- */
+// Chaque groupe d’appareils garde ici une seule copie chiffrée de ses données (la clé reste dans les appareils).
+// Écriture avec un numéro de version : si un autre appareil a écrit entre-temps, réponse 409 et l’appareil recombine.
+const SYNC_MAX = 1900000, SYNC_TTL = 400 * 24 * 3600e3;
+let SYNC_READY = false;
+async function sync(env, action, b) {
+  if (!env.DB) return json({ error: 'Synchronisation pas encore configurée' }, 503);
+  const id = String(b.id || ''), tok = String(b.tok || '');
+  if (!/^[A-Za-z0-9_-]{12}$/.test(id)) return json({ error: 'Groupe inconnu' }, 400);
+  if (!SYNC_READY) { await env.DB.prepare('CREATE TABLE IF NOT EXISTS sync (id TEXT PRIMARY KEY, tokh TEXT NOT NULL, ver INTEGER NOT NULL, iv TEXT NOT NULL, data TEXT NOT NULL, upd INTEGER NOT NULL)').run(); SYNC_READY = true; }
+  if (action === 'get') {
+    const row = await env.DB.prepare('SELECT ver, iv, data FROM sync WHERE id = ?').bind(id).first();
+    if (!row) return json({ none: true }, 404);
+    if (+b.ver === row.ver) return json({ ver: row.ver, same: true });
+    return json({ ver: row.ver, iv: row.iv, data: row.data });
+  }
+  if (!/^[A-Za-z0-9_-]{22}$/.test(tok)) return json({ error: 'Accès refusé' }, 403);
+  const h = await sha(tok), row = await env.DB.prepare('SELECT tokh, ver FROM sync WHERE id = ?').bind(id).first();
+  if (row && row.tokh !== h) return json({ error: 'Accès refusé' }, 403);
+  const iv = String(b.iv || ''), data = String(b.data || '');
+  if (!iv || !data || data.length > SYNC_MAX) return json({ error: 'Données trop grosses ou vides' }, 400);
+  if ((row ? row.ver : 0) !== +b.ver) return json({ conflict: true, ver: row ? row.ver : 0 }, 409);
+  const ver = (row ? row.ver : 0) + 1, now = Date.now();
+  await env.DB.prepare('INSERT OR REPLACE INTO sync (id, tokh, ver, iv, data, upd) VALUES (?, ?, ?, ?, ?, ?)').bind(id, h, ver, iv, data, now).run();
+  if (Math.random() < 0.02) await env.DB.prepare('DELETE FROM sync WHERE upd < ?').bind(now - SYNC_TTL).run();
+  return json({ ok: true, ver });
+}
+
 const VOICES = ['Aoede', 'Kore', 'Leda', 'Charon', 'Puck', 'Orus'];
 async function synth(env, text, voice, rate) {
   const name = 'fr-CA-Chirp3-HD-' + (VOICES.includes(voice) ? voice : 'Aoede');
@@ -219,12 +247,16 @@ export default {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(request.url);
     if (request.method === 'GET') return json({ ok: true, service: 'pointage-ia', ready: !!(env.ANTHROPIC_API_KEY && env.APP_TOKEN), tts: !!env.GOOGLE_TTS_KEY, live: !!env.DB });
-    const lv = url.pathname.match(/^\/live\/(get|put|del|send|inbox)$/);
-    if (request.method !== 'POST' || (!lv && url.pathname !== '/ask' && url.pathname !== '/tts')) return json({ error: 'Adresse inconnue' }, 404);
-    if (!env.APP_TOKEN || (!lv && !env.ANTHROPIC_API_KEY)) return json({ error: 'Relais pas encore configuré' }, 503);
+    const lv = url.pathname.match(/^\/live\/(get|put|del|send|inbox)$/), sy = url.pathname.match(/^\/sync\/(get|put)$/);
+    if (request.method !== 'POST' || (!lv && !sy && url.pathname !== '/ask' && url.pathname !== '/tts')) return json({ error: 'Adresse inconnue' }, 404);
+    if (!env.APP_TOKEN || (!lv && !sy && !env.ANTHROPIC_API_KEY)) return json({ error: 'Relais pas encore configuré' }, 503);
     if (request.headers.get('X-App-Token') !== env.APP_TOKEN) return json({ error: 'Accès refusé' }, 403);
     let body;
     try { body = await request.json(); } catch (e) { return json({ error: 'Requête illisible' }, 400); }
+    if (sy) {
+      try { return await sync(env, sy[1], body || {}); }
+      catch (e) { return json({ error: 'Synchronisation indisponible : ' + cut(e.message, 200) }, 502); }
+    }
     if (lv) {
       try { return await live(env, lv[1], body || {}); }
       catch (e) { return json({ error: 'Partage indisponible : ' + cut(e.message, 200) }, 502); }

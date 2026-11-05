@@ -52,6 +52,12 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   Reprise : l'hôte repousse la partie à la réouverture (LIVE_OPENED) ; les joueurs retrouvent les parties suivies sur l'accueil
   (localStorage pointage.suivies, 4 jours) ; « Garder cette partie » copie la partie dans db.games (fromLive). Android : lien
   pointage://suivre/ID.CLÉ (intent-filter, MainActivity.liveLink/openLive), bouton intent:// sur la page de suivi.
+- Synchronisation des appareils (index.html : syncNow, syncMerge, syncApply, syncCard ; relais : /sync/get|put, table sync) :
+  groupe {id, k} dans localStorage pointage.sync (lien #relier=ID.CLÉ, Android pointage://relier/…), copie chiffrée (gzip +
+  AES-GCM) de tout db sauf share/inbox ; fusion à trois voies avec les empreintes de la dernière synchro (pointage.syncb) ;
+  même partie changée des deux côtés : la plus récente ; joueurs de même nom fusionnés (rid remappé) ; écriture versionnée
+  (409 → recombiner). Synchro après save() (4 s), à l'ouverture et toutes les 60 s.
+- Bouton réseau (NET_SVG, liveTopBtn) en haut de chaque partie, ajouté par histBtns.
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 

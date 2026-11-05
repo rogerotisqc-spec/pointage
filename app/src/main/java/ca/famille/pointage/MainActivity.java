@@ -94,7 +94,7 @@ public class MainActivity extends Activity {
             web.restoreState(savedInstanceState);
         } else {
             String live = liveLink(getIntent());
-            web.loadUrl("file:///android_asset/index.html" + (live != null ? "#suivre=" + live : ""));
+            web.loadUrl("file:///android_asset/index.html" + (live != null ? "#" + live : ""));
         }
         if (savedInstanceState != null) openLive(getIntent());
         handleInstallIntent(getIntent());
@@ -108,17 +108,19 @@ public class MainActivity extends Activity {
         handleInstallIntent(intent);
     }
 
-    /** Lien d'une partie en direct (pointage://suivre/ID.CLÉ) : renvoie « ID.CLÉ », ou null. */
+    /** Lien pointage://suivre/ID.CLÉ (partie en direct) ou pointage://relier/ID.CLÉ (mes appareils) : renvoie « suivre=ID.CLÉ », ou null. */
     private String liveLink(Intent intent) {
         if (intent == null || intent.getData() == null || !"pointage".equals(intent.getData().getScheme())) return null;
+        String host = intent.getData().getHost();
+        if (!"suivre".equals(host) && !"relier".equals(host)) return null;
         java.util.regex.Matcher m = java.util.regex.Pattern.compile("([A-Za-z0-9_-]{12}\\.[A-Za-z0-9_-]{22})").matcher(intent.getData().toString());
-        return m.find() ? m.group(1) : null;
+        return m.find() ? host + "=" + m.group(1) : null;
     }
 
     private void openLive(Intent intent) {
         final String live = liveLink(intent);
         if (live == null || web == null) return;
-        web.post(new Runnable() { public void run() { web.evaluateJavascript("location.hash='#suivre=" + live + "'", null); } });
+        web.post(new Runnable() { public void run() { web.evaluateJavascript("location.hash='#" + live + "'", null); } });
     }
 
     /** Résultat de l'installation (PackageInstaller) : on affiche la confirmation d'Android. */
