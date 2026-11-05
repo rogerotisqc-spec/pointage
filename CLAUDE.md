@@ -89,6 +89,8 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   table. Au Mille Bornes, les partenaires partagent un seul jeu : la saisie se fait par équipe.
 - Skip-Bo : pointage officiel.
 - Play Nine : 9 trous seulement.
+- Phase 10 : g.ph[pk] = phase à réussir (1..11). Tableau : ligne 0 « Départ » ; marqueur plein à la dernière phase réussie
+  (p10At), cercle pointillé = phase à réussir (le toucher = phase réussie), petits points = chemin parcouru.
 - Skyjo : règles officielles (partie à 100, le plus bas gagne, colonne de 3 identiques retirée,
   doublement de celui qui termine s'il n'a pas strictement le plus bas et que son pointage est positif).
 - Wizard : 3 à 6 joueurs, 60 ÷ joueurs manches (k cartes à la manche k), mises puis plis (g.pend garde

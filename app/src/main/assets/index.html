@@ -348,6 +348,8 @@ table.p10 td.ph b{font-size:15px;margin-right:4px}
 table.p10 td.ph small{font-size:11px;color:var(--muted)}
 table.p10 tr:nth-child(even) td{background:color-mix(in srgb,var(--surface2) 70%,transparent)}
 table.p10 tr.fin td{border-top:2px solid var(--line)}
+table.p10 tr.dep td{border-bottom:2px solid var(--line)}
+table.p10 tr.dep td.ph b{font-size:12px}
 .p10c{width:100%;height:44px;display:grid;place-items:center}
 .mk{width:30px;height:30px;border-radius:50%;border:2.5px solid rgba(0,0,0,.25);box-shadow:0 2px 5px rgba(0,0,0,.25)}
 .mk.big{width:44px;height:44px}
@@ -807,18 +809,22 @@ function phaseOf(g, pk){
 function p10Board(g){
   const cmp = g.players.length >= 5;
   const head = g.players.map(p => `<th><button class="sw" data-a="p10color" data-k="${p.key}" style="background:${p.color}" aria-label="Couleur de ${esc(p.name)}"></button><div class="sw-n">${esc(p.name)}</div></th>`).join('');
-  const cell = (p, n) => { const cur = phaseOf(g, p.key);
+  // Ligne 0 = Départ, lignes 1 à 10 = phase réussie, ligne 11 = les 10 phases réussies.
+  // Marqueur plein : là où le joueur est rendu ; petits points : le chemin parcouru ; cercle pointillé : la phase à réussir.
+  const cell = (p, n) => { const cur = phaseOf(g, p.key), at = p10At(cur);
     let inner = '';
-    if(n === cur) inner = `<span class="mk" style="background:${p.color}"></span>`;
-    else if(n < cur) inner = `<span class="done-dot" style="background:${p.color}"></span>`;
-    else if(n === cur + 1 && !g.finished) inner = `<span class="nxt" style="border-color:${p.color}"></span>`;
-    return `<td><button class="p10c" data-a="p10cell" data-k="${p.key}" data-n="${n}" aria-label="${esc(p.name)} phase ${n}">${inner}</button></td>`; };
-  let rows = '';
+    if(n === at) inner = `<span class="mk" style="background:${p.color}"></span>`;
+    else if(n >= 1 && n < at) inner = `<span class="done-dot" style="background:${p.color}"></span>`;
+    else if(n === cur && cur <= 10 && !g.finished) inner = `<span class="nxt" style="border-color:${p.color}"></span>`;
+    const lbl = n === 0 ? 'départ' : n === 11 ? '10 phases réussies' : 'phase ' + n;
+    return `<td><button class="p10c" data-a="p10cell" data-k="${p.key}" data-n="${n}" aria-label="${esc(p.name)} ${lbl}">${inner}</button></td>`; };
+  let rows = `<tr class="dep"><td class="ph"><b>▶</b><small>Départ</small></td>${g.players.map(p => cell(p, 0)).join('')}</tr>`;
   for(let n = 1; n <= 10; n++) rows += `<tr><td class="ph"><b>${n}</b>${cmp ? '' : ''}<small>${PHASE_SHORT[n-1]}</small></td>${g.players.map(p => cell(p, n)).join('')}</tr>`;
   rows += `<tr class="fin"><td class="ph"><b>🏆</b><small>Phase 10 réussie</small></td>${g.players.map(p => cell(p, 11)).join('')}</tr>`;
   return `<div class="card p10b"><table class="p10"><thead><tr><th class="lc"><div class="hint" style="margin:0;text-align:left;font-weight:600">Touchez un carré pour la couleur</div></th>${head}</tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="hint" style="margin:6px 18px 0">Touchez la case suivante (cercle pointillé) pour avancer un joueur ; touchez son marqueur pour voir son objectif.</p>`;
+    <p class="hint" style="margin:6px 18px 0">Le marqueur plein montre où chacun est rendu ; le cercle pointillé, la phase à réussir. Quand un joueur réussit sa phase, touchez son cercle pointillé : son marqueur avance. Touchez un marqueur pour voir l’objectif.</p>`;
 }
+function p10At(cur){ return cur > 10 ? 11 : cur - 1; }   // ligne du marqueur plein
 function p10Info(g, pk){
   const p = g.players.find(x => x.key === pk); const n = phaseOf(g, pk);
   const cols = ['#e03131','#1c7ed6','#2b8a3e','#f59f00'];
@@ -828,7 +834,7 @@ function p10Info(g, pk){
     let ci = 0;
     const ex = PHASE_EX[n-1].map(gr => `<div class="cgroup">${gr.map(v => `<span class="pc" style="background:${n===8?cols[1]:cols[(ci++)%4]}">${v}</span>`).join('')}</div>`).join('');
     body = `<div class="obj"><span class="mk big" style="background:${p.color};display:inline-block"></span>
-      <div class="lvl" style="margin-top:8px">${esc(p.name)} · Phase ${n} sur 10</div><h3>${PHASES[n-1]}</h3><p class="hint" style="margin:0">${PHASE_EXPL[n-1]}</p>
+      <div class="lvl" style="margin-top:8px">${esc(p.name)} · phase à réussir : ${n} sur 10</div><h3>${PHASES[n-1]}</h3><p class="hint" style="margin:0">${PHASE_EXPL[n-1]}</p>
       <div class="cards">${ex}</div><p class="hint">Exemple. Un Joker peut remplacer n’importe quelle carte.</p>
       ${n < 10 ? `<p class="hint">Ensuite : phase ${n+1} · ${PHASES[n]}</p>` : `<p class="hint">C’est la dernière phase !</p>`}</div>`;
   }
@@ -838,7 +844,7 @@ function p10Info(g, pk){
 function p10Set(g, pk, n){
   phaseOf(g, pk); g.ph[pk] = n; g.updated = Date.now(); save(); render();
   const p = g.players.find(x => x.key === pk);
-  toast(n > 10 ? '🏆 ' + p.name + ' a réussi les 10 phases !' : p.name + ' passe à la phase ' + n);
+  toast(n > 10 ? '🏆 ' + p.name + ' a réussi les 10 phases !' : n === 1 ? p.name + ' est au départ : phase 1 à réussir' : p.name + ' a réussi la phase ' + (n - 1) + ' · prochaine : phase ' + n);
 }
 function isLow(g){ return !!g.opts.low; }
 function ranking(g){
@@ -1202,7 +1208,7 @@ function vSheet(){
   const strip = `<div class="scores">${g.players.map(p => { const x = byKey[p.key];
     return `<div class="pscore ${x.rank===1 && (g.rounds.length) ?'lead':''}"><span class="rk">${g.rounds.length?(x.rank===1?'★':'#'+x.rank):''}</span>
       <div class="n"><i style="background:${p.color}"></i>${esc(p.name)}</div><div class="v num-t">${fmt(x.total)}</div>
-      ${g.type==='phase10'?`<div class="x">Phase ${Math.min(x.phase,10)}${x.phase>10?' ✓':''}</div>`:''}
+      ${g.type==='phase10'?`<div class="x">${x.phase>10?'10 phases ✓':'Vise la phase '+x.phase}</div>`:''}
       ${g.type==='playnine' && g.rounds.length ? `<div class="x">${x.rank===1?'En tête':'+' + fmt(x.total - r[0].total) + (g.players.length >= 5 ? '' : ' du meneur')}</div>`:''}</div>`; }).join('')}</div>`;
   let table;
   if(g.type === 'playnine') table = p9Table(g, t);
@@ -2036,7 +2042,7 @@ function vResults(){
       <p class="hint" style="margin-top:4px">${g.team ? 'équipe ' + esc(r.filter(x=>x.rank===1).map(x=>x.p.team).join(', ')) + ' · ' + (r[0] && membersOf(g, r[0].p).length > 1 ? 'remportent' : 'remporte') : (r.filter(x=>x.rank===1).length>1?'remportent':'remporte')} la partie</p></div>
     <h2 class="sec">Classement</h2>
     <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank-1]||x.rank}</span><span class="av" style="background:${x.p.color}">${g.team ? esc(x.p.team) : initial(x.p.name)}</span>
-      <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type==='phase10'?`<div class="s">Phase ${Math.min(x.phase,10)}${x.phase>10?' réussie':''}</div>`:''}</div><div class="t num-t" style="font-size:20px">${fmt(x.total)}</div></div>`).join('')}</div>
+      <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type==='phase10'?`<div class="s">${x.phase>10?'Les 10 phases réussies':(x.phase-1)+' phase'+(x.phase>2?'s':'')+' réussie'+(x.phase>2?'s':'')+' · vise la phase '+x.phase}</div>`:''}</div><div class="t num-t" style="font-size:20px">${fmt(x.total)}</div></div>`).join('')}</div>
     ${(isTurnGame(g) ? g.turns.length : g.rounds.length) ? `<h2 class="sec">Évolution des scores</h2><div class="card" style="padding:12px 12px 10px">${chartHtml(g, 'chr')}</div>` : ''}
     ${guests.length ? `<h2 class="sec">Invités</h2><div class="card list">${guests.map(p => `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">Pas dans votre liste de joueurs</div></div><button class="btn sm" data-a="saveGuest" data-k="${p.key}">+ À ma liste</button></div>`).join('')}</div>` : ''}
     <div style="display:grid;gap:10px;margin-top:22px">
@@ -2368,7 +2374,7 @@ function openRound(idx){
       }
       return `<div class="card prow"><div class="ph"><span class="av" style="background:${p.color}">${initial(p.name)}</span><div class="nm">${esc(p.name)}</div>
         ${helper?`<button class="calc-t" data-a="helper" data-k="${p.key}" aria-label="Calculatrice">🧮</button>`:''}${numInput(id, v)}</div>
-        ${g.type==='phase10' ? `<p class="hint" style="margin:6px 0 0">Phase ${Math.min(phaseOf(g,p.key),10)} · ${PHASES[Math.min(phaseOf(g,p.key),10)-1]}</p>` : ''}
+        ${g.type==='phase10' ? `<p class="hint" style="margin:6px 0 0">${phaseOf(g,p.key) > 10 ? 'Les 10 phases réussies' : 'Vise la phase ' + phaseOf(g,p.key) + ' · ' + PHASES[phaseOf(g,p.key)-1]}</p>` : ''}
         ${helper}</div>`; }).join('');
   }
   openModal(`<div class="mhead"><h2>${G.round} ${n}</h2><button class="icon-btn" data-a="close" aria-label="Fermer">✕</button></div>
@@ -3306,7 +3312,7 @@ function vLive(){
     ${liveEntryHtml(g)}
     ${g.finished ? `<div class="banner done" style="margin:0 0 12px"><div class="grow">🏆 Partie terminée · ${esc(r.filter(x => x.rank === 1).map(x => x.p.name).join(' et '))} ${r.filter(x => x.rank === 1).length > 1 ? 'gagnent' : 'gagne'}</div></div>` : who ? `<p style="margin:0 2px 12px">${who}</p>` : ''}
     <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank - 1] || x.rank}</span><span class="av" style="background:${x.p.color}">${g.team ? esc(x.p.team) : initial(x.p.name)}</span>
-      <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type === 'phase10' ? `<div class="s">Phase ${Math.min(x.phase, 10)}${x.phase > 10 ? ' réussie' : ''}</div>` : ''}</div><div class="t num-t" style="font-size:20px">${fmt(x.total)}</div></div>`).join('')}</div>
+      <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type === 'phase10' ? `<div class="s">${x.phase > 10 ? 'Les 10 phases réussies' : (x.phase - 1) + ' phase' + (x.phase > 2 ? 's' : '') + ' réussie' + (x.phase > 2 ? 's' : '') + ' · vise la phase ' + x.phase}</div>` : ''}</div><div class="t num-t" style="font-size:20px">${fmt(x.total)}</div></div>`).join('')}</div>
     <p class="hint" style="margin:6px 2px 0">${g.type === 'phase10' ? 'La phase compte d’abord, puis le moins de points.' : isLow(g) ? 'Le plus bas total gagne.' : 'Le plus haut total gagne.'}</p>
     ${liveExtraHtml(g)}
     <div style="margin-top:14px">${liveTable(g)}</div>
@@ -3527,9 +3533,9 @@ async function liveYzSend(v){
 /* Suivi : renseignements propres à certains jeux */
 function liveExtraHtml(g){
   if(g.type === 'phase10') return `<h2 class="sec">Progression des phases</h2><div class="card list">${g.players.map(p => { const ph = phaseOf(g, p.key), done = Math.min(ph - 1, 10);
-    return `<div class="li" style="display:block"><div class="row" style="justify-content:space-between"><b>${esc(p.name)}</b><span class="hint" style="margin:0">${ph > 10 ? '🏆 Les 10 phases réussies' : 'Phase ' + ph + ' sur 10'}</span></div>
+    return `<div class="li" style="display:block"><div class="row" style="justify-content:space-between"><b>${esc(p.name)}</b><span class="hint" style="margin:0">${ph > 10 ? '🏆 Les 10 phases réussies' : done + ' réussie' + (done > 1 ? 's' : '') + ' · vise la phase ' + ph}</span></div>
       <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin:6px 0 4px">${Array.from({length: 10}, (_, i) => `<span style="height:9px;border-radius:3px;background:${i < done ? p.color : i === done ? 'color-mix(in srgb,' + p.color + ' 35%,transparent)' : 'var(--line)'}"></span>`).join('')}</div>
-      ${ph <= 10 ? `<div class="hint" style="margin:0">${esc(PHASES[ph - 1])}</div>` : ''}</div>`; }).join('')}</div>
+      ${ph <= 10 ? `<div class="hint" style="margin:0">Objectif : ${esc(PHASES[ph - 1])}</div>` : ''}</div>`; }).join('')}</div>
     <p class="hint" style="margin:6px 2px 0">Au Phase 10, la phase compte avant les points : le plus avancé gagne, les points départagent.</p>`;
   if(g.type === 'farkle'){ const f = g.opts.f || FD, t = totals(g);
     return `<h2 class="sec">Où en sont les joueurs</h2><div class="card list">${g.players.map(p => { const v = t[p.key], inn = g.turns.some(x => x.pk === p.key && x.pts > 0);
@@ -4044,11 +4050,11 @@ const A = {
     else { if(h.sel < 0) return toast('Touchez d’abord la carte à changer'); h.c[h.sel] = Number(el.dataset.v); const nx = h.c.findIndex((v,i) => v == null && i > h.sel); h.sel = nx >= 0 ? nx : Math.max(0, h.c.findIndex(v => v == null)); if(h.c.every(v => v != null)) h.sel = -1; }
     p9Render(k); },
   p10cell: el => { const g = curGame(), k = el.dataset.k, n = Number(el.dataset.n), cur = phaseOf(g, k);
-    if(n === cur) return p10Info(g, k);
+    if(n === p10At(cur)) return p10Info(g, k);
     if(g.finished) return toast('Partie terminée : rouvrez-la pour modifier');
-    if(n === cur + 1) return p10Set(g, k, n);
+    if(n === cur && cur <= 10) return p10Set(g, k, cur + 1);
     const p = g.players.find(x => x.key === k);
-    confirmBox(`Placer ${p.name} ${n > 10 ? 'à « Phase 10 réussie »' : 'à la phase ' + n} ?`, 'Déplacer', () => p10Set(g, k, n)); },
+    confirmBox(n === 0 ? `Remettre ${p.name} au départ (phase 1 à réussir) ?` : n > 10 ? `Indiquer que ${p.name} a réussi les 10 phases ?` : `Indiquer que ${p.name} a réussi la phase ${n} (prochaine : phase ${n + 1}) ?`, 'Déplacer', () => p10Set(g, k, Math.min(n + 1, 11))); },
   p10adv: el => { closeModal(); const g = curGame(); p10Set(g, el.dataset.k, phaseOf(g, el.dataset.k) + 1); },
   p10color: el => { const g = curGame(), k = el.dataset.k, p = g.players.find(x => x.key === k);
     openModal(`<div class="mhead"><h2>Couleur de ${esc(p.name)}</h2><button class="icon-btn" data-a="close">✕</button></div>

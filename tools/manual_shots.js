@@ -122,10 +122,10 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await startGame('phase10', ['Roger', 'Marie', 'Léa', 'Zoé']);
   const kk = await p.$$eval('.sw', e => e.map(x => x.dataset.k));
   await tap(`.sw[data-k="${kk[0]}"]`); await shot('phase10-couleurs'); await tap('.cpick button >> nth=2');
-  for (const [i, n] of [[0, 2], [0, 3], [1, 2], [3, 2], [3, 3], [3, 4]]) await tap(`[data-a=p10cell][data-k="${kk[i]}"][data-n="${n}"]`);
+  for (const [i, n] of [[0, 1], [0, 2], [1, 1], [3, 1], [3, 2], [3, 3]]) await tap(`[data-a=p10cell][data-k="${kk[i]}"][data-n="${n}"]`);   // cercle pointillé = phase réussie
   await addRound([15, 40, 85, 5]);
   await p.evaluate(() => window.scrollTo(0, 0)); await shot('phase10');
-  await tap(`[data-a=p10cell][data-k="${kk[3]}"][data-n="4"]`); await shot('phase10-objectif'); await tap('[data-a=close]');
+  await tap(`[data-a=p10cell][data-k="${kk[3]}"][data-n="3"]`); await shot('phase10-objectif');   // marqueur plein → objectif await tap('[data-a=close]');
 
   // ---------- Scrabble ----------
   await startGame('scrabble', ['Roger', 'Marie']);
