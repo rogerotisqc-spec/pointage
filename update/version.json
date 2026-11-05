@@ -1,6 +1,6 @@
 {
- "version": "6.2",
- "notes": "Correction : avec des appareils reliés, une partie suivie en direct n'est plus copiée en double dans l'historique.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.2.apk",
+ "version": "6.3",
+ "notes": "Correction : avec des appareils reliés, une partie suivie en direct n'est plus copiée en double, et « Garder cette partie » fonctionne de nouveau normalement.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.3.apk",
  "size": 201561
 }

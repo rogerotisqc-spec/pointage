@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>body{padding-top:env(safe-area-inset-top)} .top{top:env(safe-area-inset-top,0px)}</style>
-<script>window.WEB_VERSION = "6.2";</script>
+<script>window.WEB_VERSION = "6.3";</script>
 
 <style>
 :root{
@@ -3651,11 +3651,11 @@ function liveKeepHtml(g){
   const kept = db.games.find(x => x.fromLive === L.id);
   return `<button class="btn block" style="margin-top:10px" data-a="liveKeep">${kept ? '💾 Mettre à jour ma copie' : '💾 Garder cette partie dans mon historique'}</button>`;
 }
-function liveHere(L){ return db.games.some(x => (L.gid && x.id === L.gid) || x.liveId === L.id); }
+function liveHere(L){ return db.games.some(x => !x.fromLive && ((L.gid && x.id === L.gid) || x.liveId === L.id)); }
 function liveKeep(){
   const L = S.live, src = L && L.g; if(!src) return;
   if(liveHere(L)){ render(); return toast('✓ Cette partie est déjà dans votre historique'); }
-  const c = JSON.parse(JSON.stringify(src)); delete c.inbox; delete c.share;
+  const c = JSON.parse(JSON.stringify(src)); delete c.inbox; delete c.share; delete c.liveId;
   const link = p => { const q = db.players.find(x => pkey(x.name) === pkey(p.name)); if(q){ p.rid = q.id; p.guest = false; } else { delete p.rid; p.guest = true; } };
   c.players.forEach(link); if(c.members) Object.values(c.members).forEach(ms => ms.forEach(link));
   const old = db.games.find(x => x.fromLive === L.id);
@@ -3728,7 +3728,7 @@ function syncMerge(L, R, B){
     if(M['f:lastSel']) Object.keys(M['f:lastSel']).forEach(t => { M['f:lastSel'][t] = [...new Set((M['f:lastSel'][t] || []).map(id => remap[id] || id))]; });
   }
   // une copie gardée depuis une partie en direct (fromLive) devient inutile quand la partie d’origine est là
-  const orig = new Set(Object.keys(M).filter(k => k.startsWith('g:') && M[k].liveId).map(k => M[k].liveId));
+  const orig = new Set(Object.keys(M).filter(k => k.startsWith('g:') && M[k].liveId && !M[k].fromLive).map(k => M[k].liveId));
   Object.keys(M).forEach(k => { if(k.startsWith('g:') && M[k].fromLive && orig.has(M[k].fromLive)) delete M[k]; });
   return M;
 }
