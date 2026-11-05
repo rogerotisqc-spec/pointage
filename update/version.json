@@ -1,6 +1,6 @@
 {
- "version": "6.1",
- "notes": "Nouveau : synchronisez vos appareils (Réglages → Mes appareils). Et un bouton réseau en haut de chaque partie pour la partager en direct.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.1.apk",
+ "version": "6.2",
+ "notes": "Correction : avec des appareils reliés, une partie suivie en direct n'est plus copiée en double dans l'historique.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.2.apk",
  "size": 201561
 }

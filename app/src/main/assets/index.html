@@ -3203,7 +3203,7 @@ async function liveStart(){
   if(!liveOk()) return toast('Le partage en direct n’est pas offert sur cet appareil');
   if(navigator.onLine === false) return toast('Il faut Internet pour partager la partie');
   const fresh = !g.share;
-  if(fresh){ g.share = {id: liveRand(9), tok: liveRand(16), k: liveRand(16)}; save(); }
+  if(fresh){ g.share = {id: liveRand(9), tok: liveRand(16), k: liveRand(16)}; g.liveId = g.share.id; save(); }
   toast('Préparation du partage…');
   try{ await livePush(g.id); }
   catch(e){ if(fresh && e.status === 503){ delete g.share; save(); S.liveErr = ''; render(); return toast(e.message); } }
@@ -3256,7 +3256,7 @@ async function livePoll(){
     if(S.live !== L) return;
     if(!d.same){
       let snap; try{ snap = await liveDec(L.k, d.iv, d.data); }catch(e){ L.err = 'Ce lien n’est pas valide (code QR incomplet ?)'; L.gone = true; return render(); }
-      L.g = snap.g; L.g.id = 'live:' + L.id; L.ver = d.ver; S.gameId = L.g.id; L.host = snap.host || null;
+      L.gid = snap.g.id; L.g = snap.g; L.g.id = 'live:' + L.id; L.ver = d.ver; S.gameId = L.g.id; L.host = snap.host || null;
       liveBase(L); liveTurnSeen(L); liveFollowSave(L);
       L.t = Date.now(); L.err = '';
       const ae = document.activeElement, typing = ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && $('app').contains(ae) && ae.type !== 'checkbox';
@@ -3637,11 +3637,14 @@ function liveFollowHtml(){
 // Garder une copie de la partie suivie dans son propre historique (statistiques comprises)
 function liveKeepHtml(g){
   const L = S.live; if(!g || !(g.finished || L.gone)) return '';
+  if(liveHere(L)) return `<p class="hint" style="margin:12px 2px 0;color:var(--ok)">✓ Cette partie est déjà dans votre historique (vos appareils sont reliés).</p>`;
   const kept = db.games.find(x => x.fromLive === L.id);
   return `<button class="btn block" style="margin-top:10px" data-a="liveKeep">${kept ? '💾 Mettre à jour ma copie' : '💾 Garder cette partie dans mon historique'}</button>`;
 }
+function liveHere(L){ return db.games.some(x => (L.gid && x.id === L.gid) || x.liveId === L.id); }
 function liveKeep(){
   const L = S.live, src = L && L.g; if(!src) return;
+  if(liveHere(L)){ render(); return toast('✓ Cette partie est déjà dans votre historique'); }
   const c = JSON.parse(JSON.stringify(src)); delete c.inbox; delete c.share;
   const link = p => { const q = db.players.find(x => pkey(x.name) === pkey(p.name)); if(q){ p.rid = q.id; p.guest = false; } else { delete p.rid; p.guest = true; } };
   c.players.forEach(link); if(c.members) Object.values(c.members).forEach(ms => ms.forEach(link));
@@ -3714,6 +3717,9 @@ function syncMerge(L, R, B){
     Object.keys(M).filter(k => k.startsWith('g:')).forEach(k => { const g = M[k]; (g.players || []).forEach(p => { if(p.rid && remap[p.rid]) p.rid = remap[p.rid]; }); if(g.members) Object.values(g.members).forEach(ms => ms.forEach(p => { if(p.rid && remap[p.rid]) p.rid = remap[p.rid]; })); });
     if(M['f:lastSel']) Object.keys(M['f:lastSel']).forEach(t => { M['f:lastSel'][t] = [...new Set((M['f:lastSel'][t] || []).map(id => remap[id] || id))]; });
   }
+  // une copie gardée depuis une partie en direct (fromLive) devient inutile quand la partie d’origine est là
+  const orig = new Set(Object.keys(M).filter(k => k.startsWith('g:') && M[k].liveId).map(k => M[k].liveId));
+  Object.keys(M).forEach(k => { if(k.startsWith('g:') && M[k].fromLive && orig.has(M[k].fromLive)) delete M[k]; });
   return M;
 }
 function syncApply(M){
