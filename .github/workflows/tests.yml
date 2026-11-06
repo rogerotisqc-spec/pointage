@@ -1,0 +1,28 @@
+name: Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Playwright
+        run: |
+          npm i --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Tests
+        run: tests/run.sh
+      - name: Copies d'écran des tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: copies-ecran
+          path: tests/.work/out/
+          retention-days: 7

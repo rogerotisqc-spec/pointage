@@ -14,7 +14,7 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 4. L'assistant hors ligne lit le manuel : `tools/inject_help.py` l'insère dans l'app à chaque build
    (`build.sh` et `make_pages.py`, marqueur `/*HELP*/`). Pour une nouvelle fonction, ajouter aussi une
    réponse rapide dans `HELP_FAQ` (index.html) et, au besoin, des synonymes dans `HELP_SYN`.
-   Test : `tests/testask.js` (questions types) sur `build/assets/index.html`.
+   Test : `tests/run.sh testask` (questions types).
 
 ## Structure
 
@@ -64,7 +64,9 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 ## Publier une version
 
 1. Monter `versionCode` (+1) et `versionName` dans `AndroidManifest.xml`.
-2. Tester (Playwright au format téléphone et tablette, sans erreur JS).
+2. Tester : `tests/run.sh` (40 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
+   voir `tests/README.md`). GitHub les relance à chaque push (`.github/workflows/tests.yml`). Nouveau test : `tests/testXXX.js`
+   avec `const T = require('./_env')` (T.app, T.build, T.src, T.out).
 3. `AAPT2=… ANDROID_JAR=… DX_JAR=… ./build.sh` (aapt2, android.jar API 29, dx 30.0.2 ; signature apksig
    par uber-apk-signer avec `keystore/pointage.p12`, alias `pointage`, mot de passe `pointage`).
 4. Mettre à jour le manuel (voir plus haut).

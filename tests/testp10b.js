@@ -1,0 +1,22 @@
+// Phase 10 : marqueur plein = où on est rendu, cercle pointillé = phase à réussir, petits points = chemin parcouru
+const T = require('./_env');
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch(); const errs = [];
+  const p = await (await b.newContext({viewport:{width:390,height:900}, deviceScaleFactor:2})).newPage(); p.on('pageerror', e => errs.push(e.message));
+  await p.goto(T.app);
+  await p.click('[data-a=setup][data-t=phase10]'); for (const n of ['Roger','Marie']) { await p.fill('#guestName', n); await p.click('[data-a=addGuest]'); } await p.click('[data-a=start]');
+  const state = () => p.evaluate(() => { const g = curGame(); return g.players.map(pl => { const row = n => document.querySelector(`[data-a=p10cell][data-k="${pl.key}"][data-n="${n}"]`);
+    const f = c => [...Array(12).keys()].filter(n => row(n) && row(n).querySelector(c)); return pl.name + ' plein=' + f('.mk') + ' pointillé=' + f('.nxt') + ' points=' + (f('.done-dot').join(',') || '-'); }).join(' | '); });
+  console.log('début :', await state());
+  await p.screenshot({path:T.out('p10-debut.png'), fullPage:true});
+  const k = await p.evaluate(() => curGame().players[0].key);
+  await p.click(`[data-a=p10cell][data-k="${k}"][data-n="1"]`); console.log('toast :', await p.textContent('#toast'));
+  console.log('Roger réussit la 1 :', await state());
+  await p.click(`[data-a=p10cell][data-k="${k}"][data-n="2"]`); await p.click(`[data-a=p10cell][data-k="${k}"][data-n="3"]`);
+  console.log('Roger réussit 2 et 3 :', await state());
+  await p.screenshot({path:T.out('p10-milieu.png'), fullPage:true});
+  await p.click(`[data-a=p10cell][data-k="${k}"][data-n="3"]`); console.log('toucher le marqueur → objectif :', (await p.textContent('#modal .lvl')).trim()); await p.evaluate(() => closeModal());
+  await p.click(`[data-a=p10cell][data-k="${k}"][data-n="0"]`); console.log('retour au départ, question :', (await p.textContent('#modal')).replace(/\s+/g, ' ').slice(0, 70)); await p.evaluate(() => closeModal());
+  await p.evaluate(k => { const g = curGame(); g.ph[k] = 11; save(); render(); }, k);
+  console.log('10 phases :', await state(), '| bandeau :', (await p.textContent('#app')).match(/10 phases ✓|Vise la phase \d+/g).join(', '));
+  console.log('erreurs', errs); await b.close(); })();

@@ -7,3 +7,7 @@ keystore/
 build/
 dist/
 tools/bin/
+
+# Tests
+tests/.work/
+node_modules/
