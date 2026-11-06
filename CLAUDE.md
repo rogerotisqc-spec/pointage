@@ -27,6 +27,8 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   installable (`docs/app/`), manuel, APK.
 - `tools/publish.sh notes.txt <clone du dépôt>` : dépose l'APK (`update/Pointage-X.Y.apk` et
   `update/Pointage.apk`), `update/version.json` (lu par le bouton de mise à jour) et reconstruit `docs/`.
+- `app/src/main/assets/adi-registration.properties` : jeton de vérification Google (Android Developer Console, compte
+  pointage.jeu@gmail.com) qui prouve que la clé de signature appartient à Roger ; à garder dans l’APK.
 - `tools/inject_key.py` : insère la clé des rapports (encodée, découpée) au moment de construire.
 - `server/worker.js` : relais IA (Cloudflare Worker `pointage-ia.rogerotisqc.workers.dev`, compte Cloudflare de
   Roger). Garde la clé Anthropic (secret ANTHROPIC_API_KEY), vérifie APP_TOKEN (= `keystore/ai.token`, injecté
