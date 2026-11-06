@@ -9,7 +9,7 @@ set -u
 cd "$(dirname "$0")/.."
 W=tests/.work; rm -rf "$W"; mkdir -p "$W/out"
 cp app/src/main/assets/index.html "$W/app.html"
-python3 tools/inject_help.py "$W/app.html" >/dev/null
+python3 tools/inject_help.py "$W/app.html" >/dev/null || { echo "inject_help.py a échoué (pip install beautifulsoup4 pillow)"; exit 1; }
 python3 - "$W" <<'PY'
 import re, sys
 w = sys.argv[1]; s = open(w + '/app.html').read()
@@ -23,7 +23,7 @@ b = base64.b64encode(b'cle-de-test-rapports').decode(); parts = [b[i:i+9] for i 
 os.makedirs(w + '/out/fbtest', exist_ok=True)
 open(w + '/out/fbtest/index.html', 'w').write(s.replace('__FB_KEY__', '.'.join(reversed(parts))))
 PY
-python3 tools/make_pages.py . "$W/docs" >/dev/null
+python3 tools/make_pages.py . "$W/docs" >/dev/null || { echo "make_pages.py a échoué"; exit 1; }
 node tests/mockrelay.js >/dev/null 2>&1 & RELAY=$!
 (cd "$W/docs" && exec python3 -m http.server 8766 >/dev/null 2>&1) & WEB=$!
 trap 'kill $RELAY $WEB 2>/dev/null' EXIT

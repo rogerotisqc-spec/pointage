@@ -13,6 +13,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Python
+        run: pip install beautifulsoup4 pillow
       - name: Playwright
         run: |
           npm i --no-save playwright@1.63.0
