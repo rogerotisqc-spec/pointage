@@ -63,6 +63,8 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 - Annonce du brasseur (annBtn, annCheck, ANN) : haut-parleur dans la bande dealerBanner (SPK_ON / SPK_OFF, une icône à la
   fois), réglage de l'appareil localStorage pointage.annonce ; après save(), si une manche s'est ajoutée à la partie ouverte
   (pas en suivi, pas pendant une synchro), speak(« Manche N : c'est à X de brasser. »).
+  dealerBanner est vide dès que endInfo(g) (but atteint) : le haut-parleur passe dans le bandeau « Terminer ». À « Terminer »
+  (A.finish) : annWinner/winText annoncent le gagnant, dans tous les jeux ; réglage aussi dans le menu ⋮ (data-a=annonce).
 - Skip-Bo en direct : dans LIVE_ENTRY, équipes permises (un téléphone par équipe, comme Mille Bornes). Message {v, out} ou
   {v, left:[cartes par membre]} ; l'hôte coche le gagnant (sbw) et remplit sb-CLÉ / sb-CLÉ-i.
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,

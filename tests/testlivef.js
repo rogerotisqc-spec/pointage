@@ -69,5 +69,23 @@ const T = require('./_env');
   await host.click('.dealer [data-a=annonce]'); const n = await host.evaluate(() => SAID.length);
   await addRound(); await host.waitForTimeout(600);
   console.log('recoupée, rien de plus :', await host.evaluate(k => SAID.length === k, n), '| bouton Changer marche :', !!(await host.$('.dealer [data-a=dealer]')));
+  // Partie gagnée : pas d'annonce du brasseur, haut-parleur dans le bandeau de fin, puis annonce du gagnant
+  await host.click('.dealer [data-a=annonce]');
+  const k2 = await host.evaluate(() => SAID.length);
+  await host.evaluate(() => { const g = curGame(); g.rounds.push({s: Object.fromEntries(g.players.map((p, i) => [p.key, i ? 500 : 0])), m: {}}); save(); render(); });
+  await host.waitForTimeout(600);
+  console.log('but atteint : brasseur annoncé ?', await host.evaluate(k => SAID.length > k, k2), '| bande du brasseur :', !!(await host.$('.dealer')), '| haut-parleur dans le bandeau de fin :', !!(await host.$('.banner [data-a=annonce]')));
+  await host.screenshot({path: T.out('livef-fin.png')});
+  await host.click('.banner [data-a=finish]'); await host.waitForTimeout(700);
+  console.log('gagnant annoncé :', await host.evaluate(() => SAID.at(-1)));
+  // Jeu sans brasseur (Yahtzee) : réglage dans le menu, gagnant annoncé à « Terminer »
+  await host.evaluate(() => tab('home')); await host.click('[data-a=setup][data-t=yahtzee]');
+  for (const n of ['Roger', 'Marie']) { await host.fill('#guestName', n); await host.click('[data-a=addGuest]'); }
+  await host.click('[data-a=start]');
+  await host.click('.top [data-a=menu]'); console.log('menu :', await host.textContent('#modal [data-a=annonce]'));
+  await host.click('#modal [data-a=annonce]'); console.log('menu fermé :', !(await host.$('#modal .menu')), '|', await host.evaluate(() => annOn()));
+  await host.click('.top [data-a=menu]'); await host.click('#modal [data-a=annonce]');
+  await host.click('.top [data-a=menu]'); await host.click('#modal [data-a=finish]'); await host.waitForTimeout(700);
+  console.log('Yahtzee terminé :', await host.evaluate(() => SAID.at(-1)));
   console.log('erreurs', errs); await b.close();
 })();

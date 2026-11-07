@@ -1,6 +1,6 @@
 {
- "version": "6.5",
- "notes": "Skip-Bo en partie en direct : chacun inscrit les cartes restantes de son talon (en équipes : un téléphone par équipe).\nAnnonce à voix haute du prochain brasseur après chaque manche : haut-parleur dans la bande « À … de brasser » pour l’activer ou la couper.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.5.apk",
- "size": 201641
+ "version": "6.6",
+ "notes": "Plus d'annonce du brasseur une fois le but atteint (tous les jeux).\nAnnonce du gagnant à voix haute en touchant « Terminer », dans tous les jeux, si les annonces sont activées (haut-parleur, ou menu ⋮ de la partie).",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.6.apk",
+ "size": 205737
 }

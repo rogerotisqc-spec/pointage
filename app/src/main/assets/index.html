@@ -130,6 +130,8 @@ table.sheet tfoot td.lbl{font-size:13px}
 .empty{padding:28px 16px;text-align:center;color:var(--muted)}
 .banner{margin:12px 16px 0;padding:12px 14px;border-radius:12px;background:var(--lead);border:1px solid var(--accent);display:flex;gap:10px;align-items:center}
 .banner .grow{flex:1;font-weight:600;font-size:14.5px}
+.banner .spk{flex:none;width:40px;height:38px;display:grid;place-items:center;border:0;border-radius:10px;background:none;color:var(--muted);cursor:pointer;margin:-6px 0}
+.banner .spk.on{color:var(--brand)}
 .banner.done{background:color-mix(in srgb,var(--ok) 14%,var(--surface));border-color:var(--ok)}
 /* modal */
 .modal-bg{position:fixed;inset:0;z-index:100;background:rgba(10,14,12,.5);display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
@@ -955,7 +957,7 @@ function dealerName(g){ return (realPlayers(g)[dealerIdx(g)] || {}).name || '?';
 const SPK_ON = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4z" fill="currentColor" fill-opacity=".15"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
 const SPK_OFF = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4z" fill="currentColor" fill-opacity=".15"/><path d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg>';
 function annOn(){ try{ return localStorage.getItem('pointage.annonce') === '1'; }catch(e){ return false; } }
-function annBtn(){ if(S.live) return ''; const on = annOn(); return `<button class="spk ${on ? 'on' : ''}" data-a="annonce" aria-pressed="${on}" aria-label="${on ? 'Annonce du brasseur à voix haute : activée (toucher pour couper)' : 'Annonce du brasseur à voix haute : coupée (toucher pour activer)'}">${on ? SPK_ON : SPK_OFF}</button>`; }
+function annBtn(){ if(S.live) return ''; const on = annOn(); return `<button class="spk ${on ? 'on' : ''}" data-a="annonce" aria-pressed="${on}" aria-label="${on ? 'Annonces à voix haute (brasseur, gagnant) : activées (toucher pour couper)' : 'Annonces à voix haute (brasseur, gagnant) : coupées (toucher pour activer)'}">${on ? SPK_ON : SPK_OFF}</button>`; }
 const ANN = {};
 function annText(g){ return `${GAMES[g.type].round} ${g.rounds.length + 1} : c’est à ${dealerName(g)} de brasser.`; }
 function annCheck(){
@@ -964,8 +966,15 @@ function annCheck(){
   if(was == null || n <= was || SYNC_SILENT || !annOn() || isTurnGame(g) || !dealerBanner(g)) return;
   if(speakOk()) setTimeout(() => speak(annText(g)), 350);
 }
+function winText(g){
+  const w = ranking(g).filter(x => x.rank === 1); if(!w.length) return '';
+  const names = w.map(x => x.p.name), many = names.length > 1 || (g.team && membersOf(g, w[0].p).length > 1);
+  const list = names.length > 1 ? names.slice(0, -1).join(', ') + ' et ' + names.at(-1) : names[0];
+  return `Partie terminée ! ${list} ${many ? 'remportent' : 'remporte'} la partie. Bravo !`;
+}
+function annWinner(g){ if(!S.live && annOn() && speakOk()){ const t = winText(g); if(t) setTimeout(() => speak(t), 400); } }
 function dealerBanner(g){
-  if(isTurnGame(g) || g.finished || (g.opts.holes && g.rounds.length >= g.opts.holes) || ((g.type === 'wizard' || g.type === 'train') && g.rounds.length >= g.opts.rounds)) return '';
+  if(isTurnGame(g) || g.finished || endInfo(g) || (g.opts.holes && g.rounds.length >= g.opts.holes) || ((g.type === 'wizard' || g.type === 'train') && g.rounds.length >= g.opts.rounds)) return '';
   const G = GAMES[g.type];
   return `<div class="dealer"><button class="dmain" data-a="dealer"><span class="ic">🃏</span><div class="grow">À <b>${esc(dealerName(g))}</b> de brasser<small>${G.round} ${g.rounds.length + 1}</small></div><span class="chg">Changer</span></button>${annBtn()}</div>`;
 }
@@ -1249,7 +1258,7 @@ function vSheet(){
             : (g.opts.target ? `Partie à ${fmt(g.opts.target)} · ${isLow(g)?'le plus bas gagne':'le plus haut gagne'}` : (isLow(g)?'Le plus bas gagne':'Le plus haut gagne'));
   return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="${g.type}" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="${g.type}" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(ranking(g).filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
-    ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
+    ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div>${annBtn()}<button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${dealerBanner(g)}${g.type === 'phase10' ? p10Board(g) + (g.rounds.length ? '<h2 class="sec" style="margin:20px 18px 0">Points</h2>' : '') : ''}${strip}${table}
     <div style="height:100px"></div>
     ${canAdd ? `<button class="btn primary fab" data-a="addRound">+ ${G.round} ${next}</button>` : ''}`;
@@ -1322,7 +1331,7 @@ function vFarkle(g){
         <div class="t num-t ${x.pts<0?'neg':''}">${x.pts>0?'+':''}${fmt(x.pts)}</div>${idx===g.turns.length-1 && !g.finished?`<button class="btn sm" data-a="fkUndo">Annuler</button>`:''}</div>`; }).join('')}</div>` : '';
   return `${topbar(gameName(g), `Partie à ${fmt(f.target)}`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="farkle" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="farkle" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
-    ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
+    ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div>${annBtn()}<button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${players}${panel}${log}<div style="height:40px"></div>`;
 }
 /* ---------- Petit train mexicain ---------- */
@@ -1432,7 +1441,7 @@ function vTriomino(g){
         <div class="t num-t ${x.pts < 0 ? 'neg' : ''}">${x.pts > 0 ? '+' : ''}${fmt(x.pts)}</div>${idx === g.turns.length - 1 && !g.finished ? `<button class="btn sm" data-a="trUndo">Annuler</button>` : ''}</div>`; }).join('')}</div>` : '';
   return `${topbar(gameName(g), `Partie à ${fmt(target)} · le plus haut gagne`, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="triomino" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="triomino" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x => x.rank === 1).map(x => x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
-    ${!g.finished && over.length ? `<div class="banner"><div class="grow">🏁 ${esc(over.map(p => p.name).join(', '))} ${over.length > 1 ? 'dépassent' : 'dépasse'} ${fmt(target)} : ${lastEnd ? 'la partie est finie' : 'on termine cette manche'}</div>${lastEnd ? '<button class="btn sm primary" data-a="finish">Terminer</button>' : ''}</div>` : ''}
+    ${!g.finished && over.length ? `<div class="banner"><div class="grow">🏁 ${esc(over.map(p => p.name).join(', '))} ${over.length > 1 ? 'dépassent' : 'dépasse'} ${fmt(target)} : ${lastEnd ? 'la partie est finie' : 'on termine cette manche'}</div>${lastEnd ? annBtn() + '<button class="btn sm primary" data-a="finish">Terminer</button>' : ''}</div>` : ''}
     ${strip}${panel}${log}<div style="height:40px"></div>`;
 }
 function trNext(g){ g.cur = (g.cur + 1) % g.players.length; }
@@ -1521,7 +1530,7 @@ function vYahtzee(g){
       <p class="hint" style="margin:6px 0 0">${d.length < 5 ? (view.key === cur.key || done ? `Tour de <b>${esc(view.name)}</b> : touchez les 5 dés obtenus${d.length ? ` (${d.length}/5)` : ''}, ou touchez directement une case.` : `Feuille de <b>${esc(view.name)}</b> (pour corriger) · c’est au tour de <b>${esc(cur.name)}</b>, touchez son nom en haut.`) : `Touchez la case à inscrire${joker ? ' · Yahtzee de plus : joker' + (sc.yz === 50 ? ' et prime de 100' : '') : ''}.`}</p></div>`;
   return `${topbar(gameName(g), 'Le plus haut total gagne', histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="yahtzee" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="yahtzee" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x => x.rank === 1).map(x => x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
-    ${done && !g.finished ? `<div class="banner"><div class="grow">🏁 Toutes les cases sont remplies</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
+    ${done && !g.finished ? `<div class="banner"><div class="grow">🏁 Toutes les cases sont remplies</div>${annBtn()}<button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${chips}${tray}
     <div class="yzsec"><h2 class="sec">Section supérieure</h2><span class="hint">${parts.up >= 63 ? '✓ Prime de 35 gagnée' : `Prime de 35 à 63 : encore ${63 - parts.up}`}</span></div>
     <div class="yzprog"><i style="width:${pct}%"></i></div>
@@ -1808,7 +1817,7 @@ function vWizard(g){
   const sub = done < N ? `Manche ${cards} de ${N} · ${cards} carte${cards>1?'s':''}${cards === N ? ' · sans atout' : ''}` : `${N} manches jouées`;
   return `${topbar(gameName(g), sub, histBtns(g) + `<button class="icon-btn sm" data-a="rules" data-t="wizard" aria-label="Règles">📖</button><button class="icon-btn sm ask" data-a="ask" data-t="wizard" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`)}
     ${g.finished ? `<div class="banner done"><div class="grow">Partie terminée · ${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(', '))} gagne</div><button class="btn sm" data-a="results">Résultat</button></div>` : ''}
-    ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div><button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
+    ${end ? `<div class="banner"><div class="grow">🏁 ${esc(end)}</div>${annBtn()}<button class="btn sm primary" data-a="finish">Terminer</button></div>` : ''}
     ${dealerBanner(g)}${strip}${table}<div style="height:100px"></div>
     ${canPlay ? `<button class="btn primary fab" data-a="wzOpen">${g.pend ? `Plis faits · manche ${cards}` : `Mises · manche ${cards}`}</button>` : ''}`;
 }
@@ -2505,6 +2514,7 @@ function openMenu(){
       ${!g.finished && !g.team ? `<button class="li" data-a="addLate">➕ Ajouter un joueur</button>` : ''}
       <button class="li" data-a="rematch">🔁 Revanche (nouvelle partie)</button>
       <button class="li" data-a="chart">📈 Évolution des scores</button>
+      <button class="li" data-a="annonce">${annOn() ? '🔇 Couper les annonces à voix haute' : '🔊 Activer les annonces à voix haute'}</button>
       ${liveOk() ? (g.share ? `<button class="li" data-a="liveShow">📡 Partie en direct : code QR</button>` : `<button class="li" data-a="liveStart">📡 Partager la partie en direct</button>`) : ''}
       <button class="li" data-a="ask">💬 Poser une question à Ludo</button>
       ${anHasData(g) ? `<button class="li" data-a="analyse">🔍 Analyse de la partie par Ludo</button>` : ''}
@@ -2516,6 +2526,7 @@ function openMenu(){
 // Cherche la réponse dans : réponses rapides (ci-dessous), règles de chaque jeu, nos règles maison, manuel (inséré au build).
 const HELP_MANUAL = /*HELP*/[]/*HELP*/;
 const HELP_FAQ = [
+  {q:['annoncer le gagnant','qui a gagné à voix haute','annonce du gagnant','dire le gagnant'], a:'Si les annonces à voix haute sont activées (haut-parleur non barré, ou menu ⋮ de la partie), l’app dit qui a gagné quand vous touchez Terminer, dans tous les jeux.'},
   {q:['annonce du brasseur','dire à voix haute qui brasse','annoncer le brasseur','haut-parleur','couper l’annonce','qui brasse à voix haute'], a:'Touchez le haut-parleur au bout du bandeau « À … de brasser ». Activé, le téléphone qui tient la feuille dit à voix haute à qui c’est de brasser dès qu’une manche est enregistrée. Touchez-le encore pour le couper (haut-parleur barré).'},
   {q:['skip-bo en direct','skip bo chacun son téléphone','inscrire mon talon','cartes restantes talon direct'], a:'En partie en direct, chacun touche son nom, inscrit les cartes restantes dans son talon ou coche « J’ai vidé mon talon », puis Envoyer. En équipes, un seul téléphone par équipe inscrit les cartes de chaque membre. La feuille calcule 25 + 5 par carte pour le gagnant.'},
   {q:['corriger une manche','je me suis trompé de pointage','modifier un pointage','changer un score','erreur dans les points','corriger une erreur'], a:'Touchez la manche dans le tableau : la fenêtre de saisie s’ouvre avec les valeurs déjà inscrites. Corrigez, puis touchez Enregistrer. Pour défaire la toute dernière action, la flèche ↶ en haut de la feuille suffit.'},
@@ -3327,7 +3338,7 @@ function vLive(){
   if(!g) return `${head}<main class="pad"><div class="card" style="padding:18px;display:flex;align-items:center;gap:12px"><span class="spin"></span><b>Ouverture de la partie…</b></div>${L && L.err ? `<p class="hint">⚠︎ ${esc(L.err)}</p>` : ''}</main>`;
   const r = ranking(g), med = ['🥇','🥈','🥉'], turn = isTurnGame(g) || g.type === 'yahtzee';
   const who = g.finished ? '' : turn ? (g.players[g.type === 'yahtzee' ? (g.yz ? g.yz.cur : 0) : g.cur] ? '🎲 Au tour de <b>' + esc(g.players[g.type === 'yahtzee' ? (g.yz ? g.yz.cur : 0) : g.cur].name) + '</b>' : '')
-    : (g.type !== 'acquire' ? '🃏 À <b>' + esc(dealerName(g)) + '</b> de brasser' : '');
+    : (g.type !== 'acquire' && !endInfo(g) ? '🃏 À <b>' + esc(dealerName(g)) + '</b> de brasser' : '');
   return `${head}<main class="pad">
     <div class="livebar ${L.err ? 'err' : ''}" style="margin:0 0 12px"><span class="dot"></span><span class="grow">${L.gone ? 'Le partage est terminé : voici les derniers pointages reçus.' : L.err ? esc(L.err) : '<span id="liveAge">' + liveAgeTxt(L) + '</span>'}</span></div>
     ${liveEntryHtml(g)}
@@ -4139,7 +4150,8 @@ const A = {
   liveForget: el => { liveFollowDrop(el.dataset.id); render(); },
   liveKeep: () => liveKeep(),
   annonce: () => { const on = !annOn(); try{ localStorage.setItem('pointage.annonce', on ? '1' : '0'); }catch(e){} render();
-    if(on){ audioUnlock(); const g = curGame(); toast('🔊 Annonce du brasseur activée'); if(g && speakOk()) speak(annText(g)); } else { speakStop(); toast('🔇 Annonce du brasseur coupée'); } },
+    if(document.querySelector('#modal .menu')) closeModal();
+    if(on){ audioUnlock(); const g = curGame(); toast('🔊 Annonces à voix haute activées'); if(g && dealerBanner(g) && speakOk()) speak(annText(g)); } else { speakStop(); toast('🔇 Annonces à voix haute coupées'); } },
   syncQr: () => syncShowQr(),
   syncSend: () => syncSend(),
   syncJoin: () => syncJoin(),
@@ -4183,7 +4195,7 @@ const A = {
   askLocal: () => { speakStop(); askOffline(S.askQ, false, ''); },
   askSrc: el => { const x = S.askAi && S.askAi.sources[+el.dataset.i]; if(x) openUrl(x.url); },
   iaToggle: () => { const on = !aiPref(); try{ localStorage.setItem('pointage.ia', on ? '1' : '0'); }catch(e){} toast(on ? 'IA activée' : 'IA désactivée : assistant hors ligne seulement'); render(); },
-  finish: () => { closeModal(); const g = curGame(); g.finished = true; g.updated = Date.now(); save(); go('results'); },
+  finish: () => { closeModal(); const g = curGame(); g.finished = true; g.updated = Date.now(); save(); go('results'); annWinner(g); },
   results: () => go('results'),
   reopen: () => { closeModal(); const g = curGame(); g.finished = false; g.updated = Date.now(); save(); render(); },
   undoRound: () => { closeModal(); const g = curGame(); confirmBox('Supprimer la dernière manche ?', 'Supprimer', () => { g.rounds.pop(); save(); render(); }, true); },
