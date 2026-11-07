@@ -60,13 +60,18 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   même partie changée des deux côtés : la plus récente ; joueurs de même nom fusionnés (rid remappé) ; écriture versionnée
   (409 → recombiner). Synchro après save() (4 s), à l'ouverture et toutes les 60 s.
 - Bouton réseau (NET_SVG, liveTopBtn) en haut de chaque partie, ajouté par histBtns.
+- Annonce du brasseur (annBtn, annCheck, ANN) : haut-parleur dans la bande dealerBanner (SPK_ON / SPK_OFF, une icône à la
+  fois), réglage de l'appareil localStorage pointage.annonce ; après save(), si une manche s'est ajoutée à la partie ouverte
+  (pas en suivi, pas pendant une synchro), speak(« Manche N : c'est à X de brasser. »).
+- Skip-Bo en direct : dans LIVE_ENTRY, équipes permises (un téléphone par équipe, comme Mille Bornes). Message {v, out} ou
+  {v, left:[cartes par membre]} ; l'hôte coche le gagnant (sbw) et remplit sb-CLÉ / sb-CLÉ-i.
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 
 ## Publier une version
 
 1. Monter `versionCode` (+1) et `versionName` dans `AndroidManifest.xml`.
-2. Tester : `tests/run.sh` (40 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
+2. Tester : `tests/run.sh` (41 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
    voir `tests/README.md`). GitHub les relance à chaque push (`.github/workflows/tests.yml`). Nouveau test : `tests/testXXX.js`
    avec `const T = require('./_env')` (T.app, T.build, T.src, T.out).
 3. `AAPT2=… ANDROID_JAR=… DX_JAR=… ./build.sh` (aapt2, android.jar API 29, dx 30.0.2 ; signature apksig
