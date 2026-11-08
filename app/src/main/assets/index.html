@@ -2486,6 +2486,9 @@ function saveRound(){
     : g.type === 'skipbo' ? (pk => pk !== sbW && [...document.querySelectorAll(`#modal [data-sb][data-team="${pk}"]`)].every(i => i.value.trim() === ''))
     : (pk => { const i = $('in-' + pk); return !!i && i.value.trim() === ''; });
   if(M.round === null && liveWarn(liveMissing(g, isEmpty))) return;
+  if(g.type === 'skyjo' && M.skClaim && !document.querySelector('input[name=skfin]:checked')){
+    const w = $('skClaim'); if(w){ w.scrollIntoView({block: 'center'}); w.animate([{opacity: .3}, {opacity: 1}], {duration: 300, iterations: 2}); }
+    return toast('Choisissez qui a retourné toutes ses cartes en premier'); }
   if(g.type === 'skyjo' && M.round === null && !document.querySelector('input[name=skfin]:checked') && modalWarn('finWarned', '⚠︎ Personne n’a retourné toutes ses cartes en premier ? Choisissez le joueur en haut de la fenêtre, ou touchez Enregistrer encore pour enregistrer sans lui.')) return;
   const liveMiss = g.share && M.round === null ? g.players.filter(p => isEmpty(p.key)).map(p => p.key) : [];
   if(g.type === 'millebornes'){
@@ -3432,7 +3435,6 @@ function liveApply(g, m){
   if(g.type === 'millebornes'){ e.mb = liveMbClean(m.mb); e.v = mbPts(e.mb, null); }
   if(g.type === 'skipbo' && Array.isArray(m.left) && !m.out){ e.left = m.left.slice(0, 4).map(n => Math.max(0, Math.min(40, num(n)))); e.v = e.left.reduce((a, b) => a + b, 0); }
   if(g.type === 'skipbo' && m.out) Object.keys(g.inbox.e).forEach(k => { if(k !== m.pk && g.inbox.e[k].out) delete g.inbox.e[k]; });
-  if(m.fin) Object.values(g.inbox.e).forEach(o => { delete o.fin; });
   g.inbox.e[m.pk] = e; g.updated = Date.now();
   const unit = g.type === 'wizard' ? (key.endsWith('b') ? ' (mise)' : ' pli' + (e.v > 1 ? 's' : '')) : ' point' + (Math.abs(e.v) > 1 ? 's' : '');
   toast(`📥 ${p.name} : ${e.out ? (g.type === 'train' ? 'a posé tous ses dominos' : g.type === 'skipbo' ? 'a vidé son talon 🏁' : 'a terminé la manche, 0 point') : g.type === 'skipbo' ? fmt(e.v) + ' carte' + (e.v > 1 ? 's' : '') + ' dans le talon' : fmt(e.v) + unit}`);
@@ -3461,8 +3463,14 @@ function liveOpenInbox(focus){
     sbUpdate(); return; }
   if(g.type === 'millebornes'){ Object.keys(ib.e).forEach(pk => { if(M.mb[pk] && ib.e[pk].mb) M.mb[pk] = JSON.parse(JSON.stringify(ib.e[pk].mb)); });
     const nx = g.players.find(p => !ib.e[p.key]); M.mbSel = nx ? nx.key : g.players[0].key; mbRender(); return; }
-  Object.keys(ib.e).forEach(pk => { const e = ib.e[pk], i = $('in-' + pk); if(i) i.value = e.v;
-    if(e.fin){ const r = document.querySelector(`input[name=skfin][value="${pk}"]`); if(r) r.checked = true; } });
+  Object.keys(ib.e).forEach(pk => { const e = ib.e[pk], i = $('in-' + pk); if(i) i.value = e.v; });
+  // Skyjo : un seul joueur dit avoir terminé en premier → choisi ; plusieurs → rien de choisi, avertissement, choix obligatoire
+  const claims = g.type === 'skyjo' ? g.players.filter(p => ib.e[p.key] && ib.e[p.key].fin) : [];
+  if(claims.length === 1){ const r = document.querySelector(`input[name=skfin][value="${claims[0].key}"]`); if(r) r.checked = true; }
+  if(claims.length > 1){ M.skClaim = claims.map(p => p.key);
+    const q = [...document.querySelectorAll('#modal p')].find(x => /en premier \?/.test(x.textContent));
+    if(q){ const w = document.createElement('p'); w.id = 'skClaim'; w.className = 'neg'; w.style.cssText = 'margin:0 0 8px;font-weight:700';
+      w.textContent = `⚠︎ ${claims.map(p => p.name).join(claims.length > 2 ? ', ' : ' et ').replace(/, ([^,]*)$/, ' et $1')} disent avoir retourné toutes leurs cartes en premier : choisissez le bon joueur.`; q.after(w); } }
   // Skyjo : tous les autres ont envoyé sans cocher « en premier » → c'est sûrement le téléphone maître (modifiable)
   if(g.type === 'skyjo' && me && !Object.values(ib.e).some(e => e.fin) && g.players.every(p => p.key === me || ib.e[p.key])){
     const r = document.querySelector(`input[name=skfin][value="${me}"]`); if(r) r.checked = true; }
@@ -3472,7 +3480,7 @@ function liveInboxHtml(g){
   const ib = liveInboxNow(g); if(!ib || g.type === 'yahtzee') return '';
   const me = g.share && g.share.me, got = g.players.filter(p => ib.e[p.key]), wait = g.players.filter(p => !ib.e[p.key] && p.key !== me);
   const what = g.type === 'wizard' ? (ib.key.endsWith('b') ? 'mises reçues' : 'plis reçus') : g.type === 'skipbo' ? 'cartes restantes' : 'points reçus';
-  return `<div class="livebar inbox" id="liveinbox"><span>📥</span><span class="grow">${GAMES[g.type].round} ${g.rounds.length + 1} · ${what} : ${got.map(p => esc(p.name) + ' ' + (ib.e[p.key].out ? '🏁' : fmt(ib.e[p.key].v)) + (ib.e[p.key].ph ? ' ✓' : '')).join(', ')}${wait.length ? `<small>En attente : ${wait.map(p => esc(p.name)).join(', ')}</small>` : `<small>${me && g.players.some(p => p.key === me) && !ib.e[me] ? 'Tous les autres ont envoyé : à vous d’inscrire vos points.' : 'Tout le monde a envoyé.'}</small>`}</span><button class="btn sm primary" data-a="liveOpenInbox">Inscrire</button></div>`;
+  return `<div class="livebar inbox" id="liveinbox"><span>📥</span><span class="grow">${GAMES[g.type].round} ${g.rounds.length + 1} · ${what} : ${got.map(p => esc(p.name) + ' ' + (ib.e[p.key].out ? '🏁' : fmt(ib.e[p.key].v)) + (ib.e[p.key].ph ? ' ✓' : '') + (ib.e[p.key].fin ? ' 🏁' : '')).join(', ')}${g.type === 'skyjo' && got.filter(p => ib.e[p.key].fin).length > 1 ? `<small class="neg" style="font-weight:700">⚠︎ Plus d’un joueur dit avoir terminé en premier</small>` : ''}${wait.length ? `<small>En attente : ${wait.map(p => esc(p.name)).join(', ')}</small>` : `<small>${me && g.players.some(p => p.key === me) && !ib.e[me] ? 'Tous les autres ont envoyé : à vous d’inscrire vos points.' : 'Tout le monde a envoyé.'}</small>`}</span><button class="btn sm primary" data-a="liveOpenInbox">Inscrire</button></div>`;
 }
 // Avant d’enregistrer : prévenir s’il manque des points (une fois ; on touche Enregistrer encore pour passer outre)
 function liveMissing(g, isEmpty){
