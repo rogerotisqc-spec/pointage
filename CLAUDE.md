@@ -59,6 +59,8 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   AES-GCM) de tout db sauf share/inbox ; fusion à trois voies avec les empreintes de la dernière synchro (pointage.syncb) ;
   même partie changée des deux côtés : la plus récente ; joueurs de même nom fusionnés (rid remappé) ; écriture versionnée
   (409 → recombiner). Synchro après save() (4 s), à l'ouverture et toutes les 60 s.
+- Accueil : CATS = catégories (encadrés .cat, étiquette .cat-l), jeux triés par nom (catSort, localeCompare fr) ;
+  nouveau jeu : l'ajouter à une catégorie de CATS. Grand écran : catégories de 2 côte à côte, cartes sur 4 colonnes.
 - Bouton réseau (NET_SVG, liveTopBtn) en haut de chaque partie, ajouté par histBtns.
 - Annonce du brasseur (annBtn, annCheck, ANN) : haut-parleur dans la bande dealerBanner (SPK_ON / SPK_OFF, une icône à la
   fois), réglage de l'appareil localStorage pointage.annonce ; après save(), si une manche s'est ajoutée à la partie ouverte
@@ -90,7 +92,7 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 
 ## Règles de jeu de la famille (déjà dans l'app)
 
-- Jeu de dés : partie à 25 000, entrée à 1 000 en un tour, objectif à atteindre exactement (un
+- Farkle (jeu de dés, type farkle) : partie à 25 000, entrée à 1 000 en un tour, objectif à atteindre exactement (un
   dépassement termine le tour sans gain ni perte), pénalité de 1 000 à partir de 20 000 seulement si
   aucun dé n'a compté pendant le tour, six dés identiques = victoire immédiate.
 - Uno : choix au début de la partie. Officielle (par défaut) : celui qui termine la manche marque les

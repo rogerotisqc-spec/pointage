@@ -1,6 +1,6 @@
 {
- "version": "6.7",
- "notes": "Skyjo : question « Qui a retourné toutes ses cartes en premier ? » en gras, et avertissement si personne n'est choisi.\nPartie en direct Skyjo : si tous les autres ont envoyé sans cocher la case, le téléphone maître est choisi d'office (modifiable).",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.7.apk",
+ "version": "6.8",
+ "notes": "Accueil : les jeux sont rangés par catégorie (cartes, dés, dominos et tuiles, plateau, autres), en ordre alphabétique.\nLe jeu de dés s'appelle maintenant Farkle.",
+ "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.8.apk",
  "size": 205737
 }
