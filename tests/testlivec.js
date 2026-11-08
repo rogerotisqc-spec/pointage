@@ -30,8 +30,10 @@ const { chromium } = require('playwright');
   await host.click('#modal [data-a=saveRound]'); await host.waitForTimeout(150);
   console.log('avertissement :', (await host.textContent('#modal .mfoot p')).trim(), '| manche enregistrée ?', await host.evaluate(() => curGame().rounds.length));
   await host.screenshot({path:T.out('livec-warn.png')});
+  await host.click('#modal [data-a=saveRound]'); await host.waitForTimeout(150);
+  console.log('2e avertissement :', (await host.textContent('#modal .mfoot p')).trim().slice(0, 50));
   await host.click('#modal [data-a=saveRound]');
-  console.log('après 2e toucher :', await host.evaluate(() => { const r = curGame().rounds[0]; return JSON.stringify({n: curGame().rounds.length, miss: r.m.miss && r.m.miss.length}); }));
+  console.log('après 3e toucher :', await host.evaluate(() => { const r = curGame().rounds[0]; return JSON.stringify({n: curGame().rounds.length, miss: r.m.miss && r.m.miss.length}); }));
   // Léa envoie en retard (manche 1)
   await lea.waitForTimeout(100);
   await lea.evaluate(() => { const L = S.live, d = liveDraft(L, '0'); d.v = '7'; liveSendMsg({t: 'r', key: '0', pk: L.me, v: 7}); });

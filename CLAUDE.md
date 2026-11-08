@@ -104,6 +104,8 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   (p10At), cercle pointillé = phase à réussir (le toucher = phase réussie), petits points = chemin parcouru.
 - Skyjo : règles officielles (partie à 100, le plus bas gagne, colonne de 3 identiques retirée,
   doublement de celui qui termine s'il n'a pas strictement le plus bas et que son pointage est positif).
+  Personne de choisi (skfin) → avertissement modalWarn('finWarned') au 1er Enregistrer. En direct : si tous les autres ont
+  envoyé sans « en premier », liveOpenInbox choisit d'office le téléphone maître (g.share.me).
 - Wizard : 3 à 6 joueurs, 60 ÷ joueurs manches (k cartes à la manche k), mises puis plis (g.pend garde
   les mises en cours), réussie = 20 + 10 par pli, ratée = −10 par pli d'écart, le plus haut gagne.
   Règle maison au choix : le total des mises ne doit pas égaler le nombre de cartes.

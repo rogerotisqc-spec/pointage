@@ -87,5 +87,25 @@ const T = require('./_env');
   await host.click('.top [data-a=menu]'); await host.click('#modal [data-a=annonce]');
   await host.click('.top [data-a=menu]'); await host.click('#modal [data-a=finish]'); await host.waitForTimeout(700);
   console.log('Yahtzee terminé :', await host.evaluate(() => SAID.at(-1)));
+  // ---------- Skyjo : personne n'a coché « en premier » ----------
+  r = await start('skyjo', ['Roger', 'Marie', 'Léa'], null, 'Roger');
+  const sm = await open(r.link), sl = await open(r.link);
+  await sm.click('[data-a=liveMe] >> text=Marie'); await sl.click('[data-a=liveMe] >> text=Léa');
+  console.log('case en gras chez Marie :', await sm.evaluate(() => !!document.querySelector('label:has(#liveX-fin) b')));
+  await sm.fill('#liveVal', '15'); await sm.click('[data-a=liveSendScore]');
+  await sl.fill('#liveVal', '9'); await sl.click('[data-a=liveSendScore]');
+  await host.waitForFunction(() => M && document.querySelector('#modal [data-a=saveRound]'), null, {timeout: 10000}); await host.waitForTimeout(300);
+  console.log('maître coché d’office :', await host.evaluate(() => { const v = (document.querySelector('input[name=skfin]:checked') || {}).value; return v ? curGame().players.find(p => p.key === v).name : 'personne'; }),
+    '| question en gras :', await host.evaluate(() => getComputedStyle([...document.querySelectorAll('#modal p')].find(p => /en premier/.test(p.textContent))).fontWeight));
+  await host.keyboard.type('12'); await host.click('#modal [data-a=saveRound]');
+  console.log('Skyjo manche 1 :', await host.evaluate(() => curGame().players.map(p => p.name + ' ' + curGame().rounds[0].s[p.key]).join(', ')), '(Roger 12 × 2 = 24 attendu)');
+  // Un seul téléphone : avertissement si personne n'est coché
+  await host.evaluate(() => { const g = curGame(); delete g.share; g.inbox = null; save(); render(); });
+  await host.click('[data-a=addRound]');
+  await host.evaluate(() => curGame().players.forEach((p, i) => { $('in-' + p.key).value = String(5 + i); }));
+  await host.click('#modal [data-a=saveRound]'); await host.waitForTimeout(150);
+  console.log('avertissement :', (await host.textContent('#modal .mfoot p')).trim().slice(0, 60), '| enregistrée ?', await host.evaluate(() => curGame().rounds.length));
+  await host.click('#modal [data-a=saveRound]');
+  console.log('2e toucher, manches :', await host.evaluate(() => curGame().rounds.length));
   console.log('erreurs', errs); await b.close();
 })();
