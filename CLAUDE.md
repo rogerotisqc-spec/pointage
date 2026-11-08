@@ -69,13 +69,18 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   (A.finish) : annWinner/winText annoncent le gagnant, dans tous les jeux ; réglage aussi dans le menu ⋮ (data-a=annonce).
 - Skip-Bo en direct : dans LIVE_ENTRY, équipes permises (un téléphone par équipe, comme Mille Bornes). Message {v, out} ou
   {v, left:[cartes par membre]} ; l'hôte coche le gagnant (sbw) et remplit sb-CLÉ / sb-CLÉ-i.
+- Compteur de téléchargements (relais : /apk, /stats ; tables D1 dl et dlseen) : version.json « apk » = relais
+  `…/apk?v=X.Y&k=maj` (302 vers raw GitHub), « apk2 » = lien direct (l'app réessaie avec apk2 si le relais échoue,
+  onUpdateError) ; page d'installation : `…/apk?v=X.Y&k=new` + « Lien direct ». Unique = empreinte (IP, navigateur,
+  version, type, jour), gardée 3 jours, jamais l'IP. Robots ignorés (BOTS). Tableau de bord : `tools/stats/index.html` →
+  docs/stats/ (app web installable, make_pages.py), code = secret STATS_KEY du relais (en-tête X-Stats-Key).
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 
 ## Publier une version
 
 1. Monter `versionCode` (+1) et `versionName` dans `AndroidManifest.xml`.
-2. Tester : `tests/run.sh` (41 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
+2. Tester : `tests/run.sh` (42 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
    voir `tests/README.md`). GitHub les relance à chaque push (`.github/workflows/tests.yml`). Nouveau test : `tests/testXXX.js`
    avec `const T = require('./_env')` (T.app, T.build, T.src, T.out).
 3. `AAPT2=… ANDROID_JAR=… DX_JAR=… ./build.sh` (aapt2, android.jar API 29, dx 30.0.2 ; signature apksig

@@ -1,6 +1,7 @@
 {
- "version": "6.9",
- "notes": "Skyjo en direct : si plus d'un joueur dit avoir retourné toutes ses cartes en premier, l'app le signale et il faut choisir le bon joueur avant d'enregistrer.",
- "apk": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.9.apk",
+ "version": "6.10",
+ "notes": "Compteur de téléchargements (version et jour seulement, aucune donnée personnelle) et tableau de bord protégé pour Roger.\nSi le compteur ne répond pas, la mise à jour se télécharge directement depuis GitHub.",
+ "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.10&k=maj",
+ "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.10.apk",
  "size": 205737
 }

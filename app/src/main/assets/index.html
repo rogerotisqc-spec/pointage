@@ -2257,12 +2257,15 @@ window.onUpdateInfo = text => {
   const quiet = UP.quiet;
   let rel = null; try{ rel = text ? JSON.parse(text) : null; }catch(e){}
   if(rel && rel.version && rel.apk && newer(rel.version, appVersion())){
-    UP = {state:'available', latest: String(rel.version), notes: rel.notes || '', url: rel.apk, size: rel.size};
+    UP = {state:'available', latest: String(rel.version), notes: rel.notes || '', url: rel.apk, url2: rel.apk2 || '', size: rel.size};
   } else UP = {state:'none'};
   if(!(quiet && UP.state === 'none')) render();
 };
 window.onUpdateProgress = pct => { UP.state = 'downloading'; UP.pct = pct; const b = $('upPct'); if(b){ b.style.width = pct + '%'; $('upTxt').textContent = pct < 100 ? 'Téléchargement… ' + pct + ' %' : 'Ouverture de l’installation…'; } else if(S.view === 'settings') render(); };
-window.onUpdateError = msg => { const q = UP.quiet && UP.state === 'checking'; UP = Object.assign({}, UP, {state: q ? 'idle' : 'error', msg}); if(!q) render(); };
+window.onUpdateError = msg => {
+  // Téléchargement par le compteur raté → on réessaie une fois avec le lien direct de GitHub
+  if(UP.state === 'downloading' && UP.url2 && UP.url !== UP.url2){ UP.url = UP.url2; UP.pct = 0; bridge.installUpdate(UP.url); return; }
+  const q = UP.quiet && UP.state === 'checking'; UP = Object.assign({}, UP, {state: q ? 'idle' : 'error', msg}); if(!q) render(); };
 window.onUpdateNeedsPermission = () => { UP.state = 'perm'; render(); };
 window.onUpdateDone = () => { UP = {state:'none'}; toast('Mise à jour installée'); render(); };
 function updateBanner(){

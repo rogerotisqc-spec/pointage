@@ -11,13 +11,15 @@
 // Liaison KV facultative (Settings → Bindings) : nom LIMITS, pour compter les questions.
 // Liaison D1 facultative (Settings → Bindings) : nom DB, pour les parties en direct (adresses /live/…).
 //   Le relais ne garde que des données chiffrées par les téléphones (la clé reste dans le code QR) ; effacées après 3 jours.
+//   La même base compte aussi les téléchargements de l'APK (adresse /apk, tables dl et dlseen : aucune adresse IP gardée).
+//   STATS_KEY          (secret)  code du tableau de bord des téléchargements (adresse /stats) ; inventé par Roger
 
 const MODEL = 'claude-haiku-5-5';
 const MANUAL_URL = 'https://rogerotisqc-spec.github.io/pointage/manuel/';
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-App-Token',
+  'Access-Control-Allow-Headers': 'Content-Type, X-App-Token, X-Stats-Key',
   'Access-Control-Max-Age': '86400'
 };
 
@@ -242,11 +244,62 @@ async function synth(env, text, voice, rate) {
   return bytes;
 }
 
+// ---------- Compteur de téléchargements de l'APK ----------
+// /apk?v=6.10&k=new (page d'installation) ou k=maj (bouton de mise à jour de l'app) : on compte, puis on renvoie vers l'APK.
+const APK_BASE = 'https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/';
+const BOTS = /bot|crawl|spider|preview|facebookexternalhit|whatsapp|slack|discord|telegram|skype|linkedin|embedly|curl|wget|python|headless|monitor/i;
+let DL_READY = false;
+function dayTo() { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto' }).format(new Date()); }
+async function dlReady(db) {
+  if (DL_READY) return;
+  await db.batch([
+    db.prepare('CREATE TABLE IF NOT EXISTS dl (day TEXT NOT NULL, ver TEXT NOT NULL, kind TEXT NOT NULL, n INTEGER NOT NULL, u INTEGER NOT NULL, PRIMARY KEY (day, ver, kind))'),
+    db.prepare('CREATE TABLE IF NOT EXISTS dlseen (h TEXT PRIMARY KEY, day TEXT NOT NULL)')
+  ]);
+  DL_READY = true;
+}
+async function dlCount(env, request, ver, kind) {
+  const db = env.DB; await dlReady(db);
+  const day = dayTo(), ip = request.headers.get('CF-Connecting-IP') || '', ua = request.headers.get('User-Agent') || '';
+  // « unique » = même appareil (adresse + navigateur), même version, même jour : seule l'empreinte est gardée, 3 jours
+  const h = await sha([ip, ua, ver, kind, day].join('|'));
+  const seen = await db.prepare('INSERT OR IGNORE INTO dlseen (h, day) VALUES (?, ?)').bind(h, day).run();
+  const u = seen.meta && seen.meta.changes ? 1 : 0;
+  await db.prepare('INSERT INTO dl (day, ver, kind, n, u) VALUES (?, ?, ?, 1, ?) ON CONFLICT (day, ver, kind) DO UPDATE SET n = n + 1, u = u + excluded.u').bind(day, ver, kind, u).run();
+  if (Math.random() < 0.05) {
+    const old = new Date(Date.now() - 3 * 864e5).toISOString().slice(0, 10);
+    await db.prepare('DELETE FROM dlseen WHERE day < ?').bind(old).run();
+  }
+}
+function apk(request, env, url, ctx) {
+  const v = url.searchParams.get('v') || '', ver = /^\d{1,3}\.\d{1,3}$/.test(v) ? v : '';
+  const kind = url.searchParams.get('k') === 'maj' ? 'maj' : 'new';
+  const ua = request.headers.get('User-Agent') || '';
+  if (env.DB && request.method === 'GET' && !BOTS.test(ua)) ctx.waitUntil(dlCount(env, request, ver || '?', kind).catch(() => {}));
+  return new Response(null, { status: 302, headers: { Location: APK_BASE + (ver ? 'Pointage-' + ver + '.apk' : 'Pointage.apk'), 'Cache-Control': 'no-store' } });
+}
+function same(a, b) { if (a.length !== b.length) return false; let r = 0; for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i); return r === 0; }
+async function stats(request, env) {
+  if (!env.STATS_KEY) return json({ error: 'Code du tableau de bord pas encore configuré (secret STATS_KEY)' }, 503);
+  if (!env.DB) return json({ error: 'Base D1 (DB) non liée' }, 503);
+  const key = request.headers.get('X-Stats-Key') || '';
+  if (!same(await sha(key), await sha(env.STATS_KEY))) { await new Promise(r => setTimeout(r, 1000)); return json({ error: 'Code refusé' }, 403); }
+  await dlReady(env.DB);
+  const rows = (await env.DB.prepare('SELECT day, ver, kind, n, u FROM dl ORDER BY day').all()).results || [];
+  let latest = null;
+  try { const r = await fetch(APK_BASE + 'version.json', { cf: { cacheTtl: 300 } }); if (r.ok) latest = (await r.json()).version || null; } catch (e) {}
+  return new Response(JSON.stringify({ rows, latest, today: dayTo() }), { headers: { ...CORS, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
+}
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(request.url);
-    if (request.method === 'GET') return json({ ok: true, service: 'pointage-ia', ready: !!(env.ANTHROPIC_API_KEY && env.APP_TOKEN), tts: !!env.GOOGLE_TTS_KEY, live: !!env.DB });
+    if (url.pathname === '/apk' && (request.method === 'GET' || request.method === 'HEAD')) return apk(request, env, url, ctx);
+    if (url.pathname === '/stats' && request.method === 'GET') {
+      try { return await stats(request, env); } catch (e) { return json({ error: 'Statistiques indisponibles : ' + cut(e.message, 200) }, 502); }
+    }
+    if (request.method === 'GET') return json({ ok: true, service: 'pointage-ia', ready: !!(env.ANTHROPIC_API_KEY && env.APP_TOKEN), tts: !!env.GOOGLE_TTS_KEY, live: !!env.DB, apk: true, stats: !!env.STATS_KEY });
     const lv = url.pathname.match(/^\/live\/(get|put|del|send|inbox)$/), sy = url.pathname.match(/^\/sync\/(get|put)$/);
     if (request.method !== 'POST' || (!lv && !sy && url.pathname !== '/ask' && url.pathname !== '/tts')) return json({ error: 'Adresse inconnue' }, 404);
     if (!env.APP_TOKEN || (!lv && !sy && !env.ANTHROPIC_API_KEY)) return json({ error: 'Relais pas encore configuré' }, 503);

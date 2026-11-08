@@ -13,7 +13,9 @@ python3 - "$VER" "$NOTES" "$REPO_DIR/update" <<'PY'
 import json, os, sys
 ver, notes, d = sys.argv[1:4]
 json.dump({"version": ver, "notes": open(notes, encoding="utf-8").read().strip(),
-           "apk": f"https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-{ver}.apk",
+           # passe par le relais (compte les mises à jour), qui renvoie vers GitHub ; apk2 = lien direct de secours
+           "apk": f"https://pointage-ia.rogerotisqc.workers.dev/apk?v={ver}&k=maj",
+           "apk2": f"https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-{ver}.apk",
            "size": os.path.getsize(os.path.join(d, "Pointage.apk"))},
           open(os.path.join(d, "version.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 PY

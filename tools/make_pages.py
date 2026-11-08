@@ -89,6 +89,40 @@ if os.path.isdir(man_src):
     txt = open(mi, encoding="utf-8").read().replace("{{VER}}", VER)   # lire AVANT d'ouvrir en écriture
     open(mi, "w", encoding="utf-8").write(txt)
 
+# ---------- tableau de bord des téléchargements (docs/stats/, app web à installer ; données protégées par un code) ----------
+from PIL import ImageDraw
+st_src = os.path.join(root, "tools/stats/index.html")
+if os.path.exists(st_src):
+    st_dir = os.path.join(docs, "stats"); os.makedirs(st_dir, exist_ok=True)
+    shutil.copy(st_src, os.path.join(st_dir, "index.html"))
+    # icône : celle de l'app + une pastille « graphique » pour la distinguer
+    ic = base.copy(); dr = ImageDraw.Draw(ic)
+    dr.rounded_rectangle((268, 268, 496, 496), radius=48, fill="#ffffff", outline="#1f5c45", width=10)
+    for i, (h, col) in enumerate([(70, "#2a78d6"), (120, "#eb6834"), (165, "#2a78d6")]):
+        x = 302 + i * 62; dr.rounded_rectangle((x, 462 - h, x + 40, 462), radius=8, fill=col)
+    for size, name in [(192, "icon-192.png"), (512, "icon-512.png")]:
+        ic.resize((size, size), Image.LANCZOS).save(os.path.join(st_dir, name))
+    bg2 = Image.new("RGBA", (180, 180), "#1f5c45"); bg2.alpha_composite(ic.resize((180, 180), Image.LANCZOS))
+    bg2.convert("RGB").save(os.path.join(st_dir, "apple-touch-icon.png"))
+    json.dump({"name": "Stats Pointage", "short_name": "Stats", "lang": "fr-CA",
+               "description": "Téléchargements de l'app Pointage",
+               "start_url": "./", "scope": "./", "display": "standalone",
+               "background_color": "#f3f0e8", "theme_color": "#1f5c45",
+               "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+                         {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}]},
+              open(os.path.join(st_dir, "manifest.webmanifest"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    open(os.path.join(st_dir, "sw.js"), "w", encoding="utf-8").write(f"""// Stats Pointage {VER}
+const CACHE = 'stats-{VER}';
+const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
+self.addEventListener('install', e => {{ e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); }});
+self.addEventListener('activate', e => {{ e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); }});
+self.addEventListener('fetch', e => {{
+  if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
+  e.respondWith(fetch(e.request).then(r => {{ const copy = r.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); return r; }})
+    .catch(() => caches.match(e.request).then(r => r || caches.match('index.html'))));
+}});
+""")
+
 # ---------- page d'accueil ----------
 open(os.path.join(docs, ".nojekyll"), "w").write("")
 landing = open(os.path.join(root, "tools/landing.html"), encoding="utf-8").read()
