@@ -258,11 +258,13 @@ async function dlReady(db) {
   ]);
   DL_READY = true;
 }
-async function dlCount(env, request, ver, kind) {
+async function dlCount(env, request, url, ver, kind) {
   const db = env.DB; await dlReady(db);
   const day = dayTo(), ip = request.headers.get('CF-Connecting-IP') || '', ua = request.headers.get('User-Agent') || '';
-  // « unique » = même appareil (adresse + navigateur), même version, même jour : seule l'empreinte est gardée, 3 jours
-  const h = await sha([ip, ua, ver, kind, day].join('|'));
+  // « unique » = même appareil, même version, même jour : seule l'empreinte est gardée, 3 jours.
+  // Appareil = numéro tiré au hasard par l'app (id) ; sinon (anciennes versions) adresse + navigateur.
+  const id = /^[A-Za-z0-9_-]{8,40}$/.test(url.searchParams.get('id') || '') ? url.searchParams.get('id') : '';
+  const h = await sha((id ? ['id', id] : [ip, ua]).concat([ver, kind, day]).join('|'));
   const seen = await db.prepare('INSERT OR IGNORE INTO dlseen (h, day) VALUES (?, ?)').bind(h, day).run();
   const u = seen.meta && seen.meta.changes ? 1 : 0;
   await db.prepare('INSERT INTO dl (day, ver, kind, n, u) VALUES (?, ?, ?, 1, ?) ON CONFLICT (day, ver, kind) DO UPDATE SET n = n + 1, u = u + excluded.u').bind(day, ver, kind, u).run();
@@ -275,7 +277,7 @@ function apk(request, env, url, ctx) {
   const v = url.searchParams.get('v') || '', ver = /^\d{1,3}\.\d{1,3}$/.test(v) ? v : '';
   const kind = url.searchParams.get('k') === 'maj' ? 'maj' : 'new';
   const ua = request.headers.get('User-Agent') || '';
-  if (env.DB && request.method === 'GET' && !BOTS.test(ua)) ctx.waitUntil(dlCount(env, request, ver || '?', kind).catch(() => {}));
+  if (env.DB && request.method === 'GET' && !BOTS.test(ua)) ctx.waitUntil(dlCount(env, request, url, ver || '?', kind).catch(() => {}));
   return new Response(null, { status: 302, headers: { Location: APK_BASE + (ver ? 'Pointage-' + ver + '.apk' : 'Pointage.apk'), 'Cache-Control': 'no-store' } });
 }
 function same(a, b) { if (a.length !== b.length) return false; let r = 0; for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i); return r === 0; }

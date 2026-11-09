@@ -16,6 +16,7 @@ const { chromium } = require('playwright');
   await p.goto(T.src); await p.waitForTimeout(1500);
   await p.evaluate(() => go('settings')); await p.click('[data-a=installUp]'); await p.waitForTimeout(400);
   console.log('liens essayés :', JSON.stringify(await p.evaluate(() => URLS.map(u => u.split('/')[2]))), '| état :', await p.evaluate(() => UP.state + ' ' + UP.pct));
+  console.log('numéro ajouté au lien du relais seulement :', await p.evaluate(() => /&id=[A-Za-z0-9]{9}$/.test(URLS[0]) && !/id=/.test(URLS[1])), '| même numéro ensuite :', await p.evaluate(() => apkUrl('https://pointage-ia.rogerotisqc.workers.dev/apk?v=1&k=maj') === URLS[0].replace('v=6.10', 'v=1')));
   // Les deux liens échouent → message d'erreur normal
   await p.evaluate(() => { URLS.length = 0; window.AndroidBridge.installUpdate = u => { URLS.push(u); setTimeout(() => window.onUpdateError('Pas de connexion'), 20); }; UP.url = UP.url.replace(/.*/, 'https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.10&k=maj'); UP.state = 'error'; render(); });
   await p.click('[data-a=installUp]'); await p.waitForTimeout(300);

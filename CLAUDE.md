@@ -71,8 +71,9 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   {v, left:[cartes par membre]} ; l'hôte coche le gagnant (sbw) et remplit sb-CLÉ / sb-CLÉ-i.
 - Compteur de téléchargements (relais : /apk, /stats ; tables D1 dl et dlseen) : version.json « apk » = relais
   `…/apk?v=X.Y&k=maj` (302 vers raw GitHub), « apk2 » = lien direct (l'app réessaie avec apk2 si le relais échoue,
-  onUpdateError) ; page d'installation : `…/apk?v=X.Y&k=new` + « Lien direct ». Unique = empreinte (IP, navigateur,
-  version, type, jour), gardée 3 jours, jamais l'IP. Robots ignorés (BOTS). Tableau de bord : `tools/stats/index.html` →
+  onUpdateError) ; page d'installation : `…/apk?v=X.Y&k=new` + « Lien direct ». Unique = empreinte (numéro au hasard id
+  — app : installId/apkUrl, localStorage pointage.iid ; page d'installation : pointage.dlid — sinon IP + navigateur ;
+  + version, type, jour), gardée 3 jours, jamais l'IP. Robots ignorés (BOTS). Tableau de bord : `tools/stats/index.html` →
   docs/stats/ (app web installable, make_pages.py), code = secret STATS_KEY du relais (en-tête X-Stats-Key).
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).

@@ -1,7 +1,7 @@
 {
- "version": "6.10",
- "notes": "Compteur de téléchargements (version et jour seulement, aucune donnée personnelle) et tableau de bord protégé pour Roger.\nSi le compteur ne répond pas, la mise à jour se télécharge directement depuis GitHub.",
- "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.10&k=maj",
- "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.10.apk",
+ "version": "6.11",
+ "notes": "Compteur de téléchargements : deux téléphones de la même maison sont maintenant comptés séparément.",
+ "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.11&k=maj",
+ "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.11.apk",
  "size": 205737
 }

@@ -173,7 +173,7 @@ footer a{color:inherit;font-weight:700}
         <span class="tagp" hidden>Pour votre téléphone</span>
         <h3>Android</h3>
         <p>L’application à installer, avec les mises à jour intégrées.</p>
-        <a class="btn" href="https://pointage-ia.rogerotisqc.workers.dev/apk?v={{VER}}&amp;k=new">Télécharger l’app ({{SIZE}})</a>
+        <a class="btn" id="dl" href="https://pointage-ia.rogerotisqc.workers.dev/apk?v={{VER}}&amp;k=new">Télécharger l’app ({{SIZE}})</a>
         <p class="direct" style="margin:8px 0 0;font-size:13px;opacity:.75">Le bouton ne marche pas ? <a href="Pointage.apk">Lien direct</a></p>
         <ol class="small">
           <li>Si Chrome avertit que le fichier peut être dangereux, choisissez <b>Télécharger quand même</b>.</li>
@@ -215,6 +215,12 @@ footer a{color:inherit;font-weight:700}
   var b = el.querySelector('.btn.alt'); if(b) b.classList.remove('alt');
   order.insertBefore(el, order.firstChild);
 })();
+</script>
+<script>
+// Compteur : numéro au hasard propre à ce navigateur, pour distinguer deux téléphones de la même maison
+(function(){ try{ var a = document.getElementById('dl'); if(!a) return; var id = localStorage.getItem('pointage.dlid');
+  if(!id){ id = Array.from(crypto.getRandomValues(new Uint8Array(9)), function(b){ return 'abcdefghijkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'[b % 56]; }).join(''); localStorage.setItem('pointage.dlid', id); }
+  a.href += '&id=' + id; }catch(e){} })();
 </script>
 </body>
 </html>

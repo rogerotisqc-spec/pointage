@@ -2246,6 +2246,13 @@ const canUpdate = () => !!(bridge && bridge.checkUpdate && bridge.installUpdate)
 const appVersion = () => { try{ return bridge && bridge.getVersion ? bridge.getVersion() : (window.WEB_VERSION || ''); }catch(e){ return ''; } };
 let UP = {state:'idle'};
 function verParts(v){ return String(v||'').replace(/^v/i,'').split('.').map(n => parseInt(n,10)||0); }
+// Compteur de téléchargements : numéro tiré au hasard, propre à cette installation (aucune donnée de jeu), ajouté au lien du relais
+function installId(){
+  try{ let id = localStorage.getItem('pointage.iid');
+    if(!id){ id = [...crypto.getRandomValues(new Uint8Array(9))].map(b => 'abcdefghijkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'[b % 56]).join(''); localStorage.setItem('pointage.iid', id); }
+    return id; }catch(e){ return ''; }
+}
+function apkUrl(u){ const id = installId(); return id && /workers\.dev\/apk\?/.test(u) && !/[?&]id=/.test(u) ? u + '&id=' + id : u; }
 function newer(a, b){ const x = verParts(a), y = verParts(b); for(let i=0;i<Math.max(x.length,y.length);i++){ const d = (x[i]||0) - (y[i]||0); if(d) return d > 0; } return false; }
 function checkUpdates(quiet){
   if(!canUpdate()) return;
@@ -4269,7 +4276,7 @@ const A = {
   chart: () => { closeModal(); openChart(); },
   export: () => doExport(),
   checkUp: () => checkUpdates(false),
-  installUp: () => { if(!UP.url) return checkUpdates(false); UP.state = 'downloading'; UP.pct = 0; render(); bridge.installUpdate(UP.url); },
+  installUp: () => { if(!UP.url) return checkUpdates(false); UP.state = 'downloading'; UP.pct = 0; render(); bridge.installUpdate(apkUrl(UP.url)); },
   feedback: () => { closeModal(); openFeedback(); },
   fbType: el => { M.fbType = el.dataset.v; document.querySelectorAll('#fbSeg button').forEach(b => b.classList.toggle('on', b === el)); },
   fbSend: () => { const it = fbBuild(); if(!it) return toast('Écrivez quelques mots d’abord'); const q = fbQueue(); q.push(it); fbSaveQueue(q); closeModal(); toast('Envoi…'); fbFlush(false); },
