@@ -2253,6 +2253,12 @@ function installId(){
     return id; }catch(e){ return ''; }
 }
 function apkUrl(u){ const id = installId(); return id && /workers\.dev\/apk\?/.test(u) && !/[?&]id=/.test(u) ? u + '&id=' + id : u; }
+// Retour haptique (petite vibration) : Android par l'enveloppe, sinon l'API web ; réglage pointage.haptic (activé par défaut)
+function hapticOn(){ try{ return localStorage.getItem('pointage.haptic') !== '0'; }catch(e){ return true; } }
+function haptic(ms){
+  if(!hapticOn()) return; ms = ms || 25;
+  try{ if(bridge && bridge.vibrate) bridge.vibrate(Array.isArray(ms) ? ms.join(',') : String(ms)); else if(navigator.vibrate) navigator.vibrate(ms); }catch(e){}
+}
 function newer(a, b){ const x = verParts(a), y = verParts(b); for(let i=0;i<Math.max(x.length,y.length);i++){ const d = (x[i]||0) - (y[i]||0); if(d) return d > 0; } return false; }
 function checkUpdates(quiet){
   if(!canUpdate()) return;
@@ -2329,6 +2335,8 @@ function vSettings(){
     <h2 class="sec">Affichage</h2>
     <div class="card" style="padding:14px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Garder l’écran allumé</b><div class="hint" style="margin:2px 0 0">Tant que l’app est ouverte, l’écran ne se met pas en veille. Il s’éteint normalement quand vous changez d’app.</div></div>
       <button class="switch ${screenOnPref() ? 'on' : ''}" data-a="screenToggle" aria-label="Garder l’écran allumé"></button></div></div>
+    <div class="card" style="padding:14px;margin-top:10px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Vibrer en touchant les dés</b><div class="hint" style="margin:2px 0 0">Une petite vibration confirme chaque dé touché (Farkle, Yahtzee, Triomino), pour sentir qu’il a bien compté.</div></div>
+      <button class="switch ${hapticOn() ? 'on' : ''}" data-a="hapticToggle" aria-label="Vibrer en touchant les dés"></button></div></div>
     <div class="card" style="padding:14px;margin-top:10px"><b>Rotation de l’écran</b><div class="hint" style="margin:2px 0 10px">${bridge ? 'Choisissez si l’écran pivote quand vous tournez l’appareil.' : 'Choisissez si l’écran pivote quand vous tournez l’appareil. Dans un navigateur, le verrouillage fonctionne seulement si l’app est installée sur Android ; sur iPhone, utilisez le verrou de rotation du Centre de contrôle.'}</div>
       <div class="seg">${[['auto','Automatique'],['portrait','Portrait'],['landscape','Paysage']].map(([v,l]) => `<button data-a="setOrient" data-v="${v}" class="${orientPref()===v?'on':''}">${l}</button>`).join('')}</div></div>
     <h2 class="sec">Données</h2>
@@ -2577,6 +2585,7 @@ const HELP_FAQ = [
   {q:['faire une sauvegarde','sauvegarder mes parties','exporter','copie de sécurité'], a:'Réglages → Sauvegarde : « Exporter une sauvegarde » crée un fichier. Avec la sauvegarde automatique, une copie à jour est enregistrée dans un dossier de votre choix après chaque changement.', go:'settings'},
   {q:['restaurer une sauvegarde','importer','nouveau téléphone','récupérer mes parties','parties disparues'], a:'Réglages → Sauvegarde → « Importer une sauvegarde », puis choisissez le fichier (par exemple Pointage-sauvegarde.json). Les données actuelles sont remplacées.', go:'settings'},
   {q:['mise à jour','nouvelle version','mettre l’app à jour'], a:'Réglages → « Vérifier les mises à jour », puis « Télécharger et installer ». Vos parties sont conservées. Sur iPhone, la version web se met à jour toute seule.', go:'settings'},
+  {q:['vibration','vibrer','retour haptique','couper la vibration','le téléphone vibre'], a:'Réglages → Affichage → « Vibrer en touchant les dés » : une petite vibration confirme chaque dé touché. Touchez l’interrupteur pour l’activer ou la couper.', go:'settings'},
   {q:['garder l’écran allumé','écran qui s’éteint','mise en veille'], a:'Réglages → Affichage → « Garder l’écran allumé ».', go:'settings'},
   {q:['empêcher l’écran de pivoter','rotation','bloquer en portrait','paysage','écran qui tourne'], a:'Réglages → Affichage → « Rotation de l’écran » : Automatique, Portrait ou Paysage.', go:'settings'},
   {q:['signaler un problème','faire une suggestion','bug'], a:'Menu ⋮ d’une partie, ou Réglages → « Signaler un problème / suggérer ». Le message va directement au responsable de l’app.'},
@@ -4060,7 +4069,7 @@ const A = {
   mtRm: el => { const x = M.mt.v[M.mt.sel]; x.tiles.splice(+el.dataset.i, 1); mtRender(); },
   mtSave: () => mtSave(),
   mtDel: () => { const g = curGame(), i = M.mt.idx; closeModal(); confirmBox('Supprimer la manche ' + (i + 1) + ' ?', 'Supprimer', () => { g.rounds.splice(i, 1); save(); render(); }, true); },
-  trNum: el => { const t = trState(); if(t.c.length < 3) t.c.push(+el.dataset.v); render(); },
+  trNum: el => { const t = trState(); if(t.c.length < 3){ haptic(); t.c.push(+el.dataset.v); } render(); },
   trClear: () => { S.tr = null; render(); },
   trHex: el => { trState().hex = +el.dataset.v; render(); },
   trDraw: el => { const t = trState(); t.draws = Math.max(0, Math.min(3, t.draws + (+el.dataset.d))); if(t.draws < 3) t.fail = false; render(); },
@@ -4080,7 +4089,7 @@ const A = {
     const tg = g.opts.target || 400, t = totals(g); const over = g.players.filter(p => t[p.key] >= tg);
     toast(over.length ? `Manche ${rd} terminée · ${over.map(p => p.name).join(', ')} dépasse ${tg} !` : `Manche ${rd} terminée · nouvelle manche`); },
   yzView: el => { S.yzView = el.dataset.k; S.yzDice = []; render(); },
-  yzDie: el => { const d = yzDice(), i = +el.dataset.i; if(i >= d.length){ if(d.length < 5) d.push(1); } else d[i] = d[i] % 6 + 1; render(); },
+  yzDie: el => { haptic(); const d = yzDice(), i = +el.dataset.i; if(i >= d.length){ if(d.length < 5) d.push(1); } else d[i] = d[i] % 6 + 1; render(); },
   yzFace: el => { const d = yzDice(); if(d.length < 5) d.push(+el.dataset.v); render(); },
   yzClear: () => { S.yzDice = []; render(); },
   yzCat: el => yzCatOpen(el.dataset.c),
@@ -4270,6 +4279,7 @@ const A = {
   abNow: () => { autoBackupNow(true); toast('Sauvegarde…'); },
   abResume: () => autoBackupNow(true),
   setOrient: el => { const v = el.dataset.v; try{ localStorage.setItem('pointage.orient', v); }catch(e){} applyOrient(); toast({auto:'L’écran pivote librement', portrait:'Écran verrouillé en portrait', landscape:'Écran verrouillé en paysage'}[v]); render(); },
+  hapticToggle: () => { const on = !hapticOn(); try{ localStorage.setItem('pointage.haptic', on ? '1' : '0'); }catch(e){} if(on) haptic(40); toast(on ? 'Vibration activée' : 'Vibration coupée'); render(); },
   screenToggle: () => { const on = !screenOnPref(); try{ localStorage.setItem('pointage.screenon', on ? '1' : '0'); }catch(e){} toast(on ? 'L’écran restera allumé' : 'Veille normale de l’écran'); render(); },
   statP: el => { S.statP = el.dataset.v; render(); },
   statPlayer: el => openPlayerStats(el.dataset.k),
@@ -4311,8 +4321,8 @@ const A = {
     try{ navigator.clipboard.writeText(t.value).then(done, () => { t.select(); toast('Texte sélectionné : copiez-le'); }); }catch(e){ t.select(); toast('Texte sélectionné : copiez-le'); } },
   import: () => doImport(),
   // dés
-  fkDie: el => { if((S.dice||[]).length >= 6) return toast('6 dés maximum'); S.dice = (S.dice||[]).concat([Number(el.dataset.v)]); render(); },
-  fkRm: el => { S.dice.splice(Number(el.dataset.i),1); render(); },
+  fkDie: el => { if((S.dice||[]).length >= 6){ haptic([30, 60, 30]); return toast('6 dés maximum'); } haptic(); S.dice = (S.dice||[]).concat([Number(el.dataset.v)]); render(); },
+  fkRm: el => { haptic(); S.dice.splice(Number(el.dataset.i),1); render(); },
   fkClear: () => { S.dice = []; render(); },
   fkAddSel: () => { if(S.dice.length === 6 && S.dice.every(d => d === S.dice[0])) return fkSix(S.dice[0]); const g = curGame(); const c = [0,0,0,0,0,0,0]; S.dice.forEach(d => c[d]++); fkAdd(diceScore(c, g.opts.f).pts); },
   fkAddMan: () => { const v = num($('fk-man').value); if(!v) return; if(v < 0){ S.turn = Math.max(0, (S.turn||0) + v); recordHist(); return render(); } fkAdd(v); },

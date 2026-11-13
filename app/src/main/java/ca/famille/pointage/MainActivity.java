@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInstaller;
 import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.provider.DocumentsContract;
 import android.content.SharedPreferences;
@@ -667,6 +669,27 @@ public class MainActivity extends Activity {
                     setRequestedOrientation(o);
                 }
             });
+        }
+
+        @JavascriptInterface
+        // Petite vibration : « 25 » ou un motif « 30,60,30 » (vibre, pause, vibre)
+        public void vibrate(String spec) {
+            try {
+                Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                if (v == null || !v.hasVibrator()) return;
+                String[] p = spec.split(",");
+                if (p.length == 1) {
+                    long ms = Math.max(5, Math.min(500, Long.parseLong(p[0].trim())));
+                    if (Build.VERSION.SDK_INT >= 26) v.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE));
+                    else v.vibrate(ms);
+                } else {
+                    long[] t = new long[Math.min(p.length, 8) + 1];
+                    t[0] = 0;
+                    for (int i = 1; i < t.length; i++) t[i] = Math.max(5, Math.min(500, Long.parseLong(p[i - 1].trim())));
+                    if (Build.VERSION.SDK_INT >= 26) v.vibrate(VibrationEffect.createWaveform(t, -1));
+                    else v.vibrate(t, -1);
+                }
+            } catch (Exception e) { }
         }
 
         @JavascriptInterface

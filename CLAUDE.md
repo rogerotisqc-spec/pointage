@@ -61,6 +61,8 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   (409 → recombiner). Synchro après save() (4 s), à l'ouverture et toutes les 60 s.
 - Accueil : CATS = catégories (encadrés .cat, étiquette .cat-l), jeux triés par nom (catSort, localeCompare fr) ;
   nouveau jeu : l'ajouter à une catégorie de CATS. Grand écran : catégories de 2 côte à côte, cartes sur 4 colonnes.
+- Retour haptique : haptic(ms | [motif]) → AndroidBridge.vibrate(« 25 » ou « 30,60,30 », permission VIBRATE) ou navigator.vibrate ;
+  appelé par fkDie, fkRm, trNum, yzDie ; réglage localStorage pointage.haptic (activé par défaut, Réglages → Affichage).
 - Bouton réseau (NET_SVG, liveTopBtn) en haut de chaque partie, ajouté par histBtns.
 - Annonce du brasseur (annBtn, annCheck, ANN) : haut-parleur dans la bande dealerBanner (SPK_ON / SPK_OFF, une icône à la
   fois), réglage de l'appareil localStorage pointage.annonce ; après save(), si une manche s'est ajoutée à la partie ouverte
@@ -81,7 +83,7 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
 ## Publier une version
 
 1. Monter `versionCode` (+1) et `versionName` dans `AndroidManifest.xml`.
-2. Tester : `tests/run.sh` (42 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
+2. Tester : `tests/run.sh` (43 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
    voir `tests/README.md`). GitHub les relance à chaque push (`.github/workflows/tests.yml`). Nouveau test : `tests/testXXX.js`
    avec `const T = require('./_env')` (T.app, T.build, T.src, T.out).
 3. `AAPT2=… ANDROID_JAR=… DX_JAR=… ./build.sh` (aapt2, android.jar API 29, dx 30.0.2 ; signature apksig

@@ -1,7 +1,7 @@
 {
- "version": "6.11",
- "notes": "Compteur de téléchargements : deux téléphones de la même maison sont maintenant comptés séparément.",
- "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.11&k=maj",
- "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.11.apk",
+ "version": "6.12",
+ "notes": "Petite vibration à chaque dé touché (Farkle, Yahtzee, Triomino) pour confirmer qu'il a compté ; se coupe dans Réglages → Affichage.",
+ "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.12&k=maj",
+ "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.12.apk",
  "size": 205737
 }

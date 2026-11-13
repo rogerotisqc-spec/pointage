@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 6.11</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 6.12</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -132,7 +132,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><a href="#triomino">Triomino</a></li>
         <li><a href="#yahtzee">Yahtzee</a></li>
         <li><a href="#acquire">Acquire</a></li>
-        <li><a href="#des">Farkle (Farkle)</a></li>
+        <li><a href="#des">Farkle (jeu de dés)</a></li>
         <li><a href="#voix">Commande vocale</a></li>
       </ol></li>
     <li><a href="#regles">8. Règles et règles maison</a>
@@ -419,10 +419,10 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><span class="ui">🏁 Pointage final</span> : inscrivez l’argent papier de chacun. L’app ajoute les primes de toutes les chaînes actives et la vente de toutes les actions, puis le plus riche gagne. Un bandeau rappelle quand la fin peut être déclarée (une chaîne de 41 tuiles, ou toutes les chaînes sûres).</li></ul>
     </div><div class="figs"><figure><img src="img/acquire.webp" alt="Feuille Acquire" loading="lazy"><figcaption>Les chaînes et les actions de chacun.</figcaption></figure><figure><img src="img/acquire-fusion.webp" alt="Fusion Acquire" loading="lazy"><figcaption>Une fusion : primes, ventes et échanges.</figcaption></figure><figure><img src="img/acquire-final.webp" alt="Pointage final Acquire" loading="lazy"><figcaption>Le pointage final avec l’argent papier.</figcaption></figure></div></div>
 
-    <h3 id="des">Farkle (Farkle)</h3>
-    <div class="row2 many"><div class="txt" data-kw="farkle dés jeu de dés 10000 25000 farkle entrer 1000 raté pénalité zone -1000 encaisser objectif exact dépasser six dés identiques victoire suite trois paires valeurs">
+    <h3 id="des">Farkle (jeu de dés)</h3>
+    <div class="row2 many"><div class="txt" data-kw="farkle vibration vibrer haptique dés jeu de dés 10000 25000 farkle entrer 1000 raté pénalité zone -1000 encaisser objectif exact dépasser six dés identiques victoire suite trois paires valeurs">
       <p>Le joueur dont c’est le tour est mis en évidence. Après chaque lancer :</p>
-      <ol><li>Touchez les <b>dés gardés</b> : l’app affiche leur valeur. Touchez un dé du plateau pour le retirer.</li>
+      <ol><li>Touchez les <b>dés gardés</b> : l’app affiche leur valeur, et le téléphone vibre un peu à chaque dé (assurez-vous de sentir une vibration par dé). Touchez un dé du plateau pour le retirer.</li>
         <li><span class="ui">Ajouter au tour</span> cumule ces points ; relancez et recommencez.</li>
         <li><span class="ui">Encaisser</span> ajoute les points du tour au total et passe au joueur suivant.</li>
         <li><span class="ui">💥 Raté</span> : aucun dé ne compte, les points du tour sont perdus.</li></ol>
@@ -552,6 +552,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <h3 id="ecran">Garder l’écran allumé</h3>
     <div class="txt" data-kw="écran veille allumé éteint batterie affichage">
       <p>Par défaut, l’écran ne se met pas en veille tant que l’app est ouverte. Il s’éteint normalement quand vous changez d’app. Pour revenir à la veille habituelle : Réglages → <b>Affichage</b> → « Garder l’écran allumé ».</p>
+      <p><b>Vibrer en touchant les dés</b> : une petite vibration confirme chaque dé touché (Farkle, Yahtzee, Triomino), pour sentir qu’il a bien compté. Une double vibration signale un dé refusé (déjà 6 dés choisis). Pour la couper : Réglages → <b>Affichage</b> → « Vibrer en touchant les dés ».</p>
     </div>
     <h3 id="voixia">Voix de Ludo</h3>
     <div class="txt" data-kw="ludo voix lecture lire à voix haute naturelle google parler accent vitesse lente rapide homme femme synthèse vocale robot téléphone assistant">
@@ -594,7 +595,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 6.11 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 6.12 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){
