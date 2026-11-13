@@ -61,8 +61,9 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   (409 → recombiner). Synchro après save() (4 s), à l'ouverture et toutes les 60 s.
 - Accueil : CATS = catégories (encadrés .cat, étiquette .cat-l), jeux triés par nom (catSort, localeCompare fr) ;
   nouveau jeu : l'ajouter à une catégorie de CATS. Grand écran : catégories de 2 côte à côte, cartes sur 4 colonnes.
-- Retour haptique : haptic(ms | [motif]) → AndroidBridge.vibrate(« 25 » ou « 30,60,30 », permission VIBRATE) ou navigator.vibrate ;
-  appelé par fkDie, fkRm, trNum, yzDie ; réglage localStorage pointage.haptic (activé par défaut, Réglages → Affichage).
+- Retour haptique : haptic(ms | [motif]) → AndroidBridge.vibrate(« 25 » ou « 30,60,30 », permission VIBRATE ;
+  AudioAttributes USAGE_MEDIA → suit « Vibration des médias », pas le retour haptique interactif du téléphone) ou navigator.vibrate ;
+  appelé par fkDie, fkRm, trNum, yzDie ; réglage localStorage pointage.haptic (activé par défaut, Réglages → Affichage, bouton hapticTest).
 - Bouton réseau (NET_SVG, liveTopBtn) en haut de chaque partie, ajouté par histBtns.
 - Annonce du brasseur (annBtn, annCheck, ANN) : haut-parleur dans la bande dealerBanner (SPK_ON / SPK_OFF, une icône à la
   fois), réglage de l'appareil localStorage pointage.annonce ; après save(), si une manche s'est ajoutée à la partie ouverte

@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInstaller;
 import android.os.Build;
 import android.os.VibrationEffect;
+import android.media.AudioAttributes;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.provider.DocumentsContract;
@@ -461,6 +462,8 @@ public class MainActivity extends Activity {
         }
     }
 
+    private AudioAttributes MEDIA_VIB;
+
     class Bridge {
         @JavascriptInterface
         public void exportData(String json, String fileName) {
@@ -672,21 +675,25 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
-        // Petite vibration : « 25 » ou un motif « 30,60,30 » (vibre, pause, vibre)
+        // Petite vibration : « 25 » ou un motif « 30,60,30 » (vibre, pause, vibre).
+        // Classée « médias » (et non « retour haptique interactif ») : elle suit le réglage « Vibration des médias » d'Android,
+        // donc l'app vibre même si le retour haptique du téléphone est coupé.
         public void vibrate(String spec) {
+            if (MEDIA_VIB == null) MEDIA_VIB = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build();
             try {
                 Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                 if (v == null || !v.hasVibrator()) return;
                 String[] p = spec.split(",");
                 if (p.length == 1) {
                     long ms = Math.max(5, Math.min(500, Long.parseLong(p[0].trim())));
-                    if (Build.VERSION.SDK_INT >= 26) v.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE));
+                    if (Build.VERSION.SDK_INT >= 26) v.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE), MEDIA_VIB);
                     else v.vibrate(ms);
                 } else {
                     long[] t = new long[Math.min(p.length, 8) + 1];
                     t[0] = 0;
                     for (int i = 1; i < t.length; i++) t[i] = Math.max(5, Math.min(500, Long.parseLong(p[i - 1].trim())));
-                    if (Build.VERSION.SDK_INT >= 26) v.vibrate(VibrationEffect.createWaveform(t, -1));
+                    if (Build.VERSION.SDK_INT >= 26) v.vibrate(VibrationEffect.createWaveform(t, -1), MEDIA_VIB);
                     else v.vibrate(t, -1);
                 }
             } catch (Exception e) { }

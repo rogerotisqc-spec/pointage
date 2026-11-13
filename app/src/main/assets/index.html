@@ -2336,7 +2336,9 @@ function vSettings(){
     <div class="card" style="padding:14px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Garder l’écran allumé</b><div class="hint" style="margin:2px 0 0">Tant que l’app est ouverte, l’écran ne se met pas en veille. Il s’éteint normalement quand vous changez d’app.</div></div>
       <button class="switch ${screenOnPref() ? 'on' : ''}" data-a="screenToggle" aria-label="Garder l’écran allumé"></button></div></div>
     <div class="card" style="padding:14px;margin-top:10px"><div class="row" style="align-items:flex-start"><div style="flex:1"><b>Vibrer en touchant les dés</b><div class="hint" style="margin:2px 0 0">Une petite vibration confirme chaque dé touché (Farkle, Yahtzee, Triomino), pour sentir qu’il a bien compté.</div></div>
-      <button class="switch ${hapticOn() ? 'on' : ''}" data-a="hapticToggle" aria-label="Vibrer en touchant les dés"></button></div></div>
+      <button class="switch ${hapticOn() ? 'on' : ''}" data-a="hapticToggle" aria-label="Vibrer en touchant les dés"></button></div>
+      ${hapticOn() ? `<button class="btn sm" style="margin-top:10px" data-a="hapticTest">📳 Tester la vibration</button>
+      <p class="hint" style="margin:8px 0 0">Rien senti ? Sur Android, vérifiez Paramètres → Son et vibreur → Vibreur et retour haptique : « Utiliser le vibreur » et « Vibration des médias » doivent être activés.</p>` : ''}</div>
     <div class="card" style="padding:14px;margin-top:10px"><b>Rotation de l’écran</b><div class="hint" style="margin:2px 0 10px">${bridge ? 'Choisissez si l’écran pivote quand vous tournez l’appareil.' : 'Choisissez si l’écran pivote quand vous tournez l’appareil. Dans un navigateur, le verrouillage fonctionne seulement si l’app est installée sur Android ; sur iPhone, utilisez le verrou de rotation du Centre de contrôle.'}</div>
       <div class="seg">${[['auto','Automatique'],['portrait','Portrait'],['landscape','Paysage']].map(([v,l]) => `<button data-a="setOrient" data-v="${v}" class="${orientPref()===v?'on':''}">${l}</button>`).join('')}</div></div>
     <h2 class="sec">Données</h2>
@@ -2585,7 +2587,7 @@ const HELP_FAQ = [
   {q:['faire une sauvegarde','sauvegarder mes parties','exporter','copie de sécurité'], a:'Réglages → Sauvegarde : « Exporter une sauvegarde » crée un fichier. Avec la sauvegarde automatique, une copie à jour est enregistrée dans un dossier de votre choix après chaque changement.', go:'settings'},
   {q:['restaurer une sauvegarde','importer','nouveau téléphone','récupérer mes parties','parties disparues'], a:'Réglages → Sauvegarde → « Importer une sauvegarde », puis choisissez le fichier (par exemple Pointage-sauvegarde.json). Les données actuelles sont remplacées.', go:'settings'},
   {q:['mise à jour','nouvelle version','mettre l’app à jour'], a:'Réglages → « Vérifier les mises à jour », puis « Télécharger et installer ». Vos parties sont conservées. Sur iPhone, la version web se met à jour toute seule.', go:'settings'},
-  {q:['vibration','vibrer','retour haptique','couper la vibration','le téléphone vibre'], a:'Réglages → Affichage → « Vibrer en touchant les dés » : une petite vibration confirme chaque dé touché. Touchez l’interrupteur pour l’activer ou la couper.', go:'settings'},
+  {q:['vibration','vibrer','retour haptique','couper la vibration','le téléphone vibre'], a:'Réglages → Affichage → « Vibrer en touchant les dés » : une petite vibration confirme chaque dé touché. Touchez l’interrupteur pour l’activer ou la couper, et « Tester la vibration » pour l’essayer. Rien senti ? Sur Android, activez « Vibration des médias » dans Paramètres → Son et vibreur → Vibreur et retour haptique.', go:'settings'},
   {q:['garder l’écran allumé','écran qui s’éteint','mise en veille'], a:'Réglages → Affichage → « Garder l’écran allumé ».', go:'settings'},
   {q:['empêcher l’écran de pivoter','rotation','bloquer en portrait','paysage','écran qui tourne'], a:'Réglages → Affichage → « Rotation de l’écran » : Automatique, Portrait ou Paysage.', go:'settings'},
   {q:['signaler un problème','faire une suggestion','bug'], a:'Menu ⋮ d’une partie, ou Réglages → « Signaler un problème / suggérer ». Le message va directement au responsable de l’app.'},
@@ -4279,6 +4281,7 @@ const A = {
   abNow: () => { autoBackupNow(true); toast('Sauvegarde…'); },
   abResume: () => autoBackupNow(true),
   setOrient: el => { const v = el.dataset.v; try{ localStorage.setItem('pointage.orient', v); }catch(e){} applyOrient(); toast({auto:'L’écran pivote librement', portrait:'Écran verrouillé en portrait', landscape:'Écran verrouillé en paysage'}[v]); render(); },
+  hapticTest: () => { haptic(25); setTimeout(() => haptic(25), 350); setTimeout(() => haptic([30, 60, 30]), 900); toast('📳 Deux petites vibrations, puis une double'); },
   hapticToggle: () => { const on = !hapticOn(); try{ localStorage.setItem('pointage.haptic', on ? '1' : '0'); }catch(e){} if(on) haptic(40); toast(on ? 'Vibration activée' : 'Vibration coupée'); render(); },
   screenToggle: () => { const on = !screenOnPref(); try{ localStorage.setItem('pointage.screenon', on ? '1' : '0'); }catch(e){} toast(on ? 'L’écran restera allumé' : 'Veille normale de l’écran'); render(); },
   statP: el => { S.statP = el.dataset.v; render(); },

@@ -1,7 +1,7 @@
 {
- "version": "6.12",
- "notes": "Petite vibration à chaque dé touché (Farkle, Yahtzee, Triomino) pour confirmer qu'il a compté ; se coupe dans Réglages → Affichage.",
- "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.12&k=maj",
- "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.12.apk",
- "size": 205737
+ "version": "6.13",
+ "notes": "La vibration des dés suit maintenant « Vibration des médias » d'Android : plus besoin d'activer le retour haptique de tout le téléphone. Bouton « Tester la vibration » dans Réglages → Affichage.",
+ "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.13&k=maj",
+ "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.13.apk",
+ "size": 209833
 }
