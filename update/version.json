@@ -1,7 +1,7 @@
 {
- "version": "6.17",
- "notes": "Clue : bouton des règles (📖) et Ludo en haut de la feuille ; les règles indiquent le nombre de joueurs.",
- "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.17&k=maj",
- "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.17.apk",
+ "version": "6.18",
+ "notes": "Les règles de chaque jeu indiquent maintenant le nombre de joueurs.",
+ "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.18&k=maj",
+ "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.18.apk",
  "size": 234409
 }
