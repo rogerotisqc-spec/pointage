@@ -457,7 +457,14 @@ table.p10 tr.dep td.ph b{font-size:12px}
 .clph{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;width:100%;font-size:11px;line-height:1.1;color:var(--pink)}
 .clph span{max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
 .clph small{color:var(--pmut);font-size:10px}
-.clt th.me{background:var(--paper2)}
+.clt th.me{background:linear-gradient(180deg,color-mix(in srgb,#d4af37 32%,var(--paper)),var(--paper2));box-shadow:inset 0 0 0 2px #c9a65a}
+.clph em{font-style:normal;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--wine);font-weight:800}
+.clme{display:flex;align-items:center;gap:14px;padding:12px 14px;border-bottom:1px solid #c9a65a;background:radial-gradient(circle at 18% 50%,rgba(212,175,55,.22),transparent 60%)}
+.clme .grow{display:flex;flex-direction:column;min-width:0;font-family:Georgia,'Times New Roman',serif}
+.clme small{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--pmut)}
+.clme b{font-size:22px;line-height:1.15;color:var(--wine);font-variant:small-caps;letter-spacing:.02em}
+.clme span{font-size:14.5px}
+.clme .clmec{font-size:12.5px;color:var(--pmut);margin-top:2px}
 .clt th.out{opacity:.45}
 .clt .env{width:30px;color:#b8860b;font-weight:800}
 .clsec td{background:var(--paper2);text-align:left;padding:6px 10px;font-family:Georgia,serif;color:var(--wine);font-size:13.5px;letter-spacing:.06em;font-variant:small-caps;border-top:1px solid #c9a65a;border-bottom:1px solid #c9a65a}
@@ -1735,11 +1742,11 @@ function vClue(g){
     const tint = n ? ` style="--pc:${clColor(g, p.key)}"` : '';
     return `<td class="${n ? 'asked' : ''}"${tint}><button class="clc ${cls}" data-a="clCell" data-c="${c.id}" data-k="${p.key}" aria-label="${esc(c.n)}, ${esc(p.name)}">${inner}${dots}</button></td>`;
   };
-  const headRow = `<tr><th class="lc"></th>${P.map(p => `<th class="${p.key === me ? 'me' : ''} ${cl.out[p.key] ? 'out' : ''}"><button class="clph" data-a="clHand" data-k="${p.key}" aria-label="${esc(p.name)}">${clPAv(g, p.key, 28)}<span>${esc(p.name)}</span><small>${cl.hand[p.key] != null ? cl.hand[p.key] + ' c.' : ''}</small></button></th>`).join('')}<th class="env">✉︎</th></tr>`;
+  const headRow = `<tr><th class="lc"></th>${P.map(p => `<th class="${p.key === me ? 'me' : ''} ${cl.out[p.key] ? 'out' : ''}"><button class="clph" data-a="clHand" data-k="${p.key}" aria-label="${esc(p.name)}">${p.key === me ? '<em>vous</em>' : ''}${clPAv(g, p.key, p.key === me ? 34 : 28)}<span>${esc(p.name)}</span><small>${cl.hand[p.key] != null ? cl.hand[p.key] + ' c.' : ''}</small></button></th>`).join('')}<th class="env">✉︎</th></tr>`;
   const sec = ([cat, q, nm]) => `<tr class="clsec"><td colspan="${P.length + 2}"><b>${q}</b> ${nm}</td></tr>` + g.opts.cl[cat].map(c => {
     const env = D.K[c.id].env, st = env === 1 ? 'gui' : env === 0 ? 'inn' : '';
     return `<tr class="${st}"><td class="lc"><span class="cli">${clIcon(c, 22)}</span><span class="cln">${esc(c.n)}</span></td>${P.map(p => cell(c, p)).join('')}<td class="env">${env === 1 ? '★' : env === 0 ? '' : '?'}</td></tr>`; }).join('');
-  const book = `<div class="clbook"><div class="cltitle"><span class="orn">❦</span> Carnet de détective <span class="orn">❦</span><small>Notes confidentielles</small></div><div class="clscroll"><table class="clt">${headRow}${CL_CAT.map(sec).join('')}</table></div>
+  const book = `<div class="clbook"><div class="cltitle"><span class="orn">❦</span> Carnet de détective <span class="orn">❦</span><small>Notes confidentielles</small></div>${me ? `<div class="clme">${clPAv(g, me, 84)}<div class="grow"><small>Votre personnage</small><b>${esc(clSusOf(g, me).n)}</b><span>Détective : ${esc(clPName(g, me))}${cl.out[me] ? ' · accusation fausse' : ''}</span><span class="clmec">${mineN} / ${H} carte${H > 1 ? 's' : ''} en main</span></div></div>` : ''}<div class="clscroll"><table class="clt">${headRow}${CL_CAT.map(sec).join('')}</table></div>
     <p class="cllegend"><span><b class="lx">✗</b> n’a pas</span><span><b class="lv">✓</b> l’a</span><span><b class="lq">?</b> je pense que oui</span><span><b class="lq">–</b> je pense que non</span><span><b class="la">✓</b> déduit par l’app</span><span><i class="ask" style="background:#888"></i> carte demandée par ce joueur</span></p>
     <p class="hint" style="margin:4px 12px 10px">Touchez une case pour changer la marque : rien → ✗ → ✓ → ? → – → rien. ★ = dans l’enveloppe. Les lignes barrées sont innocentées.</p></div>`;
   // Journal

@@ -1,7 +1,7 @@
 {
- "version": "6.15",
- "notes": "Clue : nouveaux dessins de style victorien (portraits en médaillon doré), armes illustrées et pièces Art déco ; carnet plus ancien.",
- "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.15&k=maj",
- "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.15.apk",
+ "version": "6.16",
+ "notes": "Clue : votre personnage est affiché en grand en haut du carnet ; votre colonne est marquée « vous ».",
+ "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.16&k=maj",
+ "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.16.apk",
  "size": 234409
 }
