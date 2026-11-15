@@ -1,7 +1,7 @@
 {
- "version": "6.14",
- "notes": "Nouveau jeu : Clue. Carnet de détective secret sur chaque téléphone, avatars des personnages, déductions automatiques, hypothèses et accusations partagées en direct, écran noir pour cacher son carnet.",
- "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.14&k=maj",
- "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.14.apk",
- "size": 226217
+ "version": "6.15",
+ "notes": "Clue : nouveaux dessins de style victorien (portraits en médaillon doré), armes illustrées et pièces Art déco ; carnet plus ancien.",
+ "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.15&k=maj",
+ "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.15.apk",
+ "size": 234409
 }

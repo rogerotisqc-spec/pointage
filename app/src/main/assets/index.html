@@ -444,12 +444,14 @@ table.p10 tr.dep td.ph b{font-size:12px}
 .clhint .btn{margin-top:8px;display:flex;width:100%}
 .clhint.warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
 .clhint.sol{background:var(--lead);border-color:var(--accent)}
-.clbook{--paper:#fbf6e9;--paper2:#efe3c4;--pline:#e3d9c0;--pink:#2a2118;--pmut:#7a6a58;--wine:#7b1e2b;background:var(--paper);border:1px solid #d9cfb4;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;color:var(--pink)}
-.cltitle{background:var(--wine);color:#fff6e6;font-family:Georgia,'Times New Roman',serif;font-variant:small-caps;letter-spacing:.08em;text-align:center;font-size:19px;padding:8px}
+.clbook{outline:1px solid #c9a65a;outline-offset:-5px;--paper:#fbf6e9;--paper2:#efe3c4;--pline:#e3d9c0;--pink:#2a2118;--pmut:#7a6a58;--wine:#7b1e2b;background:var(--paper);border:1px solid #d9cfb4;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;color:var(--pink)}
+.cltitle{background:var(--wine);color:#f6e3b4;font-family:Georgia,'Times New Roman',serif;font-variant:small-caps;letter-spacing:.1em;text-align:center;font-size:20px;padding:10px 8px 8px;border-bottom:3px double #d4af37;background-image:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.18))}
+.cltitle .orn{color:#d4af37;font-size:16px}
+.cltitle small{display:block;font-size:11px;letter-spacing:.3em;color:#e8cf8e;opacity:.85;font-variant:normal;text-transform:uppercase;margin-top:2px}
 .clscroll{overflow-x:auto}
 .clt{border-collapse:collapse;width:100%;font-size:13.5px}
 .clt th,.clt td{border-bottom:1px solid var(--pline);border-left:1px solid var(--pline);padding:0;text-align:center}
-.clt .lc{text-align:left;padding:3px 6px;position:sticky;left:0;background:var(--paper);z-index:1;min-width:122px;border-left:0}
+.clt .lc{font-family:Georgia,'Times New Roman',serif;text-align:left;padding:3px 6px;position:sticky;left:0;background:var(--paper);z-index:1;min-width:122px;border-left:0}
 .clt .lc .cli{display:inline-grid;vertical-align:middle;margin-right:5px;color:var(--pmut)}
 .clt .cln{vertical-align:middle}
 .clph{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;width:100%;font-size:11px;line-height:1.1;color:var(--pink)}
@@ -458,7 +460,8 @@ table.p10 tr.dep td.ph b{font-size:12px}
 .clt th.me{background:var(--paper2)}
 .clt th.out{opacity:.45}
 .clt .env{width:30px;color:#b8860b;font-weight:800}
-.clsec td{background:var(--paper2);text-align:left;padding:5px 8px;font-family:Georgia,serif;color:var(--wine);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.clsec td{background:var(--paper2);text-align:left;padding:6px 10px;font-family:Georgia,serif;color:var(--wine);font-size:13.5px;letter-spacing:.06em;font-variant:small-caps;border-top:1px solid #c9a65a;border-bottom:1px solid #c9a65a}
+.clsec td::before{content:'❧ ';color:#b8860b}
 .clsec td b{margin-right:4px}
 .clc{width:100%;min-width:40px;height:38px;position:relative;font-size:19px;font-weight:800;color:var(--pink)}
 .clc.x{color:var(--wine)}.clc.v{color:#1f7a4f}.clc.auto{color:#1971c2}.clc.auto.x{color:#5b8cc4}
@@ -481,7 +484,7 @@ tr.gui .cln{font-weight:800;color:var(--wine)}
 .clph2 .grow{display:flex;flex-direction:column}
 .clph2 b{font-size:19px}.clph2 small{color:var(--muted);font-size:13px}
 .clpc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
-.clcard{background:#fbf6e9;color:#2a2118;border:2px solid var(--pc);border-radius:12px;padding:10px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.clcard{background:#fbf6e9;color:#2a2118;border:2px solid var(--pc);box-shadow:inset 0 0 0 3px #fbf6e9,inset 0 0 0 4px #c9a65a;border-radius:10px;padding:10px 4px;font-family:Georgia,serif;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
 .clcard .ci{color:#5b4a3a;line-height:0}
 .clcard b{font-size:13.5px;line-height:1.15}.clcard small{font-size:10.5px;color:#7a6a58;text-transform:uppercase;letter-spacing:.05em}
 .clrl{display:grid;gap:4px}
@@ -1353,7 +1356,7 @@ function startGame(){
 /* ====================== Clue : carnet de détective ====================== */
 // Pas de feuille commune : chaque téléphone a son carnet secret (g.clp sur ce téléphone ; jamais envoyé en direct).
 // En commun (g.cl) : personnages, cartes en main, tour, journal des hypothèses et accusations.
-// Avatars et icônes dessinés ici (originaux, pas les dessins officiels du jeu).
+// Dessins originaux (pas les dessins officiels du jeu) : portraits victoriens, armes illustrées, pièces Art déco.
 const CL_SUS = {
   classic: [['Colonel Moutarde','#d9a400','col'],['Mademoiselle Rose','#c92a2a','rose'],['Madame Pervenche','#1c7ed6','per'],['Docteur Olive','#2f9e44','oli'],['Professeur Violet','#7048e8','vio'],['Madame Leblanc','#e9ecef','leb']],
   y2016:   [['Colonel Moutarde','#d9a400','col'],['Mademoiselle Rose','#c92a2a','rose'],['Madame Pervenche','#1c7ed6','per'],['Docteur Olive','#2f9e44','oli'],['Professeur Violet','#7048e8','vio'],['Docteur Orchidée','#f3c4ef','orc']]
@@ -1373,43 +1376,179 @@ function clDeck(ed, names){
 function clCards(g){ const d = g.opts.cl; return d.sus.concat(d.wea, d.roo); }
 function clCard(g, id){ return clCards(g).find(c => c.id === id); }
 function clCatOf(id){ return id[0] === 's' ? 'sus' : id[0] === 'w' ? 'wea' : 'roo'; }
-// Avatar : médaillon de la couleur du personnage + silhouette d'époque
-function clAv(s, size){
-  size = size || 34; const k = s.a, d = 'rgba(28,22,18,.66)', w = '#fffdf8';
-  const det = {
-    col: `<path d="M14.5 15.6h19l-2.2-6h-14.6z" fill="${d}"/><rect x="12.5" y="14.8" width="23" height="2.6" rx="1.3" fill="${d}"/><path d="M18.6 25c2.2 1.7 3.9 1.3 5.4-.3 1.5 1.6 3.2 2 5.4.3" stroke="${w}" stroke-width="1.7" fill="none" stroke-linecap="round"/><rect x="9.5" y="33.5" width="7.5" height="2.6" rx="1.3" fill="${w}" opacity=".85"/><rect x="31" y="33.5" width="7.5" height="2.6" rx="1.3" fill="${w}" opacity=".85"/>`,
-    rose: `<path d="M14.6 23c0-8.4 4.2-12.6 9.4-12.6S33.4 14.6 33.4 23v8.5c-2.2-1.8-3.4-5.4-3.4-8.4-2 1.2-4 1.2-6 .1-2 1.1-4 1.1-6-.1 0 3-1.2 6.6-3.4 8.4z" fill="${d}"/><ellipse cx="21.5" cy="12.3" rx="11.5" ry="2.7" transform="rotate(-14 21.5 12.3)" fill="${d}"/><circle cx="24" cy="36.5" r="1.6" fill="${w}"/>`,
-    per: `<path d="M14 15.2h20l-3.2-4.6h-13.6z" fill="${d}"/><path d="M30.5 11c2.6-6 7.6-7.6 10.4-6.6-3 2-5 4.8-8 7.4z" fill="${d}"/>${[17, 20.5, 24, 27.5, 31].map(x => `<circle cx="${x}" cy="${35 + Math.abs(x - 24) * -.18 + 1.2}" r="1.2" fill="${w}"/>`).join('')}`,
-    oli: `<rect x="17" y="3.5" width="14" height="9.6" rx="1.2" fill="${d}"/><rect x="12.5" y="12.4" width="23" height="2.6" rx="1.3" fill="${d}"/><path d="M20.5 31.5l3.5 4 3.5-4" stroke="${w}" stroke-width="1.8" fill="none" stroke-linejoin="round"/>`,
-    vio: `<path d="M15.6 19.5c.6-6 4.2-8.6 8.4-8.6s7.8 2.6 8.4 8.6c-2.2-2.6-5-3.6-8.4-3.6s-6.2 1-8.4 3.6z" fill="${d}"/><circle cx="20.6" cy="21.5" r="2.6" stroke="${w}" stroke-width="1.4" fill="none"/><circle cx="27.4" cy="21.5" r="2.6" stroke="${w}" stroke-width="1.4" fill="none"/><path d="M23.2 21.5h1.6" stroke="${w}" stroke-width="1.4"/><path d="M19 33.5l5 2.6 5-2.6v5.2l-5-2.6-5 2.6z" fill="${w}"/>`,
-    leb: `<path d="M14.8 16.2c2.4-6.2 16-6.2 18.4 0-6.1-2-12.3-2-18.4 0z" fill="${w}"/><path d="M15 16.6c3-1 15-1 18 0" stroke="${d}" stroke-width="1.2" fill="none"/><path d="M19 32.5h10l1.5 10h-13z" fill="${w}" opacity=".9"/>`,
-    orc: `<circle cx="24" cy="10.6" r="4.4" fill="${d}"/><path d="M15.8 20c.8-5.6 4.2-8 8.2-8s7.4 2.4 8.2 8c-2.4-2-5-3-8.2-3s-5.8 1-8.2 3z" fill="${d}"/><path d="M19.5 31.5l4.5 9 4.5-9" stroke="${w}" stroke-width="2.2" fill="none" stroke-linejoin="round"/>`
-  }[k] || '';
-  return `<svg class="clav" viewBox="0 0 48 48" width="${size}" height="${size}" style="width:${size}px;height:${size}px;flex:none" aria-hidden="true"><defs><clipPath id="clc"><circle cx="24" cy="24" r="22.2"/></clipPath></defs>
-    <circle cx="24" cy="24" r="23" fill="${s.c}" stroke="rgba(0,0,0,.28)" stroke-width="1.6"/><g clip-path="url(#clc)"><path d="M7.5 48c1.2-10.5 7.6-16.2 16.5-16.2S39.3 37.5 40.5 48z" fill="${d}"/><circle cx="24" cy="21.5" r="8.4" fill="${d}"/>${det}</g></svg>`;
+/* --- Dessins du Clue (originaux) : portraits victoriens en médaillon doré, armes illustrées, pièces Art déco --- */
+const CL_DEFS = `<linearGradient id="clGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdeeb0"/><stop offset=".35" stop-color="#d7a63e"/><stop offset=".6" stop-color="#f6d98a"/><stop offset="1" stop-color="#8a5c12"/></linearGradient>
+<radialGradient id="clSkin" cx="42%" cy="35%" r="70%"><stop offset="0" stop-color="#f8dcc2"/><stop offset=".7" stop-color="#e8b892"/><stop offset="1" stop-color="#c98d68"/></radialGradient>
+<radialGradient id="clSkinD" cx="42%" cy="35%" r="70%"><stop offset="0" stop-color="#e9c09c"/><stop offset="1" stop-color="#b9805c"/></radialGradient>
+<linearGradient id="clSteel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f6f8"/><stop offset=".45" stop-color="#a9b2bb"/><stop offset=".55" stop-color="#7b858f"/><stop offset="1" stop-color="#d6dce1"/></linearGradient>
+<linearGradient id="clDark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b7178"/><stop offset=".5" stop-color="#2c3036"/><stop offset="1" stop-color="#4a4f56"/></linearGradient>
+<linearGradient id="clBrass" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a5c12"/><stop offset=".3" stop-color="#f3d27a"/><stop offset=".55" stop-color="#c9952f"/><stop offset="1" stop-color="#6e4a10"/></linearGradient>
+<linearGradient id="clWood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4a2512"/><stop offset=".45" stop-color="#9a5a2c"/><stop offset="1" stop-color="#3a1d0e"/></linearGradient>
+<linearGradient id="clLead" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfd3d6"/><stop offset=".4" stop-color="#8e959b"/><stop offset=".75" stop-color="#5d646a"/><stop offset="1" stop-color="#9aa1a6"/></linearGradient>
+<radialGradient id="clFlame" cx="50%" cy="70%" r="60%"><stop offset="0" stop-color="#fff8c9"/><stop offset=".5" stop-color="#ffc23a"/><stop offset="1" stop-color="#e2541b"/></radialGradient>
+<linearGradient id="clDeco" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d3b36"/><stop offset="1" stop-color="#0c1a18"/></linearGradient>
+<clipPath id="clCut"><circle cx="50" cy="50" r="42"/></clipPath>`;
+// Un seul jeu de définitions dans la page (dégradés partagés par tous les dessins)
+function clDefsOnce(){ if(document.getElementById('clDefsSvg')) return; const d = document.createElement('div');
+  d.innerHTML = `<svg id="clDefsSvg" width="0" height="0" style="position:absolute;width:0;height:0" aria-hidden="true"><defs>${CL_DEFS}</defs></svg>`; document.body.appendChild(d.firstChild); }
+// Visage : yeux, sourcils, nez, bouche (traits fins, à la manière d'une gravure colorée)
+function clFace(o){
+  o = o || {}; const brow = o.brow || '#4a3020', lips = o.lips || '#b4544a', y = o.y || 0;
+  return `<g transform="translate(0 ${y})">
+    <ellipse cx="36.6" cy="45" rx="2.3" ry="3.6" fill="url(#clSkinD)"/><ellipse cx="63.4" cy="45" rx="2.3" ry="3.6" fill="url(#clSkinD)"/>
+    <path d="M50 26.5c8.6 0 13.3 6.4 13.3 15.6 0 10.4-6 17.4-13.3 17.4s-13.3-7-13.3-17.4c0-9.2 4.7-15.6 13.3-15.6z" fill="url(#clSkin)"/>
+    <path d="M41.2 40.8q3.2-${o.lift || 1.6} 6.2 0M52.6 40.8q3.2-${o.lift || 1.6} 6.2 0" stroke="${brow}" stroke-width="${o.bw || 1.3}" fill="none" stroke-linecap="round"/>
+    <ellipse cx="44.4" cy="44.3" rx="1.55" ry="1.15" fill="#2a1b12"/><ellipse cx="55.6" cy="44.3" rx="1.55" ry="1.15" fill="#2a1b12"/>
+    ${o.lash ? '<path d="M42.4 43.2l-1.2-.9M57.6 43.2l1.2-.9" stroke="#2a1b12" stroke-width=".8" stroke-linecap="round"/>' : ''}
+    <path d="M50 45.5c-.6 2.8-1.5 4.6-2 5.6.9.6 2.6.7 3.7.1" stroke="#b37a59" stroke-width=".9" fill="none" stroke-linecap="round"/>
+    <circle cx="42.3" cy="50" r="2.6" fill="#e58a7a" opacity=".22"/><circle cx="57.7" cy="50" r="2.6" fill="#e58a7a" opacity=".22"/>
+    ${o.mouth || `<path d="M46.3 54.2q3.7 ${o.smile || 1.6} 7.4 0" stroke="${lips}" stroke-width="${o.lw || 1.3}" fill="none" stroke-linecap="round"/>`}
+  </g>`;
 }
-const CL_IC = {
-  chand: '<path d="M12 2.5c1.6 2 1.6 3.6 0 4.6-1.6-1-1.6-2.6 0-4.6z"/><path d="M9.5 9h5v7.5h-5z"/><path d="M12 16.5v3.5M7 21h10M8 9h8"/>',
-  dag: '<path d="M12 2l2.2 10.5h-4.4z"/><path d="M7.5 12.5h9M12 12.5v3"/><path d="M10.8 15.5h2.4v5.5h-2.4z"/>',
-  pipe: '<path d="M5.5 18.5L17.5 6.5" stroke-width="3.4"/><path d="M15.5 4.5l4 4M3.5 16.5l4 4" stroke-width="2.4"/>',
-  gun: '<path d="M3 8h15.5l2 2v2.3H9.5l-1.2 2.4H6.2L5 20H2l1.1-6.6z"/><path d="M11.5 12.3v2.2h-2"/>',
-  rope: '<path d="M12 5a7 7 0 1 0 7 7 4.5 4.5 0 1 0-4.5 4.5 2.2 2.2 0 1 0-2.2-2.2"/><path d="M12 5c2-1.5 4-1.8 6-.8"/>',
-  wrench: '<path d="M14.6 3.8a4.6 4.6 0 0 0-4.1 6.3L3.8 16.8l3.4 3.4 6.7-6.7a4.6 4.6 0 0 0 6.3-4.1l-2.9 2.9-3-.6-.6-3 2.9-2.9z"/>',
-  kit: '<path d="M5 10h14v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M3 10h18M10 6.5c0-1.6 4-1.6 4 0"/>',
-  ball: '<path d="M9 18V5.5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16.5" r="2.5"/>',
-  cons: '<path d="M12 21v-9"/><path d="M12 12c-4.2 0-6.2-3-6.2-7.2 4.2 0 6.2 3 6.2 7.2z"/><path d="M12 14.5c3.2 0 5.2-2.2 5.2-5.4-3.2 0-5.2 2.2-5.2 5.4z"/><path d="M8 21h8"/>',
-  din: '<circle cx="12.5" cy="12" r="5"/><path d="M3.5 3.5v6a2 2 0 0 0 2 2v9M5.5 3.5v5M21 3.5c-2 0-3 3-3 6.5h3v10.5"/>',
-  bil: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/><path d="M12 10.6v2.8"/>',
-  lib: '<path d="M4 4h4v16H4zM10 4h4v16h-4z"/><path d="M16 5.2l3.4-.9 3.1 15.4-3.4.9z"/>',
-  lou: '<path d="M4.5 11V8.2a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2V11"/><path d="M2.5 12.5a2 2 0 0 1 4 0v3h11v-3a2 2 0 0 1 4 0V19h-19z"/><path d="M5 19v2M19 19v2"/>',
-  hall: '<path d="M6 21V3h12v18M3 21h18"/><circle cx="15" cy="12.5" r=".9"/>',
-  stu: '<path d="M3 20h18M6 20v-5.5h12V20"/><path d="M14.5 14.5l-3.2-6.2 4.2-3"/><path d="M15 4.8l3.4 3"/>'
+const CL_PORTRAIT = {
+  // Colonel Moutarde : vétéran, veste moutarde à épaulettes, moustache en guidon, monocle
+  col: {bg: ['#f6dc7c', '#9a6c06'], art: `
+    <path d="M8 100c3-19 15-28 42-30 27 2 39 11 42 30z" fill="#b8860b"/><path d="M8 100c3-19 15-28 42-30 27 2 39 11 42 30z" fill="url(#clDark)" opacity=".18"/>
+    <path d="M42 70l8 14 8-14z" fill="#f2ead6"/><path d="M45.5 70l4.5 9 4.5-9" fill="#7a1d1d"/>
+    <rect x="13" y="72" width="17" height="6" rx="3" fill="url(#clGold)" transform="rotate(-14 21 75)"/><rect x="70" y="72" width="17" height="6" rx="3" fill="url(#clGold)" transform="rotate(14 79 75)"/>
+    <path d="M14 79l1.5 5M17 78.4l1.5 5M20 77.6l1.5 5M23 76.8l1.5 5M86 79l-1.5 5M83 78.4l-1.5 5M80 77.6l-1.5 5M77 76.8l-1.5 5" stroke="#e8c15a" stroke-width="1.1"/>
+    <circle cx="34" cy="88" r="2.6" fill="#c0392b" stroke="url(#clGold)" stroke-width="1.2"/><circle cx="40.5" cy="89" r="2.6" fill="#1f4e8c" stroke="url(#clGold)" stroke-width="1.2"/>
+    <rect x="45" y="56" width="10" height="14" fill="url(#clSkinD)"/>
+    ${clFace({brow: '#9a9a96', bw: 2.2, lift: 2.4, mouth: '<path d="M47 56q3 1.2 6 0" stroke="#9b5145" stroke-width="1" fill="none"/>'})}
+    <path d="M36.6 36c1.4-8 6.6-11 13.4-11s12 3 13.4 11c-2.8-4-7.4-5.6-13.4-5.6S39.4 32 36.6 36z" fill="#c8c6c0"/>
+    <path d="M36.4 38c-1.8 3-1.6 7 .2 9l1-6zM63.6 38c1.8 3 1.6 7-.2 9l-1-6z" fill="#d6d4ce"/>
+    <path d="M50 51.4c-3.6-1-7.8-.4-10.8 2.2-2.6 2.2-5.6 2.4-7.6.8 1.4 4 6.4 5.2 10.2 3.2 3-1.6 5.4-2.8 8.2-2.4 2.8-.4 5.2.8 8.2 2.4 3.8 2 8.8.8 10.2-3.2-2 1.6-5 1.4-7.6-.8-3-2.6-7.2-3.2-10.8-2.2z" fill="#f4f1ea" stroke="#b9b2a4" stroke-width=".6"/>
+    <circle cx="55.6" cy="44.3" r="4" fill="#ffffff" fill-opacity=".18" stroke="url(#clGold)" stroke-width="1.3"/><path d="M59.4 45.6c3 4 4.4 10 3.6 17" stroke="#d7a63e" stroke-width=".7" fill="none"/>`},
+  // Mademoiselle Rose : jeune femme des années folles, robe écarlate, carré noir ondulé, bandeau à plume
+  rose: {bg: ['#f27c74', '#6d0b12'], art: `
+    <path d="M27 100c0-14 7-24 23-25 16 1 23 11 23 25z" fill="url(#clSkin)"/>
+    <path d="M14 100c2-10 6-15 14-17 7 4 14 6 22 6s15-2 22-6c8 2 12 7 14 17z" fill="#b5121b"/><path d="M28 83c7 4 14 6 22 6s15-2 22-6" stroke="#ff6b6b" stroke-width="1.2" fill="none" opacity=".6"/>
+    ${[38, 41.5, 45, 48.5, 52, 55.5, 59, 62.5].map((x, i) => `<circle cx="${x - 0.5}" cy="${71 + Math.abs(i - 3.5) * -0.9 + 3.2}" r="1.5" fill="#fffaf0" stroke="#d8cfc0" stroke-width=".4"/>`).join('')}
+    <rect x="45.5" y="56" width="9" height="13" fill="url(#clSkinD)"/>
+    <path d="M33 47c-3-14 3-25 17-25s20 11 17 25c-1 6-1 11 1 15-5 1-9-1-11-5 1-6 1-12-1-16-3 2-9 3-13 1-1 5-2 10-1 15-3 4-7 6-11 5 2-4 2-9 2-15z" fill="#17110f"/>
+    ${clFace({lash: true, lips: '#c3162a', lw: 1.8, smile: 1.4, brow: '#1a1210', bw: 1, lift: 2.2})}
+    <path d="M36.5 39c3-9 9-12 14-12s10 3 13.5 10c-4-3-9-4-13.5-4s-10 2-14 6z" fill="#17110f"/>
+    <path d="M38 33c5-3 10-4 13-4" stroke="#3b2c28" stroke-width="1" fill="none" opacity=".8"/>
+    <path d="M35.4 34.6c9-3.6 20-3.6 29.2 0" stroke="#d8b25a" stroke-width="2.4" fill="none"/><circle cx="58" cy="33.4" r="2.2" fill="#c3162a" stroke="url(#clGold)" stroke-width="1"/>
+    <path d="M59 32c5-10 12-14 17-13-5 3-8 8-11 14-2 3-4 3-6-1z" fill="#f7f1e8"/><path d="M60 31c4-6 9-9 14-10" stroke="#cfc4b4" stroke-width=".7" fill="none"/>`},
+  // Madame Pervenche : grande dame, robe bleu paon, grand chapeau à plume de paon, collier de perles
+  per: {bg: ['#6fb7f0', '#0a3466'], art: `
+    <path d="M10 100c3-17 14-26 40-27 26 1 37 10 40 27z" fill="#11528f"/><path d="M38 73l12 16 12-16" fill="url(#clSkin)"/>
+    <path d="M10 100c3-17 14-26 40-27" stroke="#2f86c8" stroke-width="1.5" fill="none" opacity=".7"/>
+    <path d="M22 80c6-3 9-1 12 4M78 80c-6-3-9-1-12 4" stroke="#0c3c6c" stroke-width="2" fill="none"/>
+    <rect x="45.5" y="56" width="9" height="14" fill="url(#clSkinD)"/>
+    <path d="M44 66.5q6 3 12 0" stroke="#fffaf0" stroke-width="2.4" fill="none" stroke-dasharray=".1 2.4" stroke-linecap="round"/>
+    <path d="M36 44c-2-10 4-17 14-17s16 7 14 17c-2-5-7-7-14-7s-12 2-14 7z" fill="#8c5a3a"/>
+    ${clFace({lash: true, lips: '#c4505a', lw: 1.5, brow: '#5a3a28', lift: 2})}
+    <path d="M37 41c2-7 7-10 13-10s11 3 13 10c-3-3-8-4-13-4s-10 1-13 4z" fill="#8c5a3a"/>
+    <ellipse cx="50" cy="29" rx="27" ry="6.5" fill="#0b2f5a" transform="rotate(-8 50 29)"/><path d="M33 28c2-8 9-12 17-12s15 4 16 11z" fill="#0f3e74"/>
+    <path d="M34 27.5c10-2 22-2.6 32-1" stroke="#5fb0e8" stroke-width="1.4" fill="none"/>
+    <path d="M62 24c6-12 15-18 24-17-7 4-12 10-16 18z" fill="#1f8a6e"/><ellipse cx="80" cy="10.6" rx="4.4" ry="3.4" fill="#0e5d8f" transform="rotate(-30 80 10.6)"/><ellipse cx="80" cy="10.6" rx="2" ry="1.5" fill="#d6b04a" transform="rotate(-30 80 10.6)"/><circle cx="80" cy="10.6" r=".9" fill="#1b2a5e"/>`},
+  // Docteur Olive : homme élégant des années 30, costume vert, cheveux gominés, fine moustache
+  oli: {bg: ['#86cf7d', '#1a4a17'], art: `
+    <path d="M8 100c3-18 15-27 42-29 27 2 39 11 42 29z" fill="#2f6a2a"/><path d="M50 71l-12 6 12 23 12-23z" fill="#f4efe2"/>
+    <path d="M38 77l12 23-17-8-5-14zM62 77l-12 23 17-8 5-14z" fill="#24541f"/><path d="M47.5 75h5l1.5 4-4 12-4-12z" fill="#7a5a1a"/><path d="M47.5 75h5l-2.5 3z" fill="#5a3f10"/>
+    <rect x="45" y="56" width="10" height="14" fill="url(#clSkinD)"/>
+    ${clFace({brow: '#2a1a10', lift: 1.4, mouth: '<path d="M46.8 55q3.2 1 6.4 0" stroke="#9b5145" stroke-width="1.1" fill="none"/><path d="M45.6 52.2q4.4-2 8.8 0q-4.4.6-8.8 0z" fill="#2a1a10"/>'})}
+    <path d="M36.6 41c-.6-10 5-16 13.4-16 8.6 0 14.2 5.4 13.4 15-2.4-5-6-7.6-9.4-8.6-5.4 2.2-11 3.6-17.4 9.6z" fill="#2a1a10"/><path d="M42 30c5-2.6 11-3 16-1" stroke="#5a4030" stroke-width=".9" fill="none"/>`},
+  // Professeur Violet : universitaire, veste violette, nœud papillon, lunettes rondes, barbiche
+  vio: {bg: ['#b49af5', '#2e1766'], art: `
+    <path d="M8 100c3-18 15-27 42-29 27 2 39 11 42 29z" fill="#55339f"/><path d="M42 71l8 12 8-12z" fill="#f4efe2"/>
+    <path d="M30 80l20 20 20-20-6-6-14 10-14-10z" fill="#6c47b8"/><path d="M50 84l-8 16M50 84l8 16" stroke="#3d2378" stroke-width="1.2"/>
+    <path d="M42 74l8 3.4 8-3.4v7l-8-3.4-8 3.4z" fill="#d8b25a"/><circle cx="50" cy="77.4" r="1.6" fill="#a8822e"/>
+    <rect x="45" y="56" width="10" height="14" fill="url(#clSkinD)"/>
+    ${clFace({brow: '#6b4a32', lift: 1.2, mouth: '<path d="M47 54.6q3 1 6 0" stroke="#9b5145" stroke-width="1.1" fill="none"/><path d="M46 56c1.4 4 2.6 6.6 4 7.4 1.4-.8 2.6-3.4 4-7.4-2.6 1-5.4 1-8 0z" fill="#6b4a32"/>'})}
+    <path d="M36.4 45c-1.4-5 0-9 2.4-11 .4 3 .6 6 .8 9zM63.6 45c1.4-5 0-9-2.4-11-.4 3-.6 6-.8 9z" fill="#7a5a40"/>
+    <path d="M40 31c3-4 7-5.6 10-5.6s7 1.6 10 5.6c-3-1.6-6.6-2.2-10-2.2s-7 .6-10 2.2z" fill="#8a6a4e" opacity=".8"/>
+    <circle cx="44.4" cy="44.4" r="4.1" fill="#ffffff" fill-opacity=".16" stroke="url(#clGold)" stroke-width="1.2"/><circle cx="55.6" cy="44.4" r="4.1" fill="#ffffff" fill-opacity=".16" stroke="url(#clGold)" stroke-width="1.2"/><path d="M48.5 44q1.5-1 3 0M40.3 43.6l-3.2-1M59.7 43.6l3.2-1" stroke="#c9952f" stroke-width="1" fill="none"/>`},
+  // Madame Leblanc : gouvernante, robe noire, tablier et bonnet blancs, chignon gris
+  leb: {bg: ['#fbf9f2', '#8d877b'], art: `
+    <path d="M8 100c3-18 15-27 42-29 27 2 39 11 42 29z" fill="#26211f"/><path d="M33 100V83c5-5 11-7 17-7s12 2 17 7v17z" fill="#fbfaf6"/>
+    <path d="M33 83c5-5 11-7 17-7s12 2 17 7" stroke="#d9d4c8" stroke-width="1.2" fill="none"/><path d="M40 72c3 3 6 4 10 4s7-1 10-4l3 3c-4 4-8 5-13 5s-9-1-13-5z" fill="#fbfaf6" stroke="#d9d4c8" stroke-width=".7"/>
+    <rect x="45" y="56" width="10" height="14" fill="url(#clSkinD)"/>
+    <circle cx="50" cy="24" r="7" fill="#b9b6b0"/>
+    <path d="M36 44c-2-10 4-17 14-17s16 7 14 17c-1-6-6-9-14-9s-13 3-14 9z" fill="#b9b6b0"/>
+    ${clFace({brow: '#8a857c', lift: 1.4, lips: '#a5584e', smile: 1})}
+    <path d="M39 51.5q1.8 2 1.2 4.6M61 51.5q-1.8 2-1.2 4.6" stroke="#c99472" stroke-width=".7" fill="none"/>
+    <path d="M37 38c2-6 7-9 13-9s11 3 13 9c-3-2.4-8-3.6-13-3.6S40 35.6 37 38z" fill="#c4c1bb"/>
+    <path d="M36 31c3-6 8-9 14-9s11 3 14 9c-4 1-9 1.6-14 1.6S40 32 36 31z" fill="#fbfaf6" stroke="#d9d4c8" stroke-width=".8"/><path d="M36.6 31.4c4.4 1 8.8 1.6 13.4 1.6s9-.6 13.4-1.6" stroke="#d9d4c8" stroke-width="2.2" stroke-dasharray="1.6 1.4" fill="none"/>`},
+  // Docteur Orchidée : jeune médecin, sarrau blanc, chemisier orchidée, stéthoscope, fleur dans les cheveux
+  orc: {bg: ['#f7cdf0', '#7a2d73'], art: `
+    <path d="M8 100c3-18 15-27 42-29 27 2 39 11 42 29z" fill="#fbfaf6"/><path d="M40 72l10 10 10-10v28H40z" fill="#c45bb6"/>
+    <path d="M40 72l-8 6 10 22M60 72l8 6-10 22" stroke="#d9d4c8" stroke-width="1.4" fill="none"/>
+    <path d="M38 76c-2 8 0 14 6 16M62 76c2 8 0 14-6 16" stroke="#3a3a40" stroke-width="1.6" fill="none"/><circle cx="50" cy="94" r="3.4" fill="url(#clSteel)" stroke="#555" stroke-width=".6"/><path d="M44 92c2 2 4 2 6 2M56 92c-2 2-4 2-6 2" stroke="#3a3a40" stroke-width="1.6" fill="none"/>
+    <rect x="45.5" y="56" width="9" height="14" fill="url(#clSkinD)"/>
+    <path d="M34 50c-3-14 3-24 16-24s19 10 16 24c-2-7-4-13-6-15-6 2-13 2-20 0-2 3-4 8-6 15z" fill="#141018"/>
+    ${clFace({lash: true, lips: '#b8457e', lw: 1.5, brow: '#141018', lift: 2})}
+    <path d="M37 40c1-8 6-12 13-12s12 4 13 12c-4-4-8-5-13-5s-9 1-13 5z" fill="#141018"/>
+    <g transform="translate(64 31)"><ellipse rx="4.4" ry="2.6" fill="#e58ad6" transform="rotate(30)"/><ellipse rx="4.4" ry="2.6" fill="#e58ad6" transform="rotate(-40)"/><ellipse rx="4.4" ry="2.6" fill="#d070c2" transform="rotate(100)"/><circle r="1.6" fill="#f7e36a"/></g>`}
 };
+function clAv(s, size){
+  size = size || 34; clDefsOnce();
+  const P = CL_PORTRAIT[s.a] || CL_PORTRAIT.col, id = 'clBg-' + (s.a || 'x');
+  const beads = [...Array(24).keys()].map(i => { const a = i / 24 * Math.PI * 2; return `<circle cx="${(50 + 46.3 * Math.cos(a)).toFixed(1)}" cy="${(50 + 46.3 * Math.sin(a)).toFixed(1)}" r="1.15" fill="#fff4cc" opacity=".75"/>`; }).join('');
+  return `<svg class="clav" viewBox="0 0 100 100" width="${size}" height="${size}" style="width:${size}px;height:${size}px;flex:none" aria-hidden="true"><defs><radialGradient id="${id}" cx="50%" cy="34%" r="70%"><stop offset="0" stop-color="${P.bg[0]}"/><stop offset="1" stop-color="${P.bg[1]}"/></radialGradient></defs>
+    <circle cx="50" cy="50" r="49.5" fill="url(#clGold)"/>${size >= 30 ? beads : ''}<circle cx="50" cy="50" r="43.6" fill="#3a2610"/>
+    <circle cx="50" cy="50" r="42" fill="url(#${id})"/><g clip-path="url(#clCut)"><g transform="translate(-7 -3) scale(1.14)">${P.art}</g></g><circle cx="50" cy="50" r="42" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1.6"/></svg>`;
+}
+/* Armes : illustrations (laiton, acier, bois, chanvre) */
+const CL_WEAPON = {
+  chand: `<ellipse cx="50" cy="88" rx="22" ry="6" fill="#6e4a10"/><ellipse cx="50" cy="85" rx="22" ry="6" fill="url(#clBrass)"/>
+    <path d="M44 84c0-5 2-8 3-12h6c1 4 3 7 3 12z" fill="url(#clBrass)"/><ellipse cx="50" cy="71" rx="6" ry="2.4" fill="url(#clBrass)"/>
+    <path d="M47 70V44h6v26z" fill="url(#clBrass)"/><ellipse cx="50" cy="56" rx="5" ry="2.6" fill="url(#clBrass)"/><ellipse cx="50" cy="45" rx="11" ry="3.2" fill="url(#clBrass)"/>
+    <rect x="45" y="20" width="10" height="24" rx="1.4" fill="#f6ecd4"/><path d="M45 23c2 0 2 6 4 6s1-4 6-6" fill="#fffaf0" stroke="#e2d4b4" stroke-width=".6"/><path d="M53 20h2v24h-2z" fill="#d9c9a4" opacity=".7"/>
+    <path d="M50 19v-3" stroke="#3a2a1a" stroke-width="1"/><path d="M50 4c4 5 5 9 2 12-1 1-3 1-4 0-3-3-2-7 2-12z" fill="url(#clFlame)"/>`,
+  dag: `<g transform="rotate(-38 50 50)"><path d="M50 4l6 12v46H44V16z" fill="url(#clSteel)"/><path d="M50 6v56" stroke="#7b858f" stroke-width="1.2"/><path d="M44 16l6-12 6 12" fill="none" stroke="#5d646a" stroke-width=".6"/>
+    <rect x="34" y="61" width="32" height="6" rx="3" fill="url(#clGold)"/><circle cx="34" cy="64" r="3.6" fill="url(#clGold)"/><circle cx="66" cy="64" r="3.6" fill="url(#clGold)"/><circle cx="50" cy="64" r="2" fill="#a51e24"/>
+    <rect x="45.5" y="67" width="9" height="20" rx="2" fill="url(#clWood)"/><path d="M45.5 71l9 2M45.5 75l9 2M45.5 79l9 2M45.5 83l9 2" stroke="#2a140a" stroke-width="1"/>
+    <circle cx="50" cy="91" r="5" fill="url(#clGold)"/></g>`,
+  pipe: `<g fill="none" stroke-linecap="butt" stroke-linejoin="round"><path d="M10 72H50Q68 72 68 54V12" stroke="#3f454a" stroke-width="20"/><path d="M10 72H50Q68 72 68 54V12" stroke="#7d858b" stroke-width="16"/>
+    <path d="M10 67H50Q63 67 63 54V12" stroke="#b9bfc4" stroke-width="3.4" opacity=".9"/><path d="M10 77H50Q73 77 73 54V12" stroke="#4f565c" stroke-width="2.4" opacity=".7"/></g>
+    <rect x="6" y="60" width="10" height="24" rx="2" fill="url(#clLead)" transform="rotate(90 11 72)"/><rect x="5" y="61" width="9" height="22" rx="2" fill="#8e959b"/><path d="M7.5 61v22M10 61v22M12.5 61v22" stroke="#4f565c" stroke-width=".8"/>
+    <rect x="56" y="5" width="24" height="10" rx="2" fill="#8e959b"/><path d="M56 7.5h24M56 10h24M56 12.5h24" stroke="#4f565c" stroke-width=".8"/>
+    <ellipse cx="34" cy="70" rx="3" ry="1.6" fill="#4f565c" opacity=".55"/><ellipse cx="66" cy="34" rx="1.5" ry="3" fill="#4f565c" opacity=".5"/>`,
+  gun: `<path d="M12 32h50l3-4h4v4h18v10H18z" fill="url(#clDark)"/><path d="M12 32h75" stroke="#9aa1a8" stroke-width="1"/><rect x="83" y="29" width="4" height="4" fill="#2c3036"/>
+    <rect x="42" y="30" width="22" height="18" rx="5" fill="url(#clDark)"/><path d="M46 31v16M51 31v16M56 31v16M61 31v16" stroke="#1a1d21" stroke-width="1.2"/>
+    <path d="M34 42h34c0 6-4 10-10 10H40z" fill="url(#clDark)"/><path d="M48 52c0 6 4 9 9 9s7-3 7-7" stroke="#2c3036" stroke-width="3" fill="none"/><path d="M55 52l2 6" stroke="#9aa1a8" stroke-width="1.6"/>
+    <path d="M30 44l-6-8 7-3 6 9z" fill="#2c3036"/>
+    <path d="M33 46L17 78c-2.4 5 .6 9 6 9h9c4 0 6-3 5.4-6.4L46 48z" fill="url(#clWood)"/><path d="M27 60l12 8M24 66l12 8M21 72l12 8M30 56l-8 16M36 58l-9 18M42 60l-9 18" stroke="#2a140a" stroke-width=".6" opacity=".6"/><circle cx="34" cy="66" r="1.6" fill="url(#clGold)"/>`,
+  rope: `<g fill="none" stroke-linecap="round"><path d="M50 22c-22 0-34 9-34 22s12 22 34 22 34-9 34-22-12-22-34-22zM50 30c-16 0-26 6-26 14s10 14 26 14 26-6 26-14-10-14-26-14zM50 38c-9 0-17 3-17 6s8 6 17 6 17-3 17-6-8-6-17-6z" stroke="#a87b45" stroke-width="7"/>
+    <path d="M50 22c-22 0-34 9-34 22s12 22 34 22 34-9 34-22-12-22-34-22zM50 30c-16 0-26 6-26 14s10 14 26 14 26-6 26-14-10-14-26-14zM50 38c-9 0-17 3-17 6s8 6 17 6 17-3 17-6-8-6-17-6z" stroke="#e2c48e" stroke-width="7" stroke-dasharray="3 3.2"/>
+    <path d="M78 54c6 8 8 18 4 30" stroke="#a87b45" stroke-width="7"/><path d="M78 54c6 8 8 18 4 30" stroke="#e2c48e" stroke-width="7" stroke-dasharray="3 3.2"/></g>
+    <path d="M78.5 84l-2 8M82 85l-1 8M85 84l1 7" stroke="#c9a46a" stroke-width="1.4" stroke-linecap="round"/>`,
+  wrench: `<g transform="rotate(-40 50 50)"><rect x="44" y="34" width="12" height="58" rx="6" fill="url(#clSteel)" transform="rotate(90 50 63) translate(0 0)" opacity="0"/>
+    <path d="M44 38h12v52a6 6 0 0 1-12 0z" fill="url(#clSteel)"/><path d="M47 44h6v38h-6z" fill="#8e959b" opacity=".5"/><circle cx="50" cy="86" r="2.6" fill="#5d646a"/>
+    <path d="M36 8h14v10h4V8h10v20c0 6-4 12-14 12s-14-6-14-12z" fill="url(#clSteel)"/><path d="M36 8h14v10" stroke="#5d646a" stroke-width=".8" fill="none"/>
+    <rect x="41" y="29" width="18" height="6" rx="3" fill="url(#clDark)"/><path d="M44 29v6M47 29v6M50 29v6M53 29v6M56 29v6" stroke="#9aa1a8" stroke-width=".8"/></g>`
+};
+/* Pièces : plaques Art déco (années 30), motifs dorés sur fond vert nuit */
+const CL_ROOM = {
+  kit: `<path d="M28 76V48h44v28M24 76h52" /><rect x="32" y="56" width="16" height="14"/><rect x="52" y="56" width="16" height="14"/><path d="M30 48c0-4 4-6 8-6h24c4 0 8 2 8 6"/><path d="M44 42v-6h12v6M40 36h20"/><path d="M46 30c-2-3 2-5 0-8M54 30c-2-3 2-5 0-8"/>`,
+  ball: `<path d="M50 14v10"/><path d="M50 24l-18 14h36z"/><path d="M32 38c0 6 4 10 4 14M68 38c0 6-4 10-4 14M50 38v20M41 38v14M59 38v14"/><circle cx="36" cy="54" r="1.6" fill="#e2c35c"/><circle cx="64" cy="54" r="1.6" fill="#e2c35c"/><circle cx="50" cy="60" r="1.8" fill="#e2c35c"/><circle cx="41" cy="54" r="1.4" fill="#e2c35c"/><circle cx="59" cy="54" r="1.4" fill="#e2c35c"/><path d="M22 84h56M30 84l6-12h28l6 12M50 72v12"/>`,
+  cons: `<path d="M26 84V44a24 24 0 0 1 48 0v40z"/><path d="M50 20v64M26 50h48M26 66h48M38 23v61M62 23v61"/><path d="M50 84c0-12 2-20 6-26M56 58c6-6 12-4 16-2-6 0-10 2-16 2zM56 58c-2-8 2-14 6-16 0 6-2 10-6 16zM50 72c-6-6-14-6-18-4 6 1 12 2 18 4z"/>`,
+  din: `<path d="M20 64h60M26 64v20M74 64v20M34 64v12M66 64v12"/><path d="M50 64V40M42 46h16M42 46v-6M58 46v-6M50 40v-6"/><path d="M42 40c0-2 0-4 0-5M58 40c0-2 0-4 0-5M50 34c0-2 0-3 0-4"/><path d="M40 33c1.4-2 2.8-2 4 0M56 33c1.4-2 2.8-2 4 0M48 28c1.4-2 2.8-2 4 0"/><path d="M24 64V44l6-4 6 4v20M64 64V44l6-4 6 4v20"/>`,
+  bil: `<path d="M18 68l12-24h40l12 24z"/><path d="M14 68h72v6H14zM20 74v10M80 74v10"/><circle cx="44" cy="56" r="3" fill="#e2c35c"/><circle cx="52" cy="52" r="3"/><circle cx="58" cy="58" r="3" fill="#e2c35c"/><path d="M30 34l36 22"/><path d="M26 32l4 2"/>`,
+  lib: `<path d="M22 84V20h56v64M22 40h56M22 62h56"/><path d="M27 40V26M32 40V24M37 40V28M43 40V25M48 40l4-15M58 40V27M63 40V24M68 40V29M73 40V26M27 62V46M33 62V48M38 62V45M45 62V50M52 62V46M57 62V48M64 62V45M70 62l3-15M74 62V50"/><path d="M28 84V68h14v16M58 84V68h14v16"/>`,
+  lou: `<path d="M26 82V60c0-8 4-12 12-12h24c8 0 12 4 12 12v22"/><path d="M20 82V62c0-4 6-4 6 0M80 82V62c0-4-6-4-6 0M26 70h48M30 70V58M70 70V58"/><path d="M22 82v4M78 82v4"/><path d="M50 48V30M42 30h16l-4-10H46z"/>`,
+  hall: `<path d="M26 86V36l24-16 24 16v50"/><path d="M34 86V44l16-10 16 10v42M50 34v52"/><path d="M45 62h2M53 62h2"/><path d="M14 86h72M18 86v-6h64v6M22 80v-5h56v5"/>`,
+  stu: `<path d="M18 66h64M24 66v18M76 66v18M24 74h20M44 66v18"/><path d="M60 66V52"/><path d="M50 52h20l-4-8H54z"/><path d="M62 44V38"/><circle cx="34" cy="52" r="9"/><path d="M34 61v5M28 66h12M25 52h18M34 43c-4 4-4 14 0 18M34 43c4 4 4 14 0 18"/>`
+};
+function clRoomSvg(k){
+  const rays = [...Array(9).keys()].map(i => { const a = Math.PI + (i + 1) / 10 * Math.PI; return `<path d="M50 96L${(50 + 60 * Math.cos(a)).toFixed(1)} ${(96 + 60 * Math.sin(a)).toFixed(1)}" stroke="#d4af37" stroke-width=".7" opacity=".22"/>`; }).join('');
+  return `<path d="M14 4h72l10 10v72l-10 10H14L4 86V14z" fill="url(#clDeco)"/>${rays}
+    <path d="M14 4h72l10 10v72l-10 10H14L4 86V14z" fill="none" stroke="url(#clGold)" stroke-width="3"/>
+    <path d="M17 9h66l8 8v66l-8 8H17l-8-8V17z" fill="none" stroke="#d4af37" stroke-width="1" opacity=".75"/>
+    <g fill="none" stroke="#e2c35c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${CL_ROOM[k] || ''}</g>`;
+}
 function clIcon(c, size){
   size = size || 30;
   if(c.id[0] === 's') return clAv(c, size);
-  return `<svg class="clic" viewBox="0 0 24 24" width="${size}" height="${size}" style="width:${size}px;height:${size}px;flex:none" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${CL_IC[c.i] || `<text x="12" y="16.5" text-anchor="middle" font-size="12" fill="currentColor" stroke="none">${esc(c.n[0])}</text>`}</svg>`;
+  clDefsOnce();
+  const body = c.id[0] === 'w' ? (CL_WEAPON[c.i] || '') : clRoomSvg(c.i);
+  const fallback = body ? '' : `<text x="50" y="64" text-anchor="middle" font-size="44" font-family="Georgia,serif" fill="#7b1e2b">${esc(c.n[0])}</text>`;
+  return `<svg class="clic ${c.id[0] === 'r' ? 'room' : 'weap'}" viewBox="0 0 100 100" width="${size}" height="${size}" style="width:${size}px;height:${size}px;flex:none" aria-hidden="true">${body}${fallback}</svg>`;
 }
+
 // Personnage d'un joueur
 function clSusOf(g, pk){ const id = g.cl.chars[pk]; return g.opts.cl.sus.find(s => s.id === id) || g.opts.cl.sus[0]; }
 function clPAv(g, pk, size){ return clAv(clSusOf(g, pk), size); }
@@ -1600,7 +1739,7 @@ function vClue(g){
   const sec = ([cat, q, nm]) => `<tr class="clsec"><td colspan="${P.length + 2}"><b>${q}</b> ${nm}</td></tr>` + g.opts.cl[cat].map(c => {
     const env = D.K[c.id].env, st = env === 1 ? 'gui' : env === 0 ? 'inn' : '';
     return `<tr class="${st}"><td class="lc"><span class="cli">${clIcon(c, 22)}</span><span class="cln">${esc(c.n)}</span></td>${P.map(p => cell(c, p)).join('')}<td class="env">${env === 1 ? '★' : env === 0 ? '' : '?'}</td></tr>`; }).join('');
-  const book = `<div class="clbook"><div class="cltitle">Carnet de détective</div><div class="clscroll"><table class="clt">${headRow}${CL_CAT.map(sec).join('')}</table></div>
+  const book = `<div class="clbook"><div class="cltitle"><span class="orn">❦</span> Carnet de détective <span class="orn">❦</span><small>Notes confidentielles</small></div><div class="clscroll"><table class="clt">${headRow}${CL_CAT.map(sec).join('')}</table></div>
     <p class="cllegend"><span><b class="lx">✗</b> n’a pas</span><span><b class="lv">✓</b> l’a</span><span><b class="lq">?</b> je pense que oui</span><span><b class="lq">–</b> je pense que non</span><span><b class="la">✓</b> déduit par l’app</span><span><i class="ask" style="background:#888"></i> carte demandée par ce joueur</span></p>
     <p class="hint" style="margin:4px 12px 10px">Touchez une case pour changer la marque : rien → ✗ → ✓ → ? → – → rien. ★ = dans l’enveloppe. Les lignes barrées sont innocentées.</p></div>`;
   // Journal
