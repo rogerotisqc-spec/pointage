@@ -873,6 +873,7 @@ function rulesHtml(type, g){
     <h3>Fin de manche</h3><p>Quand un joueur a retourné ses 12 cartes, chacun des autres joue un dernier tour. On retourne alors toutes les cartes et chacun additionne ses cartes.</p>
     <h3>Doublement</h3><p>Si le joueur qui a terminé la manche <b>n’a pas strictement le plus bas pointage</b> de la manche, son pointage est <b>doublé</b> (seulement s’il est positif). Une égalité avec le plus bas compte aussi : il est doublé. L’app applique cette règle quand vous indiquez qui a terminé.</p>`;
   case 'clue': return `
+    <h3>Joueurs</h3><p><b>3 à 6 joueurs</b> selon les règles classiques. Certaines éditions récentes se jouent aussi à 2 : l’app accepte de 2 à 6 joueurs. Chacun joue un personnage différent. À 3 joueurs, chacun reçoit 6 cartes ; à 4, 5 ou 6 joueurs, de 3 à 5 cartes (certains en ont une de plus).</p>
     <h3>But</h3><p>Découvrir les 3 cartes cachées dans l’enveloppe : <b>qui</b> a commis le crime, <b>avec quelle arme</b> et <b>dans quelle pièce</b>.</p>
     <h3>Mise en place</h3><ul><li>On tire au hasard un suspect, une arme et une pièce, qu’on glisse sans les regarder dans l’enveloppe.</li>
       <li>On distribue toutes les autres cartes (18). Selon le nombre de joueurs, certains en ont une de plus.</li>
@@ -1700,8 +1701,9 @@ function vClue(g){
   const live = !!(S.live && S.live.g === g), nb = clNB(g), cl = clState(g), me = nb.me;
   const D = clDeduce(g, nb), cur = clCurKey(g), pend = clPend(g), P = g.players;
   const myTurn = me && cur === me && !g.finished;
-  const right = live ? `<button class="icon-btn sm" data-a="clCurtain" aria-label="Écran noir">🌙</button>`
-    : `<button class="icon-btn sm" data-a="clCurtain" aria-label="Écran noir">🌙</button>${histBtns(g)}<button class="icon-btn" data-a="menu" aria-label="Menu">⋮</button>`;
+  const rulesBtn = `<button class="icon-btn sm" data-a="rules" data-t="clue" aria-label="Règles">📖</button>`;
+  const right = live ? `<button class="icon-btn sm" data-a="clCurtain" aria-label="Écran noir">🌙</button>${rulesBtn}`
+    : `<button class="icon-btn sm" data-a="clCurtain" aria-label="Écran noir">🌙</button>${histBtns(g)}${rulesBtn}<button class="icon-btn sm ask" data-a="ask" data-t="clue" aria-label="Ludo, l’assistant : poser une question">${askIcon()}</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`;
   const head = live ? `<header class="top"><button class="icon-btn" data-a="liveQuit" aria-label="Quitter">←</button><div class="grow"><h1>Clue</h1><p class="sub">${me ? 'Carnet de ' + esc(clPName(g, me)) + ' · en direct' : 'Partie en direct'}</p></div>${right}</header>`
     : topbar('Clue', me ? 'Carnet de ' + clPName(g, me) : 'Carnet de détective', right);
   if(live && !me){

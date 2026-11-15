@@ -1,7 +1,7 @@
 {
- "version": "6.16",
- "notes": "Clue : votre personnage est affiché en grand en haut du carnet ; votre colonne est marquée « vous ».",
- "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.16&k=maj",
- "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.16.apk",
+ "version": "6.17",
+ "notes": "Clue : bouton des règles (📖) et Ludo en haut de la feuille ; les règles indiquent le nombre de joueurs.",
+ "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.17&k=maj",
+ "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.17.apk",
  "size": 234409
 }
