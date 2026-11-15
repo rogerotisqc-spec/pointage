@@ -197,6 +197,19 @@ const LANDING = 'file://' + path.resolve(__dirname, '../../pointage-repo/docs/in
   await tap(`[data-a=trWho][data-k="${trk[1]}"]`); await p.fill(`[data-trrack="${trk[0]}"]`, '14'); await p.fill(`[data-trrack="${trk[2]}"]`, '9');
   await shot('triomino-fin'); await tap('#modal [data-a=close]');
 
+  // ---------- Clue ----------
+  await startGame('clue', ['Roger', 'Marie', 'Léa'], async () => { await p.evaluate(() => window.scrollTo(0, 99999)); await shot('clue-prep'); });
+  await p.waitForTimeout(200);
+  for (const c of ['s0', 'w1', 'r2', 'r5']) await tap(`#modal [data-a=clMineT][data-c="${c}"]`);
+  await shot('clue-mes-cartes');
+  for (const c of ['s5', 'w4']) await tap(`#modal [data-a=clMineT][data-c="${c}"]`);
+  await tap('#modal [data-a=clMineSave]');
+  await p.evaluate(() => { const g = curGame(), k = g.players.map(x => x.key), now = Date.now();
+    g.cl.log.push({id: 'a1', t: 'sug', by: k[1], cards: ['s1', 'w2', 'r0'], order: [k[2], k[0]], resp: [{pk: k[2], r: 'none'}, {pk: k[0], r: 'none'}], done: true, at: now - 300000});
+    g.cl.log.push({id: 'a2', t: 'sug', by: k[0], cards: ['s3', 'w3', 'r1'], order: [k[1], k[2]], resp: [{pk: k[1], r: 'show'}], done: true, at: now - 200000});
+    g.clp.seen.a2 = 'w3'; g.clp.marks.s2 = {[k[2]]: 'q'}; g.clp.marks.r4 = {[k[1]]: 'x'}; g.cl.cur = 2; save(); render(); });
+  await shot('clue-carnet', { fullPage: true });
+
   // ---------- Yahtzee ----------
   await startGame('yahtzee', ['Roger', 'Marie', 'Léa']);
   await p.evaluate(() => { const g = curGame(), k = g.players.map(x => x.key);

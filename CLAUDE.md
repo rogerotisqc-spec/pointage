@@ -78,13 +78,20 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   — app : installId/apkUrl, localStorage pointage.iid ; page d'installation : pointage.dlid — sinon IP + navigateur ;
   + version, type, jour), gardée 3 jours, jamais l'IP. Robots ignorés (BOTS). Tableau de bord : `tools/stats/index.html` →
   docs/stats/ (app web installable, make_pages.py), code = secret STATS_KEY du relais (en-tête X-Stats-Key).
+- Clue (index.html : vClue, clDeduce, clApply, clDo, clPopHtml, clPickOpen, clCurtainOn) : pas de feuille commune ; carnet
+  secret g.clp (hôte / un téléphone) ou localStorage pointage.clue.<liveId> (joueur en direct), jamais dans liveSnap. En commun
+  g.cl = {chars, hand, cur, out, log, solved} ; g.opts.cl = cartes (éditions classic / y2016, noms modifiables db.clNames).
+  Marques : x ✗, v ✓ (certitudes), q ? et n – (crayon) ; déductions (bleu) : passes, cartes en main, clauses « a au moins
+  une », enveloppe = une par catégorie. En direct : messages {t:'cl', a:'sug'|'resp'|'accres'|'acc'|'end'} appliqués par
+  l'hôte (clApply) ; fenêtre clpop sur tous les téléphones ; l'hôte peut répondre à la place d'un joueur (data-k).
+  Écran noir : S.curtain après 20 s ou 🌙, AndroidBridge.setDim (luminosité min.), écran gardé allumé (clInView). Pas de voix.
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 
 ## Publier une version
 
 1. Monter `versionCode` (+1) et `versionName` dans `AndroidManifest.xml`.
-2. Tester : `tests/run.sh` (43 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
+2. Tester : `tests/run.sh` (44 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
    voir `tests/README.md`). GitHub les relance à chaque push (`.github/workflows/tests.yml`). Nouveau test : `tests/testXXX.js`
    avec `const T = require('./_env')` (T.app, T.build, T.src, T.out).
 3. `AAPT2=… ANDROID_JAR=… DX_JAR=… ./build.sh` (aapt2, android.jar API 29, dx 30.0.2 ; signature apksig

@@ -432,6 +432,98 @@ table.p10 tr.dep td.ph b{font-size:12px}
 .livebar.inbox small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
 @keyframes livep{0%,100%{opacity:1}50%{opacity:.35}}
 @media (prefers-reduced-motion: reduce){ .livebar .dot{animation:none} }
+
+/* ---------- Clue : carnet de détective ---------- */
+.cl .clturn{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--surface);border:2px solid var(--pc,var(--line));margin-bottom:10px}
+.clturn .grow{display:flex;flex-direction:column;min-width:0}
+.clturn small{font-size:12.5px;color:var(--muted)}
+.clturn b{font-size:17px}
+.clturn.done{border-color:var(--accent);background:var(--lead)}
+.clacts{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-bottom:10px}
+.clhint{padding:10px 12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);margin-bottom:10px;font-size:14.5px;line-height:1.4}
+.clhint .btn{margin-top:8px;display:flex;width:100%}
+.clhint.warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
+.clhint.sol{background:var(--lead);border-color:var(--accent)}
+.clbook{--paper:#fbf6e9;--paper2:#efe3c4;--pline:#e3d9c0;--pink:#2a2118;--pmut:#7a6a58;--wine:#7b1e2b;background:var(--paper);border:1px solid #d9cfb4;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;color:var(--pink)}
+.cltitle{background:var(--wine);color:#fff6e6;font-family:Georgia,'Times New Roman',serif;font-variant:small-caps;letter-spacing:.08em;text-align:center;font-size:19px;padding:8px}
+.clscroll{overflow-x:auto}
+.clt{border-collapse:collapse;width:100%;font-size:13.5px}
+.clt th,.clt td{border-bottom:1px solid var(--pline);border-left:1px solid var(--pline);padding:0;text-align:center}
+.clt .lc{text-align:left;padding:3px 6px;position:sticky;left:0;background:var(--paper);z-index:1;min-width:122px;border-left:0}
+.clt .lc .cli{display:inline-grid;vertical-align:middle;margin-right:5px;color:var(--pmut)}
+.clt .cln{vertical-align:middle}
+.clph{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;width:100%;font-size:11px;line-height:1.1;color:var(--pink)}
+.clph span{max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.clph small{color:var(--pmut);font-size:10px}
+.clt th.me{background:var(--paper2)}
+.clt th.out{opacity:.45}
+.clt .env{width:30px;color:#b8860b;font-weight:800}
+.clsec td{background:var(--paper2);text-align:left;padding:5px 8px;font-family:Georgia,serif;color:var(--wine);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.clsec td b{margin-right:4px}
+.clc{width:100%;min-width:40px;height:38px;position:relative;font-size:19px;font-weight:800;color:var(--pink)}
+.clc.x{color:var(--wine)}.clc.v{color:#1f7a4f}.clc.auto{color:#1971c2}.clc.auto.x{color:#5b8cc4}
+.clc.q{color:var(--pmut);font-family:'Segoe Print','Comic Sans MS',cursive;font-weight:400;font-size:20px}
+td.asked{background:color-mix(in srgb,var(--pc) 15%,transparent)}
+.ask{position:absolute;right:3px;top:3px;min-width:9px;height:9px;border-radius:5px;font-size:8px;line-height:9px;color:#fff;font-style:normal;padding:0 1px;font-weight:700}
+tr.inn .cln{text-decoration:line-through;color:#a0927d}
+tr.gui{background:#fff1c2}
+tr.gui .lc{background:#fff1c2}
+tr.gui .cln{font-weight:800;color:var(--wine)}
+.cllegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;margin:8px 12px 0;color:var(--pmut)}
+.cllegend b{display:inline-block;width:14px;text-align:center}.lx{color:var(--wine)}.lv{color:#1f7a4f}.lq{font-weight:400;font-family:'Segoe Print','Comic Sans MS',cursive}.la{color:#1971c2}
+.cllegend .ask{position:static;display:inline-block;margin-right:4px;vertical-align:-1px}
+.clbook .hint{color:var(--pmut)}
+.cllog .li{align-items:flex-start}
+.clwhoi{flex:none;line-height:0;margin-top:2px}
+.clpop{position:fixed;inset:0;z-index:60;background:rgba(10,8,6,.55);display:flex;align-items:flex-end;justify-content:center;padding:12px 12px calc(12px + env(safe-area-inset-bottom))}
+.clpw{width:100%;max-width:520px;background:var(--surface);border-radius:18px;border-top:7px solid var(--pc);padding:14px;max-height:92vh;overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.clph2{display:flex;gap:12px;align-items:center}
+.clph2 .grow{display:flex;flex-direction:column}
+.clph2 b{font-size:19px}.clph2 small{color:var(--muted);font-size:13px}
+.clpc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.clcard{background:#fbf6e9;color:#2a2118;border:2px solid var(--pc);border-radius:12px;padding:10px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.clcard .ci{color:#5b4a3a;line-height:0}
+.clcard b{font-size:13.5px;line-height:1.15}.clcard small{font-size:10.5px;color:#7a6a58;text-transform:uppercase;letter-spacing:.05em}
+.clrl{display:grid;gap:4px}
+.clrr{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:10px;background:var(--surface2);font-size:14px}
+.clrr.now{outline:2px solid var(--pc,var(--brand))}
+.clrr.dis{opacity:.45}
+.clyou{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--lead);border:1px solid var(--accent);line-height:1.4}
+.clyou.ok{background:#e3f4e8;border-color:#2f7d4f;color:#1c2420}.clyou.ko{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
+.clseen{display:grid;gap:6px;margin-top:8px}
+.clseen .btn{justify-content:flex-start}
+.clsub{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:13px;color:var(--muted)}
+.clsub span{flex-basis:100%}
+.clpf{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.clpf .btn:only-child{grid-column:1/-1}
+.clpick .lbl{margin-top:12px}
+.clgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.clpk{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font-size:12px;line-height:1.15}
+.clpk .clic{color:var(--muted)}
+.clpk.on{border-color:var(--pc);background:color-mix(in srgb,var(--pc) 16%,var(--surface));font-weight:700}
+.clwhorow{display:flex;gap:6px;flex-wrap:wrap}
+.clwb{display:flex;flex-direction:column;align-items:center;padding:5px;border-radius:12px;border:2px solid transparent;font-size:11.5px}
+.clwb.on{border-color:var(--pc);background:color-mix(in srgb,var(--pc) 12%,transparent)}
+.seg.sm button{min-height:34px;padding:0 10px;font-size:13px}
+.clwho{display:grid;gap:8px}
+.clwhob{display:flex;gap:12px;align-items:center;padding:8px 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);text-align:left}
+.clwhob span{display:flex;flex-direction:column}.clwhob small{color:var(--muted)}
+.clsrow{display:flex;flex-direction:column;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}
+.clsav{display:flex;gap:4px;flex-wrap:wrap}
+.clsa{border-radius:50%;padding:2px;border:3px solid transparent;line-height:0}
+.clsa.on{border-color:var(--brand)}
+.clsa.tk{opacity:.3}
+.chip .clav{flex:none}
+:root[data-theme="dark"] .clbook{--paper:#26211a;--paper2:#322b21;--pline:#3d3529;--pink:#efe6d4;--pmut:#b3a68f;--wine:#e07b88;border-color:#3d3529}
+:root[data-theme="dark"] .cltitle{background:#5e1520}
+:root[data-theme="dark"] tr.gui,:root[data-theme="dark"] tr.gui .lc{background:#4a3c12}
+.curtain{position:fixed;inset:0;z-index:95;background:#000;display:flex;align-items:flex-end;justify-content:center;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+.curtain span{color:#2b2b2b;font-size:13px}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .clbook{--paper:#26211a;--paper2:#322b21;--pline:#3d3529;--pink:#efe6d4;--pmut:#b3a68f;--wine:#e07b88;border-color:#3d3529}
+  :root:not([data-theme="light"]) .cltitle{background:#5e1520}
+  :root:not([data-theme="light"]) tr.gui,:root:not([data-theme="light"]) tr.gui .lc{background:#4a3c12}
+}
 </style>
 </head>
 <body>
@@ -556,7 +648,7 @@ const CATS = [
   ['Jeux de cartes', ['flip7', 'millebornes', 'phase10', 'playnine', 'skipbo', 'skyjo', 'uno', 'wizard']],
   ['Jeux de dés', ['farkle', 'yahtzee']],
   ['Dominos et tuiles', ['train', 'triomino']],
-  ['Jeux de plateau', ['acquire', 'scrabble']],
+  ['Jeux de plateau', ['acquire', 'clue', 'scrabble']],
   ['Tous les autres jeux', ['generic']]
 ];
 const ORDER = CATS.flatMap(c => c[1]);
@@ -576,7 +668,8 @@ const GAMES = {
   wizard:     {name:'Wizard',         color:'#3949ab', badge:'W',  desc:'Mises et plis · le plus haut gagne', round:'Manche'},
   skyjo:      {name:'Skyjo',          color:'#3b8fd9', badge:'SK', desc:'Partie à 100 · le plus bas gagne', round:'Manche', target:100, low:true, helper:'skyjo'},
   scrabble:   {name:'Scrabble',       color:'#9c6b2f', badge:'S',  desc:'Calcul des mots · fin de partie', round:'Tour'},
-  farkle:     {name:'Farkle',       color:'#0b7285', badge:'⚄',  desc:'Entrée à 1 000 · partie à 25 000', round:'Tour'}
+  farkle:     {name:'Farkle',       color:'#0b7285', badge:'⚄',  desc:'Entrée à 1 000 · partie à 25 000', round:'Tour'},
+  clue:       {name:'Clue',         color:'#7b1e2b', badge:'🔍', desc:'Carnet de détective secret · 2 à 6', round:'Tour'}
 };
 catSort();
 const PHASES = [
@@ -769,6 +862,19 @@ function rulesHtml(type, g){
       <li><b>Colonne de trois cartes identiques</b> : elle est retirée du jeu (elle ne compte plus).</li></ul>
     <h3>Fin de manche</h3><p>Quand un joueur a retourné ses 12 cartes, chacun des autres joue un dernier tour. On retourne alors toutes les cartes et chacun additionne ses cartes.</p>
     <h3>Doublement</h3><p>Si le joueur qui a terminé la manche <b>n’a pas strictement le plus bas pointage</b> de la manche, son pointage est <b>doublé</b> (seulement s’il est positif). Une égalité avec le plus bas compte aussi : il est doublé. L’app applique cette règle quand vous indiquez qui a terminé.</p>`;
+  case 'clue': return `
+    <h3>But</h3><p>Découvrir les 3 cartes cachées dans l’enveloppe : <b>qui</b> a commis le crime, <b>avec quelle arme</b> et <b>dans quelle pièce</b>.</p>
+    <h3>Mise en place</h3><ul><li>On tire au hasard un suspect, une arme et une pièce, qu’on glisse sans les regarder dans l’enveloppe.</li>
+      <li>On distribue toutes les autres cartes (18). Selon le nombre de joueurs, certains en ont une de plus.</li>
+      <li>Chacun note en secret ses propres cartes : elles ne peuvent pas être dans l’enveloppe.</li></ul>
+    <h3>Un tour</h3><ul><li>Lancer les dés et se déplacer vers une pièce (ou prendre un passage secret).</li>
+      <li>Dans une pièce, faire une <b>hypothèse</b> : un suspect, une arme, et la pièce où l’on se trouve. Le suspect et l’arme nommés sont déplacés dans cette pièce.</li>
+      <li>Le joueur à gauche doit montrer, en cachette, <b>une seule</b> des cartes nommées s’il en a une. Sinon, il passe et c’est au suivant. On s’arrête au premier qui montre une carte.</li></ul>
+    <h3>Accusation</h3><ul><li>Une fois par partie, à son tour, on peut <b>accuser</b> : on nomme un suspect, une arme et une pièce, puis on regarde l’enveloppe sans la montrer.</li>
+      <li>Si c’est exact, on gagne. Sinon, on ne joue plus, mais on continue de montrer ses cartes quand on nous le demande.</li></ul>
+    <h3>Dans l’app</h3><ul><li>Chaque téléphone est un carnet secret. ✗ et ✓ sont des certitudes ; ? et – sont vos idées au crayon.</li>
+      <li>L’app fait les déductions : les cases en bleu sont déduites des réponses des autres.</li>
+      <li>En partie en direct, les hypothèses et accusations apparaissent sur tous les téléphones.</li></ul>`;
   case 'scrabble': return `
     <h3>But</h3><p>Marquer le plus de points en formant des mots sur la grille.</p>
     <h3>Mise en place</h3><p>Chaque joueur pige 7 lettres. Le premier mot doit couvrir la case centrale (étoile), qui compte comme un mot compte double.</p>
@@ -884,6 +990,7 @@ function endInfo(g){
     const w = g.players.filter(p => phaseOf(g,p.key) > 10);
     return w.length ? w.map(p=>p.name).join(', ') + ' a réussi la phase 10' : null;
   }
+  if(g.type === 'clue') return g.cl && g.cl.solved ? clPName(g, g.cl.solved) + (g.cl.last ? ' est le dernier détective en jeu' : ' a résolu l’énigme') : null;
   if(g.type === 'acquire' || g.type === 'yahtzee' || g.type === 'triomino') return null;
   if(g.type === 'wizard' || g.type === 'train') return g.rounds.length >= g.opts.rounds ? 'Les ' + g.opts.rounds + ' manches sont jouées' : null;
   if(g.opts.holes) return g.rounds.length >= g.opts.holes ? 'Les ' + g.opts.holes + ' trous sont joués' : null;
@@ -986,9 +1093,9 @@ function winText(g){
   const list = names.length > 1 ? names.slice(0, -1).join(', ') + ' et ' + names.at(-1) : names[0];
   return `Partie terminée ! ${list} ${many ? 'remportent' : 'remporte'} la partie. Bravo !`;
 }
-function annWinner(g){ if(!S.live && annOn() && speakOk()){ const t = winText(g); if(t) setTimeout(() => speak(t), 400); } }
+function annWinner(g){ if(g.type !== 'clue' && !S.live && annOn() && speakOk()){ const t = winText(g); if(t) setTimeout(() => speak(t), 400); } }
 function dealerBanner(g){
-  if(isTurnGame(g) || g.finished || endInfo(g) || (g.opts.holes && g.rounds.length >= g.opts.holes) || ((g.type === 'wizard' || g.type === 'train') && g.rounds.length >= g.opts.rounds)) return '';
+  if(g.type === 'clue' || isTurnGame(g) || g.finished || endInfo(g) || (g.opts.holes && g.rounds.length >= g.opts.holes) || ((g.type === 'wizard' || g.type === 'train') && g.rounds.length >= g.opts.rounds)) return '';
   const G = GAMES[g.type];
   return `<div class="dealer"><button class="dmain" data-a="dealer"><span class="ic">🃏</span><div class="grow">À <b>${esc(dealerName(g))}</b> de brasser<small>${G.round} ${g.rounds.length + 1}</small></div><span class="chg">Changer</span></button>${annBtn()}</div>`;
 }
@@ -1027,7 +1134,9 @@ function render(top){
   $('app').innerHTML = html;
   if(top) window.scrollTo(0,0);
   const hd = document.querySelector('#app .top'); if(hd) document.documentElement.style.setProperty('--toph', hd.offsetHeight + 'px');
-  const keep = screenOnPref();
+  if(S.curtain && !clInView()){ S.curtain = false; try{ if(bridge && bridge.setDim) bridge.setDim(false); }catch(e){} }
+  clPopCheck(); clCurtainArm();
+  const keep = screenOnPref() || clInView();   // Clue : l'écran reste allumé, et devient noir après 20 s (rideau)
   if(bridge && bridge.keepScreenOn) try{ bridge.keepScreenOn(keep); }catch(e){}
   else wakeLock(keep);
 }
@@ -1056,7 +1165,7 @@ function vHome(){
     ${open.length ? `<h2 class="sec">Parties en cours</h2>${open.map(g => {
       const r = ranking(g);
       return `<button class="card resume" data-a="open" data-id="${g.id}">${badge(g.type)}<div class="grow"><div class="t">${esc(gameName(g))}</div>
-        <div class="s">${r.map(x=>esc(x.p.name)+' '+fmt(x.total)).join(' · ')}</div></div><span class="chev">›</span></button>`;}).join('')}` : ''}
+        <div class="s">${g.type === 'clue' ? (g.cl && g.cl.solved ? '🔍 ' + esc(clPName(g, g.cl.solved)) + ' a trouvé' : 'Au tour de ' + esc(clPName(g, clCurKey(g)))) : r.map(x=>esc(x.p.name)+' '+fmt(x.total)).join(' · ')}</div></div><span class="chev">›</span></button>`;}).join('')}` : ''}
     <h2 class="sec">Nouvelle partie</h2>
     <div class="cats">${CATS.map(([cat, list]) => `<section class="cat${list.length > 4 ? ' big' : ''}" aria-label="${cat}"><h3 class="cat-l">${cat}</h3><div class="tiles">${list.map(t => `<div class="card tile" data-a="setup" data-t="${t}" role="button">
       ${badge(t)}<h3>${GAMES[t].name}</h3><p>${GAMES[t].desc}</p>
@@ -1123,6 +1232,8 @@ function vSetup(){
       <div class="seg">${[[9,'Double-9'],[12,'Double-12'],[15,'Double-15']].map(([v,l]) => `<button data-a="setMtSet" data-v="${v}" class="${set === v ? 'on' : ''}">${l}</button>`).join('')}</div>
       <p class="hint">${set + 1} manches, du double ${set} au double blanc.</p>
       <label class="chk"><input type="checkbox" id="o-mtblank" ${o.blank50 ? 'checked' : ''}> Le double blanc vaut 50 points (variante courante)</label>`;
+  } else if(type === 'clue'){
+    opts = clSetupHtml();
   } else if(type === 'triomino'){
     const n = S.sel.length;
     opts = `<label class="lbl" for="o-target">Partie à</label><input id="o-target" class="field" inputmode="numeric" value="${o.target||400}">
@@ -1154,11 +1265,11 @@ function vSetup(){
     ${db.players.length || S.guests.length ? `<div class="chips">${rosterChips}${guestChips}</div>` : `<p class="hint" style="margin-bottom:8px">Aucun joueur dans votre liste pour l’instant. Ajoutez un nom ci-dessous.</p>`}
     <div class="row" style="margin-top:12px"><input id="guestName" class="field" placeholder="Ajouter un nom…" autocomplete="off" enterkeyhint="done"></div>
     <div class="row" style="margin-top:8px"><button class="btn sm" style="flex:1" data-a="addGuest">+ Invité (sans profil)</button><button class="btn sm" style="flex:1" data-a="addRoster">+ À ma liste</button></div>
-    ${type !== 'farkle' && type !== 'scrabble' && S.sel.length > 1 ? `<h2 class="sec">Premier à brasser</h2><div class="chips">${S.sel.map(k => {
+    ${type !== 'farkle' && type !== 'scrabble' && S.sel.length > 1 ? `<h2 class="sec">${type === 'clue' ? 'Premier à jouer' : 'Premier à brasser'}</h2><div class="chips">${S.sel.map(k => {
         const nm = (db.players.find(p => p.id === k) || S.guests.find(g => g.key === k) || {}).name || '?';
         const on = (S.sel.includes(S.dealer) ? S.dealer : S.sel[0]) === k;
-        return `<button class="chip ${on?'on':''}" data-a="setDealer0" data-k="${k}" style="padding-left:14px">${on?'🃏 ':''}${esc(nm)}</button>`; }).join('')}</div>
-      <p class="hint">Ensuite, le brassage passe au joueur suivant, dans l’ordre choisi ci-dessus.</p>` : ''}
+        return `<button class="chip ${on?'on':''}" data-a="setDealer0" data-k="${k}" style="padding-left:14px">${on?(type === 'clue' ? '🔍 ' : '🃏 '):''}${esc(nm)}</button>`; }).join('')}</div>
+      <p class="hint">${type === 'clue' ? 'Ensuite, on joue chacun son tour dans l’ordre choisi ci-dessus. Traditionnellement, Mademoiselle Rose commence.' : 'Ensuite, le brassage passe au joueur suivant, dans l’ordre choisi ci-dessus.'}</p>` : ''}
     ${opts ? `<h2 class="sec">Options</h2><div class="card opts">${opts}</div>` : ''}
   </main>
   <button class="btn primary fab" data-a="start" ${S.sel.length?'':'disabled'}>Commencer${S.sel.length?` · ${S.sel.length} joueur${S.sel.length>1?'s':''}`:''}</button>`;
@@ -1173,6 +1284,7 @@ function readSetupFields(){
   if($('o-wznoeven')) o.noEven = $('o-wznoeven').checked;
   if($('o-trstart')) o.startBonus = $('o-trstart').checked;
   if($('o-mtblank')) o.blank50 = $('o-mtblank').checked;
+  if($('cln-sus-0')){ const c = clSetup(), d = clDeck(c.ed, null); c.names = {}; CL_CAT.forEach(([cat]) => { c.names[cat] = d[cat].map((x, i) => { const v = ($('cln-' + cat + '-' + i).value || '').trim(); return v || x.n; }); }); }
   if($('f-target')){
     o.f = {}; ['target','entry','penFrom','pen','straight','pairs'].forEach(k => o.f[k] = num($('f-'+k).value));
     o.f.useStraight = $('f-useStraight').checked; o.f.usePairs = $('f-usePairs').checked;
@@ -1187,6 +1299,7 @@ function startGame(){
   if(type === 'acquire' && (S.sel.length < 2 || S.sel.length > 6)) return toast('Acquire se joue de 2 à 6 joueurs');
   if(type === 'triomino' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
   if(type === 'train' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
+  if(type === 'clue' && (S.sel.length < 2 || S.sel.length > 6)) return toast('Clue se joue de 2 à 6 joueurs');
   if(TEAM_GAMES.includes(type) && o.teams && S.sel.length < (o.nteams || 2)) return toast('Il faut au moins un joueur par équipe');
   const players = S.sel.map(k => {
     const p = db.players.find(x => x.id === k);
@@ -1205,6 +1318,7 @@ function startGame(){
   else if(type === 'train'){ opts.set = [9,12,15].includes(o.set) ? o.set : 12; opts.rounds = opts.set + 1; opts.blank50 = !!o.blank50; }
   else if(type === 'triomino'){ opts.target = o.target || 400; opts.startBonus = !!o.startBonus; }
   else if(type === 'acquire'){ opts.ed = AQ_EDS[o.ed] ? o.ed : (db.aqEd || 'classic'); db.aqEd = opts.ed; }
+  else if(type === 'clue'){ const c = clSetupChars(); opts.cl = clDeck(c.ed, clSetupNames(c)); opts.clue = {ed: c.ed, names: c.names || null, chars: Object.assign({}, c.chars), me: c.me}; db.clEd = c.ed; if(c.names){ db.clNames = db.clNames || {}; db.clNames[c.ed] = c.names; } }
   else if(type === 'farkle'){ opts.f = Object.assign({}, FD, db.farkle, o.f||{}); db.farkle = Object.assign({}, opts.f); }
   else if(G.target){ opts.target = o.target || G.target; }
   if(type === 'uno'){ opts.mode = o.mode || db.unoMode || 'official'; opts.low = opts.mode === 'house'; db.unoMode = opts.mode; }
@@ -1225,10 +1339,402 @@ function startGame(){
   }
   if(type === 'acquire') aqState(g);
   if(type === 'triomino') g.cur = Math.max(0, Math.min(players.length - 1, g.dealer0 || 0));
+  if(type === 'clue'){ const c = opts.clue; g.cl = {chars: {}, hand: {}, cur: Math.max(0, Math.min(players.length - 1, g.dealer0 || 0)), out: {}, log: []};
+    S.sel.forEach((k, i) => { const s = opts.cl.sus[c.chars[k]] || opts.cl.sus[i]; g.cl.chars[players[i].key] = s.id; players[i].color = s.c === '#e9ecef' || s.c === '#f3c4ef' ? '#a8a29a' : s.c; });
+    g.cl.hand = clHands(players, g.cl.cur);
+    const mi = S.sel.indexOf(c.me); g.clp = {me: players[mi >= 0 ? mi : 0].key, mine: [], marks: {}, seen: {}, pop: {}}; }
   if(type === 'yahtzee'){ yzState(g); g.yz.cur = Math.max(0, Math.min(players.length - 1, g.dealer0 || 0)); }
   db.games.push(g); save();
   S = {view:'sheet', gameId:g.id, stack:[{view:'home'}], turn:0, dice:[]};
   render(true);
+  if(type === 'clue') setTimeout(() => { if(curGame() === g) clMineOpen(g); }, 60);
+}
+
+/* ====================== Clue : carnet de détective ====================== */
+// Pas de feuille commune : chaque téléphone a son carnet secret (g.clp sur ce téléphone ; jamais envoyé en direct).
+// En commun (g.cl) : personnages, cartes en main, tour, journal des hypothèses et accusations.
+// Avatars et icônes dessinés ici (originaux, pas les dessins officiels du jeu).
+const CL_SUS = {
+  classic: [['Colonel Moutarde','#d9a400','col'],['Mademoiselle Rose','#c92a2a','rose'],['Madame Pervenche','#1c7ed6','per'],['Docteur Olive','#2f9e44','oli'],['Professeur Violet','#7048e8','vio'],['Madame Leblanc','#e9ecef','leb']],
+  y2016:   [['Colonel Moutarde','#d9a400','col'],['Mademoiselle Rose','#c92a2a','rose'],['Madame Pervenche','#1c7ed6','per'],['Docteur Olive','#2f9e44','oli'],['Professeur Violet','#7048e8','vio'],['Docteur Orchidée','#f3c4ef','orc']]
+};
+const CL_EDS = {classic: 'Classique (Madame Leblanc)', y2016: '2016 et après (Docteur Orchidée)'};
+const CL_WEA = [['Chandelier','chand'],['Poignard','dag'],['Tuyau de plomb','pipe'],['Revolver','gun'],['Corde','rope'],['Clé anglaise','wrench']];
+const CL_ROO = [['Cuisine','kit'],['Salle de bal','ball'],['Véranda','cons'],['Salle à manger','din'],['Salle de billard','bil'],['Bibliothèque','lib'],['Salon','lou'],['Hall','hall'],['Bureau','stu']];
+const CL_CAT = [['sus','Qui ?','Suspects'],['wea','Avec quoi ?','Armes'],['roo','Où ?','Pièces']];
+// Liste de cartes d'une partie (noms modifiables à la préparation, gardés pour les prochaines parties)
+function clDeck(ed, names){
+  const n = names || {};
+  return {ed,
+    sus: CL_SUS[ed].map(([nm, c, a], i) => ({id: 's' + i, n: (n.sus && n.sus[i]) || nm, c, a})),
+    wea: CL_WEA.map(([nm, ic], i) => ({id: 'w' + i, n: (n.wea && n.wea[i]) || nm, i: ic})),
+    roo: CL_ROO.map(([nm, ic], i) => ({id: 'r' + i, n: (n.roo && n.roo[i]) || nm, i: ic}))};
+}
+function clCards(g){ const d = g.opts.cl; return d.sus.concat(d.wea, d.roo); }
+function clCard(g, id){ return clCards(g).find(c => c.id === id); }
+function clCatOf(id){ return id[0] === 's' ? 'sus' : id[0] === 'w' ? 'wea' : 'roo'; }
+// Avatar : médaillon de la couleur du personnage + silhouette d'époque
+function clAv(s, size){
+  size = size || 34; const k = s.a, d = 'rgba(28,22,18,.66)', w = '#fffdf8';
+  const det = {
+    col: `<path d="M14.5 15.6h19l-2.2-6h-14.6z" fill="${d}"/><rect x="12.5" y="14.8" width="23" height="2.6" rx="1.3" fill="${d}"/><path d="M18.6 25c2.2 1.7 3.9 1.3 5.4-.3 1.5 1.6 3.2 2 5.4.3" stroke="${w}" stroke-width="1.7" fill="none" stroke-linecap="round"/><rect x="9.5" y="33.5" width="7.5" height="2.6" rx="1.3" fill="${w}" opacity=".85"/><rect x="31" y="33.5" width="7.5" height="2.6" rx="1.3" fill="${w}" opacity=".85"/>`,
+    rose: `<path d="M14.6 23c0-8.4 4.2-12.6 9.4-12.6S33.4 14.6 33.4 23v8.5c-2.2-1.8-3.4-5.4-3.4-8.4-2 1.2-4 1.2-6 .1-2 1.1-4 1.1-6-.1 0 3-1.2 6.6-3.4 8.4z" fill="${d}"/><ellipse cx="21.5" cy="12.3" rx="11.5" ry="2.7" transform="rotate(-14 21.5 12.3)" fill="${d}"/><circle cx="24" cy="36.5" r="1.6" fill="${w}"/>`,
+    per: `<path d="M14 15.2h20l-3.2-4.6h-13.6z" fill="${d}"/><path d="M30.5 11c2.6-6 7.6-7.6 10.4-6.6-3 2-5 4.8-8 7.4z" fill="${d}"/>${[17, 20.5, 24, 27.5, 31].map(x => `<circle cx="${x}" cy="${35 + Math.abs(x - 24) * -.18 + 1.2}" r="1.2" fill="${w}"/>`).join('')}`,
+    oli: `<rect x="17" y="3.5" width="14" height="9.6" rx="1.2" fill="${d}"/><rect x="12.5" y="12.4" width="23" height="2.6" rx="1.3" fill="${d}"/><path d="M20.5 31.5l3.5 4 3.5-4" stroke="${w}" stroke-width="1.8" fill="none" stroke-linejoin="round"/>`,
+    vio: `<path d="M15.6 19.5c.6-6 4.2-8.6 8.4-8.6s7.8 2.6 8.4 8.6c-2.2-2.6-5-3.6-8.4-3.6s-6.2 1-8.4 3.6z" fill="${d}"/><circle cx="20.6" cy="21.5" r="2.6" stroke="${w}" stroke-width="1.4" fill="none"/><circle cx="27.4" cy="21.5" r="2.6" stroke="${w}" stroke-width="1.4" fill="none"/><path d="M23.2 21.5h1.6" stroke="${w}" stroke-width="1.4"/><path d="M19 33.5l5 2.6 5-2.6v5.2l-5-2.6-5 2.6z" fill="${w}"/>`,
+    leb: `<path d="M14.8 16.2c2.4-6.2 16-6.2 18.4 0-6.1-2-12.3-2-18.4 0z" fill="${w}"/><path d="M15 16.6c3-1 15-1 18 0" stroke="${d}" stroke-width="1.2" fill="none"/><path d="M19 32.5h10l1.5 10h-13z" fill="${w}" opacity=".9"/>`,
+    orc: `<circle cx="24" cy="10.6" r="4.4" fill="${d}"/><path d="M15.8 20c.8-5.6 4.2-8 8.2-8s7.4 2.4 8.2 8c-2.4-2-5-3-8.2-3s-5.8 1-8.2 3z" fill="${d}"/><path d="M19.5 31.5l4.5 9 4.5-9" stroke="${w}" stroke-width="2.2" fill="none" stroke-linejoin="round"/>`
+  }[k] || '';
+  return `<svg class="clav" viewBox="0 0 48 48" width="${size}" height="${size}" style="width:${size}px;height:${size}px;flex:none" aria-hidden="true"><defs><clipPath id="clc"><circle cx="24" cy="24" r="22.2"/></clipPath></defs>
+    <circle cx="24" cy="24" r="23" fill="${s.c}" stroke="rgba(0,0,0,.28)" stroke-width="1.6"/><g clip-path="url(#clc)"><path d="M7.5 48c1.2-10.5 7.6-16.2 16.5-16.2S39.3 37.5 40.5 48z" fill="${d}"/><circle cx="24" cy="21.5" r="8.4" fill="${d}"/>${det}</g></svg>`;
+}
+const CL_IC = {
+  chand: '<path d="M12 2.5c1.6 2 1.6 3.6 0 4.6-1.6-1-1.6-2.6 0-4.6z"/><path d="M9.5 9h5v7.5h-5z"/><path d="M12 16.5v3.5M7 21h10M8 9h8"/>',
+  dag: '<path d="M12 2l2.2 10.5h-4.4z"/><path d="M7.5 12.5h9M12 12.5v3"/><path d="M10.8 15.5h2.4v5.5h-2.4z"/>',
+  pipe: '<path d="M5.5 18.5L17.5 6.5" stroke-width="3.4"/><path d="M15.5 4.5l4 4M3.5 16.5l4 4" stroke-width="2.4"/>',
+  gun: '<path d="M3 8h15.5l2 2v2.3H9.5l-1.2 2.4H6.2L5 20H2l1.1-6.6z"/><path d="M11.5 12.3v2.2h-2"/>',
+  rope: '<path d="M12 5a7 7 0 1 0 7 7 4.5 4.5 0 1 0-4.5 4.5 2.2 2.2 0 1 0-2.2-2.2"/><path d="M12 5c2-1.5 4-1.8 6-.8"/>',
+  wrench: '<path d="M14.6 3.8a4.6 4.6 0 0 0-4.1 6.3L3.8 16.8l3.4 3.4 6.7-6.7a4.6 4.6 0 0 0 6.3-4.1l-2.9 2.9-3-.6-.6-3 2.9-2.9z"/>',
+  kit: '<path d="M5 10h14v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M3 10h18M10 6.5c0-1.6 4-1.6 4 0"/>',
+  ball: '<path d="M9 18V5.5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16.5" r="2.5"/>',
+  cons: '<path d="M12 21v-9"/><path d="M12 12c-4.2 0-6.2-3-6.2-7.2 4.2 0 6.2 3 6.2 7.2z"/><path d="M12 14.5c3.2 0 5.2-2.2 5.2-5.4-3.2 0-5.2 2.2-5.2 5.4z"/><path d="M8 21h8"/>',
+  din: '<circle cx="12.5" cy="12" r="5"/><path d="M3.5 3.5v6a2 2 0 0 0 2 2v9M5.5 3.5v5M21 3.5c-2 0-3 3-3 6.5h3v10.5"/>',
+  bil: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/><path d="M12 10.6v2.8"/>',
+  lib: '<path d="M4 4h4v16H4zM10 4h4v16h-4z"/><path d="M16 5.2l3.4-.9 3.1 15.4-3.4.9z"/>',
+  lou: '<path d="M4.5 11V8.2a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2V11"/><path d="M2.5 12.5a2 2 0 0 1 4 0v3h11v-3a2 2 0 0 1 4 0V19h-19z"/><path d="M5 19v2M19 19v2"/>',
+  hall: '<path d="M6 21V3h12v18M3 21h18"/><circle cx="15" cy="12.5" r=".9"/>',
+  stu: '<path d="M3 20h18M6 20v-5.5h12V20"/><path d="M14.5 14.5l-3.2-6.2 4.2-3"/><path d="M15 4.8l3.4 3"/>'
+};
+function clIcon(c, size){
+  size = size || 30;
+  if(c.id[0] === 's') return clAv(c, size);
+  return `<svg class="clic" viewBox="0 0 24 24" width="${size}" height="${size}" style="width:${size}px;height:${size}px;flex:none" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${CL_IC[c.i] || `<text x="12" y="16.5" text-anchor="middle" font-size="12" fill="currentColor" stroke="none">${esc(c.n[0])}</text>`}</svg>`;
+}
+// Personnage d'un joueur
+function clSusOf(g, pk){ const id = g.cl.chars[pk]; return g.opts.cl.sus.find(s => s.id === id) || g.opts.cl.sus[0]; }
+function clPAv(g, pk, size){ return clAv(clSusOf(g, pk), size); }
+function clPName(g, pk){ const p = g.players.find(x => x.key === pk); return p ? p.name : '?'; }
+function clPLabel(g, pk){ return clPName(g, pk) + ' (' + clSusOf(g, pk).n + ')'; }
+function clColor(g, pk){ const c = clSusOf(g, pk).c; return c === '#e9ecef' || c === '#f3c4ef' ? '#a8a29a' : c; }
+// Cartes en main : 18 cartes à distribuer (21 moins l'enveloppe), une de plus aux premiers joueurs
+function clHands(players, first){
+  const n = players.length, base = Math.floor(18 / n), extra = 18 % n, h = {};
+  players.forEach((p, i) => { const pos = (i - first + n) % n; h[p.key] = base + (pos < extra ? 1 : 0); });
+  return h;
+}
+/* --- Carnet secret (sur ce téléphone seulement) --- */
+function clNB(g){
+  if(S.live && S.live.g === g){
+    const L = S.live;
+    if(!L.clnb){ let x = null; try{ x = JSON.parse(localStorage.getItem('pointage.clue.' + L.id) || 'null'); }catch(e){} L.clnb = x || {mine: [], marks: {}, seen: {}, pop: {}}; }
+    L.clnb.me = L.me || null; return L.clnb;
+  }
+  if(!g.clp) g.clp = {me: null, mine: [], marks: {}, seen: {}, pop: {}};
+  ['mine', 'marks', 'seen', 'pop'].forEach(k => { if(!g.clp[k]) g.clp[k] = k === 'mine' ? [] : {}; });
+  return g.clp;
+}
+function clSaveNB(g){
+  if(S.live && S.live.g === g){ try{ localStorage.setItem('pointage.clue.' + S.live.id, JSON.stringify(S.live.clnb)); }catch(e){} return; }
+  g.updated = Date.now(); save();
+}
+/* --- Déductions : qui a quelle carte (1), qui ne l'a pas (0) ; « env » = l'enveloppe --- */
+function clDeduce(g, nb){
+  const P = g.players.map(p => p.key), O = P.concat(['env']), cards = clCards(g), K = {}, src = {};
+  let conflict = '';
+  cards.forEach(c => K[c.id] = {});
+  const set = (c, o, v, why) => {
+    if(!K[c]) return false;
+    if(K[c][o] === undefined){ K[c][o] = v; if(why) src[c + '|' + o] = why; return true; }
+    if(K[c][o] !== v && !conflict) conflict = (clCard(g, c) || {}).n || c;
+    return false;
+  };
+  const me = nb.me, clauses = [], envNot = [];
+  if(me && P.includes(me)) (nb.mine || []).forEach(c => set(c, me, 1, 'mine'));
+  Object.keys(nb.marks || {}).forEach(c => { const r = nb.marks[c]; Object.keys(r).forEach(o => { if(r[o] === 'v') set(c, o, 1, 'hand'); if(r[o] === 'x') set(c, o, 0, 'hand'); }); });
+  (g.cl.log || []).forEach(e => {
+    if(e.t === 'sug'){
+      (e.resp || []).forEach(r => {
+        if(r.r === 'none') e.cards.forEach(c => set(c, r.pk, 0, 'pass'));
+        if(r.r === 'show'){
+          if(e.by === me && nb.seen && nb.seen[e.id]) set(nb.seen[e.id], r.pk, 1, 'seen');
+          else clauses.push({p: r.pk, cards: e.cards});
+        }
+      });
+    }
+    if(e.t === 'acc' && e.ok === false) envNot.push(e.cards);
+    if(e.t === 'acc' && e.ok === true) e.cards.forEach(c => set(c, 'env', 1, 'acc'));
+  });
+  const hand = g.cl.hand || {};
+  for(let it = 0, ch = true; ch && it < 60; it++){
+    ch = false;
+    cards.forEach(c => {
+      const row = K[c.id];
+      if(O.some(o => row[o] === 1)) O.forEach(o => { if(row[o] === undefined) ch = set(c.id, o, 0, 'auto') || ch; });
+      else { const open = O.filter(o => row[o] !== 0); if(open.length === 1) ch = set(c.id, open[0], 1, 'auto') || ch; if(!open.length && !conflict) conflict = c.n; }
+    });
+    CL_CAT.forEach(([cat]) => {
+      const list = g.opts.cl[cat];
+      if(list.some(c => K[c.id].env === 1)) list.forEach(c => { if(K[c.id].env === undefined) ch = set(c.id, 'env', 0, 'auto') || ch; });
+      else { const open = list.filter(c => K[c.id].env !== 0); if(open.length === 1) ch = set(open[0].id, 'env', 1, 'auto') || ch; }
+    });
+    P.forEach(p => {
+      const H = hand[p]; if(H == null) return;
+      const ones = cards.filter(c => K[c.id][p] === 1).length, unk = cards.filter(c => K[c.id][p] === undefined);
+      if(ones > H && !conflict) conflict = 'les cartes de ' + clPName(g, p);
+      if(ones === H) unk.forEach(c => { ch = set(c.id, p, 0, 'auto') || ch; });
+      else if(ones + unk.length === H) unk.forEach(c => { ch = set(c.id, p, 1, 'auto') || ch; });
+    });
+    clauses.forEach(cl => {
+      if(cl.cards.some(c => K[c][cl.p] === 1)) return;
+      const open = cl.cards.filter(c => K[c][cl.p] !== 0);
+      if(open.length === 1) ch = set(open[0], cl.p, 1, 'auto') || ch;
+      else if(!open.length && !conflict) conflict = 'une réponse de ' + clPName(g, cl.p);
+    });
+    envNot.forEach(cs => { const inE = cs.filter(c => K[c].env === 1); if(inE.length === 2){ const o = cs.find(c => K[c].env !== 1); ch = set(o, 'env', 0, 'auto') || ch; } });
+  }
+  return {K, src, conflict, clauses};
+}
+/* --- Partie : tour, journal --- */
+function clState(g){ if(!g.cl) g.cl = {chars: {}, hand: {}, cur: 0, out: {}, log: []}; ['out'].forEach(k => g.cl[k] = g.cl[k] || {}); g.cl.log = g.cl.log || []; return g.cl; }
+function clCurKey(g){ const p = g.players[g.cl.cur]; return p ? p.key : null; }
+function clNext(g){
+  const n = g.players.length;
+  for(let i = 1; i <= n; i++){ const j = (g.cl.cur + i) % n; if(!g.cl.out[g.players[j].key]){ g.cl.cur = j; return; } }
+}
+function clOrderAfter(g, pk){ const i = g.players.findIndex(p => p.key === pk), n = g.players.length; return [...Array(n - 1).keys()].map(k => g.players[(i + 1 + k) % n].key); }
+function clPend(g){ const e = g.cl.log[g.cl.log.length - 1]; return e && !e.done ? e : null; }
+// Appliquer une action (téléphone qui tient la partie ; en direct, les autres envoient leurs actions ici)
+function clApply(g, m, local){
+  const cl = clState(g), pend = clPend(g), cur = clCurKey(g), say = t => { if(!local) toast(t); };
+  if(g.finished) return false;
+  if(m.a === 'sug' || m.a === 'acc'){
+    if(pend || m.by !== cur || !Array.isArray(m.cards) || m.cards.length !== 3) return false;
+    const e = {id: uid(), t: m.a, by: m.by, cards: m.cards.slice(0, 3), at: Date.now()};
+    if(m.a === 'sug'){ e.order = clOrderAfter(g, m.by); e.resp = []; if(Array.isArray(m.resp)){ e.resp = m.resp.slice(0, e.order.length); e.done = true; } }
+    else { e.ok = typeof m.ok === 'boolean' ? m.ok : null; if(e.ok !== null) clAccDone(g, e); }
+    cl.log.push(e); g.updated = Date.now();
+    say(`🔍 ${clPName(g, m.by)} : ${m.a === 'sug' ? 'hypothèse' : 'accusation'}`); return true;
+  }
+  if(m.a === 'resp'){
+    if(!pend || pend.id !== m.id || pend.t !== 'sug') return false;
+    const exp = pend.order[pend.resp.length]; if(m.pk !== exp) return false;
+    pend.resp.push({pk: m.pk, r: m.r === 'show' ? 'show' : 'none'});
+    if(m.r === 'show' || pend.resp.length >= pend.order.length) pend.done = true;
+    g.updated = Date.now(); say(`🔍 ${clPName(g, m.pk)} ${m.r === 'show' ? 'montre une carte' : 'passe'}`); return true;
+  }
+  if(m.a === 'accres'){
+    if(!pend || pend.id !== m.id || pend.t !== 'acc' || m.pk !== pend.by) return false;
+    pend.ok = !!m.ok; clAccDone(g, pend); g.updated = Date.now(); return true;
+  }
+  if(m.a === 'end'){
+    if(pend || (m.pk !== cur && !local)) return false;
+    clNext(g); g.updated = Date.now(); return true;
+  }
+  return false;
+}
+function clAccDone(g, e){
+  e.done = true;
+  if(e.ok){ g.winner = e.by; g.cl.solved = e.by; }
+  else { g.cl.out[e.by] = true; const left = g.players.filter(p => !g.cl.out[p.key]); if(left.length === 1){ g.winner = left[0].key; g.cl.solved = left[0].key; g.cl.last = true; } else if(clCurKey(g) === e.by) clNext(g); }
+}
+// Action de ce téléphone : hôte ou seul téléphone → appliquée ici ; joueur en direct → envoyée au téléphone qui tient la partie
+async function clDo(g, m){
+  if(S.live && S.live.g === g){
+    const L = S.live; if(!L.me) return toast('Choisissez d’abord qui vous êtes');
+    m.t = 'cl'; m.pk = L.me; L.clBusy = true; render();
+    try{ await liveSendMsg(m); toast('Envoyé ✓'); }
+    catch(e){ toast(e.status === 404 ? 'Le partage est terminé' : 'Envoi impossible : vérifiez Internet'); }
+    L.clBusy = false; return render();
+  }
+  const nb = clNB(g); m.pk = m.pk || nb.me;
+  if(clApply(g, m, true)){ save(); render(); } else toast('Action impossible pour l’instant');
+}
+/* --- Feuille --- */
+function vClue(g){
+  const live = !!(S.live && S.live.g === g), nb = clNB(g), cl = clState(g), me = nb.me;
+  const D = clDeduce(g, nb), cur = clCurKey(g), pend = clPend(g), P = g.players;
+  const myTurn = me && cur === me && !g.finished;
+  const right = live ? `<button class="icon-btn sm" data-a="clCurtain" aria-label="Écran noir">🌙</button>`
+    : `<button class="icon-btn sm" data-a="clCurtain" aria-label="Écran noir">🌙</button>${histBtns(g)}<button class="icon-btn" data-a="menu" aria-label="Menu">⋮</button>`;
+  const head = live ? `<header class="top"><button class="icon-btn" data-a="liveQuit" aria-label="Quitter">←</button><div class="grow"><h1>Clue</h1><p class="sub">${me ? 'Carnet de ' + esc(clPName(g, me)) + ' · en direct' : 'Partie en direct'}</p></div>${right}</header>`
+    : topbar('Clue', me ? 'Carnet de ' + clPName(g, me) : 'Carnet de détective', right);
+  if(live && !me){
+    return `${head}<main class="pad"><div class="card" style="padding:16px"><b>Qui êtes-vous ?</b><p class="hint" style="margin:4px 0 12px">Votre carnet reste sur ce téléphone : personne d’autre ne le voit.</p>
+      <div class="clwho">${P.map(p => `<button class="clwhob" data-a="liveMe" data-k="${p.key}">${clPAv(g, p.key, 44)}<span><b>${esc(p.name)}</b><small>${esc(clSusOf(g, p.key).n)}</small></span></button>`).join('')}</div></div>
+      <button class="btn block" style="margin-top:12px" data-a="liveQuit">Quitter</button></main>`;
+  }
+  // Bande du tour
+  let turn = '';
+  if(g.finished || cl.solved){ const w = cl.solved || g.winner;
+    turn = `<div class="clturn done">${w ? clPAv(g, w, 40) : ''}<div class="grow"><b>🔍 ${w ? esc(clPName(g, w)) + (cl.last ? ' est le dernier détective en jeu' : ' a résolu l’énigme !') : 'Partie terminée'}</b>${w && !cl.last ? `<small>${clLastAccTxt(g)}</small>` : ''}</div>${!g.finished && !live ? '<button class="btn sm primary" data-a="finish">Terminer</button>' : ''}</div>`; }
+  else if(cur){ const c = clColor(g, cur);
+    turn = `<div class="clturn" style="--pc:${c}">${clPAv(g, cur, 40)}<div class="grow"><small>${myTurn ? 'C’est à vous de jouer' : 'Au tour de'}</small><b>${esc(clPName(g, cur))}</b><small>${esc(clSusOf(g, cur).n)}${cl.out[cur] ? ' · éliminé' : ''}</small></div>
+      ${!live ? `<button class="btn sm" data-a="clEnd" ${pend ? 'disabled' : ''}>Tour suivant ›</button>` : myTurn && !pend ? `<button class="btn sm" data-a="clEnd" ${S.live.clBusy ? 'disabled' : ''}>Fin de mon tour</button>` : ''}</div>`; }
+  // Boutons d'action
+  const shared = !!(g.share || live), canAct = !g.finished && !cl.solved && !pend;
+  const acts = !canAct ? '' : shared
+    ? (myTurn ? `<div class="clacts"><button class="btn primary" data-a="clPick" data-t="sug">🔍 Faire une hypothèse</button><button class="btn" data-a="clPick" data-t="acc">⚖️ Accuser</button></div>` : '')
+    : `<div class="clacts"><button class="btn primary" data-a="clPick" data-t="sug">🔍 Noter une hypothèse</button><button class="btn" data-a="clPick" data-t="acc">⚖️ Noter une accusation</button></div>`;
+  // Progrès vers la solution
+  const cand = {}; CL_CAT.forEach(([cat]) => cand[cat] = g.opts.cl[cat].filter(c => D.K[c.id].env !== 0));
+  const sol = CL_CAT.every(([cat]) => cand[cat].length === 1);
+  const mineN = (nb.mine || []).length, H = me ? cl.hand[me] : 0;
+  const hint = D.conflict ? `<div class="clhint warn">⚠︎ Contradiction dans vos marques (${esc(D.conflict)}). Vérifiez vos ✓ et ✗ : une marque est sans doute de trop.</div>`
+    : me && mineN < H ? `<div class="clhint"><b>Vos cartes</b> : touchez les ${H} cartes de votre main dans votre colonne (${mineN} sur ${H}). <button class="btn sm" data-a="clMine">Choisir mes cartes</button></div>`
+    : sol ? `<div class="clhint sol">★ <b>Vous avez la solution</b> : ${esc(cand.sus[0].n)}, avec ${esc(cand.wea[0].n.toLowerCase())}, dans ${esc(cand.roo[0].n.toLowerCase())}.${myTurn || !shared ? ' Vous pouvez accuser !' : ' Accusez à votre tour.'}</div>`
+    : `<div class="clhint">Encore possible : <b>${cand.sus.length}</b> suspect${cand.sus.length > 1 ? 's' : ''}, <b>${cand.wea.length}</b> arme${cand.wea.length > 1 ? 's' : ''}, <b>${cand.roo.length}</b> pièce${cand.roo.length > 1 ? 's' : ''}.</div>`;
+  // Carnet
+  const asked = {}; (cl.log || []).forEach(e => { if(e.t === 'sug') e.cards.forEach(c => { const k = c + '|' + e.by; asked[k] = (asked[k] || 0) + 1; }); });
+  const cell = (c, p) => {
+    const man = (nb.marks[c.id] || {})[p.key], k = D.K[c.id][p.key], why = D.src[c.id + '|' + p.key], n = asked[c.id + '|' + p.key] || 0;
+    let inner = '', cls = '';
+    if(k === 1){ inner = '✓'; cls = why === 'auto' || why === 'pass' || why === 'seen' ? 'v auto' : 'v'; }
+    else if(k === 0){ inner = '✗'; cls = why === 'auto' || why === 'pass' ? 'x auto' : 'x'; }
+    else if(man === 'q'){ inner = '?'; cls = 'q'; }
+    else if(man === 'n'){ inner = '–'; cls = 'q'; }
+    const dots = n ? `<i class="ask" style="background:${clColor(g, p.key)}">${n > 1 ? n : ''}</i>` : '';
+    const tint = n ? ` style="--pc:${clColor(g, p.key)}"` : '';
+    return `<td class="${n ? 'asked' : ''}"${tint}><button class="clc ${cls}" data-a="clCell" data-c="${c.id}" data-k="${p.key}" aria-label="${esc(c.n)}, ${esc(p.name)}">${inner}${dots}</button></td>`;
+  };
+  const headRow = `<tr><th class="lc"></th>${P.map(p => `<th class="${p.key === me ? 'me' : ''} ${cl.out[p.key] ? 'out' : ''}"><button class="clph" data-a="clHand" data-k="${p.key}" aria-label="${esc(p.name)}">${clPAv(g, p.key, 28)}<span>${esc(p.name)}</span><small>${cl.hand[p.key] != null ? cl.hand[p.key] + ' c.' : ''}</small></button></th>`).join('')}<th class="env">✉︎</th></tr>`;
+  const sec = ([cat, q, nm]) => `<tr class="clsec"><td colspan="${P.length + 2}"><b>${q}</b> ${nm}</td></tr>` + g.opts.cl[cat].map(c => {
+    const env = D.K[c.id].env, st = env === 1 ? 'gui' : env === 0 ? 'inn' : '';
+    return `<tr class="${st}"><td class="lc"><span class="cli">${clIcon(c, 22)}</span><span class="cln">${esc(c.n)}</span></td>${P.map(p => cell(c, p)).join('')}<td class="env">${env === 1 ? '★' : env === 0 ? '' : '?'}</td></tr>`; }).join('');
+  const book = `<div class="clbook"><div class="cltitle">Carnet de détective</div><div class="clscroll"><table class="clt">${headRow}${CL_CAT.map(sec).join('')}</table></div>
+    <p class="cllegend"><span><b class="lx">✗</b> n’a pas</span><span><b class="lv">✓</b> l’a</span><span><b class="lq">?</b> je pense que oui</span><span><b class="lq">–</b> je pense que non</span><span><b class="la">✓</b> déduit par l’app</span><span><i class="ask" style="background:#888"></i> carte demandée par ce joueur</span></p>
+    <p class="hint" style="margin:4px 12px 10px">Touchez une case pour changer la marque : rien → ✗ → ✓ → ? → – → rien. ★ = dans l’enveloppe. Les lignes barrées sont innocentées.</p></div>`;
+  // Journal
+  const logs = (cl.log || []).slice().reverse().slice(0, 30).map(e => clLogLine(g, nb, e)).join('');
+  const journal = logs ? `<h2 class="sec">Journal</h2><div class="card list cllog">${logs}</div>` : '';
+  return `${head}<main class="pad cl">${live ? `<div class="livebar ${S.live.err ? 'err' : ''}" style="margin:0 0 12px"><span class="dot"></span><span class="grow">${S.live.gone ? 'Le partage est terminé.' : S.live.err ? esc(S.live.err) : '<span id="liveAge">' + liveAgeTxt(S.live) + '</span>'}</span></div>` : ''}
+    ${turn}${acts}${hint}${book}${journal}
+    ${live ? `<button class="btn block" style="margin-top:16px" data-a="liveQuit">Quitter la partie</button>` : ''}
+  </main>${clPopHtml(g, nb)}${S.curtain ? '<div class="curtain" data-a="clCurtainOff" role="button" aria-label="Toucher pour revoir le carnet"><span>Touchez pour revoir votre carnet</span></div>' : ''}`;
+}
+function clLastAccTxt(g){ const e = [...g.cl.log].reverse().find(x => x.t === 'acc' && x.ok); return e ? e.cards.map(c => clCard(g, c).n).join(' · ') : ''; }
+function clLogLine(g, nb, e){
+  const names = e.cards.map(c => esc(clCard(g, c).n)).join(' · ');
+  const who = `<span class="clwhoi">${clPAv(g, e.by, 24)}</span>`;
+  if(e.t === 'acc') return `<div class="li">${who}<div class="grow"><div class="t">⚖️ ${esc(clPName(g, e.by))} accuse</div><div class="s">${names}</div></div><div class="t">${e.ok === true ? '✓ exact' : e.ok === false ? '✗ faux' : '…'}</div></div>`;
+  const sh = (e.resp || []).find(r => r.r === 'show'), pass = (e.resp || []).filter(r => r.r === 'none').map(r => esc(clPName(g, r.pk)));
+  const seen = e.by === nb.me && nb.seen[e.id] ? ` · <b>vous a montré : ${esc(clCard(g, nb.seen[e.id]).n)}</b>` : '';
+  const res = sh ? `${esc(clPName(g, sh.pk))} a montré une carte${seen}` : e.done ? 'Personne n’a pu répondre' : 'En cours…';
+  return `<div class="li">${who}<div class="grow"><div class="t">🔍 ${esc(clPName(g, e.by))} : ${names}</div><div class="s">${res}${pass.length ? ' · passe : ' + pass.join(', ') : ''}</div></div></div>`;
+}
+/* --- Fenêtre partagée (en direct) : hypothèse ou accusation, sur tous les téléphones --- */
+function clPopHtml(g, nb){
+  if(!(g.share || (S.live && S.live.g === g))) return '';
+  const e = g.cl.log[g.cl.log.length - 1]; if(!e || nb.pop[e.id] || Date.now() - e.at > 20 * 60000) return '';
+  const me = nb.me, c = clColor(g, e.by), busy = S.live && S.live.clBusy ? 'disabled' : '';
+  const cards = `<div class="clpc">${e.cards.map(id => { const k = clCard(g, id); return `<div class="clcard"><div class="ci">${clIcon(k, 54)}</div><b>${esc(k.n)}</b><small>${id[0] === 's' ? 'Suspect' : id[0] === 'w' ? 'Arme' : 'Pièce'}</small></div>`; }).join('')}</div>`;
+  let body = '', foot = '';
+  if(e.t === 'sug'){
+    const nxt = !e.done ? e.order[e.resp.length] : null, sh = e.resp.find(r => r.r === 'show');
+    const rows = e.order.map((pk, i) => { const r = e.resp[i]; const st = r ? (r.r === 'show' ? '🃏 a montré une carte' : '✗ n’a aucune de ces cartes') : pk === nxt ? '⏳ doit répondre' : sh || e.done ? '— pas besoin' : '…';
+      return `<div class="clrr ${pk === nxt ? 'now' : ''}">${clPAv(g, pk, 24)}<span class="grow">${esc(clPName(g, pk))}${pk === me ? ' (vous)' : ''}</span><span>${st}</span></div>`; }).join('');
+    body = `<div class="clrl">${rows}</div>`;
+    if(nxt && nxt === me){
+      const have = e.cards.filter(id => (nb.mine || []).includes(id)).map(id => clCard(g, id).n);
+      body += `<div class="clyou"><b>C’est à vous de répondre.</b> ${have.length ? 'Vous avez : <b>' + have.map(esc).join(', ') + '</b>. Montrez-en une seule, en cachette, à ' + esc(clPName(g, e.by)) + '.' : (nb.mine || []).length ? 'Selon votre carnet, vous n’avez aucune de ces cartes.' : 'Si vous avez une de ces cartes, montrez-en une seule, en cachette.'}</div>`;
+      foot = `<button class="btn" data-a="clResp" data-r="none" ${busy}>✗ Je n’en ai aucune</button><button class="btn primary" data-a="clResp" data-r="show" ${busy}>🃏 Je montre une carte</button>`;
+    } else if(sh && e.by === me && !nb.seen[e.id]){
+      body += `<div class="clyou"><b>Quelle carte vous a été montrée par ${esc(clPName(g, sh.pk))} ?</b><div class="clseen">${e.cards.map(id => `<button class="btn" data-a="clSeen" data-c="${id}">${clIcon(clCard(g, id), 26)} ${esc(clCard(g, id).n)}</button>`).join('')}</div><p class="hint" style="margin:6px 0 0">Seul votre carnet le saura.</p></div>`;
+    } else if(e.done) foot = `<button class="btn primary" data-a="clPopOk">OK</button>`;
+    else { body += `<p class="hint" style="margin:8px 2px 0">${nxt ? 'En attente de ' + esc(clPName(g, nxt)) + '…' : ''}</p>`;
+      if(nxt && g.share && !S.live) body += `<div class="clsub"><span>Son téléphone ne répond pas ? Répondez à sa place :</span><button class="btn sm" data-a="clResp" data-r="none" data-k="${nxt}">Passe</button><button class="btn sm" data-a="clResp" data-r="show" data-k="${nxt}">Montre</button></div>`; }
+    if(e.done && !sh) body += `<div class="clyou">Personne n’a pu montrer de carte !</div>`;
+  } else {
+    if(e.ok === null && e.by === me){ body = `<div class="clyou"><b>Regardez les 3 cartes de l’enveloppe</b>, sans les montrer, puis dites si votre accusation est exacte.</div>`;
+      foot = `<button class="btn" data-a="clAccRes" data-ok="0" ${busy}>✗ C’est faux</button><button class="btn primary" data-a="clAccRes" data-ok="1" ${busy}>✓ C’est exact</button>`; }
+    else if(e.ok === null){ body = `<p class="hint" style="margin:8px 2px 0">⏳ ${esc(clPName(g, e.by))} regarde dans l’enveloppe…</p>`;
+      if(g.share && !S.live) body += `<div class="clsub"><span>Son téléphone ne répond pas ? Indiquez le résultat :</span><button class="btn sm" data-a="clAccRes" data-ok="0" data-k="${e.by}">✗ Faux</button><button class="btn sm" data-a="clAccRes" data-ok="1" data-k="${e.by}">✓ Exact</button></div>`; }
+    else { body = `<div class="clyou ${e.ok ? 'ok' : 'ko'}">${e.ok ? '✓ <b>Exact !</b> ' + esc(clPName(g, e.by)) + ' a résolu l’énigme.' : '✗ <b>Faux.</b> ' + esc(clPName(g, e.by)) + ' ne joue plus, mais continue de montrer ses cartes.'}</div>`; foot = `<button class="btn primary" data-a="clPopOk">OK</button>`; }
+  }
+  return `<div class="clpop"><div class="clpw" style="--pc:${c}"><div class="clph2">${clPAv(g, e.by, 44)}<div class="grow"><small>${e.t === 'sug' ? '🔍 Hypothèse de' : '⚖️ Accusation de'}</small><b>${esc(clPName(g, e.by))}${e.by === me ? ' (vous)' : ''}</b><small>${esc(clSusOf(g, e.by).n)}</small></div></div>
+    ${cards}${body}${foot ? `<div class="clpf">${foot}</div>` : ''}</div></div>`;
+}
+/* --- Choix des 3 cartes (hypothèse ou accusation) puis, sur un seul téléphone, les réponses --- */
+function clPickOpen(g, t){
+  const nb = clNB(g), shared = !!(g.share || (S.live && S.live.g === g));
+  M = {cl: {t, by: shared ? nb.me : clCurKey(g), sel: {}, step: 'cards', resp: [], ok: null}};
+  clPickRender(g);
+}
+function clPickRender(g){
+  const x = M.cl, shared = !!(g.share || (S.live && S.live.g === g)), c = clColor(g, x.by);
+  let body = '', foot = '';
+  if(x.step === 'cards'){
+    body = `${!shared ? `<label class="lbl">Qui ${x.t === 'sug' ? 'fait l’hypothèse' : 'accuse'} ?</label><div class="clwhorow">${g.players.filter(p => !g.cl.out[p.key] || x.t === 'sug').map(p => `<button class="clwb ${x.by === p.key ? 'on' : ''}" style="--pc:${clColor(g, p.key)}" data-a="clBy" data-k="${p.key}">${clPAv(g, p.key, 34)}<small>${esc(p.name)}</small></button>`).join('')}</div>` : ''}
+      ${CL_CAT.map(([cat, q, nm]) => `<label class="lbl">${q} <span style="font-weight:500">${nm}</span></label><div class="clgrid">${g.opts.cl[cat].map(k => `<button class="clpk ${x.sel[cat] === k.id ? 'on' : ''}" style="--pc:${c}" data-a="clSel" data-c="${k.id}">${clIcon(k, 34)}<small>${esc(k.n)}</small></button>`).join('')}</div>`).join('')}`;
+    const ok = CL_CAT.every(([cat]) => x.sel[cat]);
+    foot = `<button class="btn" data-a="close">Annuler</button><button class="btn primary" data-a="clPickNext" ${ok ? '' : 'disabled'}>${shared ? (x.t === 'sug' ? 'Annoncer l’hypothèse' : 'Accuser') : 'Suivant ›'}</button>`;
+  } else if(x.step === 'resp'){
+    const order = clOrderAfter(g, x.by), sh = x.resp.findIndex(r => r === 'show');
+    body = `<p style="margin:0 0 10px"><b>Qui a répondu ?</b> Dans l’ordre, à partir de la gauche de ${esc(clPName(g, x.by))}. On s’arrête au premier qui montre une carte.</p>
+      ${order.map((pk, i) => { const v = x.resp[i], dis = sh >= 0 && i > sh;
+        return `<div class="clrr ${dis ? 'dis' : ''}">${clPAv(g, pk, 26)}<span class="grow">${esc(clPName(g, pk))}</span><span class="seg sm"><button class="${v === 'none' ? 'on' : ''}" data-a="clRespSet" data-i="${i}" data-r="none" ${dis ? 'disabled' : ''}>Passe</button><button class="${v === 'show' ? 'on' : ''}" data-a="clRespSet" data-i="${i}" data-r="show" ${dis ? 'disabled' : ''}>Montre</button></span></div>`; }).join('')}
+      ${sh >= 0 && x.by === clNB(g).me ? `<label class="lbl">Quelle carte vous a été montrée ?</label><div class="clseen">${CL_CAT.map(([cat]) => x.sel[cat]).map(id => `<button class="btn ${x.seen === id ? 'primary' : ''}" data-a="clSeenPick" data-c="${id}">${clIcon(clCard(g, id), 24)} ${esc(clCard(g, id).n)}</button>`).join('')}</div>` : ''}`;
+    foot = `<button class="btn" data-a="clPickBack">‹ Retour</button><button class="btn primary" data-a="clPickSave">Enregistrer</button>`;
+  } else {
+    body = `<p style="margin:0 0 10px"><b>${esc(clPName(g, x.by))}</b> a regardé dans l’enveloppe. L’accusation est-elle exacte ?</p>
+      <div class="seg"><button class="${x.ok === false ? 'on' : ''}" data-a="clOkSet" data-v="0">✗ Faux</button><button class="${x.ok === true ? 'on' : ''}" data-a="clOkSet" data-v="1">✓ Exact</button></div>`;
+    foot = `<button class="btn" data-a="clPickBack">‹ Retour</button><button class="btn primary" data-a="clPickSave" ${x.ok === null ? 'disabled' : ''}>Enregistrer</button>`;
+  }
+  openModal(`<div class="mhead"><h2>${x.t === 'sug' ? '🔍 Hypothèse' : '⚖️ Accusation'}</h2><button class="icon-btn" data-a="close">✕</button></div><div class="mbody clpick">${body}</div><div class="mfoot">${foot}</div>`);
+}
+function clMineOpen(g){
+  const nb = clNB(g), H = g.cl.hand[nb.me] || 0;
+  M = {clMine: (nb.mine || []).slice()};
+  const draw = () => openModal(`<div class="mhead"><h2>Mes cartes</h2><button class="icon-btn" data-a="close">✕</button></div><div class="mbody clpick">
+    <p style="margin:0 0 8px">Touchez les <b>${H}</b> cartes de votre main (${M.clMine.length} choisie${M.clMine.length > 1 ? 's' : ''}). Elles restent sur ce téléphone.</p>
+    ${CL_CAT.map(([cat, q, nm]) => `<label class="lbl">${nm}</label><div class="clgrid">${g.opts.cl[cat].map(k => `<button class="clpk ${M.clMine.includes(k.id) ? 'on' : ''}" style="--pc:var(--brand)" data-a="clMineT" data-c="${k.id}">${clIcon(k, 34)}<small>${esc(k.n)}</small></button>`).join('')}</div>`).join('')}</div>
+    <div class="mfoot"><button class="btn" data-a="close">Annuler</button><button class="btn primary" data-a="clMineSave">Enregistrer</button></div>`);
+  M.clMineDraw = draw; draw();
+}
+// Écran noir : après 20 s sans toucher l'écran (ou bouton lune) ; le carnet reste caché, l'écran reste allumé mais très sombre
+let CL_CT = null;
+function clCurtainOn(){ if(S.curtain) return; S.curtain = true; render(); try{ if(bridge && bridge.setDim) bridge.setDim(true); }catch(e){} }
+function clCurtainOff(){ S.curtain = false; try{ if(bridge && bridge.setDim) bridge.setDim(false); }catch(e){} render(); clCurtainArm(); }
+function clInView(){ const g = curGame(); return !!(g && g.type === 'clue' && ((S.view === 'sheet' && !S.live) || (S.view === 'live' && S.live && S.live.g === g))); }
+function clCurtainArm(){ clearTimeout(CL_CT); if(!clInView() || S.curtain) return; CL_CT = setTimeout(() => { if(clInView() && !M) clCurtainOn(); else clCurtainArm(); }, 20000); }
+['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(ev => document.addEventListener(ev, () => { if(!S.curtain) clCurtainArm(); }, {passive: true, capture: true}));
+// Une nouvelle fenêtre (hypothèse, accusation) relève le rideau et fait vibrer
+let CL_LASTPOP = null;
+function clPopCheck(){
+  const g = curGame(); if(!g || g.type !== 'clue' || !clInView()) return;
+  const e = g.cl && g.cl.log[g.cl.log.length - 1], nb = clNB(g);
+  const sig = e ? e.id + ':' + (e.resp ? e.resp.length : '') + ':' + e.ok : null;
+  if(sig && sig !== CL_LASTPOP && !nb.pop[e.id]){ const first = CL_LASTPOP !== null; CL_LASTPOP = sig; if(first){ haptic([40, 80, 40]); if(S.curtain){ S.curtain = false; try{ if(bridge && bridge.setDim) bridge.setDim(false); }catch(x){} setTimeout(render, 0); } } }
+  else if(!sig) CL_LASTPOP = '';
+}
+/* --- Préparation de la partie --- */
+function clSetup(){ const o = S.setupOpts = S.setupOpts || {}; const c = o.clue = o.clue || {}; c.ed = CL_EDS[c.ed] ? c.ed : (db.clEd || 'classic'); c.chars = c.chars || {}; return c; }
+function clSetupNames(c){ return c.names || (db.clNames || {})[c.ed] || null; }
+function clSetupChars(){
+  const c = clSetup(), used = new Set();
+  S.sel.forEach(k => { let v = c.chars[k]; if(v == null || v > 5 || used.has(v)){ v = [0, 1, 2, 3, 4, 5].find(i => !used.has(i)); } if(v != null){ c.chars[k] = v; used.add(v); } });
+  Object.keys(c.chars).forEach(k => { if(!S.sel.includes(k)) delete c.chars[k]; });
+  if(!c.me || !S.sel.includes(c.me)) c.me = S.sel[0] || null;
+  return c;
+}
+function clSetupHtml(){
+  const c = clSetupChars(), deck = clDeck(c.ed, clSetupNames(c)), n = S.sel.length;
+  const nameOf = k => (db.players.find(p => p.id === k) || S.guests.find(g => g.key === k) || {}).name || '?';
+  const inp = (cat, list) => list.map((x, i) => `<input id="cln-${cat}-${i}" class="field" style="margin-top:6px" value="${esc(x.n)}" aria-label="${esc(x.n)}">`).join('');
+  const hands = n >= 2 && n <= 6 ? (() => { const first = Math.max(0, S.sel.indexOf(S.sel.includes(S.dealer) ? S.dealer : S.sel[0])); const h = clHands(S.sel.map(k => ({key: k})), first); const vals = S.sel.map(k => h[k]);
+      return Math.min(...vals) === Math.max(...vals) ? vals[0] + ' cartes chacun' : S.sel.map(k => esc(nameOf(k)) + ' ' + h[k]).join(', '); })() : '';
+  return `<label class="lbl">Édition du jeu</label>
+    <div class="aqpick">${Object.keys(CL_EDS).map(k => `<button data-a="setClEd" data-v="${k}" class="${c.ed === k ? 'on' : ''}">${esc(CL_EDS[k])}</button>`).join('')}</div>
+    <details style="margin-top:8px"><summary class="lbl" style="cursor:pointer">Modifier les noms des cartes ▾</summary>
+      <p class="hint">Si votre boîte utilise d’autres noms, corrigez-les ici. Ils sont gardés pour les prochaines parties.</p>
+      ${CL_CAT.map(([cat, q, nm]) => `<label class="lbl">${nm}</label>${inp(cat, deck[cat])}`).join('')}
+      <button class="btn sm" style="margin-top:10px" data-a="clNamesReset">Rétablir les noms d’origine</button></details>
+    ${n ? `<label class="lbl">Personnages</label>${n > 6 ? '<p class="hint"><b>Clue se joue jusqu’à 6 joueurs.</b></p>' : ''}
+      ${S.sel.map(k => `<div class="clsrow"><div><b>${esc(nameOf(k))}</b> · <span class="hint" style="margin:0">${esc(deck.sus[c.chars[k]] ? deck.sus[c.chars[k]].n : '')}</span></div>
+        <div class="clsav">${deck.sus.map((s, i) => `<button class="clsa ${c.chars[k] === i ? 'on' : ''} ${c.chars[k] !== i && S.sel.some(x => x !== k && c.chars[x] === i) ? 'tk' : ''}" data-a="setClChar" data-k="${k}" data-v="${i}" aria-label="${esc(s.n)}">${clAv(s, 38)}</button>`).join('')}</div></div>`).join('')}
+      <label class="lbl">Ce téléphone est le carnet de…</label>
+      <div class="chips">${S.sel.map(k => `<button class="chip ${c.me === k ? 'on' : ''}" style="padding-left:6px" data-a="setClMe" data-k="${k}">${deck.sus[c.chars[k]] ? clAv(deck.sus[c.chars[k]], 30) : ''}${esc(nameOf(k))}</button>`).join('')}</div>
+      <p class="hint">Chacun garde son carnet secret sur son propre téléphone. Pour jouer avec plusieurs téléphones, partagez la partie en direct (icône réseau en haut de la partie) : les hypothèses de chacun arrivent alors sur tous les téléphones.</p>
+      ${hands ? `<p class="hint">18 cartes à distribuer : ${hands}.</p>` : ''}` : '<p class="hint">Choisissez d’abord les joueurs ci-dessus.</p>'}`;
 }
 
 /* ---------- Feuille de pointage ---------- */
@@ -1240,6 +1746,7 @@ function vSheet(){
   if(g.type === 'acquire') return vAcquire(g);
   if(g.type === 'yahtzee') return vYahtzee(g);
   if(g.type === 'triomino') return vTriomino(g);
+  if(g.type === 'clue') return vClue(g);
   const G = GAMES[g.type], r = ranking(g), t = totals(g);
   const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
   const end = !g.finished && endInfo(g);
@@ -2077,11 +2584,11 @@ function vResults(){
   return `${topbar('Résultat', gameName(g) + ' · ' + dateFr(g.created))}
   <main class="pad">
     <div class="card" style="padding:22px 16px;text-align:center"><div style="font-size:44px">🏆</div>
-      <h2 style="font-size:24px;margin-top:6px">${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(' et '))}</h2>${g.winner?'<p class="hint" style="margin:4px 0 0">🎲 Six dés identiques</p>':''}
+      <h2 style="font-size:24px;margin-top:6px">${esc(r.filter(x=>x.rank===1).map(x=>x.p.name).join(' et '))}</h2>${g.winner && g.type === 'farkle' ? '<p class="hint" style="margin:4px 0 0">🎲 Six dés identiques</p>' : g.type === 'clue' && g.cl && g.cl.solved ? `<p class="hint" style="margin:4px 0 0">🔍 ${g.cl.last ? 'Dernier détective en jeu' : 'A résolu l’énigme : ' + esc(clLastAccTxt(g))}</p>` : ''}
       <p class="hint" style="margin-top:4px">${g.team ? 'équipe ' + esc(r.filter(x=>x.rank===1).map(x=>x.p.team).join(', ')) + ' · ' + (r[0] && membersOf(g, r[0].p).length > 1 ? 'remportent' : 'remporte') : (r.filter(x=>x.rank===1).length>1?'remportent':'remporte')} la partie</p></div>
     <h2 class="sec">Classement</h2>
-    <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank-1]||x.rank}</span><span class="av" style="background:${x.p.color}">${g.team ? esc(x.p.team) : initial(x.p.name)}</span>
-      <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type==='phase10'?`<div class="s">${x.phase>10?'Les 10 phases réussies':(x.phase-1)+' phase'+(x.phase>2?'s':'')+' réussie'+(x.phase>2?'s':'')+' · vise la phase '+x.phase}</div>`:''}</div><div class="t num-t" style="font-size:20px">${fmt(x.total)}</div></div>`).join('')}</div>
+    <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank-1]||x.rank}</span>${g.type === 'clue' && g.cl ? `<span style="line-height:0">${clPAv(g, x.p.key, 34)}</span>` : `<span class="av" style="background:${x.p.color}">${g.team ? esc(x.p.team) : initial(x.p.name)}</span>`}
+      <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type==='clue'?`<div class="s">${esc(clSusOf(g, x.p.key).n)}${g.cl && g.cl.out[x.p.key] ? ' · accusation fausse' : ''}</div>`:g.type==='phase10'?`<div class="s">${x.phase>10?'Les 10 phases réussies':(x.phase-1)+' phase'+(x.phase>2?'s':'')+' réussie'+(x.phase>2?'s':'')+' · vise la phase '+x.phase}</div>`:''}</div><div class="t num-t" style="font-size:20px">${g.type === 'clue' ? '' : fmt(x.total)}</div></div>`).join('')}</div>
     ${(isTurnGame(g) ? g.turns.length : g.rounds.length) ? `<h2 class="sec">Évolution des scores</h2><div class="card" style="padding:12px 12px 10px">${chartHtml(g, 'chr')}</div>` : ''}
     ${guests.length ? `<h2 class="sec">Invités</h2><div class="card list">${guests.map(p => `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">Pas dans votre liste de joueurs</div></div><button class="btn sm" data-a="saveGuest" data-k="${p.key}">+ À ma liste</button></div>`).join('')}</div>` : ''}
     <div style="display:grid;gap:10px;margin-top:22px">
@@ -2564,6 +3071,8 @@ function openMenu(){
 // Cherche la réponse dans : réponses rapides (ci-dessous), règles de chaque jeu, nos règles maison, manuel (inséré au build).
 const HELP_MANUAL = /*HELP*/[]/*HELP*/;
 const HELP_FAQ = [
+  {q:['clue','cluedo','carnet de détective','noter une hypothèse','faire une hypothèse au clue','accuser au clue'], a:'Au Clue, chaque téléphone est un carnet secret. Touchez une case pour la marquer : ✗ n’a pas, ✓ l’a, ? et – au crayon. Notez les hypothèses avec « Noter une hypothèse » : l’app fait les déductions en bleu. À plusieurs téléphones, partagez la partie en direct : les hypothèses arrivent sur tous les téléphones.'},
+  {q:['écran noir','rideau','cacher mon carnet','lune'], a:'Au Clue, l’écran devient noir après 20 secondes sans toucher, ou avec le bouton 🌙. Le téléphone ne se verrouille pas. Touchez l’écran pour revoir votre carnet.'},
   {q:['annoncer le gagnant','qui a gagné à voix haute','annonce du gagnant','dire le gagnant'], a:'Si les annonces à voix haute sont activées (haut-parleur non barré, ou menu ⋮ de la partie), l’app dit qui a gagné quand vous touchez Terminer, dans tous les jeux.'},
   {q:['annonce du brasseur','dire à voix haute qui brasse','annoncer le brasseur','haut-parleur','couper l’annonce','qui brasse à voix haute'], a:'Touchez le haut-parleur au bout du bandeau « À … de brasser ». Activé, le téléphone qui tient la feuille dit à voix haute à qui c’est de brasser dès qu’une manche est enregistrée. Touchez-le encore pour le couper (haut-parleur barré).'},
   {q:['skip-bo en direct','skip bo chacun son téléphone','inscrire mon talon','cartes restantes talon direct'], a:'En partie en direct, chacun touche son nom, inscrit les cartes restantes dans son talon ou coche « J’ai vidé mon talon », puis Envoyer. En équipes, un seul téléphone par équipe inscrit les cartes de chaque membre. La feuille calcule 25 + 5 par carte pour le gagnant.'},
@@ -2613,6 +3122,7 @@ const HELP_STOP = new Set(('ludo a au aux avec ca ce cela ces cet cette comment 
 const HELP_SYN = [
   'supprimer effacer enlever retirer oter detruire jeter', 'corriger modifier changer editer rectifier correction modification erreur trompe tromper',
   'annuler defaire arriere undo', 'retablir refaire', 'brasser distribuer donneur brasseur donner melanger brasse',
+  'clue cluedo detective enquete carnet', 'hypothese soupcon suggestion', 'accuser accusation enveloppe coupable',
   'invite visiteur ami', 'manche ronde round trou', 'pointage point points score compte compter calculer valeur vaut valent',
   'gagner gagnant victoire vainqueur gagne but objectif', 'regle reglement regles instructions', 'sauvegarde sauvegarder copie backup exporter',
   'importer restaurer recuperer', 'statistique stats record', 'historique ancienne precedente', 'micro vocal voix parler',
@@ -3248,6 +3758,7 @@ function liveSnap(g){
   const clean = p => { delete p.rid; };
   c.players.forEach(clean); if(c.members) Object.values(c.members).forEach(ms => ms.forEach(clean));
   if(c.aq) delete c.aq.sh;   // Acquire : les actions de chacun restent secrètes
+  delete c.clp;                // Clue : le carnet de chacun reste sur son téléphone
   return {v: 1, g: c, t: Date.now(), host: g.share && g.share.me && g.share.me !== '-' ? g.share.me : null};
 }
 /* --- Côté hôte (le téléphone qui tient la feuille) --- */
@@ -3273,14 +3784,14 @@ async function livePush(id){
 function liveBar(){ const b = $('livebar'); if(b) b.outerHTML = liveBarHtml(curGame()); }
 function liveBarHtml(g){
   if(!g || !g.share) return '';
-  return `<div class="livebar ${S.liveErr ? 'err' : ''}" id="livebar"><span class="dot"></span><span class="grow">${S.liveErr ? esc(S.liveErr) : 'Partie en direct : les autres joueurs suivent les pointages'}</span><button class="btn sm" data-a="liveShow">Code QR</button></div>`;
+  return `<div class="livebar ${S.liveErr ? 'err' : ''}" id="livebar"><span class="dot"></span><span class="grow">${S.liveErr ? esc(S.liveErr) : g.type === 'clue' ? 'Partie en direct : les hypothèses arrivent sur tous les téléphones' : 'Partie en direct : les autres joueurs suivent les pointages'}</span><button class="btn sm" data-a="liveShow">Code QR</button></div>`;
 }
 async function liveStart(){
   const g = curGame(); closeModal();
   if(!liveOk()) return toast('Le partage en direct n’est pas offert sur cet appareil');
   if(navigator.onLine === false) return toast('Il faut Internet pour partager la partie');
   const fresh = !g.share;
-  if(fresh){ g.share = {id: liveRand(9), tok: liveRand(16), k: liveRand(16)}; g.liveId = g.share.id; save(); }
+  if(fresh){ g.share = {id: liveRand(9), tok: liveRand(16), k: liveRand(16)}; g.liveId = g.share.id; if(g.type === 'clue' && g.clp) g.share.me = g.clp.me; save(); }
   toast('Préparation du partage…');
   try{ await livePush(g.id); }
   catch(e){ if(fresh && e.status === 503){ delete g.share; save(); S.liveErr = ''; render(); return toast(e.message); } }
@@ -3294,7 +3805,8 @@ function liveShow(){
       <div style="background:#fff;padding:12px;border-radius:16px;max-width:300px;margin:0 auto">${qrSvg(url)}</div>
       <p style="margin:14px 4px 6px;line-height:1.45">Les autres joueurs <b>scannent ce code</b> avec l’appareil photo de leur téléphone : ils suivent les pointages en direct${liveEntryOk(g) ? ' et peuvent envoyer leurs propres points. Ce téléphone garde le dernier mot.' : ', sans pouvoir les modifier.'}</p>
       <p class="hint" style="margin:0 4px">Pas besoin d’avoir l’app : la partie s’ouvre dans le navigateur. Seule cette partie est partagée, chiffrée de bout en bout.</p>
-      ${liveEntryOk(g) ? `<div style="text-align:left;margin-top:14px"><b>Qui tient ce téléphone ?</b><p class="hint" style="margin:2px 0 8px">Les autres inscrivent leurs points sur leur téléphone ; vous inscrivez les vôtres ici, quand les leurs sont arrivés.</p>
+      ${g.type === 'clue' ? '<p class="hint" style="margin:10px 4px 0">Au Clue, chacun choisit son nom, puis garde son carnet secret sur son téléphone. Les hypothèses et les accusations apparaissent sur tous les téléphones.</p>' : ''}
+      ${liveEntryOk(g) && g.type !== 'clue' ? `<div style="text-align:left;margin-top:14px"><b>Qui tient ce téléphone ?</b><p class="hint" style="margin:2px 0 8px">Les autres inscrivent leurs points sur leur téléphone ; vous inscrivez les vôtres ici, quand les leurs sont arrivés.</p>
         <div class="chips">${g.players.map(p => `<button class="chip ${g.share.me === p.key ? 'on' : ''}" style="min-height:40px;padding:0 12px" data-a="liveHostMe" data-k="${p.key}">${esc(p.name)}</button>`).join('')}
         <button class="chip ${g.share.me === '-' ? 'on' : ''}" style="min-height:40px;padding:0 12px" data-a="liveHostMe" data-k="-">Je ne joue pas</button></div></div>` : ''}
     </div>
@@ -3371,6 +3883,7 @@ function liveTable(g){
 }
 function vLive(){
   const L = S.live, g = L && L.g;
+  if(g && g.type === 'clue' && !(L.gone && !g)) return vClue(g);
   const head = topbar('Partie en direct', g ? gameName(g) + (liveEntryOk(g) ? ' · en direct' : ' · lecture seule') : 'Ouverture…');
   if(L && L.gone && !g) return `${head}<main class="pad"><div class="card empty">${esc(L.err || 'Cette partie n’est pas partagée en ce moment. Le partage a été arrêté, ou la partie n’a pas bougé depuis plus de 3 jours : elle revient dès que le téléphone qui tient la feuille la rouvre.')}</div>
     <button class="btn block" style="margin-top:16px" data-a="liveQuit">Accueil</button></main>`;
@@ -3399,6 +3912,7 @@ function vLive(){
 const LIVE_ENTRY = ['generic', 'flip7', 'playnine', 'skyjo', 'phase10', 'train', 'wizard', 'yahtzee', 'uno', 'millebornes', 'skipbo', 'farkle', 'scrabble', 'triomino'];
 function liveRoundKey(g){ return g.type === 'wizard' ? g.rounds.length + ':' + (g.pend ? 't' : 'b') : String(g.rounds.length); }
 function liveEntryOk(g){
+  if(g && g.type === 'clue') return !g.finished;
   if(!g || g.finished || !LIVE_ENTRY.includes(g.type) || (g.team && !['millebornes', 'skipbo'].includes(g.type))) return false;
   if(g.type === 'uno' && g.opts.mode === 'official') return false;
   if(g.type === 'yahtzee') return !yzDone(g);
@@ -3438,6 +3952,7 @@ async function liveInboxFetch(g){
 }
 function liveApply(g, m){
   const p = m && g.players.find(x => x.key === m.pk); if(!p || g.finished) return;
+  if(m.t === 'cl'){ if(g.type === 'clue') clApply(g, m, false); return; }
   if(m.t === 'yz'){
     if(g.type !== 'yahtzee') return; const st = yzState(g), c = YZ_ALL.find(x => x.id === m.cat);
     if(!c || st.sc[m.pk][m.cat] != null) return;
@@ -4281,6 +4796,58 @@ const A = {
   abNow: () => { autoBackupNow(true); toast('Sauvegarde…'); },
   abResume: () => autoBackupNow(true),
   setOrient: el => { const v = el.dataset.v; try{ localStorage.setItem('pointage.orient', v); }catch(e){} applyOrient(); toast({auto:'L’écran pivote librement', portrait:'Écran verrouillé en portrait', landscape:'Écran verrouillé en paysage'}[v]); render(); },
+  /* --- Clue --- */
+  clCell: el => { const g = curGame(), nb = clNB(g), c = el.dataset.c, k = el.dataset.k; haptic();
+    if(k === nb.me){ const i = nb.mine.indexOf(c); if(i >= 0) nb.mine.splice(i, 1); else { if(nb.mine.length >= (g.cl.hand[k] || 6)) return toast('Vous avez déjà ' + nb.mine.length + ' cartes : retirez-en une d’abord'); nb.mine.push(c); } clSaveNB(g); return render(); }
+    const D = clDeduce(g, nb), man = (nb.marks[c] || {})[k], why = D.src[c + '|' + k];
+    if(D.K[c][k] !== undefined && !man) return toast(why === 'pass' ? 'Déduit : ce joueur a passé sur une hypothèse avec cette carte' : why === 'seen' ? 'Vous avez vu cette carte' : 'Déduit par l’app à partir des autres marques');
+    const cyc = [undefined, 'x', 'v', 'q', 'n'], nx = cyc[(cyc.indexOf(man) + 1) % cyc.length];
+    nb.marks[c] = nb.marks[c] || {}; if(nx) nb.marks[c][k] = nx; else delete nb.marks[c][k];
+    clSaveNB(g); render(); },
+  clHand: el => { const g = curGame(), k = el.dataset.k;
+    if(S.live && S.live.g === g) return toast(clPName(g, k) + ' a ' + (g.cl.hand[k] || 0) + ' cartes en main');
+    M = {clH: k}; const draw = () => openModal(`<div class="mhead"><h2>Cartes de ${esc(clPName(g, k))}</h2><button class="icon-btn" data-a="close">✕</button></div><div class="mbody" style="text-align:center">
+      ${clPAv(g, k, 56)}<p style="margin:8px 0">Nombre de cartes reçues au début de la partie :</p>
+      <div class="row" style="justify-content:center;gap:16px"><button class="btn" data-a="clHandAdj" data-v="-1">−</button><b style="font-size:28px">${g.cl.hand[k] || 0}</b><button class="btn" data-a="clHandAdj" data-v="1">+</button></div>
+      <p class="hint">L’app s’en sert pour ses déductions : quand on connaît toutes les cartes d’un joueur, il n’a aucune des autres.</p></div><div class="mfoot"><button class="btn primary" data-a="close">OK</button></div>`);
+    M.clHDraw = draw; draw(); },
+  clHandAdj: el => { const g = curGame(), k = M.clH; g.cl.hand[k] = Math.max(0, Math.min(18, (g.cl.hand[k] || 0) + Number(el.dataset.v))); save(); render(); M.clHDraw(); },
+  clEnd: () => { const g = curGame(); clDo(g, {a: 'end'}); },
+  clPick: el => { const g = curGame(); clPickOpen(g, el.dataset.t); },
+  clBy: el => { M.cl.by = el.dataset.k; clPickRender(curGame()); },
+  clSel: el => { const c = el.dataset.c, cat = clCatOf(c); haptic(); M.cl.sel[cat] = M.cl.sel[cat] === c ? null : c; clPickRender(curGame()); },
+  clPickNext: () => { const g = curGame(), x = M.cl, cards = CL_CAT.map(([cat]) => x.sel[cat]);
+    if(g.share || (S.live && S.live.g === g)){ closeModal(); return clDo(g, {a: x.t, by: x.by, cards}); }
+    x.step = x.t === 'sug' ? 'resp' : 'ok'; clPickRender(g); },
+  clPickBack: () => { M.cl.step = 'cards'; clPickRender(curGame()); },
+  clRespSet: el => { const x = M.cl, i = Number(el.dataset.i); x.resp[i] = el.dataset.r; if(el.dataset.r === 'show') x.resp.length = i + 1; else delete x.seen; clPickRender(curGame()); },
+  clSeenPick: el => { M.cl.seen = el.dataset.c; clPickRender(curGame()); },
+  clOkSet: el => { M.cl.ok = el.dataset.v === '1'; clPickRender(curGame()); },
+  clPickSave: () => { const g = curGame(), x = M.cl, nb = clNB(g), cards = CL_CAT.map(([cat]) => x.sel[cat]);
+    if(x.t === 'acc'){ if(x.ok === null) return; if(g.cl.cur !== g.players.findIndex(p => p.key === x.by)) g.cl.cur = g.players.findIndex(p => p.key === x.by);
+      closeModal(); clApply(g, {a: 'acc', by: x.by, cards, ok: x.ok}, true); save(); render(); return toast(x.ok ? '🔍 ' + clPName(g, x.by) + ' a résolu l’énigme !' : '✗ ' + clPName(g, x.by) + ' est éliminé'); }
+    const order = clOrderAfter(g, x.by), sh = x.resp.indexOf('show'), need = sh >= 0 ? sh + 1 : order.length;
+    for(let i = 0; i < need; i++) if(!x.resp[i]) return toast('Indiquez la réponse de ' + clPName(g, order[i]));
+    if(sh >= 0 && x.by === nb.me && !x.seen) return toast('Choisissez la carte qu’on vous a montrée');
+    g.cl.cur = g.players.findIndex(p => p.key === x.by);
+    const ok = clApply(g, {a: 'sug', by: x.by, cards, resp: x.resp.slice(0, need).map((r, i) => ({pk: order[i], r}))}, true);
+    if(!ok){ closeModal(); return toast('Hypothèse impossible pour l’instant'); }
+    const e = g.cl.log[g.cl.log.length - 1]; if(x.seen) nb.seen[e.id] = x.seen;
+    clNext(g); closeModal(); save(); render(); toast('🔍 Hypothèse notée · au tour de ' + clPName(g, clCurKey(g))); },
+  clResp: el => { const g = curGame(), e = clPend(g); if(!e) return; const m = {a: 'resp', id: e.id, r: el.dataset.r}; if(el.dataset.k) m.pk = el.dataset.k; clDo(g, m); },
+  clAccRes: el => { const g = curGame(), e = clPend(g); if(!e) return; const m = {a: 'accres', id: e.id, ok: el.dataset.ok === '1'}; if(el.dataset.k) m.pk = el.dataset.k; clDo(g, m); },
+  clSeen: el => { const g = curGame(), nb = clNB(g), e = g.cl.log[g.cl.log.length - 1]; nb.seen[e.id] = el.dataset.c; nb.pop[e.id] = 1; clSaveNB(g); render(); toast('Noté dans votre carnet'); },
+  clPopOk: () => { const g = curGame(), nb = clNB(g), e = g.cl.log[g.cl.log.length - 1]; if(e) nb.pop[e.id] = 1; clSaveNB(g); render(); },
+  clMine: () => clMineOpen(curGame()),
+  clMineT: el => { const c = el.dataset.c, i = M.clMine.indexOf(c); haptic(); if(i >= 0) M.clMine.splice(i, 1); else M.clMine.push(c); M.clMineDraw(); },
+  clMineSave: () => { const g = curGame(), nb = clNB(g); nb.mine = M.clMine.slice(); closeModal(); clSaveNB(g); render(); toast(nb.mine.length + ' carte' + (nb.mine.length > 1 ? 's' : '') + ' dans votre main'); },
+  clCurtain: () => clCurtainOn(),
+  clCurtainOff: () => clCurtainOff(),
+  setClEd: el => { readSetupFields(); const c = clSetup(); c.ed = el.dataset.v; render(); },
+  setClChar: el => { readSetupFields(); const c = clSetup(), k = el.dataset.k, v = Number(el.dataset.v); clSetupChars();
+    const other = S.sel.find(x => x !== k && c.chars[x] === v); if(other) c.chars[other] = c.chars[k]; c.chars[k] = v; render(); },
+  setClMe: el => { readSetupFields(); clSetup().me = el.dataset.k; render(); },
+  clNamesReset: () => { readSetupFields(); const c = clSetup(); db.clNames = db.clNames || {}; delete db.clNames[c.ed]; c.names = null; save(); render(); toast('Noms d’origine rétablis'); },
   hapticTest: () => { haptic(25); setTimeout(() => haptic(25), 350); setTimeout(() => haptic([30, 60, 30]), 900); toast('📳 Deux petites vibrations, puis une double'); },
   hapticToggle: () => { const on = !hapticOn(); try{ localStorage.setItem('pointage.haptic', on ? '1' : '0'); }catch(e){} if(on) haptic(40); toast(on ? 'Vibration activée' : 'Vibration coupée'); render(); },
   screenToggle: () => { const on = !screenOnPref(); try{ localStorage.setItem('pointage.screenon', on ? '1' : '0'); }catch(e){} toast(on ? 'L’écran restera allumé' : 'Veille normale de l’écran'); render(); },

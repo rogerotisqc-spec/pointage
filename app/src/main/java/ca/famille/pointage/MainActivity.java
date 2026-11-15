@@ -675,6 +675,18 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        // Clue : écran noir sans verrouiller → luminosité au minimum ; false = luminosité normale
+        public void setDim(final boolean on) {
+            runOnUiThread(new Runnable() { public void run() {
+                try {
+                    android.view.WindowManager.LayoutParams lp = getWindow().getAttributes();
+                    lp.screenBrightness = on ? 0.01f : android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+                    getWindow().setAttributes(lp);
+                } catch (Exception e) { }
+            }});
+        }
+
+        @JavascriptInterface
         // Petite vibration : « 25 » ou un motif « 30,60,30 » (vibre, pause, vibre).
         // Classée « médias » (et non « retour haptique interactif ») : elle suit le réglage « Vibration des médias » d'Android,
         // donc l'app vibre même si le retour haptique du téléphone est coupé.
