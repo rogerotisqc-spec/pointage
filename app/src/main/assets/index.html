@@ -534,6 +534,43 @@ tr.gui .cln{font-weight:800;color:var(--wine)}
   :root:not([data-theme="light"]) .cltitle{background:#5e1520}
   :root:not([data-theme="light"]) tr.gui,:root:not([data-theme="light"]) tr.gui .lc{background:#4a3c12}
 }
+
+/* ---------- Battleships ---------- */
+.bs .sec{margin-top:16px}
+.bsturn{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:10px 12px;border-radius:14px;background:var(--surface);border:2px solid var(--line);margin-bottom:10px}
+.bsturn b{font-size:17px}.bsturn span{flex-basis:100%;font-size:13.5px;color:var(--muted)}
+.bsturn.go{border-color:#e8590c;background:color-mix(in srgb,#e8590c 10%,var(--surface))}
+.bsturn.won{border-color:var(--accent);background:var(--lead)}.bsturn.lost{border-color:#5b6b7a}
+.bsturn .bsvoice{margin-left:auto}
+.bsscore{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted);margin:0 2px 4px}
+.bsscore b{color:var(--ink)}
+.bsinvite{padding:12px;border-radius:14px;background:var(--lead);border:1px solid var(--accent);margin-bottom:12px}
+.bsinvite p{margin:4px 0 10px;font-size:14px}
+.bstray{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.bstr{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 8px;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-size:11.5px;color:var(--ink)}
+.bstr.on{border-color:#e8590c;background:color-mix(in srgb,#e8590c 12%,var(--surface))}
+.bstr.ok{opacity:.6}.bstr.ok.on{opacity:1}
+.bstrs{display:block;height:14px}
+.bsbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.bsgrid{position:relative;width:calc(20px + var(--cs) * 10);margin:0 auto;user-select:none;-webkit-user-select:none}
+.bshead{display:grid;grid-template-columns:20px repeat(10,var(--cs));height:20px}
+.bsrowlab{position:absolute;left:0;top:20px;width:20px;display:grid;grid-template-rows:repeat(10,var(--cs))}
+.bslab{display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--muted)}
+.bscells{margin-left:20px;display:grid;grid-template-columns:repeat(10,var(--cs));grid-auto-rows:var(--cs);border-radius:8px;overflow:hidden;background:linear-gradient(160deg,#1f6f9f,#0b3a5c);box-shadow:inset 0 0 0 2px #0b2f4a}
+.bsgrid.enemy .bscells{background:linear-gradient(160deg,#245a7a,#0b2a44)}
+.bsc{position:relative;z-index:2;border:0;border-right:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12);background:transparent;padding:0;display:grid;place-items:center}
+.bsc svg{width:72%;height:72%}
+.bsgrid.armed .bsc:not(.miss):not(.hit):not(.sunk){cursor:crosshair}
+.bsgrid.armed .bsc:not(.miss):not(.hit):not(.sunk):active{background:rgba(255,190,90,.35)}
+.bsc.hit,.bsc.sunk{background:rgba(255,90,40,.18)}
+.bsc.pend{background:rgba(255,200,80,.25)}
+.bsaim{width:60%;height:60%;border:2px solid #ffd27a;border-radius:50%;animation:bsPulse 0.8s ease-in-out infinite}
+@keyframes bsPulse{0%,100%{transform:scale(.7);opacity:.6}50%{transform:scale(1.05);opacity:1}}
+.bsship{position:absolute;z-index:1;pointer-events:none;padding:3px 1px}
+.bsship.v{transform-origin:0 0;transform:rotate(90deg) translateY(-100%)}
+.bsship.sel{filter:drop-shadow(0 0 3px #ffb347) drop-shadow(0 0 2px #ffb347)}
+.bsship.sunk{filter:sepia(1) saturate(4) hue-rotate(-30deg) brightness(.75)}
+.bsgrid.enemy .bsship.sunk{opacity:.85}
 </style>
 </head>
 <body>
@@ -658,7 +695,7 @@ const CATS = [
   ['Jeux de cartes', ['flip7', 'millebornes', 'phase10', 'playnine', 'skipbo', 'skyjo', 'uno', 'wizard']],
   ['Jeux de dés', ['farkle', 'yahtzee']],
   ['Dominos et tuiles', ['train', 'triomino']],
-  ['Jeux de plateau', ['acquire', 'clue', 'scrabble']],
+  ['Jeux de plateau', ['acquire', 'navale', 'clue', 'scrabble']],
   ['Tous les autres jeux', ['generic']]
 ];
 const ORDER = CATS.flatMap(c => c[1]);
@@ -679,6 +716,7 @@ const GAMES = {
   skyjo:      {name:'Skyjo',          color:'#3b8fd9', badge:'SK', desc:'Partie à 100 · le plus bas gagne', round:'Manche', target:100, low:true, helper:'skyjo'},
   scrabble:   {name:'Scrabble',       color:'#9c6b2f', badge:'S',  desc:'Calcul des mots · fin de partie', round:'Tour'},
   farkle:     {name:'Farkle',       color:'#0b7285', badge:'⚄',  desc:'Entrée à 1 000 · partie à 25 000', round:'Tour'},
+  navale:     {name:'Battleships',  color:'#1b4f72', badge:'⚓', desc:'Bataille navale · 2 téléphones en direct', round:'Tir'},
   clue:       {name:'Clue',         color:'#7b1e2b', badge:'🔍', desc:'Carnet de détective secret · 2 à 6', round:'Tour'}
 };
 catSort();
@@ -882,6 +920,16 @@ function rulesHtml(type, g){
       <li><b>Colonne de trois cartes identiques</b> : elle est retirée du jeu (elle ne compte plus).</li></ul>
     <h3>Fin de manche</h3><p>Quand un joueur a retourné ses 12 cartes, chacun des autres joue un dernier tour. On retourne alors toutes les cartes et chacun additionne ses cartes.</p>
     <h3>Doublement</h3><p>Si le joueur qui a terminé la manche <b>n’a pas strictement le plus bas pointage</b> de la manche, son pointage est <b>doublé</b> (seulement s’il est positif). Une égalité avec le plus bas compte aussi : il est doublé. L’app applique cette règle quand vous indiquez qui a terminé.</p>`;
+  case 'navale': return `
+    <h3>Joueurs</h3><p><b>2 joueurs</b>, chacun avec son téléphone (partie en direct).</p>
+    <h3>But</h3><p>Couler toute la flotte de l’adversaire avant qu’il ne coule la vôtre.</p>
+    <h3>La flotte</h3><ul><li>Chacun place en secret 5 navires sur sa grille de 10 × 10 : porte-avions (5 cases), cuirassé (4), croiseur (3), sous-marin (3) et torpilleur (2).</li>
+      <li>À l’horizontale ou à la verticale, jamais en diagonale. Les navires peuvent se toucher.</li></ul>
+    <h3>Un tour</h3><ul><li>On tire sur une case de la mer adverse (par exemple B7). L’autre annonce « À l’eau », « Touché » ou « Coulé » quand toutes les cases d’un navire sont touchées.</li>
+      <li>Règles classiques : un seul tir par tour, chacun son tour, même quand on touche.</li></ul>
+    <h3>Fin</h3><p>Le premier qui coule les 5 navires adverses gagne.</p>
+    <h3>Dans l’app</h3><ul><li>Chaque téléphone garde sa flotte secrète et répond tout seul aux tirs reçus.</li>
+      <li>Le téléphone qui tire annonce le résultat à voix haute (haut-parleur pour couper) ; les deux téléphones vibrent.</li></ul>`;
   case 'clue': return `
     <h3>Joueurs</h3><p><b>3 à 6 joueurs</b> selon les règles classiques. Certaines éditions récentes se jouent aussi à 2 : l’app accepte de 2 à 6 joueurs. Chacun joue un personnage différent. À 3 joueurs, chacun reçoit 6 cartes ; à 4, 5 ou 6 joueurs, de 3 à 5 cartes (certains en ont une de plus).</p>
     <h3>But</h3><p>Découvrir les 3 cartes cachées dans l’enveloppe : <b>qui</b> a commis le crime, <b>avec quelle arme</b> et <b>dans quelle pièce</b>.</p>
@@ -1013,6 +1061,7 @@ function endInfo(g){
     const w = g.players.filter(p => phaseOf(g,p.key) > 10);
     return w.length ? w.map(p=>p.name).join(', ') + ' a réussi la phase 10' : null;
   }
+  if(g.type === 'navale') return null;
   if(g.type === 'clue') return g.cl && g.cl.solved ? clPName(g, g.cl.solved) + (g.cl.last ? ' est le dernier détective en jeu' : ' a résolu l’énigme') : null;
   if(g.type === 'acquire' || g.type === 'yahtzee' || g.type === 'triomino') return null;
   if(g.type === 'wizard' || g.type === 'train') return g.rounds.length >= g.opts.rounds ? 'Les ' + g.opts.rounds + ' manches sont jouées' : null;
@@ -1118,7 +1167,7 @@ function winText(g){
 }
 function annWinner(g){ if(g.type !== 'clue' && !S.live && annOn() && speakOk()){ const t = winText(g); if(t) setTimeout(() => speak(t), 400); } }
 function dealerBanner(g){
-  if(g.type === 'clue' || isTurnGame(g) || g.finished || endInfo(g) || (g.opts.holes && g.rounds.length >= g.opts.holes) || ((g.type === 'wizard' || g.type === 'train') && g.rounds.length >= g.opts.rounds)) return '';
+  if(g.type === 'clue' || g.type === 'navale' || isTurnGame(g) || g.finished || endInfo(g) || (g.opts.holes && g.rounds.length >= g.opts.holes) || ((g.type === 'wizard' || g.type === 'train') && g.rounds.length >= g.opts.rounds)) return '';
   const G = GAMES[g.type];
   return `<div class="dealer"><button class="dmain" data-a="dealer"><span class="ic">🃏</span><div class="grow">À <b>${esc(dealerName(g))}</b> de brasser<small>${G.round} ${g.rounds.length + 1}</small></div><span class="chg">Changer</span></button>${annBtn()}</div>`;
 }
@@ -1158,8 +1207,8 @@ function render(top){
   if(top) window.scrollTo(0,0);
   const hd = document.querySelector('#app .top'); if(hd) document.documentElement.style.setProperty('--toph', hd.offsetHeight + 'px');
   if(S.curtain && !clInView()){ S.curtain = false; try{ if(bridge && bridge.setDim) bridge.setDim(false); }catch(e){} }
-  clPopCheck(); clCurtainArm();
-  const keep = screenOnPref() || clInView();   // Clue : l'écran reste allumé, et devient noir après 20 s (rideau)
+  clPopCheck(); clCurtainArm(); setTimeout(bsTick, 0);
+  const keep = screenOnPref() || clInView() || bsInView();   // Clue : l'écran reste allumé, et devient noir après 20 s (rideau)
   if(bridge && bridge.keepScreenOn) try{ bridge.keepScreenOn(keep); }catch(e){}
   else wakeLock(keep);
 }
@@ -1188,7 +1237,7 @@ function vHome(){
     ${open.length ? `<h2 class="sec">Parties en cours</h2>${open.map(g => {
       const r = ranking(g);
       return `<button class="card resume" data-a="open" data-id="${g.id}">${badge(g.type)}<div class="grow"><div class="t">${esc(gameName(g))}</div>
-        <div class="s">${g.type === 'clue' ? (g.cl && g.cl.solved ? '🔍 ' + esc(clPName(g, g.cl.solved)) + ' a trouvé' : 'Au tour de ' + esc(clPName(g, clCurKey(g)))) : r.map(x=>esc(x.p.name)+' '+fmt(x.total)).join(' · ')}</div></div><span class="chev">›</span></button>`;}).join('')}` : ''}
+        <div class="s">${g.type === 'navale' ? (g.bs && g.bs.phase === 'play' ? 'Au tour de ' + esc((g.players.find(p => p.key === g.bs.turn) || {}).name || '') : 'Placement des flottes') : g.type === 'clue' ? (g.cl && g.cl.solved ? '🔍 ' + esc(clPName(g, g.cl.solved)) + ' a trouvé' : 'Au tour de ' + esc(clPName(g, clCurKey(g)))) : r.map(x=>esc(x.p.name)+' '+fmt(x.total)).join(' · ')}</div></div><span class="chev">›</span></button>`;}).join('')}` : ''}
     <h2 class="sec">Nouvelle partie</h2>
     <div class="cats">${CATS.map(([cat, list]) => `<section class="cat${list.length > 4 ? ' big' : ''}" aria-label="${cat}"><h3 class="cat-l">${cat}</h3><div class="tiles">${list.map(t => `<div class="card tile" data-a="setup" data-t="${t}" role="button">
       ${badge(t)}<h3>${GAMES[t].name}</h3><p>${GAMES[t].desc}</p>
@@ -1257,6 +1306,8 @@ function vSetup(){
       <label class="chk"><input type="checkbox" id="o-mtblank" ${o.blank50 ? 'checked' : ''}> Le double blanc vaut 50 points (variante courante)</label>`;
   } else if(type === 'clue'){
     opts = clSetupHtml();
+  } else if(type === 'navale'){
+    opts = bsSetupHtml();
   } else if(type === 'triomino'){
     const n = S.sel.length;
     opts = `<label class="lbl" for="o-target">Partie à</label><input id="o-target" class="field" inputmode="numeric" value="${o.target||400}">
@@ -1288,7 +1339,7 @@ function vSetup(){
     ${db.players.length || S.guests.length ? `<div class="chips">${rosterChips}${guestChips}</div>` : `<p class="hint" style="margin-bottom:8px">Aucun joueur dans votre liste pour l’instant. Ajoutez un nom ci-dessous.</p>`}
     <div class="row" style="margin-top:12px"><input id="guestName" class="field" placeholder="Ajouter un nom…" autocomplete="off" enterkeyhint="done"></div>
     <div class="row" style="margin-top:8px"><button class="btn sm" style="flex:1" data-a="addGuest">+ Invité (sans profil)</button><button class="btn sm" style="flex:1" data-a="addRoster">+ À ma liste</button></div>
-    ${type !== 'farkle' && type !== 'scrabble' && S.sel.length > 1 ? `<h2 class="sec">${type === 'clue' ? 'Premier à jouer' : 'Premier à brasser'}</h2><div class="chips">${S.sel.map(k => {
+    ${type !== 'farkle' && type !== 'scrabble' && S.sel.length > 1 ? `<h2 class="sec">${type === 'clue' ? 'Premier à jouer' : type === 'navale' ? 'Premier à tirer' : 'Premier à brasser'}</h2><div class="chips">${S.sel.map(k => {
         const nm = (db.players.find(p => p.id === k) || S.guests.find(g => g.key === k) || {}).name || '?';
         const on = (S.sel.includes(S.dealer) ? S.dealer : S.sel[0]) === k;
         return `<button class="chip ${on?'on':''}" data-a="setDealer0" data-k="${k}" style="padding-left:14px">${on?(type === 'clue' ? '🔍 ' : '🃏 '):''}${esc(nm)}</button>`; }).join('')}</div>
@@ -1323,6 +1374,7 @@ function startGame(){
   if(type === 'triomino' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
   if(type === 'train' && S.sel.length < 2) return toast('Il faut au moins 2 joueurs');
   if(type === 'clue' && (S.sel.length < 2 || S.sel.length > 6)) return toast('Clue se joue de 2 à 6 joueurs');
+  if(type === 'navale' && S.sel.length !== 2) return toast('Battleships se joue à 2 joueurs');
   if(TEAM_GAMES.includes(type) && o.teams && S.sel.length < (o.nteams || 2)) return toast('Il faut au moins un joueur par équipe');
   const players = S.sel.map(k => {
     const p = db.players.find(x => x.id === k);
@@ -1341,6 +1393,7 @@ function startGame(){
   else if(type === 'train'){ opts.set = [9,12,15].includes(o.set) ? o.set : 12; opts.rounds = opts.set + 1; opts.blank50 = !!o.blank50; }
   else if(type === 'triomino'){ opts.target = o.target || 400; opts.startBonus = !!o.startBonus; }
   else if(type === 'acquire'){ opts.ed = AQ_EDS[o.ed] ? o.ed : (db.aqEd || 'classic'); db.aqEd = opts.ed; }
+  else if(type === 'navale'){ const o2 = S.setupOpts.navale || {}; opts.navale = {me: S.sel.includes(o2.me) ? o2.me : S.sel[0]}; }
   else if(type === 'clue'){ const c = clSetupChars(); opts.cl = clDeck(c.ed, clSetupNames(c)); opts.clue = {ed: c.ed, names: c.names || null, chars: Object.assign({}, c.chars), me: c.me}; db.clEd = c.ed; if(c.names){ db.clNames = db.clNames || {}; db.clNames[c.ed] = c.names; } }
   else if(type === 'farkle'){ opts.f = Object.assign({}, FD, db.farkle, o.f||{}); db.farkle = Object.assign({}, opts.f); }
   else if(G.target){ opts.target = o.target || G.target; }
@@ -1362,6 +1415,9 @@ function startGame(){
   }
   if(type === 'acquire') aqState(g);
   if(type === 'triomino') g.cur = Math.max(0, Math.min(players.length - 1, g.dealer0 || 0));
+  if(type === 'navale'){ const mi = Math.max(0, S.sel.indexOf(opts.navale.me)), me = players[mi].key;
+    g.bs = {phase: 'place', ready: {}, turn: players[Math.max(0, Math.min(1, g.dealer0 || 0))].key, shots: {}, pend: null, host: me};
+    g.bsp = {me, fleet: [], ans: {}}; }
   if(type === 'clue'){ const c = opts.clue; g.cl = {chars: {}, hand: {}, cur: Math.max(0, Math.min(players.length - 1, g.dealer0 || 0)), out: {}, log: []};
     S.sel.forEach((k, i) => { const s = opts.cl.sus[c.chars[k]] || opts.cl.sus[i]; g.cl.chars[players[i].key] = s.id; players[i].color = s.c === '#e9ecef' || s.c === '#f3c4ef' ? '#a8a29a' : s.c; });
     g.cl.hand = clHands(players, g.cl.cur);
@@ -1897,6 +1953,214 @@ function clSetupHtml(){
       ${hands ? `<p class="hint">18 cartes à distribuer : ${hands}.</p>` : ''}` : '<p class="hint">Choisissez d’abord les joueurs ci-dessus.</p>'}`;
 }
 
+/* ====================== Battleships (bataille navale) : vrai jeu à deux téléphones ====================== */
+// Chaque téléphone garde sa flotte secrète (g.bsp sur le téléphone qui partage, localStorage pointage.bs.<liveId> chez l'autre).
+// En commun (g.bs) : phase, prêts, tour, tirs et résultats. Le téléphone visé répond tout seul (à l'eau / touché / coulé).
+const BS_N = 10, BS_COLS = 'ABCDEFGHIJ';
+const BS_SHIPS = [['pa', 'Porte-avions', 5], ['cu', 'Cuirassé', 4], ['cr', 'Croiseur', 3], ['sm', 'Sous-marin', 3], ['to', 'Torpilleur', 2]];
+const BS_ART = {pa: 'le', cu: 'le', cr: 'le', sm: 'le', to: 'le'};
+function bsName(k){ const s = BS_SHIPS.find(x => x[0] === k); return s ? s[1] : k; }
+function bsLen(k){ const s = BS_SHIPS.find(x => x[0] === k); return s ? s[2] : 0; }
+function bsCells(sh){ const out = []; for(let i = 0; i < bsLen(sh.k); i++) out.push(sh.d === 'v' ? [sh.r + i, sh.c] : [sh.r, sh.c + i]); return out; }
+function bsFits(fleet, sh){
+  const cs = bsCells(sh); if(cs.some(([r, c]) => r < 0 || c < 0 || r >= BS_N || c >= BS_N)) return false;
+  const taken = new Set(); fleet.filter(x => x.k !== sh.k && x.r != null).forEach(x => bsCells(x).forEach(([r, c]) => taken.add(r * 10 + c)));
+  return !cs.some(([r, c]) => taken.has(r * 10 + c));
+}
+function bsRandom(){
+  for(let t = 0; t < 500; t++){
+    const fleet = [];
+    let ok = true;
+    for(const [k] of BS_SHIPS){
+      let placed = false;
+      for(let i = 0; i < 200 && !placed; i++){ const d = Math.random() < .5 ? 'h' : 'v', sh = {k, d, r: Math.floor(Math.random() * BS_N), c: Math.floor(Math.random() * BS_N)}; if(bsFits(fleet, sh)){ fleet.push(sh); placed = true; } }
+      if(!placed){ ok = false; break; }
+    }
+    if(ok) return fleet;
+  }
+  return [];
+}
+/* --- État commun --- */
+function bsState(g){ if(!g.bs) g.bs = {phase: 'place', ready: {}, turn: null, shots: {}, pend: null}; g.bs.shots = g.bs.shots || {}; g.bs.ready = g.bs.ready || {}; return g.bs; }
+function bsOther(g, pk){ const o = g.players.find(p => p.key !== pk); return o ? o.key : null; }
+/* --- Flotte secrète (sur ce téléphone seulement) --- */
+function bsMine(g){
+  if(S.live && S.live.g === g){
+    const L = S.live;
+    if(!L.bsp){ let x = null; try{ x = JSON.parse(localStorage.getItem('pointage.bs.' + L.id) || 'null'); }catch(e){} L.bsp = x || {fleet: [], ans: {}}; }
+    if(!L.me) L.me = bsOther(g, g.bs && g.bs.host) || null;
+    L.bsp.me = L.me; return L.bsp;
+  }
+  if(!g.bsp) g.bsp = {me: g.players[0].key, fleet: [], ans: {}};
+  g.bsp.ans = g.bsp.ans || {}; g.bsp.fleet = g.bsp.fleet || []; return g.bsp;
+}
+function bsSaveMine(g){
+  if(S.live && S.live.g === g){ try{ localStorage.setItem('pointage.bs.' + S.live.id, JSON.stringify(S.live.bsp)); }catch(e){} return; }
+  g.updated = Date.now(); save();
+}
+/* --- Appliquer une action (téléphone qui partage la partie) --- */
+function bsApply(g, m){
+  const b = bsState(g); if(g.finished) return false;
+  if(m.a === 'ready'){
+    if(b.phase !== 'place' || !g.players.some(p => p.key === m.pk)) return false;
+    b.ready[m.pk] = true;
+    if(g.players.every(p => b.ready[p.key])){ b.phase = 'play'; b.turn = b.turn || g.players[Math.max(0, Math.min(1, g.dealer0 || 0))].key; }
+    g.updated = Date.now(); return true;
+  }
+  if(m.a === 'shot'){
+    if(b.phase !== 'play' || b.pend || m.pk !== b.turn) return false;
+    const r = m.r | 0, c = m.c | 0; if(r < 0 || c < 0 || r >= BS_N || c >= BS_N) return false;
+    const mine = b.shots[m.pk] = b.shots[m.pk] || [];
+    if(mine.some(s => s.r === r && s.c === c)) return false;
+    b.pend = {id: uid(), by: m.pk, r, c, at: Date.now()}; g.updated = Date.now(); return true;
+  }
+  if(m.a === 'res'){
+    const p = b.pend; if(!p || p.id !== m.id || m.pk !== bsOther(g, p.by)) return false;
+    const res = ['miss', 'hit', 'sunk'].includes(m.res) ? m.res : 'miss';
+    const shot = {r: p.r, c: p.c, res, at: Date.now()};
+    if(res === 'sunk'){ shot.ship = BS_SHIPS.some(s => s[0] === m.ship) ? m.ship : null; shot.cells = Array.isArray(m.cells) ? m.cells.slice(0, 5).map(x => [x[0] | 0, x[1] | 0]) : []; }
+    (b.shots[p.by] = b.shots[p.by] || []).push(shot); b.pend = null;
+    if(m.over){ b.phase = 'over'; b.win = p.by; g.winner = p.by; g.finished = true; }
+    else b.turn = bsOther(g, p.by);   // règles classiques : un tir par tour, chacun son tour
+    g.updated = Date.now(); return true;
+  }
+  return false;
+}
+// Action de ce téléphone : appliquée ici (téléphone qui partage) ou envoyée au téléphone qui partage
+async function bsDo(g, m){
+  const mine = bsMine(g); m.pk = mine.me;
+  if(S.live && S.live.g === g){
+    const L = S.live; m.t = 'bs'; L.bsBusy = true;
+    try{ await liveSendMsg(m); }catch(e){ toast(e.status === 404 ? 'Le partage est terminé' : 'Envoi impossible : vérifiez Internet'); L.bsBusy = false; return render(); }
+    L.bsBusy = false; return;
+  }
+  if(bsApply(g, m)){ save(); render(); return true; }
+  return false;
+}
+// Le téléphone visé répond tout seul au tir reçu
+function bsAutoAnswer(g){
+  const b = g.bs; if(!b || b.phase !== 'play' || !b.pend) return;
+  const mine = bsMine(g); if(!mine.me || b.pend.by === mine.me || mine.ans[b.pend.id]) return;
+  if(!mine.fleet.length || mine.fleet.some(s => s.r == null)) return;
+  const p = b.pend, got = (b.shots[p.by] || []).filter(s => s.res !== 'miss').map(s => s.r * 10 + s.c);
+  got.push(p.r * 10 + p.c);
+  const hitSet = new Set(got);
+  const ship = mine.fleet.find(s => bsCells(s).some(([r, c]) => r === p.r && c === p.c));
+  let m = {a: 'res', id: p.id, res: 'miss', pk: mine.me};
+  if(ship){
+    const sunk = bsCells(ship).every(([r, c]) => hitSet.has(r * 10 + c));
+    m.res = sunk ? 'sunk' : 'hit';
+    if(sunk){ m.ship = ship.k; m.cells = bsCells(ship); m.over = mine.fleet.every(s => bsCells(s).every(([r, c]) => hitSet.has(r * 10 + c))); }
+  }
+  mine.ans[p.id] = 1; bsSaveMine(g);
+  haptic(m.res === 'miss' ? 15 : m.res === 'hit' ? [60, 40, 60] : [120, 60, 120, 60, 200]);
+  if(S.live && S.live.g === g) bsDo(g, m); else { if(bsApply(g, m)) save(); setTimeout(render, 0); }
+}
+// Résultat de mes tirs : voix (téléphone qui tire) + vibration
+const BS_SEEN = {};
+function bsFeedback(g){
+  const b = g.bs; if(!b) return; const mine = bsMine(g); if(!mine.me) return;
+  const list = b.shots[mine.me] || [], k = g.id + ':' + mine.me;
+  if(BS_SEEN[k] == null){ BS_SEEN[k] = list.length; return; }
+  if(list.length <= BS_SEEN[k]){ BS_SEEN[k] = list.length; return; }
+  const s = list[list.length - 1]; BS_SEEN[k] = list.length;
+  haptic(s.res === 'miss' ? 20 : s.res === 'hit' ? [40, 60, 40] : [80, 60, 80, 60, 140]);
+  const t = s.res === 'miss' ? 'À l’eau.' : s.res === 'hit' ? 'Touché !' : b.phase === 'over' && b.win === mine.me ? `Touché, coulé ! Le ${bsName(s.ship).toLowerCase()}. Vous avez coulé toute la flotte. Victoire !` : `Touché, coulé ! Le ${bsName(s.ship).toLowerCase()}.`;
+  if(bsVoiceOn() && speakOk()) speak(t);
+}
+function bsVoiceOn(){ try{ const v = localStorage.getItem('pointage.annonce'); return v === null ? true : v === '1'; }catch(e){ return true; } }
+/* --- Dessins originaux des navires (vus de dessus, coque grise, ponts et tourelles) --- */
+function bsShipSvg(k, len){
+  const W = len * 40, H = 40;
+  const hull = k === 'sm' ? `<path d="M6 20c0-7 6-11 14-11h${W - 40}c9 0 14 5 14 11s-5 11-14 11H20c-8 0-14-4-14-11z" fill="url(#bsHull)" stroke="#20262c" stroke-width="1.6"/>`
+    : `<path d="M4 9h${W - 26}c8 0 16 6 20 11-4 5-12 11-20 11H4z" fill="url(#bsHull)" stroke="#20262c" stroke-width="1.6"/>`;
+  let deck = '';
+  if(k === 'pa') deck = `<rect x="10" y="14" width="${W - 40}" height="12" rx="2" fill="#4f5a62"/><path d="M14 20h${W - 52}" stroke="#e8e3cf" stroke-width="1.4" stroke-dasharray="6 5"/><rect x="${W - 70}" y="8" width="16" height="8" rx="1.5" fill="#3a434a"/><circle cx="${W - 62}" cy="12" r="1.6" fill="#d9d1b3"/>`;
+  else if(k === 'sm') deck = `<rect x="${W / 2 - 10}" y="14" width="20" height="12" rx="5" fill="#3a434a" stroke="#20262c" stroke-width="1"/><path d="M${W / 2} 14v-5" stroke="#20262c" stroke-width="2"/><path d="M12 20h${W - 30}" stroke="#7d8890" stroke-width="1" opacity=".6"/>`;
+  else { const n = k === 'cu' ? 3 : k === 'cr' ? 2 : 1; deck = `<rect x="${W / 2 - 9}" y="13" width="18" height="14" rx="2" fill="#4a545c" stroke="#20262c" stroke-width="1"/><rect x="${W / 2 - 3}" y="9" width="6" height="7" rx="1" fill="#3a434a"/>`;
+    for(let i = 0; i < n; i++){ const x = 18 + i * ((W - 70) / Math.max(1, n)); if(Math.abs(x - W / 2) < 14) continue; deck += `<circle cx="${x}" cy="20" r="5.5" fill="#5d6870" stroke="#20262c" stroke-width="1"/><path d="M${x} 20h11" stroke="#20262c" stroke-width="2.4" stroke-linecap="round"/>`; }
+    deck += `<circle cx="${W - 30}" cy="20" r="4.5" fill="#5d6870" stroke="#20262c" stroke-width="1"/><path d="M${W - 30} 20h9" stroke="#20262c" stroke-width="2" stroke-linecap="round"/>`; }
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true"><defs><linearGradient id="bsHull" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9b4bc"/><stop offset=".5" stop-color="#7a868f"/><stop offset="1" stop-color="#56616a"/></linearGradient></defs>${hull}${deck}</svg>`;
+}
+const BS_HIT = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1l2 5 5-2-2 5 4 1-4 2 2 5-5-2-2 5-2-5-5 2 2-5-4-2 4-1-2-5 5 2z" fill="#ff7a1a" stroke="#c0230f" stroke-width="1"/><circle cx="10" cy="10" r="3" fill="#ffe08a"/></svg>';
+const BS_MISS = '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="4" fill="none" stroke="#e8f4ff" stroke-width="1.6"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#e8f4ff" stroke-width="1" opacity=".5"/></svg>';
+// Grille : enemy = mes tirs sur la mer adverse ; sinon ma flotte et les tirs reçus
+function bsGrid(g, opt){
+  const b = bsState(g), mine = bsMine(g), me = mine.me, opp = bsOther(g, me), cs = opt.cs || 30;
+  const shots = opt.enemy ? (b.shots[me] || []) : (b.shots[opp] || []), at = {}; shots.forEach(s => at[s.r * 10 + s.c] = s);
+  const pend = b.pend && (opt.enemy ? b.pend.by === me : b.pend.by === opp) ? b.pend : null;
+  const canShoot = opt.enemy && b.phase === 'play' && b.turn === me && !b.pend && !(S.live && S.live.bsBusy);
+  let cells = '';
+  for(let r = 0; r < BS_N; r++) for(let c = 0; c < BS_N; c++){
+    const s = at[r * 10 + c], p = pend && pend.r === r && pend.c === c;
+    const mark = s ? (s.res === 'miss' ? BS_MISS : BS_HIT) : p ? '<span class="bsaim"></span>' : '';
+    const act = opt.place ? `data-a="bsPlaceAt" data-r="${r}" data-c="${c}"` : canShoot && !s ? `data-a="bsShoot" data-r="${r}" data-c="${c}"` : '';
+    cells += `<button class="bsc ${s ? s.res : ''} ${p ? 'pend' : ''}" ${act} ${act ? '' : 'tabindex="-1"'} aria-label="${BS_COLS[c]}${r + 1}${s ? ' ' + (s.res === 'miss' ? 'à l’eau' : s.res === 'hit' ? 'touché' : 'coulé') : ''}">${mark}</button>`;
+  }
+  // Navires : les miens (ma flotte) ou ceux de l'adversaire déjà coulés (mes tirs)
+  let ships = '';
+  const drawShip = (k, r, c, d, cls) => `<div class="bsship ${cls} ${d === 'v' ? 'v' : ''}" style="left:calc(var(--cs) * ${c} + 20px);top:calc(var(--cs) * ${r} + 20px);width:calc(var(--cs) * ${bsLen(k)});height:var(--cs)">${bsShipSvg(k, bsLen(k))}</div>`;
+  if(!opt.enemy) mine.fleet.filter(s => s.r != null).forEach(s => { ships += drawShip(s.k, s.r, s.c, s.d, (opt.place && S.bsSel === s.k ? 'sel' : '') + (bsSunkMine(g, s) ? ' sunk' : '')); });
+  else shots.filter(s => s.res === 'sunk' && s.cells && s.cells.length).forEach(s => { const cl = s.cells, v = cl.length > 1 && cl[0][1] === cl[1][1], r0 = Math.min(...cl.map(x => x[0])), c0 = Math.min(...cl.map(x => x[1])); ships += drawShip(s.ship, r0, c0, v ? 'v' : 'h', 'sunk'); });
+  const head = `<div class="bslab"></div>${[...BS_COLS].map(x => `<div class="bslab">${x}</div>`).join('')}`;
+  const rows = [...Array(BS_N).keys()].map(r => `<div class="bslab">${r + 1}</div>`).join('');
+  return `<div class="bsgrid ${opt.enemy ? 'enemy' : 'own'} ${canShoot ? 'armed' : ''}" style="--cs:${cs}px"><div class="bshead">${head}</div><div class="bsrowlab">${rows}</div><div class="bscells">${cells}</div>${ships}</div>`;
+}
+function bsSunkMine(g, sh){ const b = g.bs, opp = bsOther(g, bsMine(g).me), hits = new Set((b.shots[opp] || []).filter(s => s.res !== 'miss').map(s => s.r * 10 + s.c)); return bsCells(sh).every(([r, c]) => hits.has(r * 10 + c)); }
+function bsLeft(g, pk){ const shots = (g.bs.shots[bsOther(g, pk)] || []); return BS_SHIPS.length - shots.filter(s => s.res === 'sunk').length; }
+/* --- Écran --- */
+function vNavale(g){
+  const live = !!(S.live && S.live.g === g), b = bsState(g), mine = bsMine(g), me = mine.me, opp = bsOther(g, me);
+  const nm = k => esc((g.players.find(p => p.key === k) || {}).name || '?');
+  const cs = Math.max(24, Math.min(40, Math.floor((Math.min(innerWidth, 560) - 32 - 20 - 4) / 10)));
+  const right = live ? `<button class="icon-btn sm" data-a="rules" data-t="navale" aria-label="Règles">📖</button>`
+    : `${liveTopBtn(g)}<button class="icon-btn sm" data-a="rules" data-t="navale" aria-label="Règles">📖</button><button class="icon-btn sm" data-a="menu" aria-label="Menu">⋮</button>`;
+  const head = live ? `<header class="top"><button class="icon-btn" data-a="liveQuit" aria-label="Quitter">←</button><div class="grow"><h1>Battleships</h1><p class="sub">${me ? 'Flotte de ' + nm(me) + ' · en direct' : 'Bataille navale'}</p></div>${right}</header>`
+    : topbar('Battleships', 'Bataille navale · ' + (me ? 'flotte de ' + (g.players.find(p => p.key === me) || {}).name : ''), right);
+  const voice = `<button class="icon-btn sm bsvoice" data-a="bsVoice" aria-label="${bsVoiceOn() ? 'Annonce à voix haute activée' : 'Annonce à voix haute coupée'}">${bsVoiceOn() ? SPK_ON : SPK_OFF}</button>`;
+  const liveBar = live ? `<div class="livebar ${S.live.err ? 'err' : ''}" style="margin:0 0 12px"><span class="dot"></span><span class="grow">${S.live.gone ? 'Le partage est terminé.' : S.live.err ? esc(S.live.err) : '<span id="liveAge">' + liveAgeTxt(S.live) + '</span>'}</span></div>` : '';
+  let body = '';
+  if(b.phase === 'place'){
+    const placed = mine.fleet.filter(s => s.r != null).length, all = placed === BS_SHIPS.length, iAmReady = !!b.ready[me];
+    const invite = !live && !g.share ? `<div class="bsinvite"><b>Invitez votre adversaire</b><p>Touchez l’icône réseau en haut (ou le bouton ci-dessous), puis faites scanner le code QR par l’autre téléphone. Il placera sa flotte de son côté.</p><button class="btn primary" data-a="liveStart">Inviter l’adversaire</button></div>` : '';
+    body = iAmReady
+      ? `<div class="bsturn wait"><b>Flotte prête ✓</b><span>${b.ready[opp] ? '' : 'En attente de ' + nm(opp) + '…'}</span></div>${invite}<h2 class="sec">Ma flotte</h2>${bsGrid(g, {cs})}`
+      : `${invite}<div class="bsturn"><b>Placez votre flotte</b><span>Touchez un navire, puis la case de départ. ${placed}/${BS_SHIPS.length} placés.</span></div>
+        <div class="bstray">${BS_SHIPS.map(([k, n, len]) => { const sh = mine.fleet.find(s => s.k === k), on = S.bsSel === k; return `<button class="bstr ${on ? 'on' : ''} ${sh && sh.r != null ? 'ok' : ''}" data-a="bsPick" data-k="${k}"><span class="bstrs" style="width:${len * 14}px">${bsShipSvg(k, len)}</span><small>${n} · ${len}</small></button>`; }).join('')}</div>
+        <div class="bsbar"><button class="btn sm" data-a="bsRotate" ${S.bsSel ? '' : 'disabled'}>↻ Tourner</button><button class="btn sm" data-a="bsRandom">🎲 Au hasard</button><button class="btn sm" data-a="bsClear">Effacer</button></div>
+        ${bsGrid(g, {cs, place: true})}
+        <button class="btn primary block" style="margin-top:14px" data-a="bsReady" ${all ? '' : 'disabled'}>Ma flotte est prête ✓</button>
+        <p class="hint">Les navires peuvent se toucher. Votre flotte reste sur ce téléphone : l’autre joueur ne la voit jamais.</p>`;
+  } else {
+    const myTurn = b.phase === 'play' && b.turn === me, over = b.phase === 'over';
+    const sh = (b.shots[me] || []), hits = sh.filter(s => s.res !== 'miss').length;
+    const last = sh[sh.length - 1], lastTxt = last ? (last.res === 'miss' ? 'À l’eau.' : last.res === 'hit' ? 'Touché !' : 'Coulé : ' + bsName(last.ship).toLowerCase() + ' !') : '';
+    const banner = over ? `<div class="bsturn ${b.win === me ? 'won' : 'lost'}"><b>${b.win === me ? '🏆 Victoire !' : '⚓ Défaite'}</b><span>${b.win === me ? 'Vous avez coulé toute la flotte de ' + nm(opp) + '.' : nm(opp) + ' a coulé toute votre flotte.'}</span>${!live ? '<button class="btn sm" data-a="bsResults">Résultats</button>' : ''}</div>`
+      : b.pend ? `<div class="bsturn wait"><b>${b.pend.by === me ? 'Tir en ' + BS_COLS[b.pend.c] + (b.pend.r + 1) + '…' : nm(opp) + ' tire en ' + BS_COLS[b.pend.c] + (b.pend.r + 1) + '…'}</b></div>`
+      : `<div class="bsturn ${myTurn ? 'go' : 'wait'}"><b>${myTurn ? '🎯 À vous de tirer !' : 'Au tour de ' + nm(opp) + '…'}</b>${voice}${myTurn ? `<span>Touchez une case de la mer adverse.${lastTxt ? ' Dernier tir : ' + lastTxt : ''}</span>` : ''}</div>`;
+    const score = `<div class="bsscore"><span><b>${bsLeft(g, opp)}</b> navire${bsLeft(g, opp) > 1 ? 's' : ''} adverse${bsLeft(g, opp) > 1 ? 's' : ''} à couler</span><span>Tirs : <b>${sh.length}</b> · touchés : <b>${hits}</b></span><span>Ma flotte : <b>${bsLeft(g, me)}</b>/5</span></div>`;
+    const csSmall = Math.max(18, Math.floor(cs * .72));
+    body = `${banner}${score}<h2 class="sec">Mer adverse · mes tirs</h2>${bsGrid(g, {cs, enemy: true})}<h2 class="sec">Ma flotte · tirs reçus</h2>${bsGrid(g, {cs: csSmall})}`;
+  }
+  return `${head}<main class="pad bs">${liveBar}${body}${live ? `<button class="btn block" style="margin-top:16px" data-a="liveQuit">Quitter la partie</button>` : ''}</main>`;
+}
+// Après chaque affichage : répondre aux tirs reçus, annoncer mes résultats
+function bsTick(){
+  const g = curGame(); if(!g || g.type !== 'navale') return;
+  if(!((S.view === 'sheet' && !S.live) || (S.view === 'live' && S.live && S.live.g === g))) return;
+  bsFeedback(g); bsAutoAnswer(g);
+}
+function bsFast(){ if(S.live && S.live.g && S.live.g.type === 'navale' && !S.live.g.finished) return true; return db.games.some(g => g.type === 'navale' && g.share && !g.finished); }
+
+function bsInView(){ const g = curGame(); return !!(g && g.type === 'navale' && !g.finished && ((S.view === 'sheet' && !S.live) || (S.view === 'live' && S.live && S.live.g === g))); }
+function bsSetupHtml(){
+  const o = S.setupOpts = S.setupOpts || {}, b = o.navale = o.navale || {};
+  if(!b.me || !S.sel.includes(b.me)) b.me = S.sel[0] || null;
+  const nameOf = k => (db.players.find(p => p.id === k) || S.guests.find(g => g.key === k) || {}).name || '?';
+  return `${S.sel.length && S.sel.length !== 2 ? '<p class="hint"><b>Battleships se joue à 2 joueurs.</b></p>' : ''}
+    ${S.sel.length ? `<label class="lbl">Ce téléphone est la flotte de…</label><div class="chips">${S.sel.map(k => `<button class="chip ${b.me === k ? 'on' : ''}" data-a="setBsMe" data-k="${k}">⚓ ${esc(nameOf(k))}</button>`).join('')}</div>` : ''}
+    <p class="hint">C’est un vrai jeu de bataille navale à deux téléphones. Après avoir commencé, invitez l’adversaire avec l’icône réseau : il scanne le code QR et place sa flotte sur son téléphone. Chacun garde sa flotte secrète.</p>`;
+}
 /* ---------- Feuille de pointage ---------- */
 function vSheet(){
   const g = curGame(); if(!g) return vHome();
@@ -1907,6 +2171,7 @@ function vSheet(){
   if(g.type === 'yahtzee') return vYahtzee(g);
   if(g.type === 'triomino') return vTriomino(g);
   if(g.type === 'clue') return vClue(g);
+  if(g.type === 'navale') return vNavale(g);
   const G = GAMES[g.type], r = ranking(g), t = totals(g);
   const byKey = {}; r.forEach(x => byKey[x.p.key] = x);
   const end = !g.finished && endInfo(g);
@@ -2748,7 +3013,7 @@ function vResults(){
       <p class="hint" style="margin-top:4px">${g.team ? 'équipe ' + esc(r.filter(x=>x.rank===1).map(x=>x.p.team).join(', ')) + ' · ' + (r[0] && membersOf(g, r[0].p).length > 1 ? 'remportent' : 'remporte') : (r.filter(x=>x.rank===1).length>1?'remportent':'remporte')} la partie</p></div>
     <h2 class="sec">Classement</h2>
     <div class="card list podium">${r.map(x => `<div class="li"><span class="rk">${med[x.rank-1]||x.rank}</span>${g.type === 'clue' && g.cl ? `<span style="line-height:0">${clPAv(g, x.p.key, 34)}</span>` : `<span class="av" style="background:${x.p.color}">${g.team ? esc(x.p.team) : initial(x.p.name)}</span>`}
-      <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type==='clue'?`<div class="s">${esc(clSusOf(g, x.p.key).n)}${g.cl && g.cl.out[x.p.key] ? ' · accusation fausse' : ''}</div>`:g.type==='phase10'?`<div class="s">${x.phase>10?'Les 10 phases réussies':(x.phase-1)+' phase'+(x.phase>2?'s':'')+' réussie'+(x.phase>2?'s':'')+' · vise la phase '+x.phase}</div>`:''}</div><div class="t num-t" style="font-size:20px">${g.type === 'clue' ? '' : fmt(x.total)}</div></div>`).join('')}</div>
+      <div class="grow"><div class="t">${esc(x.p.name)}</div>${g.type==='navale' && g.bs ? (() => { const t = (g.bs.shots[x.p.key] || []), h = t.filter(z => z.res !== 'miss').length; return `<div class="s">${t.length} tirs · ${h} touchés${t.length ? ' (' + Math.round(h / t.length * 100) + ' %)' : ''}</div>`; })() : g.type==='clue'?`<div class="s">${esc(clSusOf(g, x.p.key).n)}${g.cl && g.cl.out[x.p.key] ? ' · accusation fausse' : ''}</div>`:g.type==='phase10'?`<div class="s">${x.phase>10?'Les 10 phases réussies':(x.phase-1)+' phase'+(x.phase>2?'s':'')+' réussie'+(x.phase>2?'s':'')+' · vise la phase '+x.phase}</div>`:''}</div><div class="t num-t" style="font-size:20px">${g.type === 'clue' || g.type === 'navale' ? '' : fmt(x.total)}</div></div>`).join('')}</div>
     ${(isTurnGame(g) ? g.turns.length : g.rounds.length) ? `<h2 class="sec">Évolution des scores</h2><div class="card" style="padding:12px 12px 10px">${chartHtml(g, 'chr')}</div>` : ''}
     ${guests.length ? `<h2 class="sec">Invités</h2><div class="card list">${guests.map(p => `<div class="li"><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">Pas dans votre liste de joueurs</div></div><button class="btn sm" data-a="saveGuest" data-k="${p.key}">+ À ma liste</button></div>`).join('')}</div>` : ''}
     <div style="display:grid;gap:10px;margin-top:22px">
@@ -3231,6 +3496,7 @@ function openMenu(){
 // Cherche la réponse dans : réponses rapides (ci-dessous), règles de chaque jeu, nos règles maison, manuel (inséré au build).
 const HELP_MANUAL = /*HELP*/[]/*HELP*/;
 const HELP_FAQ = [
+  {q:['battleships','bataille navale','guerre navale','placer mes navires','tirer','couler'], a:'Battleships se joue à 2 téléphones : commencez la partie, touchez « Inviter l’adversaire » et faites scanner le code QR. Chacun place ses 5 navires (touchez un navire puis sa case, ou « Au hasard »), puis tire à son tour sur la mer adverse. L’autre téléphone répond tout seul : à l’eau, touché ou coulé.'},
   {q:['clue','cluedo','carnet de détective','noter une hypothèse','faire une hypothèse au clue','accuser au clue'], a:'Au Clue, chaque téléphone est un carnet secret. Touchez une case pour la marquer : ✗ n’a pas, ✓ l’a, ? et – au crayon. Notez les hypothèses avec « Noter une hypothèse » : l’app fait les déductions en bleu. À plusieurs téléphones, partagez la partie en direct : les hypothèses arrivent sur tous les téléphones.'},
   {q:['écran noir','rideau','cacher mon carnet','lune'], a:'Au Clue, l’écran devient noir après 20 secondes sans toucher, ou avec le bouton 🌙. Le téléphone ne se verrouille pas. Touchez l’écran pour revoir votre carnet.'},
   {q:['annoncer le gagnant','qui a gagné à voix haute','annonce du gagnant','dire le gagnant'], a:'Si les annonces à voix haute sont activées (haut-parleur non barré, ou menu ⋮ de la partie), l’app dit qui a gagné quand vous touchez Terminer, dans tous les jeux.'},
@@ -3282,6 +3548,7 @@ const HELP_STOP = new Set(('ludo a au aux avec ca ce cela ces cet cette comment 
 const HELP_SYN = [
   'supprimer effacer enlever retirer oter detruire jeter', 'corriger modifier changer editer rectifier correction modification erreur trompe tromper',
   'annuler defaire arriere undo', 'retablir refaire', 'brasser distribuer donneur brasseur donner melanger brasse',
+  'battleships bataille navale guerre navale navire bateau', 'tirer tir touche coule',
   'clue cluedo detective enquete carnet', 'hypothese soupcon suggestion', 'accuser accusation enveloppe coupable',
   'invite visiteur ami', 'manche ronde round trou', 'pointage point points score compte compter calculer valeur vaut valent',
   'gagner gagnant victoire vainqueur gagne but objectif', 'regle reglement regles instructions', 'sauvegarde sauvegarder copie backup exporter',
@@ -3919,11 +4186,12 @@ function liveSnap(g){
   c.players.forEach(clean); if(c.members) Object.values(c.members).forEach(ms => ms.forEach(clean));
   if(c.aq) delete c.aq.sh;   // Acquire : les actions de chacun restent secrètes
   delete c.clp;                // Clue : le carnet de chacun reste sur son téléphone
+  delete c.bsp;                // Battleships : la flotte de chacun reste sur son téléphone
   return {v: 1, g: c, t: Date.now(), host: g.share && g.share.me && g.share.me !== '-' ? g.share.me : null};
 }
 /* --- Côté hôte (le téléphone qui tient la feuille) --- */
 let LIVE_T = null, LIVE_BUSY = false, LIVE_AGAIN = null;
-function liveSoon(){ const g = curGame(); if(!g || !g.share || S.live) return; const id = g.id; clearTimeout(LIVE_T); LIVE_T = setTimeout(() => livePush(id).catch(() => {}), 600); }
+function liveSoon(){ const g = curGame(); if(!g || !g.share || S.live) return; const id = g.id; clearTimeout(LIVE_T); LIVE_T = setTimeout(() => livePush(id).catch(() => {}), g.type === 'navale' ? 120 : 600); }
 async function livePush(id){
   const g = db.games.find(x => x.id === id); if(!g || !g.share) return;
   if(LIVE_BUSY){ LIVE_AGAIN = id; return; }
@@ -3944,14 +4212,14 @@ async function livePush(id){
 function liveBar(){ const b = $('livebar'); if(b) b.outerHTML = liveBarHtml(curGame()); }
 function liveBarHtml(g){
   if(!g || !g.share) return '';
-  return `<div class="livebar ${S.liveErr ? 'err' : ''}" id="livebar"><span class="dot"></span><span class="grow">${S.liveErr ? esc(S.liveErr) : g.type === 'clue' ? 'Partie en direct : les hypothèses arrivent sur tous les téléphones' : 'Partie en direct : les autres joueurs suivent les pointages'}</span><button class="btn sm" data-a="liveShow">Code QR</button></div>`;
+  return `<div class="livebar ${S.liveErr ? 'err' : ''}" id="livebar"><span class="dot"></span><span class="grow">${S.liveErr ? esc(S.liveErr) : g.type === 'clue' ? 'Partie en direct : les hypothèses arrivent sur tous les téléphones' : g.type === 'navale' ? 'Partie en direct : les tirs passent d’un téléphone à l’autre' : 'Partie en direct : les autres joueurs suivent les pointages'}</span><button class="btn sm" data-a="liveShow">Code QR</button></div>`;
 }
 async function liveStart(){
   const g = curGame(); closeModal();
   if(!liveOk()) return toast('Le partage en direct n’est pas offert sur cet appareil');
   if(navigator.onLine === false) return toast('Il faut Internet pour partager la partie');
   const fresh = !g.share;
-  if(fresh){ g.share = {id: liveRand(9), tok: liveRand(16), k: liveRand(16)}; g.liveId = g.share.id; if(g.type === 'clue' && g.clp) g.share.me = g.clp.me; save(); }
+  if(fresh){ g.share = {id: liveRand(9), tok: liveRand(16), k: liveRand(16)}; g.liveId = g.share.id; if(g.type === 'clue' && g.clp) g.share.me = g.clp.me; if(g.type === 'navale' && g.bsp) g.share.me = g.bsp.me; save(); }
   toast('Préparation du partage…');
   try{ await livePush(g.id); }
   catch(e){ if(fresh && e.status === 503){ delete g.share; save(); S.liveErr = ''; render(); return toast(e.message); } }
@@ -3965,8 +4233,9 @@ function liveShow(){
       <div style="background:#fff;padding:12px;border-radius:16px;max-width:300px;margin:0 auto">${qrSvg(url)}</div>
       <p style="margin:14px 4px 6px;line-height:1.45">Les autres joueurs <b>scannent ce code</b> avec l’appareil photo de leur téléphone : ils suivent les pointages en direct${liveEntryOk(g) ? ' et peuvent envoyer leurs propres points. Ce téléphone garde le dernier mot.' : ', sans pouvoir les modifier.'}</p>
       <p class="hint" style="margin:0 4px">Pas besoin d’avoir l’app : la partie s’ouvre dans le navigateur. Seule cette partie est partagée, chiffrée de bout en bout.</p>
+      ${g.type === 'navale' ? '<p class="hint" style="margin:10px 4px 0">L’adversaire scanne ce code avec son téléphone. Sa flotte reste sur son téléphone, la vôtre sur le vôtre.</p>' : ''}
       ${g.type === 'clue' ? '<p class="hint" style="margin:10px 4px 0">Au Clue, chacun choisit son nom, puis garde son carnet secret sur son téléphone. Les hypothèses et les accusations apparaissent sur tous les téléphones.</p>' : ''}
-      ${liveEntryOk(g) && g.type !== 'clue' ? `<div style="text-align:left;margin-top:14px"><b>Qui tient ce téléphone ?</b><p class="hint" style="margin:2px 0 8px">Les autres inscrivent leurs points sur leur téléphone ; vous inscrivez les vôtres ici, quand les leurs sont arrivés.</p>
+      ${liveEntryOk(g) && g.type !== 'clue' && g.type !== 'navale' ? `<div style="text-align:left;margin-top:14px"><b>Qui tient ce téléphone ?</b><p class="hint" style="margin:2px 0 8px">Les autres inscrivent leurs points sur leur téléphone ; vous inscrivez les vôtres ici, quand les leurs sont arrivés.</p>
         <div class="chips">${g.players.map(p => `<button class="chip ${g.share.me === p.key ? 'on' : ''}" style="min-height:40px;padding:0 12px" data-a="liveHostMe" data-k="${p.key}">${esc(p.name)}</button>`).join('')}
         <button class="chip ${g.share.me === '-' ? 'on' : ''}" style="min-height:40px;padding:0 12px" data-a="liveHostMe" data-k="-">Je ne joue pas</button></div></div>` : ''}
     </div>
@@ -3998,7 +4267,7 @@ let LIVE_RUN = 0, LIVE_PT = null;
 async function livePoll(){
   const L = S.live; clearTimeout(LIVE_PT);
   if(!L || S.view !== 'live' || L.gone) return;
-  const again = () => { clearTimeout(LIVE_PT); LIVE_PT = setTimeout(livePoll, 3000); };
+  const again = () => { clearTimeout(LIVE_PT); LIVE_PT = setTimeout(livePoll, bsFast() ? 1000 : 3000); };
   if(document.hidden) return again();
   try{
     const d = await liveCall('get', {id: L.id, ver: L.ver});
@@ -4044,6 +4313,7 @@ function liveTable(g){
 function vLive(){
   const L = S.live, g = L && L.g;
   if(g && g.type === 'clue' && !(L.gone && !g)) return vClue(g);
+  if(g && g.type === 'navale') return vNavale(g);
   const head = topbar('Partie en direct', g ? gameName(g) + (liveEntryOk(g) ? ' · en direct' : ' · lecture seule') : 'Ouverture…');
   if(L && L.gone && !g) return `${head}<main class="pad"><div class="card empty">${esc(L.err || 'Cette partie n’est pas partagée en ce moment. Le partage a été arrêté, ou la partie n’a pas bougé depuis plus de 3 jours : elle revient dès que le téléphone qui tient la feuille la rouvre.')}</div>
     <button class="btn block" style="margin-top:16px" data-a="liveQuit">Accueil</button></main>`;
@@ -4072,7 +4342,7 @@ function vLive(){
 const LIVE_ENTRY = ['generic', 'flip7', 'playnine', 'skyjo', 'phase10', 'train', 'wizard', 'yahtzee', 'uno', 'millebornes', 'skipbo', 'farkle', 'scrabble', 'triomino'];
 function liveRoundKey(g){ return g.type === 'wizard' ? g.rounds.length + ':' + (g.pend ? 't' : 'b') : String(g.rounds.length); }
 function liveEntryOk(g){
-  if(g && g.type === 'clue') return !g.finished;
+  if(g && (g.type === 'clue' || g.type === 'navale')) return !g.finished;
   if(!g || g.finished || !LIVE_ENTRY.includes(g.type) || (g.team && !['millebornes', 'skipbo'].includes(g.type))) return false;
   if(g.type === 'uno' && g.opts.mode === 'official') return false;
   if(g.type === 'yahtzee') return !yzDone(g);
@@ -4091,7 +4361,7 @@ function liveInboxCheck(g){
 /* Hôte : lecture de la boîte de réception toutes les 3 secondes */
 let LIVE_IT = null; const LIVE_IN_BUSY = new Set();
 function liveInboxLoop(){
-  clearTimeout(LIVE_IT); LIVE_IT = setTimeout(liveInboxLoop, 3000);
+  clearTimeout(LIVE_IT); LIVE_IT = setTimeout(liveInboxLoop, bsFast() ? 1000 : 3000);
   if(document.hidden || S.live || !aiConfigured()) return;
   db.games.filter(g => g.share && !g.finished).forEach(g => liveInboxFetch(g));
 }
@@ -4113,6 +4383,7 @@ async function liveInboxFetch(g){
 function liveApply(g, m){
   const p = m && g.players.find(x => x.key === m.pk); if(!p || g.finished) return;
   if(m.t === 'cl'){ if(g.type === 'clue') clApply(g, m, false); return; }
+  if(m.t === 'bs'){ if(g.type === 'navale') bsApply(g, m); return; }
   if(m.t === 'yz'){
     if(g.type !== 'yahtzee') return; const st = yzState(g), c = YZ_ALL.find(x => x.id === m.cat);
     if(!c || st.sc[m.pk][m.cat] != null) return;
@@ -4956,6 +5227,29 @@ const A = {
   abNow: () => { autoBackupNow(true); toast('Sauvegarde…'); },
   abResume: () => autoBackupNow(true),
   setOrient: el => { const v = el.dataset.v; try{ localStorage.setItem('pointage.orient', v); }catch(e){} applyOrient(); toast({auto:'L’écran pivote librement', portrait:'Écran verrouillé en portrait', landscape:'Écran verrouillé en paysage'}[v]); render(); },
+  /* --- Battleships --- */
+  setBsMe: el => { readSetupFields(); (S.setupOpts.navale = S.setupOpts.navale || {}).me = el.dataset.k; render(); },
+  bsPick: el => { haptic(); S.bsSel = S.bsSel === el.dataset.k ? null : el.dataset.k; render(); },
+  bsPlaceAt: el => { const g = curGame(), mine = bsMine(g), r = +el.dataset.r, c = +el.dataset.c;
+    if(g.bs.ready[mine.me]) return;
+    if(!S.bsSel){ const on = mine.fleet.find(s => s.r != null && bsCells(s).some(([a, b]) => a === r && b === c)); if(on){ S.bsSel = on.k; haptic(); render(); } return; }
+    const old = mine.fleet.find(s => s.k === S.bsSel), d = old ? old.d : (S.bsDir || 'h');
+    let sh = {k: S.bsSel, d, r, c};
+    if(!bsFits(mine.fleet, sh)){ const alt = {k: S.bsSel, d: d === 'h' ? 'v' : 'h', r, c}; if(bsFits(mine.fleet, alt)) sh = alt; else { haptic([30, 60, 30]); return toast('Le navire ne rentre pas à cet endroit'); } }
+    mine.fleet = mine.fleet.filter(s => s.k !== sh.k).concat([sh]); haptic();
+    const next = BS_SHIPS.find(([k]) => !mine.fleet.some(s => s.k === k)); S.bsSel = next ? next[0] : null;
+    bsSaveMine(g); render(); },
+  bsRotate: () => { const g = curGame(), mine = bsMine(g), sh = mine.fleet.find(s => s.k === S.bsSel);
+    if(!sh){ S.bsDir = S.bsDir === 'v' ? 'h' : 'v'; return toast(S.bsDir === 'v' ? 'Vertical' : 'Horizontal'); }
+    const nx = Object.assign({}, sh, {d: sh.d === 'h' ? 'v' : 'h'}); if(!bsFits(mine.fleet, nx)) return toast('Pas assez de place pour le tourner ici');
+    mine.fleet = mine.fleet.filter(s => s.k !== sh.k).concat([nx]); haptic(); bsSaveMine(g); render(); },
+  bsRandom: () => { const g = curGame(), mine = bsMine(g); mine.fleet = bsRandom(); S.bsSel = null; haptic(); bsSaveMine(g); render(); },
+  bsClear: () => { const g = curGame(), mine = bsMine(g); mine.fleet = []; S.bsSel = BS_SHIPS[0][0]; bsSaveMine(g); render(); },
+  bsReady: () => { const g = curGame(), mine = bsMine(g); if(mine.fleet.filter(s => s.r != null).length !== BS_SHIPS.length) return toast('Placez les 5 navires');
+    S.bsSel = null; haptic(40); bsDo(g, {a: 'ready'}); if(S.live) toast('Flotte prête ✓'); },
+  bsShoot: el => { const g = curGame(); haptic(12); bsDo(g, {a: 'shot', r: +el.dataset.r, c: +el.dataset.c}); },
+  bsVoice: () => { const on = !bsVoiceOn(); try{ localStorage.setItem('pointage.annonce', on ? '1' : '0'); }catch(e){} if(on) audioUnlock(); toast(on ? '🔊 Annonces à voix haute activées' : '🔇 Annonces coupées'); render(); },
+  bsResults: () => go('results'),
   /* --- Clue --- */
   clCell: el => { const g = curGame(), nb = clNB(g), c = el.dataset.c, k = el.dataset.k; haptic();
     if(k === nb.me){ const i = nb.mine.indexOf(c); if(i >= 0) nb.mine.splice(i, 1); else { if(nb.mine.length >= (g.cl.hand[k] || 6)) return toast('Vous avez déjà ' + nb.mine.length + ' cartes : retirez-en une d’abord'); nb.mine.push(c); } clSaveNB(g); return render(); }

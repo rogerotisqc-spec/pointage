@@ -95,7 +95,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 6.18</span></div></a>
+  <a class="brand" href="#debut"><img src="../app/apple-touch-icon.png" alt=""><div><b>Manuel Pointage</b><span>Version 6.19</span></div></a>
   <div class="search"><span class="ic">🔎</span><input id="q" type="search" placeholder="Rechercher : brasser, Phase 10, sauvegarde, joker…" autocomplete="off" aria-label="Rechercher dans le manuel"><button id="qx" hidden aria-label="Effacer la recherche">✕</button></div>
   <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="toc">☰ Sommaire</button>
 </div></header>
@@ -132,6 +132,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><a href="#triomino">Triomino</a></li>
         <li><a href="#yahtzee">Yahtzee</a></li>
         <li><a href="#acquire">Acquire</a></li>
+        <li><a href="#navale">Battleships</a></li>
         <li><a href="#clue">Clue</a></li>
         <li><a href="#des">Farkle (jeu de dés)</a></li>
         <li><a href="#voix">Commande vocale</a></li>
@@ -190,7 +191,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
     <h2><span class="n">2</span>L’accueil</h2>
     <div class="row2"><div class="txt">
       <p><b>Parties en cours</b> : les parties non terminées, avec le pointage de chacun. Touchez-en une pour la reprendre là où vous étiez.</p>
-      <p><b>Nouvelle partie</b> : une tuile par jeu, rangées par catégorie dans des encadrés (<b>Jeux de cartes</b>, <b>Jeux de dés</b>, <b>Dominos et tuiles</b>, <b>Jeux de plateau</b> (Acquire, Clue, Scrabble), <b>Tous les autres jeux</b> pour le Pointage libre), en ordre alphabétique dans chaque encadré. Le petit livre 📖 d’une tuile ouvre les règles du jeu sans commencer de partie.</p>
+      <p><b>Nouvelle partie</b> : une tuile par jeu, rangées par catégorie dans des encadrés (<b>Jeux de cartes</b>, <b>Jeux de dés</b>, <b>Dominos et tuiles</b>, <b>Jeux de plateau</b> (Acquire, Battleships, Clue, Scrabble), <b>Tous les autres jeux</b> pour le Pointage libre), en ordre alphabétique dans chaque encadré. Le petit livre 📖 d’une tuile ouvre les règles du jeu sans commencer de partie.</p>
       <p>En haut à droite : <b style="color:#e53935">Ludo</b> (avec la petite étiquette <b>IA</b>) ouvre <a href="#assistant">Ludo, l’assistant</a>, pour poser une question ; 📘 ouvre ce manuel, ⚙︎ ouvre les <a href="#reglages">Réglages</a>.</p>
       <p>En bas : les onglets <b>Jeux</b>, <b>Joueurs</b>, <b>Historique</b> et <b>Stats</b>.</p>
       <div class="tip"><b>Bandeaux :</b> un bandeau jaune peut apparaître en haut de l’accueil, par exemple quand une nouvelle version est disponible. Touchez-le pour agir.</div>
@@ -420,6 +421,18 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
         <li><span class="ui">🏁 Pointage final</span> : inscrivez l’argent papier de chacun. L’app ajoute les primes de toutes les chaînes actives et la vente de toutes les actions, puis le plus riche gagne. Un bandeau rappelle quand la fin peut être déclarée (une chaîne de 41 tuiles, ou toutes les chaînes sûres).</li></ul>
     </div><div class="figs"><figure><img src="img/acquire.webp" alt="Feuille Acquire" loading="lazy"><figcaption>Les chaînes et les actions de chacun.</figcaption></figure><figure><img src="img/acquire-fusion.webp" alt="Fusion Acquire" loading="lazy"><figcaption>Une fusion : primes, ventes et échanges.</figcaption></figure><figure><img src="img/acquire-final.webp" alt="Pointage final Acquire" loading="lazy"><figcaption>Le pointage final avec l’argent papier.</figcaption></figure></div></div>
 
+    <h3 id="navale">Battleships (bataille navale)</h3>
+    <div class="row2 many"><div class="txt" data-kw="battleships bataille navale guerre navale navire bateau flotte tir touché coulé à l'eau porte-avions cuirassé croiseur sous-marin torpilleur grille deux téléphones">
+      <p>Battleships est un <b>vrai jeu</b>, pas une feuille de pointage : chaque joueur joue sur son propre téléphone, et les tirs passent d’un téléphone à l’autre par la partie en direct.</p>
+      <ol><li><b>Préparation</b> : choisissez les 2 joueurs, à qui appartient la flotte de ce téléphone et qui tire en premier.</li>
+        <li><b>Inviter l’adversaire</b> : touchez <span class="ui">Inviter l’adversaire</span> (ou l’icône réseau). L’autre scanne le code QR avec son téléphone.</li>
+        <li><b>Placer la flotte</b> : chacun place ses 5 navires (porte-avions 5 cases, cuirassé 4, croiseur 3, sous-marin 3, torpilleur 2). Touchez un navire, puis sa case de départ ; <span class="ui">↻ Tourner</span> le met à la verticale ou à l’horizontale ; <span class="ui">🎲 Au hasard</span> place tout d’un coup. Les navires peuvent se toucher. Puis <span class="ui">Ma flotte est prête</span>.</li>
+        <li><b>Tirer</b> : quand c’est votre tour (« 🎯 À vous de tirer ! »), touchez une case de la mer adverse. Le téléphone de l’adversaire répond tout seul : à l’eau (cercle blanc), touché (explosion) ou coulé (le navire apparaît). Un seul tir par tour, chacun son tour.</li>
+        <li><b>Ma flotte</b> : la petite grille du bas montre vos navires et les tirs reçus.</li></ol>
+      <p>Le téléphone qui tire annonce le résultat à voix haute (« À l’eau », « Touché ! », « Touché, coulé ! Le croiseur. ») ; le haut-parleur du bandeau coupe la voix. Les deux téléphones vibrent : petite vibration à l’eau, plus forte quand un navire est touché ou coulé.</p>
+      <p>Votre flotte reste sur votre téléphone : elle n’est jamais envoyée. Le premier qui coule les 5 navires adverses gagne ; la partie va dans l’historique avec le nombre de tirs et la précision de chacun.</p>
+    </div><div class="figs"><figure><img src="img/navale-place.webp" alt="Placement de la flotte" loading="lazy"><figcaption>Placer sa flotte.</figcaption></figure><figure><img src="img/navale-jeu.webp" alt="Partie en cours" loading="lazy"><figcaption>Mes tirs (en haut) et ma flotte (en bas).</figcaption></figure></div></div>
+
     <h3 id="clue">Clue</h3>
     <div class="row2 many"><div class="txt" data-kw="clue cluedo carnet détective suspect arme pièce enveloppe hypothèse soupçon accusation accuser montrer carte personnage avatar colonel moutarde rose pervenche olive violet leblanc orchidée écran noir rideau lune secret déduction">
       <p>Au Clue, il n’y a pas de feuille commune : chaque téléphone devient le <b>carnet de détective secret</b> d’un joueur, pour remplacer le papier et le crayon.</p>
@@ -615,7 +628,7 @@ footer{text-align:center;color:var(--muted);font-size:13.5px;padding:10px 16px 4
   </section>
 </main>
 </div>
-<footer>Pointage · manuel de la version 6.18 · <a href="../">Installer l’app</a></footer>
+<footer>Pointage · manuel de la version 6.19 · <a href="../">Installer l’app</a></footer>
 
 <script>
 (function(){

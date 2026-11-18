@@ -85,13 +85,18 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   une », enveloppe = une par catégorie. En direct : messages {t:'cl', a:'sug'|'resp'|'accres'|'acc'|'end'} appliqués par
   l'hôte (clApply) ; fenêtre clpop sur tous les téléphones ; l'hôte peut répondre à la place d'un joueur (data-k).
   Écran noir : S.curtain après 20 s ou 🌙, AndroidBridge.setDim (luminosité min.), écran gardé allumé (clInView). Pas de voix.
+- Battleships (type navale ; index.html : vNavale, bsApply, bsDo, bsAutoAnswer, bsFeedback, bsGrid) : vrai jeu à 2 téléphones.
+  Flotte secrète g.bsp (téléphone qui partage) ou localStorage pointage.bs.<liveId> (l'autre), jamais dans liveSnap. En commun
+  g.bs = {phase place|play|over, ready, turn, shots{pk:[{r,c,res,ship,cells}]}, pend, host, win}. Messages {t:'bs', a:'ready'|'shot'|'res'} ;
+  le téléphone visé répond tout seul (bsAutoAnswer) ; règles classiques (un tir par tour, navires collés permis). Voix (pointage.annonce,
+  activée par défaut ici) sur le téléphone qui tire, vibration sur les deux. Pendant la partie : sondage et boîte de réception à 1 s (bsFast).
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 
 ## Publier une version
 
 1. Monter `versionCode` (+1) et `versionName` dans `AndroidManifest.xml`.
-2. Tester : `tests/run.sh` (44 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
+2. Tester : `tests/run.sh` (45 tests Playwright, téléphone et tablette, relais simulé `tests/mockrelay.js` ;
    voir `tests/README.md`). GitHub les relance à chaque push (`.github/workflows/tests.yml`). Nouveau test : `tests/testXXX.js`
    avec `const T = require('./_env')` (T.app, T.build, T.src, T.out).
 3. `AAPT2=… ANDROID_JAR=… DX_JAR=… ./build.sh` (aapt2, android.jar API 29, dx 30.0.2 ; signature apksig

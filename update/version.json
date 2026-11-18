@@ -1,7 +1,7 @@
 {
- "version": "6.18",
- "notes": "Les règles de chaque jeu indiquent maintenant le nombre de joueurs.",
- "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.18&k=maj",
- "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.18.apk",
- "size": 234409
+ "version": "6.19",
+ "notes": "Nouveau jeu : Battleships (bataille navale) à deux téléphones. Chacun place sa flotte en secret, les tirs passent d'un téléphone à l'autre, le téléphone visé répond tout seul. Voix sur le téléphone qui tire, vibrations sur les deux.",
+ "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.19&k=maj",
+ "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.19.apk",
+ "size": 242601
 }
