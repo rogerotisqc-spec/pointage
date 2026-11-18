@@ -1,7 +1,7 @@
 {
- "version": "6.20",
- "notes": "Battleships : bouton « Ouvrir dans l'app » pour l'adversaire, navires adverses révélés à la fin, plouf et explosion au lieu de « à l'eau » et « touché » (la voix annonce les navires coulés).\nClue : bouton « Ouvrir dans l'app » aussi pour les joueurs qui ouvrent le code QR dans le navigateur.",
- "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.20&k=maj",
- "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.20.apk",
+ "version": "6.21",
+ "notes": "Battleships : explosion plus grave (basse fréquence).",
+ "apk": "https://pointage-ia.rogerotisqc.workers.dev/apk?v=6.21&k=maj",
+ "apk2": "https://raw.githubusercontent.com/rogerotisqc-spec/pointage/main/update/Pointage-6.21.apk",
  "size": 246697
 }
