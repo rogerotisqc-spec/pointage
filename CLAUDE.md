@@ -89,7 +89,10 @@ Application familiale de feuilles de pointage (Android + app web). Propriétaire
   Flotte secrète g.bsp (téléphone qui partage) ou localStorage pointage.bs.<liveId> (l'autre), jamais dans liveSnap. En commun
   g.bs = {phase place|play|over, ready, turn, shots{pk:[{r,c,res,ship,cells}]}, pend, host, win}. Messages {t:'bs', a:'ready'|'shot'|'res'} ;
   le téléphone visé répond tout seul (bsAutoAnswer) ; règles classiques (un tir par tour, navires collés permis). Voix (pointage.annonce,
-  activée par défaut ici) sur le téléphone qui tire, vibration sur les deux. Pendant la partie : sondage et boîte de réception à 1 s (bsFast).
+  activée par défaut ici) sur le téléphone qui tire : bruitages bsSound (Web Audio : 'splash' à l'eau, 'boom' touché) et voix
+  seulement pour « coulé » ; vibration sur les deux. Pendant la partie : sondage et boîte de réception à 1 s (bsFast).
+  Fin : le perdant joint sa flotte à la réponse (m.fleet), le gagnant envoie {a:'reveal'} ; g.bs.reveal[pk] ; g.finished seulement
+  quand les deux flottes sont montrées (bouton Résultats en secours). liveAppBtn en haut (avant le placement / le choix du nom).
 - `tools/inject_help.py` : insère le texte du manuel pour l'assistant hors ligne (questions vocales,
   réponse lue par TextToSpeech côté Android, speechSynthesis côté web).
 

@@ -571,6 +571,7 @@ tr.gui .cln{font-weight:800;color:var(--wine)}
 .bsship.sel{filter:drop-shadow(0 0 3px #ffb347) drop-shadow(0 0 2px #ffb347)}
 .bsship.sunk{filter:sepia(1) saturate(4) hue-rotate(-30deg) brightness(.75)}
 .bsgrid.enemy .bsship.sunk{opacity:.85}
+.bsship.reveal{opacity:.92;filter:drop-shadow(0 0 2px #fff)}
 </style>
 </head>
 <body>
@@ -1777,6 +1778,7 @@ function vClue(g){
   if(live && !me){
     return `${head}<main class="pad"><div class="card" style="padding:16px"><b>Qui êtes-vous ?</b><p class="hint" style="margin:4px 0 12px">Votre carnet reste sur ce téléphone : personne d’autre ne le voit.</p>
       <div class="clwho">${P.map(p => `<button class="clwhob" data-a="liveMe" data-k="${p.key}">${clPAv(g, p.key, 44)}<span><b>${esc(p.name)}</b><small>${esc(clSusOf(g, p.key).n)}</small></span></button>`).join('')}</div></div>
+      ${liveAppBtn() ? `<p class="hint" style="margin:14px 4px 0">Vous avez l’app Pointage ? Ouvrez la partie dans l’app avant de choisir votre nom : votre carnet restera dans l’app.</p>${liveAppBtn()}` : ''}
       <button class="btn block" style="margin-top:12px" data-a="liveQuit">Quitter</button></main>`;
   }
   // Bande du tour
@@ -1824,7 +1826,7 @@ function vClue(g){
   const journal = logs ? `<h2 class="sec">Journal</h2><div class="card list cllog">${logs}</div>` : '';
   return `${head}<main class="pad cl">${live ? `<div class="livebar ${S.live.err ? 'err' : ''}" style="margin:0 0 12px"><span class="dot"></span><span class="grow">${S.live.gone ? 'Le partage est terminé.' : S.live.err ? esc(S.live.err) : '<span id="liveAge">' + liveAgeTxt(S.live) + '</span>'}</span></div>` : ''}
     ${turn}${acts}${hint}${book}${journal}
-    ${live ? `<button class="btn block" style="margin-top:16px" data-a="liveQuit">Quitter la partie</button>` : ''}
+    ${live ? liveAppBtn() + `<button class="btn block" style="margin-top:16px" data-a="liveQuit">Quitter la partie</button>` : ''}
   </main>${clPopHtml(g, nb)}${S.curtain ? '<div class="curtain" data-a="clCurtainOff" role="button" aria-label="Toucher pour revoir le carnet"><span>Touchez pour revoir votre carnet</span></div>' : ''}`;
 }
 function clLastAccTxt(g){ const e = [...g.cl.log].reverse().find(x => x.t === 'acc' && x.ok); return e ? e.cards.map(c => clCard(g, c).n).join(' · ') : ''; }
@@ -2001,6 +2003,7 @@ function bsSaveMine(g){
 /* --- Appliquer une action (téléphone qui partage la partie) --- */
 function bsApply(g, m){
   const b = bsState(g); if(g.finished) return false;
+  if(b.phase === 'over' && m.a !== 'reveal') return false;
   if(m.a === 'ready'){
     if(b.phase !== 'place' || !g.players.some(p => p.key === m.pk)) return false;
     b.ready[m.pk] = true;
@@ -2014,13 +2017,21 @@ function bsApply(g, m){
     if(mine.some(s => s.r === r && s.c === c)) return false;
     b.pend = {id: uid(), by: m.pk, r, c, at: Date.now()}; g.updated = Date.now(); return true;
   }
+  if(m.a === 'reveal'){   // fin de partie : chacun montre sa flotte
+    if(b.phase !== 'over' || !Array.isArray(m.fleet)) return false;
+    b.reveal = b.reveal || {}; b.reveal[m.pk] = bsClean(m.fleet);
+    if(g.players.every(q => b.reveal[q.key])) g.finished = true;
+    g.updated = Date.now(); return true;
+  }
   if(m.a === 'res'){
     const p = b.pend; if(!p || p.id !== m.id || m.pk !== bsOther(g, p.by)) return false;
     const res = ['miss', 'hit', 'sunk'].includes(m.res) ? m.res : 'miss';
     const shot = {r: p.r, c: p.c, res, at: Date.now()};
     if(res === 'sunk'){ shot.ship = BS_SHIPS.some(s => s[0] === m.ship) ? m.ship : null; shot.cells = Array.isArray(m.cells) ? m.cells.slice(0, 5).map(x => [x[0] | 0, x[1] | 0]) : []; }
     (b.shots[p.by] = b.shots[p.by] || []).push(shot); b.pend = null;
-    if(m.over){ b.phase = 'over'; b.win = p.by; g.winner = p.by; g.finished = true; }
+    if(m.over){ b.phase = 'over'; b.win = p.by; g.winner = p.by; b.reveal = b.reveal || {}; if(Array.isArray(m.fleet)) b.reveal[m.pk] = bsClean(m.fleet);
+      if(g.bsp && g.bsp.me && !b.reveal[g.bsp.me] && !(S.live && S.live.g === g)) b.reveal[g.bsp.me] = bsClean(g.bsp.fleet);
+      if(g.players.every(q => b.reveal[q.key])) g.finished = true; }
     else b.turn = bsOther(g, p.by);   // règles classiques : un tir par tour, chacun son tour
     g.updated = Date.now(); return true;
   }
@@ -2050,7 +2061,7 @@ function bsAutoAnswer(g){
   if(ship){
     const sunk = bsCells(ship).every(([r, c]) => hitSet.has(r * 10 + c));
     m.res = sunk ? 'sunk' : 'hit';
-    if(sunk){ m.ship = ship.k; m.cells = bsCells(ship); m.over = mine.fleet.every(s => bsCells(s).every(([r, c]) => hitSet.has(r * 10 + c))); }
+    if(sunk){ m.ship = ship.k; m.cells = bsCells(ship); m.over = mine.fleet.every(s => bsCells(s).every(([r, c]) => hitSet.has(r * 10 + c))); if(m.over) m.fleet = bsClean(mine.fleet); }
   }
   mine.ans[p.id] = 1; bsSaveMine(g);
   haptic(m.res === 'miss' ? 15 : m.res === 'hit' ? [60, 40, 60] : [120, 60, 120, 60, 200]);
@@ -2065,8 +2076,34 @@ function bsFeedback(g){
   if(list.length <= BS_SEEN[k]){ BS_SEEN[k] = list.length; return; }
   const s = list[list.length - 1]; BS_SEEN[k] = list.length;
   haptic(s.res === 'miss' ? 20 : s.res === 'hit' ? [40, 60, 40] : [80, 60, 80, 60, 140]);
-  const t = s.res === 'miss' ? 'À l’eau.' : s.res === 'hit' ? 'Touché !' : b.phase === 'over' && b.win === mine.me ? `Touché, coulé ! Le ${bsName(s.ship).toLowerCase()}. Vous avez coulé toute la flotte. Victoire !` : `Touché, coulé ! Le ${bsName(s.ship).toLowerCase()}.`;
-  if(bsVoiceOn() && speakOk()) speak(t);
+  if(!bsVoiceOn()) return;
+  if(s.res === 'miss') return bsSound('splash');
+  bsSound('boom');
+  if(s.res === 'sunk' && speakOk()) setTimeout(() => speak(b.phase === 'over' && b.win === mine.me ? `Touché, coulé ! Le ${bsName(s.ship).toLowerCase()}. Vous avez coulé toute la flotte. Victoire !` : `Touché, coulé ! Le ${bsName(s.ship).toLowerCase()}.`), 900);
+}
+// Bruitages fabriqués sur place (Web Audio, aucun fichier) : plouf et explosion
+let BS_AC = null;
+function bsAudio(){ try{ if(!BS_AC){ const C = window.AudioContext || window.webkitAudioContext; if(!C) return null; BS_AC = new C(); } if(BS_AC.state === 'suspended') BS_AC.resume(); return BS_AC; }catch(e){ return null; } }
+function bsNoise(ac, dur){ const n = Math.floor(ac.sampleRate * dur), buf = ac.createBuffer(1, n, ac.sampleRate), d = buf.getChannelData(0); for(let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; const src = ac.createBufferSource(); src.buffer = buf; return src; }
+function bsSound(kind){
+  const ac = bsAudio(); if(!ac) return; const t = ac.currentTime + .02, out = ac.createGain(); out.gain.value = .9; out.connect(ac.destination);
+  if(kind === 'splash'){
+    const n = bsNoise(ac, 1.1), bp = ac.createBiquadFilter(), g = ac.createGain();
+    bp.type = 'bandpass'; bp.Q.value = .8; bp.frequency.setValueAtTime(2600, t); bp.frequency.exponentialRampToValueAtTime(500, t + .9);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.9, t + .03); g.gain.exponentialRampToValueAtTime(.001, t + 1.05);
+    n.connect(bp); bp.connect(g); g.connect(out); n.start(t); n.stop(t + 1.1);
+    const o = ac.createOscillator(), og = ac.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(180, t); o.frequency.exponentialRampToValueAtTime(60, t + .25);
+    og.gain.setValueAtTime(.5, t); og.gain.exponentialRampToValueAtTime(.001, t + .3); o.connect(og); og.connect(out); o.start(t); o.stop(t + .32);
+    for(let i = 0; i < 4; i++){ const d = t + .18 + Math.random() * .5, b = ac.createOscillator(), bg = ac.createGain(); b.type = 'sine'; b.frequency.setValueAtTime(900 + Math.random() * 900, d); b.frequency.exponentialRampToValueAtTime(1800 + Math.random() * 600, d + .06);
+      bg.gain.setValueAtTime(.12, d); bg.gain.exponentialRampToValueAtTime(.001, d + .08); b.connect(bg); bg.connect(out); b.start(d); b.stop(d + .09); }
+  } else {
+    const n = bsNoise(ac, 2), lp = ac.createBiquadFilter(), g = ac.createGain();
+    lp.type = 'lowpass'; lp.frequency.setValueAtTime(3200, t); lp.frequency.exponentialRampToValueAtTime(160, t + 1.6);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + .01); g.gain.exponentialRampToValueAtTime(.001, t + 1.9);
+    n.connect(lp); lp.connect(g); g.connect(out); n.start(t); n.stop(t + 2);
+    const o = ac.createOscillator(), og = ac.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(32, t + .8);
+    og.gain.setValueAtTime(1, t); og.gain.exponentialRampToValueAtTime(.001, t + .9); o.connect(og); og.connect(out); o.start(t); o.stop(t + .95);
+  }
 }
 function bsVoiceOn(){ try{ const v = localStorage.getItem('pointage.annonce'); return v === null ? true : v === '1'; }catch(e){ return true; } }
 /* --- Dessins originaux des navires (vus de dessus, coque grise, ponts et tourelles) --- */
@@ -2101,11 +2138,15 @@ function bsGrid(g, opt){
   let ships = '';
   const drawShip = (k, r, c, d, cls) => `<div class="bsship ${cls} ${d === 'v' ? 'v' : ''}" style="left:calc(var(--cs) * ${c} + 20px);top:calc(var(--cs) * ${r} + 20px);width:calc(var(--cs) * ${bsLen(k)});height:var(--cs)">${bsShipSvg(k, bsLen(k))}</div>`;
   if(!opt.enemy) mine.fleet.filter(s => s.r != null).forEach(s => { ships += drawShip(s.k, s.r, s.c, s.d, (opt.place && S.bsSel === s.k ? 'sel' : '') + (bsSunkMine(g, s) ? ' sunk' : '')); });
-  else shots.filter(s => s.res === 'sunk' && s.cells && s.cells.length).forEach(s => { const cl = s.cells, v = cl.length > 1 && cl[0][1] === cl[1][1], r0 = Math.min(...cl.map(x => x[0])), c0 = Math.min(...cl.map(x => x[1])); ships += drawShip(s.ship, r0, c0, v ? 'v' : 'h', 'sunk'); });
+  else {
+    const rv = b.phase === 'over' && b.reveal && b.reveal[opp];
+    if(rv) rv.forEach(s => { const hitAll = bsCells(s).every(([r, c]) => at[r * 10 + c] && at[r * 10 + c].res !== 'miss'); if(!hitAll) ships += drawShip(s.k, s.r, s.c, s.d, 'reveal'); });
+    shots.filter(s => s.res === 'sunk' && s.cells && s.cells.length).forEach(s => { const cl = s.cells, v = cl.length > 1 && cl[0][1] === cl[1][1], r0 = Math.min(...cl.map(x => x[0])), c0 = Math.min(...cl.map(x => x[1])); ships += drawShip(s.ship, r0, c0, v ? 'v' : 'h', 'sunk'); }); }
   const head = `<div class="bslab"></div>${[...BS_COLS].map(x => `<div class="bslab">${x}</div>`).join('')}`;
   const rows = [...Array(BS_N).keys()].map(r => `<div class="bslab">${r + 1}</div>`).join('');
   return `<div class="bsgrid ${opt.enemy ? 'enemy' : 'own'} ${canShoot ? 'armed' : ''}" style="--cs:${cs}px"><div class="bshead">${head}</div><div class="bsrowlab">${rows}</div><div class="bscells">${cells}</div>${ships}</div>`;
 }
+function bsClean(fleet){ return (fleet || []).filter(s => BS_SHIPS.some(x => x[0] === s.k) && s.r != null).slice(0, 5).map(s => ({k: s.k, d: s.d === 'v' ? 'v' : 'h', r: s.r | 0, c: s.c | 0})); }
 function bsSunkMine(g, sh){ const b = g.bs, opp = bsOther(g, bsMine(g).me), hits = new Set((b.shots[opp] || []).filter(s => s.res !== 'miss').map(s => s.r * 10 + s.c)); return bsCells(sh).every(([r, c]) => hits.has(r * 10 + c)); }
 function bsLeft(g, pk){ const shots = (g.bs.shots[bsOther(g, pk)] || []); return BS_SHIPS.length - shots.filter(s => s.res === 'sunk').length; }
 /* --- Écran --- */
@@ -2120,12 +2161,13 @@ function vNavale(g){
   const voice = `<button class="icon-btn sm bsvoice" data-a="bsVoice" aria-label="${bsVoiceOn() ? 'Annonce à voix haute activée' : 'Annonce à voix haute coupée'}">${bsVoiceOn() ? SPK_ON : SPK_OFF}</button>`;
   const liveBar = live ? `<div class="livebar ${S.live.err ? 'err' : ''}" style="margin:0 0 12px"><span class="dot"></span><span class="grow">${S.live.gone ? 'Le partage est terminé.' : S.live.err ? esc(S.live.err) : '<span id="liveAge">' + liveAgeTxt(S.live) + '</span>'}</span></div>` : '';
   let body = '';
+  const appBtn = live ? liveAppBtn() : '';
   if(b.phase === 'place'){
     const placed = mine.fleet.filter(s => s.r != null).length, all = placed === BS_SHIPS.length, iAmReady = !!b.ready[me];
     const invite = !live && !g.share ? `<div class="bsinvite"><b>Invitez votre adversaire</b><p>Touchez l’icône réseau en haut (ou le bouton ci-dessous), puis faites scanner le code QR par l’autre téléphone. Il placera sa flotte de son côté.</p><button class="btn primary" data-a="liveStart">Inviter l’adversaire</button></div>` : '';
     body = iAmReady
       ? `<div class="bsturn wait"><b>Flotte prête ✓</b><span>${b.ready[opp] ? '' : 'En attente de ' + nm(opp) + '…'}</span></div>${invite}<h2 class="sec">Ma flotte</h2>${bsGrid(g, {cs})}`
-      : `${invite}<div class="bsturn"><b>Placez votre flotte</b><span>Touchez un navire, puis la case de départ. ${placed}/${BS_SHIPS.length} placés.</span></div>
+      : `${invite}${appBtn ? `<div class="bsinvite"><b>Vous avez l’app Pointage ?</b><p>Ouvrez la partie dans l’app avant de placer votre flotte (la flotte reste dans l’app ou le navigateur où elle est placée).</p>${appBtn}</div>` : ''}<div class="bsturn"><b>Placez votre flotte</b><span>Touchez un navire, puis la case de départ. ${placed}/${BS_SHIPS.length} placés.</span></div>
         <div class="bstray">${BS_SHIPS.map(([k, n, len]) => { const sh = mine.fleet.find(s => s.k === k), on = S.bsSel === k; return `<button class="bstr ${on ? 'on' : ''} ${sh && sh.r != null ? 'ok' : ''}" data-a="bsPick" data-k="${k}"><span class="bstrs" style="width:${len * 14}px">${bsShipSvg(k, len)}</span><small>${n} · ${len}</small></button>`; }).join('')}</div>
         <div class="bsbar"><button class="btn sm" data-a="bsRotate" ${S.bsSel ? '' : 'disabled'}>↻ Tourner</button><button class="btn sm" data-a="bsRandom">🎲 Au hasard</button><button class="btn sm" data-a="bsClear">Effacer</button></div>
         ${bsGrid(g, {cs, place: true})}
@@ -2135,20 +2177,26 @@ function vNavale(g){
     const myTurn = b.phase === 'play' && b.turn === me, over = b.phase === 'over';
     const sh = (b.shots[me] || []), hits = sh.filter(s => s.res !== 'miss').length;
     const last = sh[sh.length - 1], lastTxt = last ? (last.res === 'miss' ? 'À l’eau.' : last.res === 'hit' ? 'Touché !' : 'Coulé : ' + bsName(last.ship).toLowerCase() + ' !') : '';
-    const banner = over ? `<div class="bsturn ${b.win === me ? 'won' : 'lost'}"><b>${b.win === me ? '🏆 Victoire !' : '⚓ Défaite'}</b><span>${b.win === me ? 'Vous avez coulé toute la flotte de ' + nm(opp) + '.' : nm(opp) + ' a coulé toute votre flotte.'}</span>${!live ? '<button class="btn sm" data-a="bsResults">Résultats</button>' : ''}</div>`
+    const banner = over ? `<div class="bsturn ${b.win === me ? 'won' : 'lost'}"><b>${b.win === me ? '🏆 Victoire !' : '⚓ Défaite'}</b><span>${b.win === me ? 'Vous avez coulé toute la flotte de ' + nm(opp) + '.' : nm(opp) + ' a coulé toute votre flotte.'} ${b.reveal && b.reveal[opp] ? 'Les navires de ' + nm(opp) + ' sont maintenant visibles.' : ''}</span>${!live ? '<button class="btn sm" data-a="bsResults">Résultats</button>' : ''}</div>`
       : b.pend ? `<div class="bsturn wait"><b>${b.pend.by === me ? 'Tir en ' + BS_COLS[b.pend.c] + (b.pend.r + 1) + '…' : nm(opp) + ' tire en ' + BS_COLS[b.pend.c] + (b.pend.r + 1) + '…'}</b></div>`
       : `<div class="bsturn ${myTurn ? 'go' : 'wait'}"><b>${myTurn ? '🎯 À vous de tirer !' : 'Au tour de ' + nm(opp) + '…'}</b>${voice}${myTurn ? `<span>Touchez une case de la mer adverse.${lastTxt ? ' Dernier tir : ' + lastTxt : ''}</span>` : ''}</div>`;
     const score = `<div class="bsscore"><span><b>${bsLeft(g, opp)}</b> navire${bsLeft(g, opp) > 1 ? 's' : ''} adverse${bsLeft(g, opp) > 1 ? 's' : ''} à couler</span><span>Tirs : <b>${sh.length}</b> · touchés : <b>${hits}</b></span><span>Ma flotte : <b>${bsLeft(g, me)}</b>/5</span></div>`;
     const csSmall = Math.max(18, Math.floor(cs * .72));
     body = `${banner}${score}<h2 class="sec">Mer adverse · mes tirs</h2>${bsGrid(g, {cs, enemy: true})}<h2 class="sec">Ma flotte · tirs reçus</h2>${bsGrid(g, {cs: csSmall})}`;
   }
-  return `${head}<main class="pad bs">${liveBar}${body}${live ? `<button class="btn block" style="margin-top:16px" data-a="liveQuit">Quitter la partie</button>` : ''}</main>`;
+  return `${head}<main class="pad bs">${liveBar}${body}${live && b.phase !== 'place' ? appBtn : ''}${live ? `<button class="btn block" style="margin-top:16px" data-a="liveQuit">Quitter la partie</button>` : ''}</main>`;
 }
 // Après chaque affichage : répondre aux tirs reçus, annoncer mes résultats
 function bsTick(){
   const g = curGame(); if(!g || g.type !== 'navale') return;
   if(!((S.view === 'sheet' && !S.live) || (S.view === 'live' && S.live && S.live.g === g))) return;
   bsFeedback(g); bsAutoAnswer(g);
+  const b = g.bs, mine = bsMine(g);
+  if(b && b.phase === 'over' && mine.me && !(b.reveal && b.reveal[mine.me]) && !mine.revealed){
+    mine.revealed = 1; bsSaveMine(g);
+    if(S.live && S.live.g === g) bsDo(g, {a: 'reveal', fleet: bsClean(mine.fleet)});
+    else if(bsApply(g, {a: 'reveal', pk: mine.me, fleet: bsClean(mine.fleet)})){ save(); setTimeout(render, 0); }
+  }
 }
 function bsFast(){ if(S.live && S.live.g && S.live.g.type === 'navale' && !S.live.g.finished) return true; return db.games.some(g => g.type === 'navale' && g.share && !g.finished); }
 
@@ -5247,9 +5295,9 @@ const A = {
   bsClear: () => { const g = curGame(), mine = bsMine(g); mine.fleet = []; S.bsSel = BS_SHIPS[0][0]; bsSaveMine(g); render(); },
   bsReady: () => { const g = curGame(), mine = bsMine(g); if(mine.fleet.filter(s => s.r != null).length !== BS_SHIPS.length) return toast('Placez les 5 navires');
     S.bsSel = null; haptic(40); bsDo(g, {a: 'ready'}); if(S.live) toast('Flotte prête ✓'); },
-  bsShoot: el => { const g = curGame(); haptic(12); bsDo(g, {a: 'shot', r: +el.dataset.r, c: +el.dataset.c}); },
+  bsShoot: el => { const g = curGame(); haptic(12); bsAudio(); audioUnlock(); bsDo(g, {a: 'shot', r: +el.dataset.r, c: +el.dataset.c}); },
   bsVoice: () => { const on = !bsVoiceOn(); try{ localStorage.setItem('pointage.annonce', on ? '1' : '0'); }catch(e){} if(on) audioUnlock(); toast(on ? '🔊 Annonces à voix haute activées' : '🔇 Annonces coupées'); render(); },
-  bsResults: () => go('results'),
+  bsResults: () => { const g = curGame(); if(g && !g.finished){ g.finished = true; save(); } go('results'); },
   /* --- Clue --- */
   clCell: el => { const g = curGame(), nb = clNB(g), c = el.dataset.c, k = el.dataset.k; haptic();
     if(k === nb.me){ const i = nb.mine.indexOf(c); if(i >= 0) nb.mine.splice(i, 1); else { if(nb.mine.length >= (g.cl.hand[k] || 6)) return toast('Vous avez déjà ' + nb.mine.length + ' cartes : retirez-en une d’abord'); nb.mine.push(c); } clSaveNB(g); return render(); }
